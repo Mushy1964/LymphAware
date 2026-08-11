@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>About LymphAware | LymphAware</title>
+
+  <style>
+    :root {
+      --green: #4c9b57;
+      --green-dark: #2f6f3a;
+      --green-light: #eef7f0;
+
+      --blue: #2878b8;
+      --blue-dark: #1f5f93;
+      --blue-light: #eef6fb;
+
+      --text: #1f2933;
+      --muted: #5b6873;
+      --border: #dfe7eb;
+      --background: #ffffff;
+      --soft: #f7f9fa;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--background);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    svg {
+      display: block;
+      max-width: 100%;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    /* HEADER */
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.98);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      min-height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .header-logo {
+      width: 52px;
+      height: 52px;
+    }
+
+    .header-wordmark {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .lymph {
+      color: var(--green);
+    }
+
+    .aware {
+      color: var(--blue);
+    }
+
+    .main-nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .main-nav a:hover,
+    .main-nav a:focus,
+    .main-nav a.active {
+      color: var(--blue);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 20px;
+      white-space: nowrap;
+      border-radius: 9px;
+      border: 2px solid transparent;
+      font-weight: 700;
+    }
+
+    .button-primary {
+      background: var(--green);
+      color: white;
+    }
+
+    .button-secondary {
+      border-color: var(--blue);
+      color: var(--blue);
+      background: white;
+    }
+
+    /* PAGE HERO */
+
+    .page-hero {
+      padding: 82px 0 70px;
+      background: linear-gradient(
+        135deg,
+        rgba(76, 155, 87, 0.07),
+        rgba(40, 120, 184, 0.05)
+      );
+    }
+
+    .page-hero-inner {
+      max-width: 860px;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--green-dark);
+      font-weight: 700;
+      font-size: 0.98rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .page-hero h1 {
+      margin: 0 0 22px;
+      font-size: clamp(2.8rem, 5vw, 4.6rem);
+      line-height: 1.08;
+      letter-spacing: -2px;
+    }
+
+    .page-hero p {
+      margin: 0;
+      max-width: 760px;
+      font-size: 1.2rem;
+      color: var(--muted);
+    }
+
+    /* CONTENT */
+
+    .content-section {
+      padding: 78px 0;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 58px;
+      align-items: start;
+    }
+
+    .copy h2 {
+      margin: 0 0 18px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.2;
+    }
+
+    .copy p {
+      margin: 0 0 18px;
+      font-size: 1.08rem;
+      color: var(--muted);
+    }
+
+    .highlight-box {
+      padding: 34px;
+      border-radius: 20px;
+      background: var(--green-light);
+    }
+
+    .highlight-box h2,
+    .highlight-box h3 {
+      margin-top: 0;
+    }
+
+    .highlight-box p {
+      color: var(--muted);
+    }
+
+    .principles-section {
+      background: var(--soft);
+    }
+
+    .section-heading {
+      max-width: 780px;
+      margin: 0 auto 44px;
+      text-align: center;
+    }
+
+    .section-heading h2 {
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 4vw, 3rem);
+    }
+
+    .section-heading p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .principles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .principle-card {
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: white;
+    }
+
+    .principle-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.2rem;
+    }
+
+    .principle-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .mission-box {
+      border-radius: 24px;
+      padding: 48px 40px;
+      background: linear-gradient(135deg, var(--green-light), var(--blue-light));
+      text-align: center;
+    }
+
+    .mission-box h2 {
+      margin: 0 0 16px;
+      font-size: clamp(2rem, 4vw, 3rem);
+    }
+
+    .mission-box p {
+      max-width: 760px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 1.1rem;
+    }
+
+    /* FOOTER */
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 38px 0 30px;
+    }
+
+    .footer-grid {
+      display: flex;
+      justify-content: space-between;
+      gap: 40px;
+      align-items: flex-start;
+    }
+
+    .footer-brand {
+      max-width: 420px;
+    }
+
+    .footer-brand strong {
+      font-size: 1.25rem;
+    }
+
+    .footer-brand p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px 22px;
+      font-size: 0.94rem;
+    }
+
+    .footer-note {
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 980px) {
+      .main-nav {
+        display: none;
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .principles-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .container {
+        width: min(100% - 28px, 1180px);
+      }
+
+      .header-inner {
+        min-height: 74px;
+      }
+
+      .header-logo {
+        width: 44px;
+        height: 44px;
+      }
+
+      .header-wordmark {
+        font-size: 1.45rem;
+      }
+
+      .header-actions .button-secondary {
+        display: none;
+      }
+
+      .header-actions .button {
+        min-height: 42px;
+        padding: 0 14px;
+        font-size: 0.92rem;
+      }
+
+      .page-hero {
+        padding: 58px 0 54px;
+      }
+
+      .content-section {
+        padding: 58px 0;
+      }
+
+      .footer-grid {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+
+      <a href="/" class="header-brand" aria-label="LymphAware home">
+
+        <svg
+          class="header-logo"
+          viewBox="0 0 100 100"
+          role="img"
+          aria-label="LymphAware logo">
+
+          <circle cx="50" cy="16" r="11" fill="#4c9b57"></circle>
+
+          <path
+            d="M46 76
+               C27 70, 17 54, 18 34
+               C34 37, 44 47, 49 62
+               Z"
+            fill="#4c9b57">
+          </path>
+
+          <path
+            d="M54 76
+               C73 70, 83 54, 82 34
+               C66 37, 56 47, 51 62
+               Z"
+            fill="#2878b8">
+          </path>
+
+          <ellipse
+            cx="50"
+            cy="84"
+            rx="20"
+            ry="5"
+            fill="#2878b8">
+          </ellipse>
+
+        </svg>
+
+        <div class="header-wordmark">
+          <span class="lymph">LYMPH</span><span class="aware">AWARE</span>
+        </div>
+
+      </a>
+
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="/about/" class="active">About</a>
+        <a href="/how-it-works/">How It Works</a>
+        <a href="/understanding-lymphoedema/">Understanding Lymphoedema</a>
+        <a href="/for-professionals/">For Professionals</a>
+        <a href="/help/">Help</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="/sign-in/" class="button button-secondary">Sign In</a>
+        <a href="/#pilot" class="button button-primary">Join the Pilot</a>
+      </div>
+
+    </div>
+  </header>
+
+
+  <main>
+
+    <section class="page-hero">
+      <div class="container">
+
+        <div class="page-hero-inner">
+
+          <p class="eyebrow">About LymphAware</p>
+
+          <h1>
+            Helping people living with lymphoedema be better understood.
+          </h1>
+
+          <p>
+            LymphAware is a patient-led project being developed to make it
+            easier for people living with lymphoedema to communicate important
+            information when they need support, assistance or understanding.
+          </p>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <section class="content-section">
+      <div class="container content-grid">
+
+        <div class="copy">
+
+          <h2>Why LymphAware is being developed</h2>
+
+          <p>
+            Lymphoedema is not always well understood. People living with the
+            condition can find themselves having to explain it repeatedly in
+            healthcare settings, emergencies, workplaces, travel and everyday
+            situations.
+          </p>
+
+          <p>
+            There may also be times when explaining everything clearly is
+            difficult, uncomfortable or simply not practical.
+          </p>
+
+          <p>
+            LymphAware is being developed as an additional communication aid:
+            a physical identification card linked by QR code to a digital
+            profile containing information selected by the patient.
+          </p>
+
+        </div>
+
+
+        <aside class="highlight-box">
+
+          <h3>A patient-led approach</h3>
+
+          <p>
+            LymphAware is being shaped around the experiences and practical
+            needs of people living with lymphoedema.
+          </p>
+
+          <p>
+            The aim is not to create another complicated healthcare system,
+            but to provide a simple and respectful way for people to communicate
+            information they want others to understand.
+          </p>
+
+        </aside>
+
+      </div>
+    </section>
+
+
+    <section class="content-section principles-section">
+      <div class="container">
+
+        <div class="section-heading">
+
+          <h2>What matters to LymphAware</h2>
+
+          <p>
+            The service is being developed around a small number of principles
+            that should remain central as LymphAware grows.
+          </p>
+
+        </div>
+
+
+        <div class="principles-grid">
+
+          <article class="principle-card">
+            <h3>Patient-centred</h3>
+
+            <p>
+              The person living with lymphoedema should remain at the centre
+              of the service and in control of the information they share.
+            </p>
+          </article>
+
+
+          <article class="principle-card">
+            <h3>Simple to use</h3>
+
+            <p>
+              LymphAware should be understandable and practical for people
+              who may not feel confident using technology.
+            </p>
+          </article>
+
+
+          <article class="principle-card">
+            <h3>Privacy-conscious</h3>
+
+            <p>
+              Information should be collected and displayed only where it
+              serves a genuine purpose.
+            </p>
+          </article>
+
+
+          <article class="principle-card">
+            <h3>Accessible</h3>
+
+            <p>
+              The website, patient portal and QR-linked profile should be
+              designed to work clearly across phones, tablets and computers.
+            </p>
+          </article>
+
+
+          <article class="principle-card">
+            <h3>Credible</h3>
+
+            <p>
+              LymphAware should be suitable for appropriate scrutiny by
+              healthcare professionals and relevant organisations.
+            </p>
+          </article>
+
+
+          <article class="principle-card">
+            <h3>Practical</h3>
+
+            <p>
+              Features should be added because they provide genuine patient
+              benefit, not simply because they are technically possible.
+            </p>
+          </article>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <section class="content-section">
+      <div class="container">
+
+        <div class="mission-box">
+
+          <h2>Helping People Living with Lymphoedema Be Understood.</h2>
+
+          <p>
+            LymphAware brings together a physical identification card and a
+            patient-controlled digital profile. The long-term aim is to provide
+            a simple, credible and accessible communication tool that can be
+            tested with people living with lymphoedema and developed from
+            their experience.
+          </p>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+
+  <footer>
+    <div class="container">
+
+      <div class="footer-grid">
+
+        <div class="footer-brand">
+
+          <strong>
+            <span class="lymph">LYMPH</span><span class="aware">AWARE</span>
+          </strong>
+
+          <p>
+            Helping People Living with Lymphoedema Be Understood.
+          </p>
+
+        </div>
+
+
+        <div class="footer-links">
+
+          <a href="/about/">About</a>
+          <a href="/how-it-works/">How It Works</a>
+          <a href="/for-professionals/">For Professionals</a>
+          <a href="/privacy/">Privacy</a>
+          <a href="/cookies/">Cookies</a>
+          <a href="/terms/">Terms</a>
+          <a href="/accessibility/">Accessibility</a>
+          <a href="/contact/">Contact</a>
+
+        </div>
+
+      </div>
+
+
+      <div class="footer-note">
+        LymphAware is a communication and identification aid. It does not
+        provide medical diagnosis or replace professional medical advice.
+      </div>
+
+    </div>
+  </footer>
+
+</body>
+</html>
