@@ -7,11 +7,15 @@
   <title>LymphAware | Helping People Living with Lymphoedema Be Understood</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
       background: #ffffff;
-      color: #263238;
+      color: #1f2933;
     }
 
     main {
@@ -19,35 +23,37 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 30px;
+      padding: 50px 24px;
       text-align: center;
-      box-sizing: border-box;
     }
 
     .welcome {
       width: 100%;
-      max-width: 980px;
+      max-width: 1100px;
     }
+
+    /* LYMPHAWARE LOGO */
 
     .brand {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 18px;
-      margin-bottom: 24px;
+      gap: 28px;
+      margin-bottom: 42px;
     }
 
     .brand-icon {
-      width: 90px;
-      height: 90px;
+      width: 145px;
+      height: 145px;
       flex-shrink: 0;
     }
 
     h1 {
       margin: 0;
-      font-size: clamp(2.6rem, 7vw, 5rem);
-      letter-spacing: -2px;
-      line-height: 1;
+      font-size: clamp(4rem, 8vw, 7rem);
+      line-height: 0.95;
+      letter-spacing: -4px;
+      font-weight: 700;
     }
 
     .lymph {
@@ -58,91 +64,187 @@
       color: #2878b8;
     }
 
+    /* MAIN TAGLINE */
+
     .tagline {
-      margin: 0 auto 30px;
-      max-width: 900px;
-      font-size: clamp(1.4rem, 3vw, 2rem);
-      line-height: 1.35;
-      font-weight: 600;
-      text-wrap: balance;
+      margin: 0 auto;
+      max-width: 850px;
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      line-height: 1.25;
+      font-weight: 700;
     }
+
+    /* Forces the desktop headline into two balanced lines */
+
+    .tagline-line {
+      display: block;
+    }
+
+    /* GREEN / BLUE DIVIDER */
+
+    .divider {
+      display: flex;
+      width: 360px;
+      max-width: 60%;
+      height: 4px;
+      margin: 38px auto 36px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .divider-green {
+      width: 50%;
+      background: #4c9b57;
+    }
+
+    .divider-blue {
+      width: 50%;
+      background: #2878b8;
+    }
+
+    /* INTRODUCTION */
 
     .message {
       margin: 0 auto;
-      max-width: 700px;
-      font-size: 1.1rem;
+      max-width: 780px;
+      font-size: 1.25rem;
       line-height: 1.7;
       color: #52616b;
     }
 
+    /* DEVELOPMENT STATUS */
+
     .status {
-      display: inline-block;
-      margin-top: 36px;
-      padding: 10px 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 38px;
+      padding: 12px 22px;
       border-radius: 30px;
       background: #f0f7f2;
-      color: #367642;
-      font-weight: 600;
+      color: #26733b;
+      font-size: 1.05rem;
+      font-weight: 700;
     }
 
-    @media (max-width: 700px) {
+    .status-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* TABLET */
+
+    @media (max-width: 900px) {
+
       .brand {
-        gap: 10px;
+        gap: 18px;
       }
 
       .brand-icon {
-        width: 58px;
-        height: 58px;
+        width: 105px;
+        height: 105px;
       }
 
       h1 {
-        font-size: clamp(2rem, 11vw, 3.2rem);
+        font-size: clamp(3.2rem, 9vw, 5rem);
+        letter-spacing: -3px;
       }
 
       .tagline {
-        max-width: 95%;
+        font-size: clamp(1.8rem, 5vw, 2.6rem);
+      }
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 600px) {
+
+      main {
+        padding: 35px 18px;
+      }
+
+      .brand {
+        gap: 12px;
+        margin-bottom: 32px;
+      }
+
+      .brand-icon {
+        width: 70px;
+        height: 70px;
+      }
+
+      h1 {
+        font-size: clamp(2.5rem, 12vw, 3.5rem);
+        letter-spacing: -2px;
+      }
+
+      .tagline {
+        font-size: 1.8rem;
+      }
+
+      .tagline-line {
+        display: inline;
+      }
+
+      .message {
+        font-size: 1.05rem;
+      }
+
+      .divider {
+        width: 240px;
+        margin: 30px auto;
       }
     }
   </style>
 </head>
 
 <body>
+
   <main>
+
     <section class="welcome">
 
       <div class="brand">
+
+        <!-- LymphAware person-shaped icon -->
 
         <svg
           class="brand-icon"
           viewBox="0 0 100 100"
           role="img"
-          aria-label="LymphAware logo icon"
-        >
-          <circle cx="50" cy="18" r="10" fill="#4c9b57"/>
+          aria-label="LymphAware logo">
+
+          <circle
+            cx="50"
+            cy="16"
+            r="11"
+            fill="#4c9b57">
+          </circle>
 
           <path
-            d="M46 75
-               C30 70, 20 56, 20 37
-               C34 39, 43 48, 48 60
+            d="M46 76
+               C27 70, 17 54, 18 34
+               C34 37, 44 47, 49 62
                Z"
-            fill="#4c9b57"
-          />
+            fill="#4c9b57">
+          </path>
 
           <path
-            d="M54 75
-               C70 70, 80 56, 80 37
-               C66 39, 57 48, 52 60
+            d="M54 76
+               C73 70, 83 54, 82 34
+               C66 37, 56 47, 51 62
                Z"
-            fill="#2878b8"
-          />
+            fill="#2878b8">
+          </path>
 
           <ellipse
             cx="50"
-            cy="82"
-            rx="18"
-            ry="4"
-            fill="#2878b8"
-          />
+            cy="84"
+            rx="20"
+            ry="5"
+            fill="#2878b8">
+          </ellipse>
+
         </svg>
 
         <h1>
@@ -151,9 +253,27 @@
 
       </div>
 
-      <p class="tagline">
-        Helping People Living with Lymphoedema Be Understood.
-      </p>
+
+      <h2 class="tagline">
+
+        <span class="tagline-line">
+          Helping People Living with
+        </span>
+
+        <span class="tagline-line">
+          Lymphoedema Be Understood.
+        </span>
+
+      </h2>
+
+
+      <div class="divider" aria-hidden="true">
+
+        <span class="divider-green"></span>
+        <span class="divider-blue"></span>
+
+      </div>
+
 
       <p class="message">
         LymphAware is a patient-led project being developed to help people
@@ -161,11 +281,29 @@
         need support, assistance or understanding.
       </p>
 
+
       <div class="status">
+
+        <svg
+          class="status-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true">
+
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M9 12h6M12 9v6"></path>
+
+        </svg>
+
         Website development in progress
+
       </div>
 
     </section>
+
   </main>
+
 </body>
 </html>
