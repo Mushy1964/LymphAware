@@ -113,6 +113,21 @@
         font-size: 2.2rem;
       }
     }
+    .profile-card + .profile-card {
+  margin-top: 22px;
+}
+
+.profile-card h2 {
+  margin-top: 0;
+  margin-bottom: 22px;
+  font-size: 1.55rem;
+}
+
+.profile-helper {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.96rem;
+}
   </style>
 </head>
 
@@ -280,10 +295,22 @@
 }
 async function loadProfile(userId) {
   const { data, error } = await supabaseClient
-    .from('profiles')
-    .select('display_name, lymphaware_id, lymphoedema_location, additional_statement')
-    .eq('user_id', userId)
-    .maybeSingle();
+   .from('profiles')
+.select(`
+  display_name,
+  lymphaware_id,
+  lymphoedema_type,
+  lymphoedema_location,
+  compression_information,
+  treatment_considerations,
+  assistance_needs,
+  emergency_contact_name,
+  emergency_contact_relationship,
+  emergency_contact_phone,
+  additional_statement
+`)
+.eq('user_id', userId)
+.maybeSingle();
 
   if (error) {
     console.error('Unable to load profile:', error);
@@ -300,8 +327,29 @@ async function loadProfile(userId) {
   document.getElementById('lymphaware-id').value =
     data.lymphaware_id || '';
 
+  document.getElementById('lymphoedema-type').value =
+  data.lymphoedema_type || '';
+  
   document.getElementById('lymphoedema-location').value =
     data.lymphoedema_location || '';
+
+  document.getElementById('compression-information').value =
+  data.compression_information || '';
+
+document.getElementById('treatment-considerations').value =
+  data.treatment_considerations || '';
+
+document.getElementById('assistance-needs').value =
+  data.assistance_needs || '';
+
+document.getElementById('emergency-contact-name').value =
+  data.emergency_contact_name || '';
+
+document.getElementById('emergency-contact-relationship').value =
+  data.emergency_contact_relationship || '';
+
+document.getElementById('emergency-contact-phone').value =
+  data.emergency_contact_phone || '';
 
   document.getElementById('additional-statement').value =
     data.additional_statement || '';
@@ -325,22 +373,43 @@ profileForm.addEventListener('submit', async (event) => {
   }
 
   const profileData = {
-    user_id: user.id,
-    display_name:
-      document.getElementById('display-name').value.trim(),
+  user_id: user.id,
 
-    lymphaware_id:
-      document.getElementById('lymphaware-id').value.trim(),
+  display_name:
+    document.getElementById('display-name').value.trim(),
 
-    lymphoedema_location:
-      document.getElementById('lymphoedema-location').value.trim(),
+  lymphaware_id:
+    document.getElementById('lymphaware-id').value.trim(),
 
-    additional_statement:
-      document.getElementById('additional-statement').value.trim(),
+  lymphoedema_type:
+    document.getElementById('lymphoedema-type').value.trim(),
 
-    updated_at: new Date().toISOString()
-  };
+  lymphoedema_location:
+    document.getElementById('lymphoedema-location').value.trim(),
 
+  compression_information:
+    document.getElementById('compression-information').value.trim(),
+
+  treatment_considerations:
+    document.getElementById('treatment-considerations').value.trim(),
+
+  assistance_needs:
+    document.getElementById('assistance-needs').value.trim(),
+
+  emergency_contact_name:
+    document.getElementById('emergency-contact-name').value.trim(),
+
+  emergency_contact_relationship:
+    document.getElementById('emergency-contact-relationship').value.trim(),
+
+  emergency_contact_phone:
+    document.getElementById('emergency-contact-phone').value.trim(),
+
+  additional_statement:
+    document.getElementById('additional-statement').value.trim(),
+
+  updated_at: new Date().toISOString()
+};
   const { error } = await supabaseClient
     .from('profiles')
     .upsert(profileData, {
