@@ -278,10 +278,10 @@
       loginMessage.textContent = 'Sign in unsuccessful. Please check your details and try again.';
       return;
     }
-
-    loginMessage.textContent = 'Sign in successful.';
-
-    console.log('Authenticated development user:', data.user?.id);
+    
+    loginMessage.textContent = 'Sign in successful. Redirecting...';
+    
+    window.location.href = '/portal/';
   });
 </script>
 </body>
