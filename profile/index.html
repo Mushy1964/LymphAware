@@ -222,8 +222,8 @@
 
           <div class="profile-actions">
 
-            <button
-              type="button"
+           <button
+              type="submit"
               class="button button-primary">
               Save Changes
             </button>
@@ -237,7 +237,7 @@
           </div>
 
         </form>
-
+          <p id="profile-message" role="status" aria-live="polite"></p>
 
         <div class="profile-note">
 
@@ -306,6 +306,59 @@ async function loadProfile(userId) {
   document.getElementById('additional-statement').value =
     data.additional_statement || '';
 }
+const profileForm = document.getElementById('profile-form');
+const profileMessage = document.getElementById('profile-message');
+
+profileForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  profileMessage.textContent = 'Saving...';
+
+  const {
+    data: { user },
+    error: userError
+  } = await supabaseClient.auth.getUser();
+
+  if (userError || !user) {
+    window.location.href = '/sign-in/';
+    return;
+  }
+
+  const profileData = {
+    user_id: user.id,
+    display_name:
+      document.getElementById('display-name').value.trim(),
+
+    lymphaware_id:
+      document.getElementById('lymphaware-id').value.trim(),
+
+    lymphoedema_location:
+      document.getElementById('lymphoedema-location').value.trim(),
+
+    additional_statement:
+      document.getElementById('additional-statement').value.trim(),
+
+    updated_at: new Date().toISOString()
+  };
+
+  const { error } = await supabaseClient
+    .from('profiles')
+    .upsert(profileData, {
+      onConflict: 'user_id'
+    });
+
+  if (error) {
+    console.error('Unable to save profile:', error);
+
+    profileMessage.textContent =
+      'Your changes could not be saved. Please try again.';
+
+    return;
+  }
+
+  profileMessage.textContent = 'Your changes have been saved.';
+});
+  
   checkProfileAccess();
 </script>
 </body>
