@@ -1,58 +1,282 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Patient Portal | LymphAware</title>
 
- <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/styles.css">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    .portal-page {
+      min-height: calc(100vh - 84px);
+      padding: 60px 20px;
+      background: linear-gradient(
+        135deg,
+        rgba(76, 155, 87, 0.06),
+        rgba(40, 120, 184, 0.05)
+      );
+    }
+
+    .portal-shell {
+      width: 100%;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .portal-welcome {
+      margin-bottom: 30px;
+    }
+
+    .portal-welcome h1 {
+      margin: 6px 0 12px;
+      font-size: 2.7rem;
+      line-height: 1.15;
+    }
+
+    .portal-welcome p {
+      max-width: 680px;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .portal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+      margin-top: 30px;
+    }
+
+    .portal-option {
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: white;
+    }
+
+    .portal-option h2 {
+      margin-top: 0;
+      font-size: 1.45rem;
+    }
+
+    .portal-option p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .portal-actions {
+      margin-top: 30px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    #portal-content {
+      display: none;
+    }
+
+    #portal-loading {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--muted);
+    }
+
+    #portal-message {
+      margin-top: 16px;
+    }
+
+    @media (max-width: 680px) {
+      .portal-page {
+        padding: 40px 16px;
+      }
+
+      .portal-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .portal-welcome h1 {
+        font-size: 2.2rem;
+      }
+
+      .portal-actions {
+        justify-content: stretch;
+      }
+
+      .portal-actions .button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
+  <header class="site-header">
+    <div class="container header-inner">
+
+      <a href="/" class="header-brand" aria-label="LymphAware home">
+
+        <svg class="header-logo"
+             viewBox="0 0 100 100"
+             role="img"
+             aria-label="LymphAware logo">
+
+          <circle cx="50" cy="16" r="11" fill="#4c9b57"></circle>
+
+          <path
+            d="M46 76 C27 70, 17 54, 18 34 C34 37, 44 47, 49 62 Z"
+            fill="#4c9b57">
+          </path>
+
+          <path
+            d="M54 76 C73 70, 83 54, 82 34 C66 37, 56 47, 51 62 Z"
+            fill="#2878b8">
+          </path>
+
+          <ellipse
+            cx="50"
+            cy="84"
+            rx="20"
+            ry="5"
+            fill="#2878b8">
+          </ellipse>
+
+        </svg>
+
+        <div class="header-wordmark">
+          <span class="lymph">LYMPH</span><span class="aware">AWARE</span>
+        </div>
+
+      </a>
+
+      <div class="header-actions">
+        <a href="/" class="button button-secondary">Back to Website</a>
+      </div>
+
+    </div>
+  </header>
+
+
   <main class="portal-page">
 
-    <section class="portal-card">
+    <div id="portal-loading">
+      Checking your secure session...
+    </div>
 
-      <p class="eyebrow">PATIENT PORTAL</p>
 
-      <h1>Welcome to LymphAware</h1>
+    <section id="portal-content" class="portal-shell">
 
-      <p>
-        Manage the information you choose to share through your
-        LymphAware profile.
-      </p>
+      <div class="portal-welcome">
 
-      <div class="portal-options">
+        <p class="eyebrow">Patient Portal</p>
 
-        <div class="portal-option">
-          <h2>My Profile</h2>
-          <p>
-            View and manage your LymphAware information.
-          </p>
-        </div>
+        <h1>Welcome to LymphAware</h1>
 
-        <div class="portal-option">
-          <h2>Preview My QR Profile</h2>
-          <p>
-            See what someone scanning your LymphAware card would see.
-          </p>
-        </div>
+        <p>
+          Manage your LymphAware information and control what you choose
+          to make available through your QR-linked profile.
+        </p>
 
       </div>
 
-      <button id="sign-out-button" type="button">
-        Sign Out
-      </button>
 
-      <p id="portal-message"></p>
+      <div class="portal-grid">
+
+        <article class="portal-option">
+
+          <h2>My Profile</h2>
+
+          <p>
+            View and manage the information associated with your
+            LymphAware profile.
+          </p>
+
+        </article>
+
+
+        <article class="portal-option">
+
+          <h2>Preview My QR Profile</h2>
+
+          <p>
+            See what another person will see when your LymphAware
+            card QR code is scanned.
+          </p>
+
+        </article>
+
+      </div>
+
+
+      <div class="portal-actions">
+
+        <button
+          id="sign-out-button"
+          type="button"
+          class="button button-secondary">
+          Sign Out
+        </button>
+
+      </div>
+
+      <p id="portal-message" role="status" aria-live="polite"></p>
 
     </section>
 
   </main>
+
+
+  <script>
+    const SUPABASE_URL = 'https://thbhsktcenhrnxzkbjus.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+
+    const supabaseClient = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const portalLoading = document.getElementById('portal-loading');
+    const portalContent = document.getElementById('portal-content');
+    const portalMessage = document.getElementById('portal-message');
+    const signOutButton = document.getElementById('sign-out-button');
+
+    async function checkPortalAccess() {
+
+      const {
+        data: { user },
+        error
+      } = await supabaseClient.auth.getUser();
+
+      if (error || !user) {
+        window.location.href = '/sign-in/';
+        return;
+      }
+
+      portalLoading.style.display = 'none';
+      portalContent.style.display = 'block';
+    }
+
+
+    signOutButton.addEventListener('click', async () => {
+
+      portalMessage.textContent = 'Signing out...';
+
+      const { error } = await supabaseClient.auth.signOut();
+
+      if (error) {
+        portalMessage.textContent =
+          'Unable to sign out. Please try again.';
+        return;
+      }
+
+      window.location.href = '/sign-in/';
+    });
+
+
+    checkPortalAccess();
+  </script>
 
 </body>
 </html>
