@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>My Profile | LymphAware</title>
+
+  <link rel="stylesheet" href="/css/styles.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    .profile-page {
+      min-height: calc(100vh - 84px);
+      padding: 60px 20px;
+      background: linear-gradient(
+        135deg,
+        rgba(76, 155, 87, 0.06),
+        rgba(40, 120, 184, 0.05)
+      );
+    }
+
+    .profile-shell {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .profile-header {
+      margin-bottom: 30px;
+    }
+
+    .profile-header h1 {
+      margin: 6px 0 12px;
+      font-size: 2.6rem;
+      line-height: 1.15;
+    }
+
+    .profile-header p {
+      max-width: 700px;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .profile-card {
+      padding: 30px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: white;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 700;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 11px 13px;
+      border: 1px solid #bfcbd2;
+      border-radius: 9px;
+      font: inherit;
+      background: white;
+    }
+
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .profile-actions {
+      margin-top: 24px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .profile-note {
+      margin-top: 24px;
+      padding: 18px;
+      border-radius: 14px;
+      background: var(--green-light);
+      color: var(--green-dark);
+    }
+
+    @media (max-width: 680px) {
+      .profile-page {
+        padding: 40px 16px;
+      }
+
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-header h1 {
+        font-size: 2.2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+
+      <a href="/" class="header-brand" aria-label="LymphAware home">
+
+        <svg class="header-logo"
+             viewBox="0 0 100 100"
+             role="img"
+             aria-label="LymphAware logo">
+
+          <circle cx="50" cy="16" r="11" fill="#4c9b57"></circle>
+
+          <path
+            d="M46 76 C27 70, 17 54, 18 34 C34 37, 44 47, 49 62 Z"
+            fill="#4c9b57">
+          </path>
+
+          <path
+            d="M54 76 C73 70, 83 54, 82 34 C66 37, 56 47, 51 62 Z"
+            fill="#2878b8">
+          </path>
+
+          <ellipse
+            cx="50"
+            cy="84"
+            rx="20"
+            ry="5"
+            fill="#2878b8">
+          </ellipse>
+
+        </svg>
+
+        <div class="header-wordmark">
+          <span class="lymph">LYMPH</span><span class="aware">AWARE</span>
+        </div>
+
+      </a>
+
+      <div class="header-actions">
+        <a href="/portal/" class="button button-secondary">Back to Portal</a>
+      </div>
+
+    </div>
+  </header>
+
+
+  <main class="profile-page">
+
+    <section class="profile-shell">
+
+      <div class="profile-header">
+
+        <p class="eyebrow">Patient Portal</p>
+
+        <h1>My Profile</h1>
+
+        <p>
+          Review and manage the information associated with your
+          LymphAware profile.
+        </p>
+
+      </div>
+
+
+      <div class="profile-card">
+
+        <form id="profile-form">
+
+          <div class="profile-grid">
+
+            <div class="form-group">
+              <label for="display-name">Display name</label>
+              <input type="text" id="display-name" name="display-name">
+            </div>
+
+            <div class="form-group">
+              <label for="lymphaware-id">LymphAware ID</label>
+              <input type="text" id="lymphaware-id" name="lymphaware-id">
+            </div>
+
+            <div class="form-group full-width">
+              <label for="lymphoedema-location">Lymphoedema location</label>
+              <input
+                type="text"
+                id="lymphoedema-location"
+                name="lymphoedema-location">
+            </div>
+
+            <div class="form-group full-width">
+              <label for="additional-statement">
+                Additional statement
+              </label>
+
+              <textarea
+                id="additional-statement"
+                name="additional-statement">
+              </textarea>
+            </div>
+
+          </div>
+
+
+          <div class="profile-actions">
+
+            <button
+              type="button"
+              class="button button-primary">
+              Save Changes
+            </button>
+
+            <a
+              href="/portal/"
+              class="button button-secondary">
+              Cancel
+            </a>
+
+          </div>
+
+        </form>
+
+
+        <div class="profile-note">
+
+          <strong>Development version</strong>
+
+          <p>
+            This page is currently being tested using fictional development
+            information only. Real patient information should not be entered
+            at this stage.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</body>
+</html>
