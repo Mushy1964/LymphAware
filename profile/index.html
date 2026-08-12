@@ -128,6 +128,61 @@
   color: var(--muted);
   font-size: 0.96rem;
 }
+    .profile-section-intro {
+  margin-top: 0;
+  margin-bottom: 22px;
+  color: var(--muted);
+}
+
+.assistance-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.assistance-option {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: white;
+}
+
+.assistance-option input {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  flex: 0 0 auto;
+}
+
+.assistance-option label {
+  font-weight: 700;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.assistance-icon-placeholder {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--green-light);
+  color: var(--green-dark);
+  font-weight: 700;
+}
+
+@media (max-width: 680px) {
+  .assistance-options {
+    grid-template-columns: 1fr;
+  }
+}
   </style>
 </head>
 
@@ -280,25 +335,35 @@
   </div>
 
 
-  <div class="profile-card">
+ <div class="profile-card">
 
-    <h2>How You Can Help Me</h2>
+  <h2>How You Can Help Me</h2>
 
-    <div class="form-group">
-      <label for="assistance-needs">Assistance needs</label>
+  <p class="profile-section-intro">
+    Choose any statements that are relevant to you.
+    You will remain in control of which selected statements are
+    eventually shown on your QR-linked profile.
+  </p>
 
-      <textarea
-        id="assistance-needs"
-        name="assistance-needs"
-        placeholder="Add any practical assistance or support information you would like to record."></textarea>
-    </div>
-
-    <p class="profile-helper">
-      Selectable LymphAware assistance statements and consistent icons
-      will be added in the next stage.
-    </p>
-
+  <div
+    id="assistance-options"
+    class="assistance-options"
+    aria-live="polite">
   </div>
+
+
+  <div class="form-group">
+    <label for="assistance-needs">
+      Other assistance information
+    </label>
+
+    <textarea
+      id="assistance-needs"
+      name="assistance-needs"
+      placeholder="Add anything else that may help someone understand how they can assist you."></textarea>
+  </div>
+
+</div>
 
 
   <div class="profile-card">
@@ -409,6 +474,7 @@
   }
 
   await loadProfile(user.id);
+ await loadAssistanceOptions();   
 }
 async function loadProfile(userId) {
   const { data, error } = await supabaseClient
@@ -470,6 +536,55 @@ document.getElementById('emergency-contact-phone').value =
 
   document.getElementById('additional-statement').value =
     data.additional_statement || '';
+}
+  async function loadAssistanceOptions() {
+  const assistanceContainer =
+    document.getElementById('assistance-options');
+
+  assistanceContainer.innerHTML =
+    '<p>Loading assistance statements...</p>';
+
+  const { data, error } = await supabaseClient
+    .from('assistance_options')
+    .select('id, statement, icon_key')
+    .eq('active', true)
+    .order('sort_order');
+
+  if (error) {
+    console.error('Unable to load assistance options:', error);
+
+    assistanceContainer.innerHTML =
+      '<p>Assistance statements could not be loaded.</p>';
+
+    return;
+  }
+
+  assistanceContainer.innerHTML = '';
+
+  data.forEach((option) => {
+
+    const item = document.createElement('div');
+    item.className = 'assistance-option';
+
+    item.innerHTML = `
+      <div class="assistance-icon-placeholder" aria-hidden="true">
+        ✓
+      </div>
+
+      <div>
+        <input
+          type="checkbox"
+          id="assistance-${option.id}"
+          data-option-id="${option.id}">
+
+        <label for="assistance-${option.id}">
+          ${option.statement}
+        </label>
+      </div>
+    `;
+
+    assistanceContainer.appendChild(item);
+  });
 }
 const profileForm = document.getElementById('profile-form');
 const profileMessage = document.getElementById('profile-message');
