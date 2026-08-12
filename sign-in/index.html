@@ -7,7 +7,7 @@
   <title>Patient Portal | LymphAware</title>
 
   <link rel="stylesheet" href="/css/styles.css">
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .portal-page {
       min-height: calc(100vh - 84px);
@@ -197,8 +197,8 @@
       </p>
 
 
-      <form>
-
+     <form id="login-form">
+  
         <div class="form-group">
           <label for="email">Email address</label>
 
@@ -223,12 +223,12 @@
         </div>
 
 
-        <button
-          type="button"
+         <button
+          type="submit"
           class="button button-primary portal-button">
           Sign In
         </button>
-
+      <p id="login-message" role="status" aria-live="polite"></p>
       </form>
 
 
@@ -249,6 +249,40 @@
     </section>
 
   </main>
+<script>
+  const SUPABASE_URL = 'NEXT_PUBLIC_SUPABASE_URL=https://thbhsktcenhrnxzkbjus.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY = 'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
 
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+  const loginForm = document.getElementById('login-form');
+  const loginMessage = document.getElementById('login-message');
+
+  loginForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    loginMessage.textContent = 'Signing in...';
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      loginMessage.textContent = 'Sign in unsuccessful. Please check your details and try again.';
+      return;
+    }
+
+    loginMessage.textContent = 'Sign in successful.';
+
+    console.log('Authenticated development user:', data.user?.id);
+  });
+</script>
 </body>
 </html>
