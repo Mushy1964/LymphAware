@@ -266,17 +266,46 @@
   );
 
   async function checkProfileAccess() {
-    const {
-      data: { user },
-      error
-    } = await supabaseClient.auth.getUser();
+  const {
+    data: { user },
+    error
+  } = await supabaseClient.auth.getUser();
 
-    if (error || !user) {
-      window.location.href = '/sign-in/';
-      return;
-    }
+  if (error || !user) {
+    window.location.href = '/sign-in/';
+    return;
   }
 
+  await loadProfile(user.id);
+}
+async function loadProfile(userId) {
+  const { data, error } = await supabaseClient
+    .from('profiles')
+    .select('display_name, lymphaware_id, lymphoedema_location, additional_statement')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Unable to load profile:', error);
+    return;
+  }
+
+  if (!data) {
+    return;
+  }
+
+  document.getElementById('display-name').value =
+    data.display_name || '';
+
+  document.getElementById('lymphaware-id').value =
+    data.lymphaware_id || '';
+
+  document.getElementById('lymphoedema-location').value =
+    data.lymphoedema_location || '';
+
+  document.getElementById('additional-statement').value =
+    data.additional_statement || '';
+}
   checkProfileAccess();
 </script>
 </body>
