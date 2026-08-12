@@ -201,57 +201,174 @@
 
         <form id="profile-form">
 
-          <div class="profile-grid">
+  <div class="profile-card">
 
-            <div class="form-group">
-              <label for="display-name">Display name</label>
-              <input type="text" id="display-name" name="display-name">
-            </div>
+    <h2>About Me</h2>
 
-            <div class="form-group">
-              <label for="lymphaware-id">LymphAware ID</label>
-              <input type="text" id="lymphaware-id" name="lymphaware-id">
-            </div>
+    <div class="profile-grid">
 
-            <div class="form-group full-width">
-              <label for="lymphoedema-location">Lymphoedema location</label>
-              <input
-                type="text"
-                id="lymphoedema-location"
-                name="lymphoedema-location">
-            </div>
+      <div class="form-group">
+        <label for="display-name">Display name</label>
+        <input type="text" id="display-name" name="display-name">
+      </div>
 
-            <div class="form-group full-width">
-              <label for="additional-statement">
-                Additional statement
-              </label>
+      <div class="form-group">
+        <label for="lymphaware-id">LymphAware ID</label>
+        <input type="text" id="lymphaware-id" name="lymphaware-id">
+      </div>
 
-              <textarea
-                id="additional-statement"
-                name="additional-statement">
-              </textarea>
-            </div>
+    </div>
 
-          </div>
+  </div>
 
 
-          <div class="profile-actions">
+  <div class="profile-card">
 
-           <button
-              type="submit"
-              class="button button-primary">
-              Save Changes
-            </button>
+    <h2>My Lymphoedema</h2>
 
-            <a
-              href="/portal/"
-              class="button button-secondary">
-              Cancel
-            </a>
+    <div class="profile-grid">
 
-          </div>
+      <div class="form-group">
+        <label for="lymphoedema-type">Type of lymphoedema</label>
+        <input
+          type="text"
+          id="lymphoedema-type"
+          name="lymphoedema-type"
+          placeholder="For example: Secondary lymphoedema">
+      </div>
 
-        </form>
+      <div class="form-group">
+        <label for="lymphoedema-location">Location</label>
+        <input
+          type="text"
+          id="lymphoedema-location"
+          name="lymphoedema-location"
+          placeholder="For example: Right leg">
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="profile-card">
+
+    <h2>Treatment &amp; Compression</h2>
+
+    <div class="form-group">
+      <label for="compression-information">
+        Compression information
+      </label>
+
+      <textarea
+        id="compression-information"
+        name="compression-information"
+        placeholder="Add relevant information about compression garments or other compression needs."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="treatment-considerations">
+        Important treatment considerations
+      </label>
+
+      <textarea
+        id="treatment-considerations"
+        name="treatment-considerations"
+        placeholder="Add any patient-selected information that may help someone understand your usual care or treatment considerations."></textarea>
+    </div>
+
+  </div>
+
+
+  <div class="profile-card">
+
+    <h2>How You Can Help Me</h2>
+
+    <div class="form-group">
+      <label for="assistance-needs">Assistance needs</label>
+
+      <textarea
+        id="assistance-needs"
+        name="assistance-needs"
+        placeholder="Add any practical assistance or support information you would like to record."></textarea>
+    </div>
+
+    <p class="profile-helper">
+      Selectable LymphAware assistance statements and consistent icons
+      will be added in the next stage.
+    </p>
+
+  </div>
+
+
+  <div class="profile-card">
+
+    <h2>Emergency Contact</h2>
+
+    <div class="profile-grid">
+
+      <div class="form-group">
+        <label for="emergency-contact-name">Contact name</label>
+        <input
+          type="text"
+          id="emergency-contact-name"
+          name="emergency-contact-name">
+      </div>
+
+      <div class="form-group">
+        <label for="emergency-contact-relationship">Relationship</label>
+        <input
+          type="text"
+          id="emergency-contact-relationship"
+          name="emergency-contact-relationship">
+      </div>
+
+      <div class="form-group full-width">
+        <label for="emergency-contact-phone">Telephone number</label>
+        <input
+          type="tel"
+          id="emergency-contact-phone"
+          name="emergency-contact-phone">
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="profile-card">
+
+    <h2>Additional Information</h2>
+
+    <div class="form-group">
+      <label for="additional-statement">Additional statement</label>
+
+      <textarea
+        id="additional-statement"
+        name="additional-statement"
+        placeholder="Add any additional information you would like to record."></textarea>
+    </div>
+
+  </div>
+
+
+  <div class="profile-actions">
+
+    <button
+      type="submit"
+      class="button button-primary">
+      Save Changes
+    </button>
+
+    <a
+      href="/portal/"
+      class="button button-secondary">
+      Cancel
+    </a>
+
+  </div>
+
+</form>
           <p id="profile-message" role="status" aria-live="polite"></p>
 
         <div class="profile-note">
