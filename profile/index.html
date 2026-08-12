@@ -256,6 +256,28 @@
     </section>
 
   </main>
+<script>
+  const SUPABASE_URL = 'https://thbhsktcenhrnxzkbjus.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
 
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+  async function checkProfileAccess() {
+    const {
+      data: { user },
+      error
+    } = await supabaseClient.auth.getUser();
+
+    if (error || !user) {
+      window.location.href = '/sign-in/';
+      return;
+    }
+  }
+
+  checkProfileAccess();
+</script>
 </body>
 </html>
