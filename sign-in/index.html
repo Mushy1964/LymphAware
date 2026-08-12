@@ -4,9 +4,114 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Patient Sign In | LymphAware</title>
+  <title>Patient Portal | LymphAware</title>
 
   <link rel="stylesheet" href="/css/styles.css">
+
+  <style>
+    .portal-page {
+      min-height: calc(100vh - 84px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 70px 20px;
+      background: linear-gradient(
+        135deg,
+        rgba(76, 155, 87, 0.06),
+        rgba(40, 120, 184, 0.05)
+      );
+    }
+
+    .portal-card {
+      width: 100%;
+      max-width: 520px;
+      padding: 38px;
+      border-radius: 22px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      box-shadow: 0 18px 45px rgba(31, 41, 51, 0.08);
+    }
+
+    .portal-card h1 {
+      margin: 0 0 12px;
+      font-size: 2.3rem;
+      line-height: 1.15;
+    }
+
+    .portal-intro {
+      margin: 0 0 28px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 700;
+    }
+
+    .form-group input {
+      width: 100%;
+      min-height: 48px;
+      padding: 11px 13px;
+      border: 1px solid #bfcbd2;
+      border-radius: 9px;
+      font: inherit;
+      background: white;
+    }
+
+    .form-group input:focus {
+      outline: 3px solid rgba(40, 120, 184, 0.18);
+      border-color: var(--blue);
+    }
+
+    .portal-button {
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .portal-links {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .portal-links a {
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    .portal-status {
+      margin-top: 28px;
+      padding: 18px;
+      border-radius: 14px;
+      background: var(--green-light);
+      color: var(--green-dark);
+      font-size: 0.96rem;
+    }
+
+    .portal-status strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 680px) {
+      .portal-page {
+        padding: 40px 14px;
+      }
+
+      .portal-card {
+        padding: 26px 20px;
+      }
+
+      .portal-card h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -58,206 +163,92 @@
       </nav>
 
       <div class="header-actions">
-        <a href="/sign-in/" class="button button-secondary">Sign In</a>
-        <a href="/#pilot" class="button button-primary">Join the Pilot</a>
+        <a href="/" class="button button-secondary">Back to Website</a>
       </div>
-    <details class="mobile-menu">
-      <summary>Menu</summary>
-    
-      <nav class="mobile-menu-panel" aria-label="Mobile navigation">
-        <a href="/about/">About</a>
-        <a href="/how-it-works/">How It Works</a>
-        <a href="/understanding-lymphoedema/">Understanding Lymphoedema</a>
-        <a href="/for-professionals/">For Professionals</a>
-        <a href="/help/">Help</a>
-        <a href="/sign-in/">Sign In</a>
-        <a href="/#pilot" class="mobile-primary">Join the Pilot</a>
-      </nav>
-    </details>
-    </div>
-  </header>
 
+      <details class="mobile-menu">
+        <summary>Menu</summary>
 
-  <main>
-
-    <section class="page-hero">
-      <div class="container">
-
-        <div class="page-hero-inner">
-
-          <p class="eyebrow">Patient Sign In</p>
-
-          <h1>The LymphAware patient portal is being developed.</h1>
-
-          <p>
-            Patient sign-in is not yet available. Secure account access will
-            be introduced as LymphAware progresses towards its initial patient pilot.
-          </p>
-
-        </div>
-
-      </div>
-    </section>
-
-
-    <section class="content-section">
-      <div class="container split-section">
-
-        <div class="split-copy">
-
-          <h2>What the patient portal will provide</h2>
-
-          <p>
-            The patient portal is being designed to give people living with
-            lymphoedema a straightforward way to manage their LymphAware profile.
-          </p>
-
-          <p>
-            Patients will be able to review the information associated with
-            their profile and choose what they want to make available through
-            the QR-linked public view.
-          </p>
-
-          <p>
-            Ease of use, accessibility, privacy and security will remain central
-            to the portal as it is developed.
-          </p>
-
-        </div>
-
-
-        <div class="highlight-box">
-
-          <h3>Not available yet</h3>
-
-          <p>
-            No patient accounts are currently active through this website.
-          </p>
-
-          <p>
-            Sign-in functionality will only be introduced once the portal,
-            privacy arrangements and security controls are ready for pilot use.
-          </p>
-
-        </div>
-
-      </div>
-    </section>
-
-
-    <section class="content-section privacy-section">
-      <div class="container">
-
-        <div class="section-heading">
-
-          <h2>Designed around patient control</h2>
-
-          <p>
-            The portal will support the same principles that shape the wider
-            LymphAware service.
-          </p>
-
-        </div>
-
-
-        <div class="privacy-grid">
-
-          <article class="privacy-card">
-            <h3>Manage your information</h3>
-
-            <p>
-              Patients will be able to review and manage relevant information
-              associated with their LymphAware profile.
-            </p>
-          </article>
-
-
-          <article class="privacy-card">
-            <h3>Choose what to share</h3>
-
-            <p>
-              Patients will remain in control of which relevant information
-              they choose to make available through their QR-linked profile.
-            </p>
-          </article>
-
-
-          <article class="privacy-card">
-            <h3>Preview your profile</h3>
-
-            <p>
-              The portal is being designed so patients can see what another
-              person will see when their profile is opened.
-            </p>
-          </article>
-
-        </div>
-
-      </div>
-    </section>
-
-
-    <section class="content-section">
-      <div class="container">
-
-        <div class="mission-box">
-
-          <h2>Secure access will come before pilot use.</h2>
-
-          <p>
-            LymphAware will not introduce patient sign-in until the account,
-            privacy and security arrangements are ready for appropriate testing.
-          </p>
-
-        </div>
-
-      </div>
-    </section>
-
-  </main>
-
-
-  <footer>
-    <div class="container">
-
-      <div class="footer-grid">
-
-        <div class="footer-brand">
-
-          <strong>
-            <span class="lymph">LYMPH</span><span class="aware">AWARE</span>
-          </strong>
-
-          <p>
-            Helping People Living with Lymphoedema Be Understood.
-          </p>
-
-        </div>
-
-
-        <div class="footer-links">
+        <nav class="mobile-menu-panel" aria-label="Mobile navigation">
+          <a href="/">Home</a>
           <a href="/about/">About</a>
           <a href="/how-it-works/">How It Works</a>
           <a href="/understanding-lymphoedema/">Understanding Lymphoedema</a>
           <a href="/for-professionals/">For Professionals</a>
           <a href="/help/">Help</a>
-          <a href="/privacy/">Privacy</a>
-          <a href="/cookies/">Cookies</a>
-          <a href="/terms/">Terms</a>
-          <a href="/accessibility/">Accessibility</a>
-          <a href="/contact/">Contact</a>
-        </div>
-
-      </div>
-
-
-      <div class="footer-note">
-        LymphAware is a communication and identification aid. It does not
-        provide medical diagnosis or replace professional medical advice.
-      </div>
+        </nav>
+      </details>
 
     </div>
-  </footer>
+  </header>
+
+
+  <main class="portal-page">
+
+    <section class="portal-card" aria-labelledby="portal-heading">
+
+      <p class="eyebrow">Patient Portal</p>
+
+      <h1 id="portal-heading">Sign in to LymphAware</h1>
+
+      <p class="portal-intro">
+        Manage your LymphAware profile and the information you choose
+        to make available through your QR-linked profile.
+      </p>
+
+
+      <form>
+
+        <div class="form-group">
+          <label for="email">Email address</label>
+
+          <input
+            type="email"
+            id="email"
+            name="email"
+            autocomplete="email"
+            required>
+        </div>
+
+
+        <div class="form-group">
+          <label for="password">Password</label>
+
+          <input
+            type="password"
+            id="password"
+            name="password"
+            autocomplete="current-password"
+            required>
+        </div>
+
+
+        <button
+          type="button"
+          class="button button-primary portal-button">
+          Sign In
+        </button>
+
+      </form>
+
+
+      <div class="portal-links">
+        <a href="#">Forgotten your password?</a>
+      </div>
+
+
+      <div class="portal-status">
+
+        <strong>Development version</strong>
+
+        No real patient accounts are currently active. Secure authentication
+        will be introduced before the initial LymphAware patient pilot.
+
+      </div>
+
+    </section>
+
+  </main>
 
 </body>
 </html>
