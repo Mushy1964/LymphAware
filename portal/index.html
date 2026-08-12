@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Patient Portal | LymphAware</title>
+
+  <link rel="stylesheet" href="/styles.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+  <main class="portal-page">
+
+    <section class="portal-card">
+
+      <p class="eyebrow">PATIENT PORTAL</p>
+
+      <h1>Welcome to LymphAware</h1>
+
+      <p>
+        Manage the information you choose to share through your
+        LymphAware profile.
+      </p>
+
+      <div class="portal-options">
+
+        <div class="portal-option">
+          <h2>My Profile</h2>
+          <p>
+            View and manage your LymphAware information.
+          </p>
+        </div>
+
+        <div class="portal-option">
+          <h2>Preview My QR Profile</h2>
+          <p>
+            See what someone scanning your LymphAware card would see.
+          </p>
+        </div>
+
+      </div>
+
+      <button id="sign-out-button" type="button">
+        Sign Out
+      </button>
+
+      <p id="portal-message"></p>
+
+    </section>
+
+  </main>
+
+</body>
+</html>
