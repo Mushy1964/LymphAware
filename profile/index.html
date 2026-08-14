@@ -211,6 +211,28 @@
   width: 18px;
   height: 18px;
 } 
+
+  .section-visibility-group {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.section-visibility-control {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 18px;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.section-visibility-control input {
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  flex: 0 0 auto;
+}  
   </style>
 </head>
 
@@ -308,7 +330,14 @@
   <div class="profile-card">
 
     <h2>My Lymphoedema</h2>
-
+    <label class="section-visibility-control">
+      <input
+        type="checkbox"
+        id="show-lymphoedema-on-qr">
+    
+      Show this section on my QR profile
+    </label>
+       
     <div class="profile-grid">
 
       <div class="form-group">
@@ -337,7 +366,26 @@
   <div class="profile-card">
 
     <h2>Treatment &amp; Compression</h2>
+    <div class="section-visibility-group">
 
+      <label class="section-visibility-control">
+        <input
+          type="checkbox"
+          id="show-compression-on-qr">
+    
+        Show compression information on my QR profile
+      </label>
+    
+      <label class="section-visibility-control">
+        <input
+          type="checkbox"
+          id="show-treatment-on-qr">
+    
+        Show treatment considerations on my QR profile
+      </label>
+    
+    </div>
+    
     <div class="form-group">
       <label for="compression-information">
         Compression information
@@ -381,6 +429,14 @@
 
 
   <div class="form-group">
+    <label class="section-visibility-control">
+      <input
+        type="checkbox"
+        id="show-assistance-notes-on-qr">
+    
+      Show my other assistance information on my QR profile
+    </label>
+    
     <label for="assistance-needs">
       Other assistance information
     </label>
@@ -397,7 +453,14 @@
   <div class="profile-card">
 
     <h2>Emergency Contact</h2>
-
+    <label class="section-visibility-control">
+      <input
+        type="checkbox"
+        id="show-emergency-contact-on-qr">
+    
+      Show my emergency contact on my QR profile
+    </label>
+    
     <div class="profile-grid">
 
       <div class="form-group">
@@ -432,7 +495,14 @@
   <div class="profile-card">
 
     <h2>Additional Information</h2>
-
+    <label class="section-visibility-control">
+      <input
+        type="checkbox"
+        id="show-additional-on-qr">
+    
+      Show this information on my QR profile
+    </label>
+    
     <div class="form-group">
       <label for="additional-statement">Additional statement</label>
 
@@ -506,7 +576,7 @@
 }
 async function loadProfile(userId) {
   const { data, error } = await supabaseClient
-   .from('profiles')
+  .from('profiles')
 .select(`
   display_name,
   lymphaware_id,
@@ -518,7 +588,13 @@ async function loadProfile(userId) {
   emergency_contact_name,
   emergency_contact_relationship,
   emergency_contact_phone,
-  additional_statement
+  additional_statement,
+  show_lymphoedema_on_qr,
+  show_compression_on_qr,
+  show_treatment_on_qr,
+  show_assistance_notes_on_qr,
+  show_emergency_contact_on_qr,
+  show_additional_on_qr
 `)
 .eq('user_id', userId)
 .maybeSingle();
@@ -532,39 +608,57 @@ async function loadProfile(userId) {
     return;
   }
 
-  document.getElementById('display-name').value =
-    data.display_name || '';
-
-  document.getElementById('lymphaware-id').value =
-    data.lymphaware_id || '';
-
-  document.getElementById('lymphoedema-type').value =
-  data.lymphoedema_type || '';
-  
-  document.getElementById('lymphoedema-location').value =
-    data.lymphoedema_location || '';
-
-  document.getElementById('compression-information').value =
-  data.compression_information || '';
-
-document.getElementById('treatment-considerations').value =
-  data.treatment_considerations || '';
-
-document.getElementById('assistance-needs').value =
-  data.assistance_needs || '';
-
-document.getElementById('emergency-contact-name').value =
-  data.emergency_contact_name || '';
-
-document.getElementById('emergency-contact-relationship').value =
-  data.emergency_contact_relationship || '';
-
-document.getElementById('emergency-contact-phone').value =
-  data.emergency_contact_phone || '';
-
-  document.getElementById('additional-statement').value =
-    data.additional_statement || '';
-}
+    document.getElementById('display-name').value =
+      data.display_name || '';
+    
+    document.getElementById('lymphaware-id').value =
+      data.lymphaware_id || '';
+    
+    document.getElementById('lymphoedema-type').value =
+      data.lymphoedema_type || '';
+      
+    document.getElementById('lymphoedema-location').value =
+      data.lymphoedema_location || '';
+    
+    document.getElementById('compression-information').value =
+      data.compression_information || '';
+    
+    document.getElementById('treatment-considerations').value =
+      data.treatment_considerations || '';
+    
+    document.getElementById('assistance-needs').value =
+      data.assistance_needs || '';
+    
+    document.getElementById('emergency-contact-name').value =
+      data.emergency_contact_name || '';
+    
+    document.getElementById('emergency-contact-relationship').value =
+      data.emergency_contact_relationship || '';
+    
+    document.getElementById('emergency-contact-phone').value =
+      data.emergency_contact_phone || '';
+    
+    document.getElementById('additional-statement').value =
+      data.additional_statement || '';
+    
+    document.getElementById('show-lymphoedema-on-qr').checked =
+      data.show_lymphoedema_on_qr === true;
+    
+    document.getElementById('show-compression-on-qr').checked =
+      data.show_compression_on_qr === true;
+    
+    document.getElementById('show-treatment-on-qr').checked =
+      data.show_treatment_on_qr === true;
+    
+    document.getElementById('show-assistance-notes-on-qr').checked =
+      data.show_assistance_notes_on_qr === true;
+    
+    document.getElementById('show-emergency-contact-on-qr').checked =
+      data.show_emergency_contact_on_qr === true;
+    
+    document.getElementById('show-additional-on-qr').checked =
+      data.show_additional_on_qr === true;
+    }
   async function loadAssistanceOptions() {
     const assistanceContainer =
     document.getElementById('assistance-options');
@@ -763,6 +857,24 @@ profileForm.addEventListener('submit', async (event) => {
   additional_statement:
     document.getElementById('additional-statement').value.trim(),
 
+  show_lymphoedema_on_qr:
+    document.getElementById('show-lymphoedema-on-qr').checked,
+
+  show_compression_on_qr:
+    document.getElementById('show-compression-on-qr').checked,
+  
+  show_treatment_on_qr:
+    document.getElementById('show-treatment-on-qr').checked,
+  
+  show_assistance_notes_on_qr:
+    document.getElementById('show-assistance-notes-on-qr').checked,
+  
+  show_emergency_contact_on_qr:
+    document.getElementById('show-emergency-contact-on-qr').checked,
+  
+  show_additional_on_qr:
+    document.getElementById('show-additional-on-qr').checked,
+    
   updated_at: new Date().toISOString()
 };
   const { error } = await supabaseClient
