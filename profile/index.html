@@ -753,51 +753,52 @@ async function loadProfile(userId) {
     const item = document.createElement('div');
     item.className = 'assistance-option';
 
-   const isSelected = selectedMap.has(option.id);
-const isVisible = selectedMap.get(option.id) === true;
-
-    <div
-      class="assistance-icon-placeholder"
-      aria-hidden="true">
-      ✓
-    </div>
-
-  <div class="assistance-option-content">
-
-    <div class="assistance-selection-row">
-
-      <input
-        type="checkbox"
-        id="assistance-${option.id}"
-        data-option-id="${option.id}"
-        class="assistance-select"
-        ${isSelected ? 'checked' : ''}>
-
-      <label for="assistance-${option.id}">
-        ${option.statement}
-      </label>
-
-    </div>
-
-    <div
-      class="qr-visibility-control"
-      ${isSelected ? '' : 'hidden'}>
-
-      <label>
-        <input
-          type="checkbox"
-          class="assistance-qr-visibility"
-          data-option-id="${option.id}"
-          ${isVisible ? 'checked' : ''}>
-
-        Show on my QR profile
-      </label>
-
-    </div>
-
-  </div>
-`;
-
+     const isSelected = selectedMap.has(option.id);
+    const isVisible = selectedMap.get(option.id) === true;
+    
+    item.innerHTML = `
+      <div
+        class="assistance-icon-placeholder"
+        aria-hidden="true">
+        ✓
+      </div>
+    
+      <div class="assistance-option-content">
+    
+        <div class="assistance-selection-row">
+    
+          <input
+            type="checkbox"
+            id="assistance-${option.id}"
+            data-option-id="${option.id}"
+            class="assistance-select"
+            ${isSelected ? 'checked' : ''}>
+    
+          <label for="assistance-${option.id}">
+            ${option.statement}
+          </label>
+    
+        </div>
+    
+        <div
+          class="qr-visibility-control"
+          ${isSelected ? '' : 'hidden'}>
+    
+          <label>
+            <input
+              type="checkbox"
+              class="assistance-qr-visibility"
+              data-option-id="${option.id}"
+              ${isVisible ? 'checked' : ''}>
+    
+            Show on my QR profile
+          </label>
+    
+        </div>
+    
+      </div>
+    `;
+    
     assistanceContainer.appendChild(item);
     const selectionCheckbox =
   item.querySelector('.assistance-select');
