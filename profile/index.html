@@ -756,12 +756,11 @@ async function loadProfile(userId) {
    const isSelected = selectedMap.has(option.id);
 const isVisible = selectedMap.get(option.id) === true;
 
-<div class="assistance-icon-wrap" aria-hidden="true">
-  <img
-    src="/assets/icons/${option.icon_key}.png"
-    alt=""
-    class="assistance-icon-image">
-</div>
+    <div
+      class="assistance-icon-placeholder"
+      aria-hidden="true">
+      ✓
+    </div>
 
   <div class="assistance-option-content">
 
