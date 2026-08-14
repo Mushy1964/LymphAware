@@ -187,7 +187,22 @@
       object-fit: contain;
       display: block;
     }
+     .patient-profile-status {
+      display: inline-block;
+      margin: 8px 0 10px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #eaf6ee;
+      color: #237a3b;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
     
+    .patient-profile-id {
+      margin: 0;
+      font-weight: 600;
+    }
   </style>
 </head>
 
@@ -278,14 +293,19 @@
       <article class="patient-profile-preview">
 
         <header class="patient-profile-header">
-
-          <h2 id="preview-name">LymphAware Patient</h2>
-
-          <p id="preview-id" class="patient-profile-id">
-            LymphAware ID
-          </p>
-
-        </header>
+      
+        <h2 id="preview-name">LymphAware Patient</h2>
+      
+        <p class="patient-profile-status">
+          LYMPHOEDEMA PATIENT
+        </p>
+      
+        <p class="patient-profile-id">
+          LymphAware ID:
+          <span id="preview-id">Not provided</span>
+        </p>
+      
+      </header>
 
 
       <section
@@ -492,7 +512,7 @@
         profile.display_name || 'LymphAware Patient';
 
       document.getElementById('preview-id').textContent =
-        profile.lymphaware_id || 'LymphAware ID not provided';
+      profile.lymphaware_id || 'Not provided';
 
       document.getElementById('preview-type').textContent =
         profile.lymphoedema_type || 'Not provided';
