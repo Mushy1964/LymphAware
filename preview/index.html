@@ -534,6 +534,7 @@
             id,
             display_name,
             photo_path,
+            show_photo_on_qr,
             lymphaware_id,
             lymphoedema_type,
             lymphoedema_location,
@@ -574,9 +575,9 @@
       profile.lymphaware_id || 'Not provided';
 
       const previewPhoto =
-        document.getElementById('preview-photo');
-      
-      if (profile.photo_path) {
+      document.getElementById('preview-photo');
+
+      if (profile.photo_path && profile.show_photo_on_qr) {
         const { data: signedData, error: signedError } =
           await supabaseClient.storage
             .from('patient-photos')
@@ -596,6 +597,8 @@
       
           previewPhoto.appendChild(image);
         }
+      } else {
+        previewPhoto.style.display = 'none';
       }
       
       document.getElementById('preview-type').textContent =
