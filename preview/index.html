@@ -177,6 +177,17 @@
         width: 100%;
       }
     }
+    .preview-icon {
+      overflow: hidden;
+    }
+    
+    .preview-icon-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    
   </style>
 </head>
 
@@ -600,14 +611,17 @@
           item.className = 'preview-assistance-item';
 
           item.innerHTML = `
-            <div class="preview-icon" aria-hidden="true">
-              ✓
-            </div>
-
-            <div>
-              ${option.statement}
-            </div>
-          `;
+          <div class="preview-icon" aria-hidden="true">
+            <img
+              src="/assets/icons/${option.icon_key}.png"
+              alt=""
+              class="preview-icon-image">
+          </div>
+        
+          <div>
+            ${option.statement}
+          </div>
+        `;
 
           assistanceContainer.appendChild(item);
         });
