@@ -669,28 +669,8 @@ async function loadProfile(userId) {
   const { data, error } = await supabaseClient
   .from('profiles')
 .select(`
-    photo_path,
-    if (data.photo_path) {
-    const { data: signedData, error: signedError } =
-      await supabaseClient.storage
-        .from('patient-photos')
-        .createSignedUrl(data.photo_path, 3600);
-  
-    if (signedError) {
-      console.error(
-        'Unable to load patient photograph:',
-        signedError
-      );
-    } else if (signedData?.signedUrl) {
-      profilePhotoPreview.innerHTML = '';
-  
-      const image = document.createElement('img');
-      image.src = signedData.signedUrl;
-      image.alt = 'Patient photograph';
-  
-      profilePhotoPreview.appendChild(image);
-    }
-  }
+    
+  photo_path,
   display_name,
   lymphaware_id,
   lymphoedema_type,
@@ -753,6 +733,28 @@ async function loadProfile(userId) {
     
     document.getElementById('additional-statement').value =
       data.additional_statement || '';
+
+      if (data.photo_path) {
+      const { data: signedData, error: signedError } =
+        await supabaseClient.storage
+          .from('patient-photos')
+          .createSignedUrl(data.photo_path, 3600);
+    
+      if (signedError) {
+        console.error(
+          'Unable to load patient photograph:',
+          signedError
+        );
+      } else if (signedData?.signedUrl) {
+        profilePhotoPreview.innerHTML = '';
+    
+        const image = document.createElement('img');
+        image.src = signedData.signedUrl;
+        image.alt = 'Patient photograph';
+    
+        profilePhotoPreview.appendChild(image);
+      }
+    }
     
     document.getElementById('show-lymphoedema-on-qr').checked =
       data.show_lymphoedema_on_qr === true;
@@ -771,6 +773,9 @@ async function loadProfile(userId) {
     
     document.getElementById('show-additional-on-qr').checked =
       data.show_additional_on_qr === true;
+
+  
+  
     }
   async function loadAssistanceOptions() {
     const assistanceContainer =
