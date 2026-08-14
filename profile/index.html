@@ -233,6 +233,22 @@
   margin-top: 1px;
   flex: 0 0 auto;
 }  
+
+     .assistance-icon-wrap {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .assistance-icon-image {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    display: block;
+  } 
   </style>
 </head>
 
@@ -740,12 +756,12 @@ async function loadProfile(userId) {
    const isSelected = selectedMap.has(option.id);
 const isVisible = selectedMap.get(option.id) === true;
 
-item.innerHTML = `
-  <div
-    class="assistance-icon-placeholder"
-    aria-hidden="true">
-    ✓
-  </div>
+<div class="assistance-icon-wrap" aria-hidden="true">
+  <img
+    src="/assets/icons/${option.icon_key}.png"
+    alt=""
+    class="assistance-icon-image">
+</div>
 
   <div class="assistance-option-content">
 
