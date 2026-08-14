@@ -669,6 +669,28 @@ async function loadProfile(userId) {
   const { data, error } = await supabaseClient
   .from('profiles')
 .select(`
+    photo_path,
+    if (data.photo_path) {
+    const { data: signedData, error: signedError } =
+      await supabaseClient.storage
+        .from('patient-photos')
+        .createSignedUrl(data.photo_path, 3600);
+  
+    if (signedError) {
+      console.error(
+        'Unable to load patient photograph:',
+        signedError
+      );
+    } else if (signedData?.signedUrl) {
+      profilePhotoPreview.innerHTML = '';
+  
+      const image = document.createElement('img');
+      image.src = signedData.signedUrl;
+      image.alt = 'Patient photograph';
+  
+      profilePhotoPreview.appendChild(image);
+    }
+  }
   display_name,
   lymphaware_id,
   lymphoedema_type,
