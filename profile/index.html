@@ -400,6 +400,14 @@
       </div>
     
     </div>
+
+        <label class="section-visibility-control">
+      <input
+        type="checkbox"
+        id="show-photo-on-qr">
+    
+      Show my photograph on my QR profile
+    </label>
     
     <div class="profile-grid">
 
@@ -669,10 +677,10 @@ async function loadProfile(userId) {
   const { data, error } = await supabaseClient
   .from('profiles')
 .select(`
-    
-  photo_path,
   display_name,
   lymphaware_id,
+  photo_path,
+  show_photo_on_qr,
   lymphoedema_type,
   lymphoedema_location,
   compression_information,
@@ -734,6 +742,9 @@ async function loadProfile(userId) {
     document.getElementById('additional-statement').value =
       data.additional_statement || '';
 
+    document.getElementById('show-photo-on-qr').checked =
+    data.show_photo_on_qr === true;
+  
       if (data.photo_path) {
       const { data: signedData, error: signedError } =
         await supabaseClient.storage
@@ -774,7 +785,8 @@ async function loadProfile(userId) {
     document.getElementById('show-additional-on-qr').checked =
       data.show_additional_on_qr === true;
 
-  
+    show_photo_on_qr:
+    document.getElementById('show-photo-on-qr').checked,
   
     }
   async function loadAssistanceOptions() {
