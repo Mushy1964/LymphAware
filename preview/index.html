@@ -241,7 +241,13 @@
       flex-basis: 82px;
     }
   }
-    
+
+  .patient-photo-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
   </style>
 </head>
 
@@ -336,9 +342,11 @@
 
         <div class="patient-identity">
       
-          <div class="patient-photo-placeholder" aria-hidden="true">
-            Photo
-          </div>
+         <div
+          class="patient-photo-placeholder"
+          id="preview-photo">
+          Photo
+        </div>
       
           <div class="patient-identity-text">
       
@@ -523,8 +531,9 @@
         await supabaseClient
           .from('profiles')
           .select(`
-           id,
+            id,
             display_name,
+            photo_path,
             lymphaware_id,
             lymphoedema_type,
             lymphoedema_location,
@@ -564,6 +573,31 @@
       document.getElementById('preview-id').textContent =
       profile.lymphaware_id || 'Not provided';
 
+      const previewPhoto =
+        document.getElementById('preview-photo');
+      
+      if (profile.photo_path) {
+        const { data: signedData, error: signedError } =
+          await supabaseClient.storage
+            .from('patient-photos')
+            .createSignedUrl(profile.photo_path, 3600);
+      
+        if (signedError) {
+          console.error(
+            'Unable to load preview photograph:',
+            signedError
+          );
+        } else if (signedData?.signedUrl) {
+          previewPhoto.innerHTML = '';
+      
+          const image = document.createElement('img');
+          image.src = signedData.signedUrl;
+          image.alt = 'Patient photograph';
+      
+          previewPhoto.appendChild(image);
+        }
+      }
+      
       document.getElementById('preview-type').textContent =
         profile.lymphoedema_type || 'Not provided';
 
