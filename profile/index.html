@@ -243,12 +243,17 @@
     justify-content: center;
   }
   
+    .assistance-icon-placeholder {
+    overflow: hidden;
+  }
+  
   .assistance-icon-image {
-    width: 48px;
-    height: 48px;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
     display: block;
   } 
+    
   </style>
 </head>
 
@@ -749,6 +754,15 @@ async function loadProfile(userId) {
 
   assistanceContainer.innerHTML = '';
 
+        const iconFiles = {
+      standing: 'standing.png',
+      seating: 'seating.png',
+      time: 'extra-time.png',
+      mobility: 'mobility.png',
+      'extra-space': 'extra-space.png',
+      understanding: 'understanding.png'
+    };
+    
   options.forEach((option) => {
     const item = document.createElement('div');
     item.className = 'assistance-option';
@@ -800,6 +814,24 @@ async function loadProfile(userId) {
     `;
     
     assistanceContainer.appendChild(item);
+
+        const iconPlaceholder =
+      item.querySelector('.assistance-icon-placeholder');
+    
+    const iconFile = iconFiles[option.icon_key];
+    
+    if (iconPlaceholder && iconFile) {
+      iconPlaceholder.textContent = '';
+    
+      const iconImage = document.createElement('img');
+    
+      iconImage.src = `/assets/icons/${iconFile}`;
+      iconImage.alt = '';
+      iconImage.className = 'assistance-icon-image';
+    
+      iconPlaceholder.appendChild(iconImage);
+    }
+    
     const selectionCheckbox =
   item.querySelector('.assistance-select');
 
