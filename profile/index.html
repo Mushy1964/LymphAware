@@ -976,10 +976,65 @@ profileForm.addEventListener('submit', async (event) => {
     return;
   }
 
+  let photoPath = null;
+
+const selectedPhoto =
+  document.getElementById('profile-photo-input').files[0];
+
+if (selectedPhoto) {
+
+  if (selectedPhoto.size > 5 * 1024 * 1024) {
+    profileMessage.textContent =
+      'Please choose a photograph smaller than 5 MB.';
+    return;
+  }
+
+  const allowedTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/webp'
+  ];
+
+  if (!allowedTypes.includes(selectedPhoto.type)) {
+    profileMessage.textContent =
+      'Please choose a JPG, PNG or WebP image.';
+    return;
+  }
+
+  photoPath = `${user.id}/profile-photo`;
+
+  const { error: photoUploadError } =
+    await supabaseClient.storage
+      .from('patient-photos')
+      .upload(
+        photoPath,
+        selectedPhoto,
+        {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: selectedPhoto.type
+        }
+      );
+
+  if (photoUploadError) {
+    console.error(
+      'Unable to upload patient photograph:',
+      photoUploadError
+    );
+
+    profileMessage.textContent =
+      'Your photograph could not be uploaded. Please try again.';
+
+    return;
+  }
+}
+  
   const profileData = {
   user_id: user.id,
 
-  display_name:
+  ...(photoPath ? { photo_path: photoPath } : {}),
+  
+    display_name:
     document.getElementById('display-name').value.trim(),
 
   lymphaware_id:
