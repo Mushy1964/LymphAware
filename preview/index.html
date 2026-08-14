@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Preview My QR Profile | LymphAware</title>
+
+  <link rel="stylesheet" href="/css/styles.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    .preview-page {
+      min-height: calc(100vh - 84px);
+      padding: 50px 16px;
+      background: #f7f9fa;
+    }
+
+    .preview-shell {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .preview-heading {
+      margin-bottom: 26px;
+    }
+
+    .preview-heading h1 {
+      margin: 6px 0 10px;
+      font-size: 2.4rem;
+      line-height: 1.15;
+    }
+
+    .preview-heading p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .preview-notice {
+      margin-bottom: 22px;
+      padding: 16px 18px;
+      border-radius: 14px;
+      background: var(--blue-light);
+      color: var(--blue-dark);
+    }
+
+    .patient-profile-preview {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: white;
+      box-shadow: 0 12px 32px rgba(31, 41, 51, 0.08);
+    }
+
+    .patient-profile-header {
+      padding: 26px;
+      background: linear-gradient(
+        135deg,
+        var(--green-light),
+        var(--blue-light)
+      );
+    }
+
+    .patient-profile-header h2 {
+      margin: 0 0 6px;
+      font-size: 2rem;
+      line-height: 1.2;
+    }
+
+    .patient-profile-id {
+      margin: 0;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .preview-section {
+      padding: 24px 26px;
+      border-top: 1px solid var(--border);
+    }
+
+    .preview-section h3 {
+      margin: 0 0 14px;
+      font-size: 1.25rem;
+    }
+
+    .preview-section p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .preview-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .preview-detail strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .preview-detail span {
+      color: var(--muted);
+    }
+
+    .preview-assistance-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .preview-assistance-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .preview-icon {
+      width: 36px;
+      height: 36px;
+      flex: 0 0 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--green-light);
+      color: var(--green-dark);
+      font-weight: 700;
+    }
+
+    .preview-empty {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    #preview-loading {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--muted);
+    }
+
+    #preview-content {
+      display: none;
+    }
+
+    @media (max-width: 680px) {
+      .preview-page {
+        padding: 36px 14px;
+      }
+
+      .preview-heading h1 {
+        font-size: 2rem;
+      }
+
+      .patient-profile-header,
+      .preview-section {
+        padding: 20px;
+      }
+
+      .preview-details {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-actions .button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+
+      <a href="/" class="header-brand" aria-label="LymphAware home">
+
+        <svg
+          class="header-logo"
+          viewBox="0 0 100 100"
+          role="img"
+          aria-label="LymphAware logo">
+
+          <circle cx="50" cy="16" r="11" fill="#4c9b57"></circle>
+
+          <path
+            d="M46 76 C27 70, 17 54, 18 34 C34 37, 44 47, 49 62 Z"
+            fill="#4c9b57">
+          </path>
+
+          <path
+            d="M54 76 C73 70, 83 54, 82 34 C66 37, 56 47, 51 62 Z"
+            fill="#2878b8">
+          </path>
+
+          <ellipse
+            cx="50"
+            cy="84"
+            rx="20"
+            ry="5"
+            fill="#2878b8">
+          </ellipse>
+
+        </svg>
+
+        <div class="header-wordmark">
+          <span class="lymph">LYMPH</span><span class="aware">AWARE</span>
+        </div>
+
+      </a>
+
+      <div class="header-actions">
+        <a href="/portal/" class="button button-secondary">
+          Back to Portal
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+
+  <main class="preview-page">
+
+    <div id="preview-loading">
+      Loading your QR profile preview...
+    </div>
+
+
+    <section id="preview-content" class="preview-shell">
+
+      <div class="preview-heading">
+
+        <p class="eyebrow">Patient Portal</p>
+
+        <h1>Preview My QR Profile</h1>
+
+        <p>
+          This preview shows how patient-selected information may appear
+          when someone scans your LymphAware card.
+        </p>
+
+      </div>
+
+
+      <div class="preview-notice">
+
+        <strong>Preview only.</strong>
+
+        This page is visible only while you are signed in.
+        Your public QR profile has not been activated.
+
+      </div>
+
+
+      <article class="patient-profile-preview">
+
+        <header class="patient-profile-header">
+
+          <h2 id="preview-name">LymphAware Patient</h2>
+
+          <p id="preview-id" class="patient-profile-id">
+            LymphAware ID
+          </p>
+
+        </header>
+
+
+        <section class="preview-section">
+
+          <h3>My Lymphoedema</h3>
+
+          <div class="preview-details">
+
+            <div class="preview-detail">
+              <strong>Type</strong>
+              <span id="preview-type">Not provided</span>
+            </div>
+
+            <div class="preview-detail">
+              <strong>Location</strong>
+              <span id="preview-location">Not provided</span>
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <section class="preview-section">
+
+          <h3>How You Can Help Me</h3>
+
+          <div
+            id="preview-assistance"
+            class="preview-assistance-list">
+          </div>
+
+        </section>
+
+
+        <section class="preview-section">
+
+          <h3>Additional Information</h3>
+
+          <p id="preview-additional">
+            No additional information has been selected for this preview.
+          </p>
+
+        </section>
+
+      </article>
+
+
+      <div class="preview-actions">
+
+        <a href="/profile/" class="button button-primary">
+          Edit My Profile
+        </a>
+
+        <a href="/portal/" class="button button-secondary">
+          Back to Portal
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <script>
+    const SUPABASE_URL = 'https://thbhsktcenhrnxzkbjus.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+
+    const supabaseClient = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const previewLoading =
+      document.getElementById('preview-loading');
+
+    const previewContent =
+      document.getElementById('preview-content');
+
+
+    async function loadPreview() {
+
+      const {
+        data: { user },
+        error: userError
+      } = await supabaseClient.auth.getUser();
+
+      if (userError || !user) {
+        window.location.href = '/sign-in/';
+        return;
+      }
+
+
+      const { data: profile, error: profileError } =
+        await supabaseClient
+          .from('profiles')
+          .select(`
+            id,
+            display_name,
+            lymphaware_id,
+            lymphoedema_type,
+            lymphoedema_location,
+            additional_statement
+          `)
+          .eq('user_id', user.id)
+          .single();
+
+      if (profileError || !profile) {
+        console.error(
+          'Unable to load profile preview:',
+          profileError
+        );
+
+        previewLoading.textContent =
+          'Your profile preview could not be loaded.';
+
+        return;
+      }
+
+
+      document.getElementById('preview-name').textContent =
+        profile.display_name || 'LymphAware Patient';
+
+      document.getElementById('preview-id').textContent =
+        profile.lymphaware_id || 'LymphAware ID not provided';
+
+      document.getElementById('preview-type').textContent =
+        profile.lymphoedema_type || 'Not provided';
+
+      document.getElementById('preview-location').textContent =
+        profile.lymphoedema_location || 'Not provided';
+
+      document.getElementById('preview-additional').textContent =
+        profile.additional_statement ||
+        'No additional information has been selected for this preview.';
+
+
+      const { data: selections, error: selectionsError } =
+        await supabaseClient
+          .from('profile_assistance')
+          .select(`
+            option_id,
+            visible_on_qr,
+            assistance_options (
+              statement,
+              icon_key
+            )
+          `)
+          .eq('profile_id', profile.id)
+          .eq('visible_on_qr', true);
+
+      if (selectionsError) {
+        console.error(
+          'Unable to load QR assistance selections:',
+          selectionsError
+        );
+      }
+
+
+      const assistanceContainer =
+        document.getElementById('preview-assistance');
+
+      assistanceContainer.innerHTML = '';
+
+      if (!selections || selections.length === 0) {
+
+        assistanceContainer.innerHTML =
+          '<p class="preview-empty">No assistance statements are currently selected for your QR profile.</p>';
+
+      } else {
+
+        selections.forEach((selection) => {
+
+          const option = selection.assistance_options;
+
+          if (!option) {
+            return;
+          }
+
+          const item = document.createElement('div');
+
+          item.className = 'preview-assistance-item';
+
+          item.innerHTML = `
+            <div class="preview-icon" aria-hidden="true">
+              ✓
+            </div>
+
+            <div>
+              ${option.statement}
+            </div>
+          `;
+
+          assistanceContainer.appendChild(item);
+        });
+
+      }
+
+
+      previewLoading.style.display = 'none';
+      previewContent.style.display = 'block';
+    }
+
+
+    loadPreview();
+  </script>
+
+</body>
+</html>
