@@ -598,6 +598,15 @@
 
       } else {
 
+              const iconFiles = {
+        standing: 'standing.png',
+        seating: 'seating.png',
+        time: 'extra-time.png',
+        mobility: 'mobility.png',
+        'extra-space': 'extra-space.png',
+        understanding: 'understanding.png'
+      };
+        
         selections.forEach((selection) => {
 
           const option = selection.assistance_options;
@@ -613,7 +622,7 @@
           item.innerHTML = `
           <div class="preview-icon" aria-hidden="true">
             <img
-              src="/assets/icons/${option.icon_key}.png"
+              src="/assets/icons/${iconFiles[option.icon_key]}"
               alt=""
               class="preview-icon-image">
           </div>
