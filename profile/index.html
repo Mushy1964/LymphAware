@@ -544,14 +544,25 @@ document.getElementById('emergency-contact-phone').value =
   assistanceContainer.innerHTML =
     '<p>Loading assistance statements...</p>';
 
-  const { data, error } = await supabaseClient
-    .from('assistance_options')
-    .select('id, statement, icon_key')
-    .eq('active', true)
-    .order('sort_order');
+  const {
+    data: { user },
+    error: userError
+  } = await supabaseClient.auth.getUser();
 
-  if (error) {
-    console.error('Unable to load assistance options:', error);
+  if (userError || !user) {
+    window.location.href = '/sign-in/';
+    return;
+  }
+
+  const { data: profile, error: profileError } =
+    await supabaseClient
+      .from('profiles')
+      .select('id')
+      .eq('user_id', user.id)
+      .single();
+
+  if (profileError || !profile) {
+    console.error('Unable to find profile:', profileError);
 
     assistanceContainer.innerHTML =
       '<p>Assistance statements could not be loaded.</p>';
@@ -559,15 +570,52 @@ document.getElementById('emergency-contact-phone').value =
     return;
   }
 
+  const { data: options, error: optionsError } =
+    await supabaseClient
+      .from('assistance_options')
+      .select('id, statement, icon_key')
+      .eq('active', true)
+      .order('sort_order');
+
+  if (optionsError) {
+    console.error(
+      'Unable to load assistance options:',
+      optionsError
+    );
+
+    assistanceContainer.innerHTML =
+      '<p>Assistance statements could not be loaded.</p>';
+
+    return;
+  }
+
+  const { data: selections, error: selectionsError } =
+    await supabaseClient
+      .from('profile_assistance')
+      .select('option_id')
+      .eq('profile_id', profile.id);
+
+  if (selectionsError) {
+    console.error(
+      'Unable to load assistance selections:',
+      selectionsError
+    );
+  }
+
+  const selectedIds = new Set(
+    (selections || []).map((item) => item.option_id)
+  );
+
   assistanceContainer.innerHTML = '';
 
-  data.forEach((option) => {
-
+  options.forEach((option) => {
     const item = document.createElement('div');
     item.className = 'assistance-option';
 
     item.innerHTML = `
-      <div class="assistance-icon-placeholder" aria-hidden="true">
+      <div
+        class="assistance-icon-placeholder"
+        aria-hidden="true">
         ✓
       </div>
 
@@ -575,7 +623,8 @@ document.getElementById('emergency-contact-phone').value =
         <input
           type="checkbox"
           id="assistance-${option.id}"
-          data-option-id="${option.id}">
+          data-option-id="${option.id}"
+          ${selectedIds.has(option.id) ? 'checked' : ''}>
 
         <label for="assistance-${option.id}">
           ${option.statement}
@@ -656,7 +705,75 @@ profileForm.addEventListener('submit', async (event) => {
 
     return;
   }
+const { data: savedProfile, error: savedProfileError } =
+  await supabaseClient
+    .from('profiles')
+    .select('id')
+    .eq('user_id', user.id)
+    .single();
 
+if (savedProfileError || !savedProfile) {
+  console.error(
+    'Unable to find saved profile:',
+    savedProfileError
+  );
+
+  profileMessage.textContent =
+    'Your profile was saved, but assistance selections could not be updated.';
+
+  return;
+}
+
+const checkedOptions = Array.from(
+  document.querySelectorAll(
+    '#assistance-options input[type="checkbox"]:checked'
+  )
+).map((checkbox) =>
+  Number(checkbox.dataset.optionId)
+);
+
+const { error: deleteError } =
+  await supabaseClient
+    .from('profile_assistance')
+    .delete()
+    .eq('profile_id', savedProfile.id);
+
+if (deleteError) {
+  console.error(
+    'Unable to clear assistance selections:',
+    deleteError
+  );
+
+  profileMessage.textContent =
+    'Your profile was saved, but assistance selections could not be updated.';
+
+  return;
+}
+
+if (checkedOptions.length > 0) {
+  const assistanceRows = checkedOptions.map((optionId) => ({
+    profile_id: savedProfile.id,
+    option_id: optionId,
+    visible_on_qr: false
+  }));
+
+  const { error: insertError } =
+    await supabaseClient
+      .from('profile_assistance')
+      .insert(assistanceRows);
+
+  if (insertError) {
+    console.error(
+      'Unable to save assistance selections:',
+      insertError
+    );
+
+    profileMessage.textContent =
+      'Your profile was saved, but assistance selections could not be updated.';
+
+    return;
+  }
+}
   profileMessage.textContent = 'Your changes have been saved.';
 });
   
