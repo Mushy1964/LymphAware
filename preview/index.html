@@ -277,55 +277,120 @@
         </header>
 
 
-       <section
-          id="preview-lymphoedema-section"
-          class="preview-section">
-        
-          <h3>My Lymphoedema</h3>
-        
-          <div class="preview-details">
-        
-            <div class="preview-detail">
-              <strong>Type</strong>
-              <span id="preview-type">Not provided</span>
-            </div>
-        
-            <div class="preview-detail">
-              <strong>Location</strong>
-              <span id="preview-location">Not provided</span>
-            </div>
-        
+      <section
+        id="preview-lymphoedema-section"
+        class="preview-section">
+      
+        <h3>My Lymphoedema</h3>
+      
+        <div class="preview-details">
+      
+          <div class="preview-detail">
+            <strong>Type</strong>
+            <span id="preview-type">Not provided</span>
           </div>
-        
-        </section>
-
-
-        <section class="preview-section">
-
-          <h3>How You Can Help Me</h3>
-
-          <div
-            id="preview-assistance"
-            class="preview-assistance-list">
+      
+          <div class="preview-detail">
+            <strong>Location</strong>
+            <span id="preview-location">Not provided</span>
           </div>
-
-        </section>
-
-
-       <section
-          id="preview-additional-section"
-          class="preview-section">
-        
-          <h3>Additional Information</h3>
-        
-          <p id="preview-additional">
-            No additional information has been selected for this preview.
-          </p>
-        
-        </section>
-
+      
+        </div>
+      
+      </section>
+      
+      
+      <section
+        id="preview-compression-section"
+        class="preview-section">
+      
+        <h3>Compression Information</h3>
+      
+        <p id="preview-compression">
+          No compression information has been selected for this profile.
+        </p>
+      
+      </section>
+      
+      
+      <section
+        id="preview-treatment-section"
+        class="preview-section">
+      
+        <h3>Important Treatment Considerations</h3>
+      
+        <p id="preview-treatment">
+          No treatment information has been selected for this profile.
+        </p>
+      
+      </section>
+      
+      
+      <section class="preview-section">
+      
+        <h3>How You Can Help Me</h3>
+      
+        <div
+          id="preview-assistance"
+          class="preview-assistance-list">
+        </div>
+      
+      </section>
+      
+      
+      <section
+        id="preview-assistance-notes-section"
+        class="preview-section">
+      
+        <h3>Other Assistance Information</h3>
+      
+        <p id="preview-assistance-notes">
+          No additional assistance information has been selected.
+        </p>
+      
+      </section>
+      
+      
+      <section
+        id="preview-emergency-section"
+        class="preview-section">
+      
+        <h3>Emergency Contact</h3>
+      
+        <div class="preview-details">
+      
+          <div class="preview-detail">
+            <strong>Name</strong>
+            <span id="preview-emergency-name">Not provided</span>
+          </div>
+      
+          <div class="preview-detail">
+            <strong>Relationship</strong>
+            <span id="preview-emergency-relationship">Not provided</span>
+          </div>
+      
+          <div class="preview-detail">
+            <strong>Telephone</strong>
+            <span id="preview-emergency-phone">Not provided</span>
+          </div>
+      
+        </div>
+      
+      </section>
+      
+      
+      <section
+        id="preview-additional-section"
+        class="preview-section">
+      
+        <h3>Additional Information</h3>
+      
+        <p id="preview-additional">
+          No additional information has been selected for this preview.
+        </p>
+      
+      </section>
       </article>
-
 
       <div class="preview-actions">
 
@@ -377,13 +442,23 @@
         await supabaseClient
           .from('profiles')
           .select(`
-            id,
+           id,
             display_name,
             lymphaware_id,
             lymphoedema_type,
             lymphoedema_location,
+            compression_information,
+            treatment_considerations,
+            assistance_needs,
+            emergency_contact_name,
+            emergency_contact_relationship,
+            emergency_contact_phone,
             additional_statement,
             show_lymphoedema_on_qr,
+            show_compression_on_qr,
+            show_treatment_on_qr,
+            show_assistance_notes_on_qr,
+            show_emergency_contact_on_qr,
             show_additional_on_qr
           `)
           .eq('user_id', user.id)
@@ -420,6 +495,54 @@
       lymphoedemaSection.style.display =
         profile.show_lymphoedema_on_qr ? 'block' : 'none';
 
+      document.getElementById('preview-compression').textContent =
+      profile.compression_information ||
+        'No compression information has been provided.';
+      
+      const compressionSection =
+        document.getElementById('preview-compression-section');
+      
+      compressionSection.style.display =
+        profile.show_compression_on_qr ? 'block' : 'none';
+      
+      
+      document.getElementById('preview-treatment').textContent =
+        profile.treatment_considerations ||
+        'No treatment information has been provided.';
+      
+      const treatmentSection =
+        document.getElementById('preview-treatment-section');
+      
+      treatmentSection.style.display =
+        profile.show_treatment_on_qr ? 'block' : 'none';
+      
+      
+      document.getElementById('preview-assistance-notes').textContent =
+        profile.assistance_needs ||
+        'No additional assistance information has been provided.';
+      
+      const assistanceNotesSection =
+        document.getElementById('preview-assistance-notes-section');
+      
+      assistanceNotesSection.style.display =
+        profile.show_assistance_notes_on_qr ? 'block' : 'none';
+      
+      
+      document.getElementById('preview-emergency-name').textContent =
+        profile.emergency_contact_name || 'Not provided';
+      
+      document.getElementById('preview-emergency-relationship').textContent =
+        profile.emergency_contact_relationship || 'Not provided';
+      
+      document.getElementById('preview-emergency-phone').textContent =
+        profile.emergency_contact_phone || 'Not provided';
+      
+      const emergencySection =
+        document.getElementById('preview-emergency-section');
+      
+      emergencySection.style.display =
+        profile.show_emergency_contact_on_qr ? 'block' : 'none';
+            
       document.getElementById('preview-additional').textContent =
         profile.additional_statement ||
         'No additional information has been selected for this preview.';
