@@ -183,6 +183,34 @@
     grid-template-columns: 1fr;
   }
 }
+   .assistance-option-content {
+  flex: 1;
+}
+
+.assistance-selection-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.qr-visibility-control {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.qr-visibility-control label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--blue);
+}
+
+.qr-visibility-control input {
+  width: 18px;
+  height: 18px;
+} 
   </style>
 </head>
 
@@ -538,7 +566,7 @@ document.getElementById('emergency-contact-phone').value =
     data.additional_statement || '';
 }
   async function loadAssistanceOptions() {
-  const assistanceContainer =
+    const assistanceContainer =
     document.getElementById('assistance-options');
 
   assistanceContainer.innerHTML =
@@ -589,11 +617,11 @@ document.getElementById('emergency-contact-phone').value =
     return;
   }
 
-  const { data: selections, error: selectionsError } =
-    await supabaseClient
-      .from('profile_assistance')
-      .select('option_id')
-      .eq('profile_id', profile.id);
+ const { data: selections, error: selectionsError } =
+  await supabaseClient
+    .from('profile_assistance')
+    .select('option_id, visible_on_qr')
+    .eq('profile_id', profile.id);
 
   if (selectionsError) {
     console.error(
@@ -602,9 +630,12 @@ document.getElementById('emergency-contact-phone').value =
     );
   }
 
-  const selectedIds = new Set(
-    (selections || []).map((item) => item.option_id)
-  );
+  const selectedMap = new Map(
+  (selections || []).map((item) => [
+    item.option_id,
+    item.visible_on_qr
+  ])
+);
 
   assistanceContainer.innerHTML = '';
 
@@ -612,27 +643,70 @@ document.getElementById('emergency-contact-phone').value =
     const item = document.createElement('div');
     item.className = 'assistance-option';
 
-    item.innerHTML = `
-      <div
-        class="assistance-icon-placeholder"
-        aria-hidden="true">
-        ✓
-      </div>
+   const isSelected = selectedMap.has(option.id);
+const isVisible = selectedMap.get(option.id) === true;
 
-      <div>
+item.innerHTML = `
+  <div
+    class="assistance-icon-placeholder"
+    aria-hidden="true">
+    ✓
+  </div>
+
+  <div class="assistance-option-content">
+
+    <div class="assistance-selection-row">
+
+      <input
+        type="checkbox"
+        id="assistance-${option.id}"
+        data-option-id="${option.id}"
+        class="assistance-select"
+        ${isSelected ? 'checked' : ''}>
+
+      <label for="assistance-${option.id}">
+        ${option.statement}
+      </label>
+
+    </div>
+
+    <div
+      class="qr-visibility-control"
+      ${isSelected ? '' : 'hidden'}>
+
+      <label>
         <input
           type="checkbox"
-          id="assistance-${option.id}"
+          class="assistance-qr-visibility"
           data-option-id="${option.id}"
-          ${selectedIds.has(option.id) ? 'checked' : ''}>
+          ${isVisible ? 'checked' : ''}>
 
-        <label for="assistance-${option.id}">
-          ${option.statement}
-        </label>
-      </div>
-    `;
+        Show on my QR profile
+      </label>
+
+    </div>
+
+  </div>
+`;
 
     assistanceContainer.appendChild(item);
+    const selectionCheckbox =
+  item.querySelector('.assistance-select');
+
+const visibilityControl =
+  item.querySelector('.qr-visibility-control');
+
+const visibilityCheckbox =
+  item.querySelector('.assistance-qr-visibility');
+
+selectionCheckbox.addEventListener('change', () => {
+  if (selectionCheckbox.checked) {
+    visibilityControl.hidden = false;
+  } else {
+    visibilityControl.hidden = true;
+    visibilityCheckbox.checked = false;
+  }
+});
   });
 }
 const profileForm = document.getElementById('profile-form');
@@ -724,13 +798,27 @@ if (savedProfileError || !savedProfile) {
   return;
 }
 
-const checkedOptions = Array.from(
+const selectedOptions = Array.from(
   document.querySelectorAll(
-    '#assistance-options input[type="checkbox"]:checked'
+    '#assistance-options .assistance-select:checked'
   )
-).map((checkbox) =>
-  Number(checkbox.dataset.optionId)
-);
+).map((checkbox) => {
+
+  const optionId = Number(checkbox.dataset.optionId);
+
+  const visibilityCheckbox =
+    document.querySelector(
+      `.assistance-qr-visibility[data-option-id="${optionId}"]`
+    );
+
+  return {
+    option_id: optionId,
+    visible_on_qr:
+      visibilityCheckbox
+        ? visibilityCheckbox.checked
+        : false
+  };
+});
 
 const { error: deleteError } =
   await supabaseClient
@@ -750,12 +838,12 @@ if (deleteError) {
   return;
 }
 
-if (checkedOptions.length > 0) {
-  const assistanceRows = checkedOptions.map((optionId) => ({
-    profile_id: savedProfile.id,
-    option_id: optionId,
-    visible_on_qr: false
-  }));
+if (selectedOptions.length > 0) {
+ const assistanceRows = selectedOptions.map((option) => ({
+  profile_id: savedProfile.id,
+  option_id: option.option_id,
+  visible_on_qr: option.visible_on_qr
+}));
 
   const { error: insertError } =
     await supabaseClient
