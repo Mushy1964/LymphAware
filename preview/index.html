@@ -203,6 +203,45 @@
       margin: 0;
       font-weight: 600;
     }
+
+    .patient-identity {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+  .patient-photo-placeholder {
+    width: 96px;
+    height: 118px;
+    flex: 0 0 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #b8c7cc;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.65);
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+  
+  .patient-identity-text {
+    min-width: 0;
+  }
+  
+  @media (max-width: 520px) {
+    .patient-identity {
+      align-items: flex-start;
+      gap: 14px;
+    }
+  
+    .patient-photo-placeholder {
+      width: 82px;
+      height: 102px;
+      flex-basis: 82px;
+    }
+  }
+    
   </style>
 </head>
 
@@ -293,18 +332,30 @@
 
       <article class="patient-profile-preview">
 
-        <header class="patient-profile-header">
+      <header class="patient-profile-header">
+
+        <div class="patient-identity">
       
-        <h2 id="preview-name">LymphAware Patient</h2>
+          <div class="patient-photo-placeholder" aria-hidden="true">
+            Photo
+          </div>
       
-        <p class="patient-profile-status">
-          LYMPHOEDEMA PATIENT
-        </p>
+          <div class="patient-identity-text">
       
-        <p class="patient-profile-id">
-          LymphAware ID:
-          <span id="preview-id">Not provided</span>
-        </p>
+            <h2 id="preview-name">LymphAware Patient</h2>
+      
+            <p class="patient-profile-status">
+              LYMPHOEDEMA PATIENT
+            </p>
+      
+            <p class="patient-profile-id">
+              LymphAware ID:
+              <span id="preview-id">Not provided</span>
+            </p>
+      
+          </div>
+      
+        </div>
       
       </header>
 
