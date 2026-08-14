@@ -742,7 +742,7 @@ async function loadProfile(userId) {
     document.getElementById('additional-statement').value =
       data.additional_statement || '';
 
-    document.getElementById('show-photo-on-qr').checked =
+   document.getElementById('show-photo-on-qr').checked =
     data.show_photo_on_qr === true;
   
       if (data.photo_path) {
@@ -785,9 +785,7 @@ async function loadProfile(userId) {
     document.getElementById('show-additional-on-qr').checked =
       data.show_additional_on_qr === true;
 
-    show_photo_on_qr:
-    document.getElementById('show-photo-on-qr').checked,
-  
+   
     }
   async function loadAssistanceOptions() {
     const assistanceContainer =
@@ -1072,8 +1070,8 @@ if (selectedPhoto) {
   user_id: user.id,
 
   ...(photoPath ? { photo_path: photoPath } : {}),
-  
-    display_name:
+
+  display_name:
     document.getElementById('display-name').value.trim(),
 
   lymphaware_id:
@@ -1106,6 +1104,9 @@ if (selectedPhoto) {
   additional_statement:
     document.getElementById('additional-statement').value.trim(),
   
+  show_photo_on_qr:
+    document.getElementById('show-photo-on-qr').checked,
+    
   show_lymphoedema_on_qr:
     document.getElementById('show-lymphoedema-on-qr').checked,
   
