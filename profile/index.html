@@ -246,14 +246,58 @@
     .assistance-icon-placeholder {
     overflow: hidden;
   }
+    
+    .assistance-icon-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    } 
   
-  .assistance-icon-image {
+    .profile-photo-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 26px;
+  }
+  
+  .profile-photo-preview {
+    width: 96px;
+    height: 118px;
+    flex: 0 0 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 2px dashed #b8c7cc;
+    border-radius: 14px;
+    background: #f8faf9;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+  
+  .profile-photo-preview img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    display: block;
-  } 
-    
+    object-fit: cover;
+  }
+  
+  .profile-photo-controls {
+    min-width: 0;
+  }
+  
+  @media (max-width: 520px) {
+    .profile-photo-section {
+      align-items: flex-start;
+    }
+  
+    .profile-photo-preview {
+      width: 82px;
+      height: 102px;
+      flex-basis: 82px;
+    }
+  }
   </style>
 </head>
 
@@ -331,6 +375,32 @@
 
     <h2>About Me</h2>
 
+    <div class="profile-photo-section">
+    
+      <div class="profile-photo-preview" id="profile-photo-preview">
+        Photo
+      </div>
+    
+      <div class="profile-photo-controls">
+    
+        <label for="profile-photo-input" class="button button-secondary">
+          Choose Photograph
+        </label>
+    
+        <input
+          type="file"
+          id="profile-photo-input"
+          accept="image/jpeg,image/png,image/webp"
+          hidden>
+    
+        <p class="profile-helper">
+          Use a clear recent photograph. JPG, PNG or WebP.
+        </p>
+    
+      </div>
+    
+    </div>
+    
     <div class="profile-grid">
 
       <div class="form-group">
@@ -851,6 +921,43 @@ selectionCheckbox.addEventListener('change', () => {
 });
   });
 }
+
+const profilePhotoInput =
+  document.getElementById('profile-photo-input');
+
+const profilePhotoPreview =
+  document.getElementById('profile-photo-preview');
+
+profilePhotoInput.addEventListener('change', () => {
+  const file = profilePhotoInput.files[0];
+
+  if (!file) {
+    return;
+  }
+
+  const allowedTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/webp'
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+    alert('Please choose a JPG, PNG or WebP image.');
+    profilePhotoInput.value = '';
+    return;
+  }
+
+  const previewUrl = URL.createObjectURL(file);
+
+  profilePhotoPreview.innerHTML = '';
+
+  const image = document.createElement('img');
+  image.src = previewUrl;
+  image.alt = 'Selected patient photograph';
+
+  profilePhotoPreview.appendChild(image);
+});
+  
 const profileForm = document.getElementById('profile-form');
 const profileMessage = document.getElementById('profile-message');
 
