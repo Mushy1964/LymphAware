@@ -277,9 +277,9 @@
         </header>
 
 
-        <section class="preview-section">
-
-          <h3>My Lymphoedema</h3>
+        <section
+          id="preview-lymphoedema-section"
+          class="preview-section">
 
           <div class="preview-details">
 
@@ -310,9 +310,9 @@
         </section>
 
 
-        <section class="preview-section">
-
-          <h3>Additional Information</h3>
+       <section
+          id="preview-additional-section"
+          class="preview-section">
 
           <p id="preview-additional">
             No additional information has been selected for this preview.
@@ -378,7 +378,9 @@
             lymphaware_id,
             lymphoedema_type,
             lymphoedema_location,
-            additional_statement
+            additional_statement,
+            show_lymphoedema_on_qr,
+            show_additional_on_qr
           `)
           .eq('user_id', user.id)
           .single();
@@ -408,10 +410,21 @@
       document.getElementById('preview-location').textContent =
         profile.lymphoedema_location || 'Not provided';
 
+      const lymphoedemaSection =
+        document.getElementById('preview-lymphoedema-section');
+      
+      lymphoedemaSection.style.display =
+        profile.show_lymphoedema_on_qr ? 'block' : 'none';
+
       document.getElementById('preview-additional').textContent =
         profile.additional_statement ||
         'No additional information has been selected for this preview.';
 
+      const additionalSection =
+        document.getElementById('preview-additional-section');
+      
+      additionalSection.style.display =
+        profile.show_additional_on_qr ? 'block' : 'none';
 
       const { data: selections, error: selectionsError } =
         await supabaseClient
