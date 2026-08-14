@@ -856,10 +856,10 @@ profileForm.addEventListener('submit', async (event) => {
 
   additional_statement:
     document.getElementById('additional-statement').value.trim(),
-
+  
   show_lymphoedema_on_qr:
     document.getElementById('show-lymphoedema-on-qr').checked,
-
+  
   show_compression_on_qr:
     document.getElementById('show-compression-on-qr').checked,
   
@@ -874,8 +874,8 @@ profileForm.addEventListener('submit', async (event) => {
   
   show_additional_on_qr:
     document.getElementById('show-additional-on-qr').checked,
-    
-  updated_at: new Date().toISOString()
+  
+updated_at: new Date().toISOString()
 };
   const { error } = await supabaseClient
     .from('profiles')
