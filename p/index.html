@@ -602,9 +602,24 @@
 
       const params =
         new URLSearchParams(window.location.search);
-
-      const token =
+      
+      let token =
         params.get('token');
+      
+      if (!token) {
+        const pathParts =
+          window.location.pathname
+            .split('/')
+            .filter(Boolean);
+      
+        if (
+          pathParts.length >= 2 &&
+          pathParts[0] === 'p' &&
+          pathParts[1] !== 'index.html'
+        ) {
+          token = pathParts[1];
+        }
+      }
 
 
       if (!token) {
