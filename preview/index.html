@@ -210,20 +210,24 @@
   gap: 20px;
 }
 
-  .patient-photo-placeholder {
-    width: 96px;
-    height: 118px;
-    flex: 0 0 96px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px dashed #b8c7cc;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.65);
-    color: var(--muted);
-    font-size: 0.9rem;
-    font-weight: 700;
-  }
+ .patient-photo-placeholder {
+  width: 96px;
+  height: 118px;
+  flex: 0 0 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #b8c7cc;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.patient-photo-placeholder.has-photo {
+  border: none;
+}
   
   .patient-identity-text {
     min-width: 0;
@@ -589,13 +593,14 @@
             signedError
           );
         } else if (signedData?.signedUrl) {
-          previewPhoto.innerHTML = '';
-      
-          const image = document.createElement('img');
-          image.src = signedData.signedUrl;
-          image.alt = 'Patient photograph';
-      
-          previewPhoto.appendChild(image);
+        previewPhoto.innerHTML = '';
+        previewPhoto.classList.add('has-photo');
+        
+        const image = document.createElement('img');
+        image.src = signedData.signedUrl;
+        image.alt = 'Patient photograph';
+        
+        previewPhoto.appendChild(image);
         }
       } else {
         previewPhoto.style.display = 'none';
