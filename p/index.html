@@ -34,34 +34,49 @@
       margin: 0 auto;
     }
 
-    .public-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 18px;
-      padding: 4px 2px;
-    }
-
-    .public-brand-mark {
-      width: 38px;
-      height: 38px;
-      flex: 0 0 38px;
-    }
-
-    .public-brand-name {
-      font-size: 1.45rem;
-      font-weight: 800;
-      letter-spacing: 0.01em;
-    }
-
-    .public-brand-name .lymph {
-      color: #2e7d32;
-    }
-
-    .public-brand-name .aware {
-      color: #1565c0;
-    }
-
+        .public-brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 22px;
+        padding: 6px 2px 0;
+      }
+      
+      .public-brand-mark {
+        width: 54px;
+        height: 54px;
+        flex: 0 0 54px;
+      }
+      
+      .public-brand-text {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .public-brand-name {
+        font-size: 1.7rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: 0.01em;
+      }
+      
+      .public-brand-name .lymph {
+        color: #4c9b57;
+      }
+      
+      .public-brand-name .aware {
+        color: #2878b8;
+      }
+      
+      .public-brand-tagline {
+        margin-top: 6px;
+        color: #2878b8;
+        font-size: 0.78rem;
+        font-weight: 600;
+        line-height: 1.3;
+      }
+    
     .public-profile-card {
       overflow: hidden;
       border: 1px solid #d7e1e4;
@@ -312,46 +327,60 @@
 
     <div class="public-profile-shell">
 
-      <div class="public-brand">
-
-        <svg
-          class="public-brand-mark"
-          viewBox="0 0 100 100"
-          aria-hidden="true">
-
-          <circle
-            cx="50"
-            cy="16"
-            r="11"
-            fill="#4c9b57">
-          </circle>
-
-          <path
-            d="M46 76 C27 70, 17 54, 18 34 C34 37, 44 47, 49 62 Z"
-            fill="#4c9b57">
-          </path>
-
-          <path
-            d="M54 76 C73 70, 83 54, 82 34 C66 37, 56 47, 51 62 Z"
-            fill="#2878b8">
-          </path>
-
-          <ellipse
-            cx="50"
-            cy="84"
-            rx="20"
-            ry="5"
-            fill="#2878b8">
-          </ellipse>
-
-        </svg>
-
+       <div class="public-brand">
+    
+      <svg
+        class="public-brand-mark"
+        viewBox="0 0 100 100"
+        role="img"
+        aria-label="LymphAware">
+    
+        <circle
+          cx="50"
+          cy="16"
+          r="11"
+          fill="#4c9b57">
+        </circle>
+    
+        <path
+          d="M18 34
+             C34 37, 44 47, 50 64
+             C49 69, 48 73, 46 76
+             C27 70, 17 54, 18 34 Z"
+          fill="#4c9b57">
+        </path>
+    
+        <path
+          d="M82 34
+             C66 37, 56 47, 50 64
+             C51 69, 52 73, 54 76
+             C73 70, 83 54, 82 34 Z"
+          fill="#2878b8">
+        </path>
+    
+        <ellipse
+          cx="50"
+          cy="84"
+          rx="20"
+          ry="5"
+          fill="#2878b8">
+        </ellipse>
+    
+      </svg>
+    
+      <div class="public-brand-text">
+    
         <div class="public-brand-name">
           <span class="lymph">LYMPH</span><span class="aware">AWARE</span>
         </div>
-
+    
+        <div class="public-brand-tagline">
+          Helping People Living with Lymphoedema Be Understood.
+        </div>
+    
       </div>
-
+    
+    </div>
 
       <div
         id="loading-message"
