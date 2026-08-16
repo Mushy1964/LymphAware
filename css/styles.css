@@ -67,13 +67,14 @@ svg {
 .header-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
   flex-shrink: 0;
 }
 
 .header-logo {
-  width: 52px;
-  height: 52px;
+  display: block;
+  width: 280px;
+  max-width: 100%;
+  height: auto;
 }
 
 .header-wordmark {
