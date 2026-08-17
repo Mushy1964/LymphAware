@@ -458,7 +458,28 @@
         Only choose to display information you are comfortable sharing.
       </p>
     </div>
+
+      <div class="profile-card qr-status-card">
     
+      <h2>QR Profile Status</h2>
+    
+      <label class="section-visibility-control">
+        <input
+          type="checkbox"
+          id="qr-profile-active">
+    
+        My QR profile is active
+      </label>
+    
+      <p class="field-help">
+        Turn this off if you temporarily do not want your LymphAware card
+        to display your public profile. Your information will remain saved
+        and you can reactivate your QR profile at any time.
+      </p>
+    
+    </div>  
+
+          
  <div class="profile-card">
 
   <h2>My Lymphoedema</h2>
@@ -746,6 +767,7 @@ async function loadProfile(userId) {
   lymphaware_id,
   photo_path,
   show_photo_on_qr,
+  qr_profile_active,
   lymphoedema_type,
   lymphoedema_location,
   compression_information,
@@ -809,6 +831,9 @@ async function loadProfile(userId) {
 
    document.getElementById('show-photo-on-qr').checked =
     data.show_photo_on_qr === true;
+
+  document.getElementById('qr-profile-active').checked =
+  data.qr_profile_active !== false;
   
       if (data.photo_path) {
       const { data: signedData, error: signedError } =
@@ -1171,6 +1196,9 @@ if (selectedPhoto) {
   
   show_photo_on_qr:
     document.getElementById('show-photo-on-qr').checked,
+
+  qr_profile_active:
+    document.getElementById('qr-profile-active').checked,
     
   show_lymphoedema_on_qr:
     document.getElementById('show-lymphoedema-on-qr').checked,
