@@ -76,6 +76,13 @@
       font-weight: 700;
     }
 
+    .field-help {
+      margin: 6px 0 10px;
+      color: #566575;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    
     .form-group input,
     .form-group textarea {
       width: 100%;
@@ -466,27 +473,40 @@
     
     </div>
     
-    <div class="form-group">
-      <label for="compression-information">
-        Compression information
-      </label>
+        <div class="form-group">
+        <label for="compression-information">
+          Compression information
+        </label>
+      
+        <p class="field-help">
+          Tell us about any compression garments you use that may be helpful
+          for someone assisting you to know about. For example, where they
+          are worn, when you normally wear them, or anything important about
+          removing or handling them.
+        </p>
+      
+        <textarea
+          id="compression-information"
+          name="compression-information"
+          placeholder="Add relevant information about compression garments or other compression needs."></textarea>
+      </div>
 
-      <textarea
-        id="compression-information"
-        name="compression-information"
-        placeholder="Add relevant information about compression garments or other compression needs."></textarea>
-    </div>
-
-    <div class="form-group">
-      <label for="treatment-considerations">
-        Important treatment considerations
-      </label>
-
-      <textarea
-        id="treatment-considerations"
-        name="treatment-considerations"
-        placeholder="Add any patient-selected information that may help someone understand your usual care or treatment considerations."></textarea>
-    </div>
+      <div class="form-group">
+        <label for="treatment-considerations">
+          Important treatment considerations
+        </label>
+      
+        <p class="field-help">
+          Add anything you would like someone assisting you to know about
+          your lymphoedema care. Keep this to important practical information
+          rather than your full medical history.
+        </p>
+      
+        <textarea
+          id="treatment-considerations"
+          name="treatment-considerations"
+          placeholder="Add any patient-selected information that may help someone understand your usual care or treatment considerations."></textarea>
+      </div>
 
   </div>
 
