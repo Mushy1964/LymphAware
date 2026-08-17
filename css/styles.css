@@ -485,8 +485,12 @@ footer {
   max-width: 420px;
 }
 
-.footer-brand strong {
-  font-size: 1.25rem;
+.footer-logo {
+  display: block;
+  width: 220px;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 14px;
 }
 
 .footer-brand p {
