@@ -8,7 +8,7 @@
    aria-label="LymphAware approved logo with tagline"
    version="1.1"
    id="svg1"
-   sodipodi:docname="LymphAware_APPROVED_With_Tagline_v1.svg"
+   sodipodi:docname="LymphAware_APPROVED_No_Tagline_v1.svg"
    inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -103,7 +103,7 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="1.56"
-     inkscape:cx="618.91026"
+     inkscape:cx="625.32051"
      inkscape:cy="-61.217949"
      inkscape:window-width="2560"
      inkscape:window-height="1369"
@@ -124,11 +124,11 @@
   <text
      xml:space="preserve"
      id="text120"
-     style="fill:#00aa00;writing-mode:lr-tb;text-orientation:auto;direction:ltr;white-space:pre;shape-inside:url(#rect120);font-size:21.33333333px" />
+     style="font-size:21.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect120);display:inline;fill:#00aa00" />
   <text
      xml:space="preserve"
      id="text131"
-     style="font-size:21.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect131);fill:none"><tspan
+     style="font-size:21.3333px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect131);display:inline;fill:none"><tspan
        x="287.17969"
        y="-16.433468"
        id="tspan2"><tspan
@@ -136,66 +136,42 @@
          id="tspan1">Help</tspan></tspan></text>
   <text
      xml:space="preserve"
-     id="text132"
-     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:34.6667px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect132);fill:#000000"
-     transform="matrix(1.0618922,0,0,1.0956791,-73.833581,218.8986)"><tspan
-       x="272.43555"
-       y="-50.183974"
-       id="tspan3">Helping People Living with</tspan></text>
-  <text
-     xml:space="preserve"
-     id="text132-1"
-     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:34.6667px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect132-5);fill:#0053b7;fill-opacity:1"
-     transform="matrix(1.0618922,0,0,1.0956791,673.5254,218.8986)"><tspan
-       x="272.43555"
-       y="-50.183974"
-       id="tspan4">Be Understood</tspan></text>
-  <text
-     xml:space="preserve"
-     id="text132-8"
-     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:34.6667px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect132-4);fill:#2c922b;fill-opacity:1"
-     transform="matrix(1.0618922,0,0,1.0956791,404.93565,218.89859)"><tspan
-       x="272.43555"
-       y="-50.183974"
-       id="tspan5">Lymphoedema</tspan></text>
-  <text
-     xml:space="preserve"
      id="text133"
-     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:37.3934px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect133);fill:#00aa00"><tspan
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:37.3934px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect133);display:inline;fill:#00aa00"><tspan
        x="258.97461"
        y="-127.21422"
-       id="tspan7"><tspan
+       id="tspan4"><tspan
          dx="0 19.408781 24.941103 31.148994 24.941109"
-         id="tspan6">LYMPH</tspan></tspan></text>
+         id="tspan3">LYMPH</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text134"
-     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:96px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect134);fill:#00aa00"><tspan
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:96px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect134);display:inline;fill:#00aa00"><tspan
        x="259.61523"
        y="-14.808825"
-       id="tspan9"><tspan
+       id="tspan6"><tspan
          dx="0 49.828125 64.03125 79.96875 64.03125"
-         id="tspan8">LYMPH</tspan></tspan></text>
+         id="tspan5">LYMPH</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text135-3"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:130.483px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect135-14);fill:#0055d4"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:130.483px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect135-14);display:inline;fill:#0055d4"
      transform="matrix(1.0441663,0,0,1,189.13574,278.20512)"><tspan
        x="262.17969"
        y="74.81313"
-       id="tspan11"><tspan
+       id="tspan8"><tspan
          dx="0 86.011742 125.83199 89.197372 90.726471"
-         id="tspan10">AWARE</tspan></tspan></text>
+         id="tspan7">AWARE</tspan></tspan></text>
   <text
      xml:space="preserve"
      id="text135-34"
-     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:133.333px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect135-12);fill:#217821"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:133.333px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect135-12);display:inline;fill:#217821"
      transform="matrix(1.118166,0,0,1,64.538648,-150.04184)"><tspan
        x="262.17969"
        y="75.869814"
-       id="tspan13"><tspan
+       id="tspan10"><tspan
          dx="0 88.932068 118.48929 96.288818 96.288818"
-         id="tspan12">AWARE</tspan></tspan></text>
+         id="tspan9">AWARE</tspan></tspan></text>
   <path
      style="fill:#2c922b;fill-opacity:1"
      d="m 91.978605,52.246393 c -10.55471,-4.21235 -16.28185,-16.63899 -12.88846,-27.96513 4.65624,-15.5411397 25.852095,-20.2759097 36.994415,-8.26387 4.28774,4.62243 5.86416,8.74396 5.86416,15.33176 0,9.46089 -4.84493,16.9592 -13.21789,20.45678 -4.13297,1.72644 -12.949185,1.95824 -16.752225,0.44046 z"
@@ -214,26 +190,26 @@
      id="path34" />
   <text
      xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:142.87px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;fill:#2c922b;stroke-width:1.01332;fill-opacity:1"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:142.87px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;fill:#2c922b;fill-opacity:1;stroke-width:1.01332"
      x="691.21796"
-     y="122.76814"
+     y="145.06122"
      id="text135-2"
      transform="scale(1.0133244,0.9868508)"><tspan
        sodipodi:role="line"
        id="tspan136"
        x="691.21796"
-       y="122.76814">AWARE</tspan></text>
+       y="145.06122">AWARE</tspan></text>
   <text
      xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:142.87px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;fill:#0053b7;stroke-width:1.01332;fill-opacity:1"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:142.87px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;fill:#0053b7;fill-opacity:1;stroke-width:1.01332"
      x="204.11852"
-     y="122.76814"
+     y="145.06122"
      id="text135-2-1"
      transform="scale(1.0133244,0.9868508)"><tspan
        sodipodi:role="line"
        id="tspan137"
        x="204.11852"
-       y="122.76814">LYMPH</tspan></text>
+       y="145.06122">LYMPH</tspan></text>
   <metadata
      id="metadata137">
     <rdf:RDF>
