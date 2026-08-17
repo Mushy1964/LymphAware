@@ -168,12 +168,15 @@ svg {
 }
 
 .hero-logo {
+  display: flex;
+  align-items: center;
   margin-bottom: 28px;
 }
 
 .hero-logo-image {
   display: block;
-  width: min(100%, 720px);
+  width: 100%;
+  max-width: 720px;
   height: auto;
 }
 
