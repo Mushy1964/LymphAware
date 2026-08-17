@@ -83,6 +83,13 @@
       line-height: 1.5;
     }
     
+      .character-limit {
+        margin: 6px 0 0;
+        color: #6b7785;
+        font-size: 0.82rem;
+        text-align: right;
+      }
+    
     .form-group input,
     .form-group textarea {
       width: 100%;
@@ -647,14 +654,27 @@
       Show this information on my QR profile
     </label>
     
-    <div class="form-group">
-      <label for="additional-statement">Additional statement</label>
+   <div class="form-group">
+  <label for="additional-statement">
+    Additional statement
+  </label>
 
-      <textarea
-        id="additional-statement"
-        name="additional-statement"
-        placeholder="Add any additional information you would like to record."></textarea>
-    </div>
+  <p class="field-help">
+    Is there anything else you would like someone assisting you to know?
+    Add a short statement that may help someone understand or assist you.
+    Avoid including information you do not need or want to share publicly.
+  </p>
+
+  <textarea
+    id="additional-statement"
+    name="additional-statement"
+    maxlength="300"
+    placeholder="Add any additional information you would like someone assisting you to know."></textarea>
+
+  <p class="character-limit">
+    Maximum 300 characters
+  </p>
+</div>
 
   </div>
 
