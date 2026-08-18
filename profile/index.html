@@ -222,15 +222,53 @@
 .qr-visibility-control label {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   font-weight: 600;
   color: var(--blue);
+  cursor: pointer;
 }
 
 .qr-visibility-control input {
-  width: 18px;
-  height: 18px;
-} 
+  appearance: none;
+  -webkit-appearance: none;
+  width: 44px;
+  height: 24px;
+  flex: 0 0 44px;
+  margin: 0;
+  border: 2px solid #9aa9b3;
+  border-radius: 999px;
+  background: #dfe5e8;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.qr-visibility-control input::before {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 2px;
+  left: 2px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+}
+
+.qr-visibility-control input:checked {
+  background: var(--blue);
+  border-color: var(--blue);
+}
+
+.qr-visibility-control input:checked::before {
+  transform: translateX(20px);
+}
+
+.qr-visibility-control input:focus-visible {
+  outline: 3px solid rgba(0, 112, 192, 0.25);
+  outline-offset: 3px;
+}
 
   .section-visibility-group {
   display: grid;
