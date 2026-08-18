@@ -1035,7 +1035,7 @@ async function loadProfile(userId) {
     item.className = 'assistance-option';
 
      const isSelected = selectedMap.has(option.id);
-    const isVisible = selectedMap.get(option.id) === true;
+    
     
     item.innerHTML = `
       <div
@@ -1057,22 +1057,6 @@ async function loadProfile(userId) {
     
           <label for="assistance-${option.id}">
             ${option.statement}
-          </label>
-    
-        </div>
-    
-        <div
-          class="qr-visibility-control"
-          ${isSelected ? '' : 'hidden'}>
-    
-          <label>
-            <input
-              type="checkbox"
-              class="assistance-qr-visibility"
-              data-option-id="${option.id}"
-              ${isVisible ? 'checked' : ''}>
-    
-            Show on my QR profile
           </label>
     
         </div>
@@ -1099,25 +1083,10 @@ async function loadProfile(userId) {
       iconPlaceholder.appendChild(iconImage);
     }
     
-    const selectionCheckbox =
-  item.querySelector('.assistance-select');
-
-const visibilityControl =
-  item.querySelector('.qr-visibility-control');
-
-const visibilityCheckbox =
-  item.querySelector('.assistance-qr-visibility');
-
-selectionCheckbox.addEventListener('change', () => {
-  if (selectionCheckbox.checked) {
-    visibilityControl.hidden = false;
-  } else {
-    visibilityControl.hidden = true;
-    visibilityCheckbox.checked = false;
+const selectionCheckbox =
+    item.querySelector('.assistance-select');
+    });
   }
-});
-  });
-}
 
 const profilePhotoInput =
   document.getElementById('profile-photo-input');
