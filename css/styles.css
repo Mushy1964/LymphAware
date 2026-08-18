@@ -269,6 +269,10 @@ svg {
   font-size: 0.96rem;
 }
 
+.cta-text {
+  margin-bottom: 28px;
+}
+
 /* PAGE HERO */
 
 .page-hero {
