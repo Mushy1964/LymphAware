@@ -1317,27 +1317,23 @@ if (savedProfileError || !savedProfile) {
   return;
 }
 
-const selectedOptions = Array.from(
-  document.querySelectorAll(
-    '#assistance-options .assistance-select:checked'
-  )
-).map((checkbox) => {
-
-  const optionId = Number(checkbox.dataset.optionId);
-
-  const visibilityCheckbox =
-    document.querySelector(
-      `.assistance-qr-visibility[data-option-id="${optionId}"]`
-    );
-
-  return {
-    option_id: optionId,
-    visible_on_qr:
-      visibilityCheckbox
-        ? visibilityCheckbox.checked
-        : false
-  };
-});
+    const showSelectedAssistanceOnQr =
+      document.getElementById(
+        'show-selected-assistance-on-qr'
+      ).checked;
+    
+    const selectedOptions = Array.from(
+      document.querySelectorAll(
+        '#assistance-options .assistance-select:checked'
+      )
+    ).map((checkbox) => {
+    
+      return {
+        option_id: Number(checkbox.dataset.optionId),
+        visible_on_qr: showSelectedAssistanceOnQr
+      };
+    
+    });
 
 const { error: deleteError } =
   await supabaseClient
