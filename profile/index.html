@@ -725,42 +725,43 @@
   </div>
 
 
-  <div class="profile-card">
-
+ <div class="profile-card">
     <h2>Additional Information</h2>
-    <div class="qr-visibility-control">
-      <label>
-        <input
-          type="checkbox"
-          id="show-additional-on-qr">
-    
-        Show my additional statement on my QR profile
+  
+    <div class="form-group">
+      <label for="additional-statement">
+        Additional statement
       </label>
+  
+      <p class="field-help">
+        Is there anything else you would like someone assisting you to know?
+        Add a short statement that may help someone understand or assist you.
+        Avoid including information you do not need or want to share publicly.
+      </p>
+  
+      <textarea
+        id="additional-statement"
+        name="additional-statement"
+        maxlength="300"
+        placeholder="Add any additional information you would like someone assisting you to know."></textarea>
+  
+      <p class="character-limit">
+        Maximum 300 characters
+      </p>
+  
+      <div class="qr-visibility-control">
+        <label>
+          <input
+            type="checkbox"
+            id="show-additional-on-qr">
+  
+          Show my additional statement on my QR profile
+        </label>
+      </div>
     </div>
-    
-   <div class="form-group">
-  <label for="additional-statement">
-    Additional statement
-  </label>
-
-  <p class="field-help">
-    Is there anything else you would like someone assisting you to know?
-    Add a short statement that may help someone understand or assist you.
-    Avoid including information you do not need or want to share publicly.
-  </p>
-
-  <textarea
-    id="additional-statement"
-    name="additional-statement"
-    maxlength="300"
-    placeholder="Add any additional information you would like someone assisting you to know."></textarea>
-
-  <p class="character-limit">
-    Maximum 300 characters
-  </p>
 </div>
-
-  </div>
+  
+    </div>
 
 
   <div class="profile-actions">
