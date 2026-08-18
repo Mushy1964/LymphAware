@@ -1021,6 +1021,15 @@ async function loadProfile(userId) {
     .select('option_id, visible_on_qr')
     .eq('profile_id', profile.id);
 
+    const masterAssistanceVisibility =
+    document.getElementById('show-selected-assistance-on-qr');
+    
+    masterAssistanceVisibility.checked =
+      (selections || []).some(
+        (item) => item.visible_on_qr === true
+      ); 
+
+    
   if (selectionsError) {
     console.error(
       'Unable to load assistance selections:',
