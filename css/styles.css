@@ -462,9 +462,10 @@ svg {
   font-size: 1.1rem;
 }
 
-.cta-text {
-  margin-bottom: 28px;
+.cta-box .cta-text {
+  margin: 0 auto 28px;
 }
+
 .cta-section {
   padding: 72px 0;
 }
