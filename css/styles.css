@@ -269,10 +269,6 @@ svg {
   font-size: 0.96rem;
 }
 
-.cta-text {
-  margin-bottom: 28px;
-}
-
 /* PAGE HERO */
 
 .page-hero {
@@ -466,6 +462,9 @@ svg {
   font-size: 1.1rem;
 }
 
+.cta-text {
+  margin-bottom: 28px;
+}
 .cta-section {
   padding: 72px 0;
 }
