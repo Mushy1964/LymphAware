@@ -413,6 +413,62 @@
       border-top: 1px solid var(--border);
       margin: 20px 0;
     }
+    .unsaved-dialog[hidden] {
+  display: none;
+}
+
+.unsaved-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.unsaved-dialog-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(23, 37, 54, 0.55);
+}
+
+.unsaved-dialog-box {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  padding: 28px;
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.2);
+}
+
+.unsaved-dialog-box h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.unsaved-dialog-box p {
+  margin-bottom: 22px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.unsaved-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .unsaved-dialog-actions {
+    flex-direction: column;
+  }
+
+  .unsaved-dialog-actions .button {
+    width: 100%;
+  }
+}
   </style>
 </head>
 
@@ -1170,6 +1226,98 @@ profilePhotoInput.addEventListener('change', () => {
 const profileForm = document.getElementById('profile-form');
 const profileMessage = document.getElementById('profile-message');
 
+const backToPortal =
+  document.getElementById('back-to-portal');
+
+const cancelProfile =
+  document.getElementById('cancel-profile');
+
+const unsavedDialog =
+  document.getElementById('unsaved-dialog');
+
+const saveAndLeaveButton =
+  document.getElementById('save-and-leave');
+
+const leaveWithoutSavingButton =
+  document.getElementById('leave-without-saving');
+
+const stayOnPageButton =
+  document.getElementById('stay-on-page');
+
+const unsavedDialogBackdrop =
+  document.getElementById('unsaved-dialog-backdrop');
+
+let hasUnsavedChanges = false;
+let pendingDestination = null;
+
+profileForm.addEventListener('input', () => {
+  hasUnsavedChanges = true;
+});
+
+profileForm.addEventListener('change', () => {
+  hasUnsavedChanges = true;
+});
+
+
+function requestLeave(destination) {
+
+  if (!hasUnsavedChanges) {
+    window.location.href = destination;
+    return;
+  }
+
+  pendingDestination = destination;
+  unsavedDialog.hidden = false;
+}
+
+
+backToPortal.addEventListener('click', (event) => {
+  event.preventDefault();
+  requestLeave('/portal/');
+});
+
+
+cancelProfile.addEventListener('click', (event) => {
+  event.preventDefault();
+  requestLeave('/portal/');
+});
+
+
+stayOnPageButton.addEventListener('click', () => {
+  pendingDestination = null;
+  unsavedDialog.hidden = true;
+});
+
+
+unsavedDialogBackdrop.addEventListener('click', () => {
+  pendingDestination = null;
+  unsavedDialog.hidden = true;
+});
+
+
+leaveWithoutSavingButton.addEventListener('click', () => {
+  hasUnsavedChanges = false;
+  window.location.href =
+    pendingDestination || '/portal/';
+});
+
+
+saveAndLeaveButton.addEventListener('click', () => {
+  unsavedDialog.hidden = true;
+  profileForm.requestSubmit();
+});
+
+
+window.addEventListener('beforeunload', (event) => {
+
+  if (!hasUnsavedChanges) {
+    return;
+  }
+
+  event.preventDefault();
+  event.returnValue = '';
+});
+  
 profileForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
@@ -1392,10 +1540,73 @@ if (selectedOptions.length > 0) {
     return;
   }
 }
-  profileMessage.textContent = 'Your changes have been saved.';
+ hasUnsavedChanges = false;
+
+profileMessage.textContent =
+  'Your changes have been saved.';
+
+if (pendingDestination) {
+  const destination = pendingDestination;
+  pendingDestination = null;
+  window.location.href = destination;
+}
 });
   
   checkProfileAccess();
 </script>
+
+  <div
+  id="unsaved-dialog"
+  class="unsaved-dialog"
+  hidden>
+
+  <div
+    class="unsaved-dialog-backdrop"
+    id="unsaved-dialog-backdrop">
+  </div>
+
+  <div
+    class="unsaved-dialog-box"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="unsaved-dialog-title">
+
+    <h2 id="unsaved-dialog-title">
+      You have unsaved changes
+    </h2>
+
+    <p>
+      Would you like to save your changes before leaving this page?
+    </p>
+
+    <div class="unsaved-dialog-actions">
+
+      <button
+        type="button"
+        id="save-and-leave"
+        class="button button-primary">
+        Save and Leave
+      </button>
+
+      <button
+        type="button"
+        id="leave-without-saving"
+        class="button button-secondary">
+        Leave Without Saving
+      </button>
+
+      <button
+        type="button"
+        id="stay-on-page"
+        class="button button-secondary">
+        Stay on This Page
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+  
 </body>
 </html>
