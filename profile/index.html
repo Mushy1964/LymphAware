@@ -431,9 +431,16 @@
 
       </a>
 
+     
       <div class="header-actions">
-        <a href="/portal/" class="button button-secondary">Back to Portal</a>
+       <a
+          href="/portal/"
+          id="back-to-portal"
+          class="button button-secondary">
+          Back to Portal
+        </a>
       </div>
+     
 
     </div>
   </header>
@@ -804,11 +811,12 @@
       Save Changes
     </button>
 
-    <a
-      href="/portal/"
-      class="button button-secondary">
-      Cancel
-    </a>
+      <a
+        href="/portal/"
+        id="cancel-profile"
+        class="button button-secondary">
+        Cancel
+      </a>
 
   </div>
 
@@ -1237,9 +1245,6 @@ if (selectedPhoto) {
 
   display_name:
     document.getElementById('display-name').value.trim(),
-
-  lymphaware_id:
-    document.getElementById('lymphaware-id').value.trim(),
 
   lymphoedema_type:
     document.getElementById('lymphoedema-type').value.trim(),
