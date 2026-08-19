@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Create Account | LymphAware</title>
+
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    .portal-page {
+      min-height: calc(100vh - 84px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 70px 20px;
+      background: linear-gradient(
+        135deg,
+        rgba(76, 155, 87, 0.06),
+        rgba(40, 120, 184, 0.05)
+      );
+    }
+
+    .portal-card {
+      width: 100%;
+      max-width: 560px;
+      padding: 38px;
+      border-radius: 22px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      box-shadow: 0 18px 45px rgba(31, 41, 51, 0.08);
+    }
+
+    .portal-card h1 {
+      margin: 0 0 12px;
+      font-size: 2.3rem;
+      line-height: 1.15;
+    }
+
+    .portal-intro {
+      margin: 0 0 28px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .account-note {
+      margin: 0 0 24px;
+      padding: 16px 18px;
+      border: 1px solid #cfe0e8;
+      border-radius: 12px;
+      background: #f4f9fc;
+      color: #455566;
+      line-height: 1.5;
+    }
+
+    .account-note strong {
+      color: #263746;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 700;
+    }
+
+    .form-group input[type="email"],
+    .form-group input[type="password"] {
+      width: 100%;
+      min-height: 48px;
+      padding: 11px 13px;
+      border: 1px solid #bfcbd2;
+      border-radius: 9px;
+      font: inherit;
+      background: white;
+    }
+
+    .form-group input:focus {
+      outline: 3px solid rgba(40, 120, 184, 0.18);
+      border-color: var(--blue);
+    }
+
+    .password-help {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .agreement {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 24px 0;
+      line-height: 1.5;
+    }
+
+    .agreement input {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 20px;
+      margin-top: 2px;
+    }
+
+    .agreement label {
+      font-weight: 400;
+    }
+
+    .agreement a {
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    .portal-button {
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    #register-message {
+      margin: 16px 0 0;
+      line-height: 1.5;
+    }
+
+    .portal-links {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .portal-links span {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .portal-links a {
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    .portal-status {
+      margin-top: 28px;
+      padding: 18px;
+      border-radius: 14px;
+      background: var(--green-light);
+      color: var(--green-dark);
+      font-size: 0.96rem;
+      line-height: 1.5;
+    }
+
+    .portal-status strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 680px) {
+      .portal-page {
+        padding: 40px 14px;
+      }
+
+      .portal-card {
+        padding: 26px 20px;
+      }
+
+      .portal-card h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+
+      <a href="/" class="header-brand" aria-label="LymphAware home">
+
+        <img
+          class="header-logo"
+          src="/assets/brand/LymphAware_APPROVED_No_Tagline_Centred_v1.svg"
+          alt="LymphAware"
+        >
+
+      </a>
+
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="/about/">About</a>
+        <a href="/how-it-works/">How It Works</a>
+        <a href="/understanding-lymphoedema/">Understanding Lymphoedema</a>
+        <a href="/for-professionals/">For Professionals</a>
+        <a href="/help/">Help</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="/" class="button button-secondary">Back to Website</a>
+      </div>
+
+      <details class="mobile-menu">
+        <summary>Menu</summary>
+
+        <nav class="mobile-menu-panel" aria-label="Mobile navigation">
+          <a href="/">Home</a>
+          <a href="/about/">About</a>
+          <a href="/how-it-works/">How It Works</a>
+          <a href="/understanding-lymphoedema/">Understanding Lymphoedema</a>
+          <a href="/for-professionals/">For Professionals</a>
+          <a href="/help/">Help</a>
+        </nav>
+      </details>
+
+    </div>
+  </header>
+
+
+  <main class="portal-page">
+
+    <section class="portal-card" aria-labelledby="register-heading">
+
+      <p class="eyebrow">Patient Portal</p>
+
+      <h1 id="register-heading">Create your LymphAware account</h1>
+
+      <p class="portal-intro">
+        Create your personal account to manage your LymphAware profile
+        and choose the information you want to make available through
+        your QR-linked profile.
+      </p>
+
+
+      <div class="account-note">
+        <strong>One account for each patient.</strong><br>
+        Each person using LymphAware should have their own account,
+        LymphAware ID, QR profile and identification card.
+      </div>
+
+
+      <form id="register-form">
+
+        <div class="form-group">
+          <label for="email">Email address</label>
+
+          <input
+            type="email"
+            id="email"
+            name="email"
+            autocomplete="email"
+            required>
+        </div>
+
+
+        <div class="form-group">
+          <label for="password">Create a password</label>
+
+          <input
+            type="password"
+            id="password"
+            name="password"
+            autocomplete="new-password"
+            minlength="8"
+            required>
+
+          <p class="password-help">
+            Use at least 8 characters.
+          </p>
+        </div>
+
+
+        <div class="form-group">
+          <label for="confirm-password">Confirm password</label>
+
+          <input
+            type="password"
+            id="confirm-password"
+            name="confirm-password"
+            autocomplete="new-password"
+            minlength="8"
+            required>
+        </div>
+
+
+        <div class="agreement">
+
+          <input
+            type="checkbox"
+            id="terms-agreement"
+            required>
+
+          <label for="terms-agreement">
+            I have read and agree to the
+            <a href="/terms/" target="_blank" rel="noopener">
+              Terms
+            </a>
+            and
+            <a href="/privacy/" target="_blank" rel="noopener">
+              Privacy Notice
+            </a>.
+          </label>
+
+        </div>
+
+
+        <button
+          type="submit"
+          class="button button-primary portal-button">
+          Create My Account
+        </button>
+
+        <p
+          id="register-message"
+          role="status"
+          aria-live="polite">
+        </p>
+
+      </form>
+
+
+      <div class="portal-links">
+        <span>Already have a LymphAware account?</span>
+        <a href="/sign-in/">Sign in</a>
+      </div>
+
+
+      <div class="portal-status">
+
+        <strong>Development version</strong>
+
+        Account registration is currently being developed and tested
+        before the initial LymphAware patient pilot.
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <script>
+    const SUPABASE_URL =
+      'https://thbhsktcenhrnxzkbjus.supabase.co';
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+
+    const supabaseClient = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+    const registerForm =
+      document.getElementById('register-form');
+
+    const registerMessage =
+      document.getElementById('register-message');
+
+
+    registerForm.addEventListener('submit', async (event) => {
+
+      event.preventDefault();
+
+      const email =
+        document.getElementById('email').value.trim();
+
+      const password =
+        document.getElementById('password').value;
+
+      const confirmPassword =
+        document.getElementById('confirm-password').value;
+
+
+      if (password !== confirmPassword) {
+
+        registerMessage.textContent =
+          'The passwords do not match. Please try again.';
+
+        return;
+      }
+
+
+      if (password.length < 8) {
+
+        registerMessage.textContent =
+          'Please choose a password containing at least 8 characters.';
+
+        return;
+      }
+
+
+      registerMessage.textContent =
+        'Creating your account...';
+
+
+      const { data, error } =
+        await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo:
+              'https://lymphaware.com/sign-in/'
+          }
+        });
+
+
+      if (error) {
+
+        console.error(
+          'Unable to create account:',
+          error
+        );
+
+        registerMessage.textContent =
+          'Your account could not be created. Please check your details and try again.';
+
+        return;
+      }
+
+
+      if (data.session) {
+
+        registerMessage.textContent =
+          'Your account has been created. Redirecting...';
+
+        window.location.href = '/portal/';
+
+        return;
+      }
+
+
+      registerForm.reset();
+
+      registerMessage.textContent =
+        'Your account has been created. Please check your email and follow the confirmation link before signing in.';
+
+    });
+  </script>
+
+</body>
+</html>
