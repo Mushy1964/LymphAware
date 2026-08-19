@@ -320,15 +320,12 @@
       </div>
 
 
-      <div class="preview-notice">
-
+     <div class="preview-notice" id="preview-notice">
         <strong>Preview only.</strong>
-
-        This page is visible only while you are signed in.
-        Your public QR profile has not been activated.
-
+        <span id="preview-status-message">
+          Checking your QR profile status...
+        </span>
       </div>
-
 
       <article class="patient-profile-preview">
 
@@ -528,6 +525,7 @@
             id,
             display_name,
             photo_path,
+            qr_profile_active,
             show_photo_on_qr,
             lymphaware_id,
             lymphoedema_type,
@@ -561,6 +559,16 @@
         return;
       }
 
+      const previewStatusMessage =
+        document.getElementById('preview-status-message');
+      
+      if (profile.qr_profile_active) {
+        previewStatusMessage.textContent =
+          ' This page is visible only while you are signed in. Your public QR profile is active.';
+      } else {
+        previewStatusMessage.textContent =
+          ' This page is visible only while you are signed in. Your public QR profile has not been activated.';
+      }
 
       document.getElementById('preview-name').textContent =
         profile.display_name || 'LymphAware Patient';
