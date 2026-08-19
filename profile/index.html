@@ -896,6 +896,61 @@
     </section>
 
   </main>
+
+   <div
+  id="unsaved-dialog"
+  class="unsaved-dialog"
+  hidden>
+
+  <div
+    class="unsaved-dialog-backdrop"
+    id="unsaved-dialog-backdrop">
+  </div>
+
+  <div
+    class="unsaved-dialog-box"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="unsaved-dialog-title">
+
+    <h2 id="unsaved-dialog-title">
+      You have unsaved changes
+    </h2>
+
+    <p>
+      Would you like to save your changes before leaving this page?
+    </p>
+
+    <div class="unsaved-dialog-actions">
+
+      <button
+        type="button"
+        id="save-and-leave"
+        class="button button-primary">
+        Save and Leave
+      </button>
+
+      <button
+        type="button"
+        id="leave-without-saving"
+        class="button button-secondary">
+        Leave Without Saving
+      </button>
+
+      <button
+        type="button"
+        id="stay-on-page"
+        class="button button-secondary">
+        Stay on This Page
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+  
 <script>
   const SUPABASE_URL = 'https://thbhsktcenhrnxzkbjus.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
@@ -1553,60 +1608,8 @@ if (pendingDestination) {
 });
   
   checkProfileAccess();
+ 
 </script>
 
-  <div
-  id="unsaved-dialog"
-  class="unsaved-dialog"
-  hidden>
-
-  <div
-    class="unsaved-dialog-backdrop"
-    id="unsaved-dialog-backdrop">
-  </div>
-
-  <div
-    class="unsaved-dialog-box"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="unsaved-dialog-title">
-
-    <h2 id="unsaved-dialog-title">
-      You have unsaved changes
-    </h2>
-
-    <p>
-      Would you like to save your changes before leaving this page?
-    </p>
-
-    <div class="unsaved-dialog-actions">
-
-      <button
-        type="button"
-        id="save-and-leave"
-        class="button button-primary">
-        Save and Leave
-      </button>
-
-      <button
-        type="button"
-        id="leave-without-saving"
-        class="button button-secondary">
-        Leave Without Saving
-      </button>
-
-      <button
-        type="button"
-        id="stay-on-page"
-        class="button button-secondary">
-        Stay on This Page
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-  
 </body>
 </html>
