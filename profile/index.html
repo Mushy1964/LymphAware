@@ -637,6 +637,13 @@
           My QR profile is active
         </label>
       </div>
+    
+    <p
+      id="qr-activation-message"
+      class="field-help"
+      hidden>
+      Add your display name and photograph before activating your QR profile.
+    </p>
         
     </div>  
 
@@ -1018,10 +1025,15 @@ function updateProfileCompleteness(hasPhoto = false) {
   const identityComplete =
     displayName.length > 0 && hasPhoto;
 
-  statusBox.classList.toggle(
-    'profile-complete',
-    identityComplete
-  );
+    const qrProfileActive =
+      document.getElementById('qr-profile-active');
+    
+    const qrActivationMessage =
+      document.getElementById('qr-activation-message');
+      statusBox.classList.toggle(
+        'profile-complete',
+        identityComplete
+      );
 
   statusBox.classList.toggle(
     'profile-incomplete',
@@ -1043,6 +1055,14 @@ function updateProfileCompleteness(hasPhoto = false) {
 
     statusMessage.textContent =
       'Add your display name and photograph to complete your LymphAware identity.';
+  }
+
+  qrProfileActive.disabled = !identityComplete;
+
+  qrActivationMessage.hidden = identityComplete;
+
+  if (!identityComplete) {
+    qrProfileActive.checked = false;
   }
 }
 
