@@ -1008,6 +1008,8 @@
  await loadAssistanceOptions();   
 }
 
+let previousQrActiveState = null;
+
 function updateProfileCompleteness(hasPhoto = false) {
 
   const displayName =
@@ -1022,23 +1024,26 @@ function updateProfileCompleteness(hasPhoto = false) {
   const statusMessage =
     document.getElementById('profile-completeness-message');
 
+  const qrProfileActive =
+    document.getElementById('qr-profile-active');
+
+  const qrActivationMessage =
+    document.getElementById('qr-activation-message');
+
   const identityComplete =
     displayName.length > 0 && hasPhoto;
 
-    const qrProfileActive =
-      document.getElementById('qr-profile-active');
-    
-    const qrActivationMessage =
-      document.getElementById('qr-activation-message');
-      statusBox.classList.toggle(
-        'profile-complete',
-        identityComplete
-      );
+
+  statusBox.classList.toggle(
+    'profile-complete',
+    identityComplete
+  );
 
   statusBox.classList.toggle(
     'profile-incomplete',
     !identityComplete
   );
+
 
   if (identityComplete) {
 
@@ -1048,6 +1053,15 @@ function updateProfileCompleteness(hasPhoto = false) {
     statusMessage.textContent =
       'Your display name and photograph are in place.';
 
+    qrProfileActive.disabled = false;
+
+    qrActivationMessage.hidden = true;
+
+    if (previousQrActiveState !== null) {
+      qrProfileActive.checked = previousQrActiveState;
+      previousQrActiveState = null;
+    }
+
   } else {
 
     statusTitle.textContent =
@@ -1055,14 +1069,19 @@ function updateProfileCompleteness(hasPhoto = false) {
 
     statusMessage.textContent =
       'Add your display name and photograph to complete your LymphAware identity.';
+
+    if (previousQrActiveState === null) {
+      previousQrActiveState =
+        qrProfileActive.checked;
+    }
+
+    qrProfileActive.checked = false;
+    qrProfileActive.disabled = true;
+
+    qrActivationMessage.hidden = false;
   }
-
-  qrProfileActive.disabled = !identityComplete;
-
-  qrActivationMessage.hidden = identityComplete;
-
- }
-
+}
+  
 async function loadProfile(userId) {
   const { data, error } = await supabaseClient
   .from('profiles')
