@@ -469,6 +469,31 @@
     width: 100%;
   }
 }
+
+    .profile-completeness {
+      margin-bottom: 22px;
+      padding: 16px 18px;
+      border-radius: 14px;
+      line-height: 1.5;
+    }
+    
+    .profile-completeness strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+    
+    .profile-incomplete {
+      background: #fff7e8;
+      border: 1px solid #ead7aa;
+      color: #775c20;
+    }
+    
+    .profile-complete {
+      background: var(--green-light);
+      border: 1px solid #cfe4d3;
+      color: var(--green-dark);
+    } 
+   
   </style>
 </head>
 
@@ -507,19 +532,28 @@
     <section class="profile-shell">
 
       <div class="profile-header">
-
         <p class="eyebrow">Patient Portal</p>
-
         <h1>My Profile</h1>
-
         <p>
           Review and manage the information associated with your
           LymphAware profile.
         </p>
-
       </div>
 
-
+      <div
+        id="profile-completeness"
+        class="profile-completeness profile-incomplete">
+      
+        <strong id="profile-completeness-title">
+          Profile incomplete
+        </strong>
+      
+        <span id="profile-completeness-message">
+          Add your display name and photograph to complete your LymphAware identity.
+        </span>
+      
+      </div>
+      
       <div class="profile-card">
 
         <form id="profile-form">
@@ -966,6 +1000,52 @@
   await loadProfile(user.id);
  await loadAssistanceOptions();   
 }
+
+function updateProfileCompleteness(hasPhoto = false) {
+
+  const displayName =
+    document.getElementById('display-name').value.trim();
+
+  const statusBox =
+    document.getElementById('profile-completeness');
+
+  const statusTitle =
+    document.getElementById('profile-completeness-title');
+
+  const statusMessage =
+    document.getElementById('profile-completeness-message');
+
+  const identityComplete =
+    displayName.length > 0 && hasPhoto;
+
+  statusBox.classList.toggle(
+    'profile-complete',
+    identityComplete
+  );
+
+  statusBox.classList.toggle(
+    'profile-incomplete',
+    !identityComplete
+  );
+
+  if (identityComplete) {
+
+    statusTitle.textContent =
+      'Profile identity complete';
+
+    statusMessage.textContent =
+      'Your display name and photograph are in place.';
+
+  } else {
+
+    statusTitle.textContent =
+      'Profile incomplete';
+
+    statusMessage.textContent =
+      'Add your display name and photograph to complete your LymphAware identity.';
+  }
+}
+
 async function loadProfile(userId) {
   const { data, error } = await supabaseClient
   .from('profiles')
@@ -1059,6 +1139,10 @@ async function loadProfile(userId) {
         profilePhotoPreview.appendChild(image);
       }
     }
+
+      updateProfileCompleteness(
+      Boolean(data.photo_path)
+    );
     
     document.getElementById('show-lymphoedema-on-qr').checked =
       data.show_lymphoedema_on_qr === true;
@@ -1264,7 +1348,18 @@ profilePhotoInput.addEventListener('change', () => {
   image.alt = 'Selected patient photograph';
 
   profilePhotoPreview.appendChild(image);
+  updateProfileCompleteness(true);
 });
+
+  document
+  .getElementById('display-name')
+  .addEventListener('input', () => {
+
+    const hasPhoto =
+      profilePhotoPreview.querySelector('img') !== null;
+
+    updateProfileCompleteness(hasPhoto);
+  });
   
 const profileForm = document.getElementById('profile-form');
 const profileMessage = document.getElementById('profile-message');
