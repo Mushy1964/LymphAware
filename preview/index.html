@@ -526,7 +526,6 @@
             display_name,
             photo_path,
             qr_profile_active,
-            show_photo_on_qr,
             lymphaware_id,
             lymphoedema_type,
             lymphoedema_location,
@@ -579,7 +578,7 @@
       const previewPhoto =
       document.getElementById('preview-photo');
 
-      if (profile.photo_path && profile.show_photo_on_qr) {
+      if (profile.photo_path) {
         const { data: signedData, error: signedError } =
           await supabaseClient.storage
             .from('patient-photos')
