@@ -137,6 +137,23 @@
       outline: 3px solid #2878b8;
       outline-offset: 3px;
     }
+
+    .portal-membership {
+      grid-column: 1 / -1;
+      background: var(--green-light);
+    }
+    
+    .membership-status {
+      margin-bottom: 8px !important;
+      color: var(--green-dark) !important;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    
+    #membership-message {
+      margin-top: 0;
+    }
+    
   </style>
 </head>
 
@@ -210,6 +227,25 @@
           </p>
         
         </a>
+
+        <div
+          class="portal-option portal-membership"
+          id="membership-panel">
+        
+          <h2>LymphAware Membership</h2>
+        
+          <p
+            id="membership-status"
+            class="membership-status">
+            Loading membership information...
+          </p>
+        
+          <p
+            id="membership-message">
+          </p>
+        
+        </div>
+        
       </div>
 
 
@@ -245,23 +281,129 @@
     const portalMessage = document.getElementById('portal-message');
     const signOutButton = document.getElementById('sign-out-button');
 
-    async function checkPortalAccess() {
-
-      const {
-        data: { user },
-        error
-      } = await supabaseClient.auth.getUser();
-
-      if (error || !user) {
-        window.location.href = '/sign-in/';
-        return;
-      }
-
-      portalLoading.style.display = 'none';
-      portalContent.style.display = 'block';
-    }
+    const membershipStatus =
+      document.getElementById('membership-status');
+    
+    const membershipMessage =
+      document.getElementById('membership-message');
 
 
+    async function loadMembership(userId) {
+
+  const { data, error } = await supabaseClient
+    .from('memberships')
+    .select(`
+      membership_status,
+      payment_status,
+      membership_start,
+      membership_end
+    `)
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error || !data) {
+
+    console.error(
+      'Unable to load membership:',
+      error
+    );
+
+    membershipStatus.textContent =
+      'Membership information unavailable';
+
+    membershipMessage.textContent =
+      'Please try again later.';
+
+    return;
+  }
+
+
+  if (data.membership_status === 'PILOT') {
+
+    membershipStatus.textContent =
+      'Pilot Member';
+
+    membershipMessage.textContent =
+      'You are participating in the LymphAware patient pilot. No membership payment is currently required.';
+
+    return;
+  }
+
+
+  if (data.membership_status === 'ACTIVE') {
+
+    membershipStatus.textContent =
+      'Active Member';
+
+    membershipMessage.textContent =
+      'Your LymphAware membership is active.';
+
+    return;
+  }
+
+
+  if (data.membership_status === 'SPONSORED') {
+
+    membershipStatus.textContent =
+      'Sponsored Member';
+
+    membershipMessage.textContent =
+      'Your LymphAware membership is currently sponsored.';
+
+    return;
+  }
+
+
+  if (data.membership_status === 'RENEWAL_DUE') {
+
+    membershipStatus.textContent =
+      'Membership Renewal Due';
+
+    membershipMessage.textContent =
+      'Your LymphAware membership is due for renewal.';
+
+    return;
+  }
+
+
+  if (data.membership_status === 'LAPSED') {
+
+    membershipStatus.textContent =
+      'Membership Lapsed';
+
+    membershipMessage.textContent =
+      'Your LymphAware membership is currently not active.';
+
+    return;
+  }
+
+
+  membershipStatus.textContent =
+    'LymphAware Membership';
+
+  membershipMessage.textContent =
+    'Membership information is available for your account.';
+}
+
+    
+        async function checkPortalAccess() {
+    
+          const {
+            data: { user },
+            error
+          } = await supabaseClient.auth.getUser();
+    
+          if (error || !user) {
+            window.location.href = '/sign-in/';
+            return;
+          }
+
+           await loadMembership(user.id);
+          
+          portalLoading.style.display = 'none';
+          portalContent.style.display = 'block';
+        }
+     
     signOutButton.addEventListener('click', async () => {
 
       portalMessage.textContent = 'Signing out...';
@@ -278,6 +420,8 @@
     });
 
 
+    
+    
     checkPortalAccess();
   </script>
 
