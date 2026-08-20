@@ -459,6 +459,8 @@ async function loadRegistrationMode() {
       const confirmPassword =
         document.getElementById('confirm-password').value;
 
+      const pilotInviteCode =
+        document.getElementById('pilot-invite-code').value.trim();
 
       if (password !== confirmPassword) {
 
@@ -488,7 +490,10 @@ async function loadRegistrationMode() {
           password,
           options: {
             emailRedirectTo:
-              'https://lymphaware.com/sign-in/'
+              'https://lymphaware.com/sign-in/',
+            data: {
+              pilot_invite_code: pilotInviteCode
+            }
           }
         });
 
