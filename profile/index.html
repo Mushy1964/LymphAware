@@ -574,15 +574,7 @@
         >
       </div>
     </div>
-      <div class="qr-visibility-control no-divider">
-            <label>
-              <input
-                type="checkbox"
-                id="show-photo-on-qr">
-          
-              Show my photograph on my QR profile
-            </label>
-          </div>
+      
   </div>
 
     <div class="qr-privacy-reminder">
@@ -981,7 +973,6 @@ async function loadProfile(userId) {
   display_name,
   lymphaware_id,
   photo_path,
-  show_photo_on_qr,
   qr_profile_active,
   lymphoedema_type,
   lymphoedema_location,
@@ -1044,10 +1035,7 @@ async function loadProfile(userId) {
     document.getElementById('additional-statement').value =
       data.additional_statement || '';
 
-   document.getElementById('show-photo-on-qr').checked =
-    data.show_photo_on_qr === true;
-
-  document.getElementById('qr-profile-active').checked =
+ document.getElementById('qr-profile-active').checked =
   data.qr_profile_active !== false;
   
       if (data.photo_path) {
@@ -1476,9 +1464,6 @@ if (selectedPhoto) {
   additional_statement:
     document.getElementById('additional-statement').value.trim(),
   
-  show_photo_on_qr:
-    document.getElementById('show-photo-on-qr').checked,
-
   qr_profile_active:
     document.getElementById('qr-profile-active').checked,
     
