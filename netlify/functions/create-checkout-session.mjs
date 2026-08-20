@@ -1,7 +1,3 @@
-import Stripe from 'stripe';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
 export default async (request) => {
 
   if (request.method !== 'POST') {
@@ -45,6 +41,7 @@ export default async (request) => {
       authHeader.replace('Bearer ', '').trim();
 
 
+    // Verify the signed-in LymphAware user with Supabase.
     const userResponse = await fetch(
       `${process.env.SUPABASE_URL}/auth/v1/user`,
       {
@@ -93,6 +90,7 @@ export default async (request) => {
     }
 
 
+    // Check that this user genuinely has a payment due.
     const membershipResponse = await fetch(
       `${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${user.id}&select=membership_status,payment_status,initial_fee_pence`,
       {
@@ -168,40 +166,104 @@ export default async (request) => {
     }
 
 
-    const checkoutSession =
-      await stripe.checkout.sessions.create({
+    // Create the Stripe Checkout Session securely.
+    const stripeForm =
+      new URLSearchParams();
 
-        mode: 'payment',
+    stripeForm.append(
+      'mode',
+      'payment'
+    );
 
-        line_items: [
-          {
-            price:
-              process.env.STRIPE_MEMBERSHIP_PRICE_ID,
+    stripeForm.append(
+      'line_items[0][price]',
+      process.env.STRIPE_MEMBERSHIP_PRICE_ID
+    );
 
-            quantity: 1
-          }
-        ],
+    stripeForm.append(
+      'line_items[0][quantity]',
+      '1'
+    );
 
-        customer_email:
-          user.email || undefined,
+    stripeForm.append(
+      'client_reference_id',
+      user.id
+    );
 
-        client_reference_id:
-          user.id,
+    stripeForm.append(
+      'metadata[lymphaware_user_id]',
+      user.id
+    );
 
-        metadata: {
-          lymphaware_user_id:
-            user.id,
+    stripeForm.append(
+      'metadata[payment_type]',
+      'initial_membership'
+    );
 
-          payment_type:
-            'initial_membership'
+    stripeForm.append(
+      'success_url',
+      'https://lymphaware.com/portal/?payment=success'
+    );
+
+    stripeForm.append(
+      'cancel_url',
+      'https://lymphaware.com/portal/?payment=cancelled'
+    );
+
+
+    if (user.email) {
+      stripeForm.append(
+        'customer_email',
+        user.email
+      );
+    }
+
+
+    const stripeResponse = await fetch(
+      'https://api.stripe.com/v1/checkout/sessions',
+      {
+        method: 'POST',
+
+        headers: {
+          Authorization:
+            `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+
+          'Content-Type':
+            'application/x-www-form-urlencoded'
         },
 
-        success_url:
-          'https://lymphaware.com/portal/?payment=success',
+        body:
+          stripeForm.toString()
+      }
+    );
 
-        cancel_url:
-          'https://lymphaware.com/portal/?payment=cancelled'
-      });
+
+    const checkoutSession =
+      await stripeResponse.json();
+
+
+    if (
+      !stripeResponse.ok ||
+      !checkoutSession?.url
+    ) {
+
+      console.error(
+        'Stripe Checkout error:',
+        checkoutSession
+      );
+
+      return new Response(
+        JSON.stringify({
+          error: 'Unable to create the secure payment page.'
+        }),
+        {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+    }
 
 
     return new Response(
@@ -215,6 +277,7 @@ export default async (request) => {
         }
       }
     );
+
 
   } catch (error) {
 
