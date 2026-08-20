@@ -375,7 +375,77 @@
     const registerMessage =
       document.getElementById('register-message');
 
+let registrationMode = 'PILOT';
 
+async function loadRegistrationMode() {
+
+  const { data, error } = await supabaseClient
+    .from('system_settings')
+    .select('setting_value')
+    .eq('setting_key', 'registration_mode')
+    .single();
+
+  if (error || !data) {
+    console.error(
+      'Unable to load registration mode:',
+      error
+    );
+
+    registerMessage.textContent =
+      'Registration is temporarily unavailable. Please try again later.';
+
+        registerForm.querySelector(
+          'button[type="submit"]'
+        ).disabled = true;
+    
+        return;
+      }
+    
+      registrationMode =
+        data.setting_value.toUpperCase();
+    
+      const pilotInviteGroup =
+        document.getElementById('pilot-invite-group');
+    
+      const pilotInviteInput =
+        document.getElementById('pilot-invite-code');
+    
+      const submitButton =
+        registerForm.querySelector(
+          'button[type="submit"]'
+        );
+    
+    
+      if (registrationMode === 'PILOT') {
+    
+        pilotInviteGroup.hidden = false;
+        pilotInviteInput.required = true;
+    
+        submitButton.disabled = false;
+    
+      } else if (registrationMode === 'OPEN') {
+    
+        pilotInviteGroup.hidden = true;
+        pilotInviteInput.required = false;
+        pilotInviteInput.value = '';
+    
+        submitButton.disabled = false;
+    
+      } else {
+    
+        pilotInviteGroup.hidden = true;
+        pilotInviteInput.required = false;
+    
+        submitButton.disabled = true;
+    
+        registerMessage.textContent =
+          'New LymphAware account registration is currently closed.';
+      }
+    }
+    
+    loadRegistrationMode();
+
+    
     registerForm.addEventListener('submit', async (event) => {
 
       event.preventDefault();
