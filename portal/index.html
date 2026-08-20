@@ -313,6 +313,91 @@
     const payMembershipButton =
       document.getElementById('pay-membership-button');
 
+  payMembershipButton.addEventListener('click', async () => {
+
+  payMembershipButton.disabled = true;
+  payMembershipButton.textContent = 'Starting secure payment...';
+
+  portalMessage.textContent = '';
+
+  try {
+
+    const {
+      data: { session },
+      error: sessionError
+    } = await supabaseClient.auth.getSession();
+
+    if (
+      sessionError ||
+      !session?.access_token
+    ) {
+      portalMessage.textContent =
+        'Your secure session could not be verified. Please sign in again.';
+
+      payMembershipButton.disabled = false;
+      payMembershipButton.textContent = 'Pay Membership';
+
+      return;
+    }
+
+
+    const response = await fetch(
+      '/.netlify/functions/create-checkout-session',
+      {
+        method: 'POST',
+        headers: {
+          Authorization:
+            `Bearer ${session.access_token}`,
+          'Content-Type':
+            'application/json'
+        }
+      }
+    );
+
+
+    const result =
+      await response.json();
+
+
+    if (
+      !response.ok ||
+      !result?.url
+    ) {
+      console.error(
+        'Unable to start membership payment:',
+        result
+      );
+
+      portalMessage.textContent =
+        result?.error ||
+        'Unable to start membership payment. Please try again.';
+
+      payMembershipButton.disabled = false;
+      payMembershipButton.textContent = 'Pay Membership';
+
+      return;
+    }
+
+
+    window.location.href =
+      result.url;
+
+  } catch (error) {
+
+    console.error(
+      'Unable to start membership payment:',
+      error
+    );
+
+    portalMessage.textContent =
+      'Unable to start membership payment. Please try again.';
+
+    payMembershipButton.disabled = false;
+    payMembershipButton.textContent = 'Pay Membership';
+  }
+});
+    
+    
     async function loadMembership(userId) {
 
   const { data, error } = await supabaseClient
