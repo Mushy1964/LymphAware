@@ -153,7 +153,13 @@
     #membership-message {
       margin-top: 0;
     }
+    .membership-payment-actions {
+      margin-top: 18px;
+    }
     
+    .membership-payment-actions[hidden] {
+      display: none;
+    }
   </style>
 </head>
 
@@ -228,23 +234,37 @@
         
         </a>
 
+       <div
+        class="portal-option portal-membership"
+        id="membership-panel">
+      
+        <h2>LymphAware Membership</h2>
+      
+        <p
+          id="membership-status"
+          class="membership-status">
+          Loading membership information...
+        </p>
+      
+        <p
+          id="membership-message">
+        </p>
+      
         <div
-          class="portal-option portal-membership"
-          id="membership-panel">
-        
-          <h2>LymphAware Membership</h2>
-        
-          <p
-            id="membership-status"
-            class="membership-status">
-            Loading membership information...
-          </p>
-        
-          <p
-            id="membership-message">
-          </p>
-        
+          id="membership-payment-actions"
+          class="membership-payment-actions"
+          hidden>
+      
+          <button
+            type="button"
+            id="pay-membership-button"
+            class="button button-primary">
+            Pay Membership
+          </button>
+      
         </div>
+
+</div>
         
       </div>
 
@@ -287,6 +307,11 @@
     const membershipMessage =
       document.getElementById('membership-message');
 
+   const membershipPaymentActions =
+      document.getElementById('membership-payment-actions');
+    
+    const payMembershipButton =
+      document.getElementById('pay-membership-button');
 
     async function loadMembership(userId) {
 
@@ -309,6 +334,7 @@
       error
     );
 
+    
     membershipStatus.textContent =
       'Membership information unavailable';
 
@@ -318,6 +344,7 @@
     return;
   }
 
+   membershipPaymentActions.hidden = true;   
 
   if (data.membership_status === 'PILOT') {
 
@@ -362,7 +389,8 @@
     
       membershipMessage.textContent =
         `Your LymphAware membership fee of £${feePounds} is awaiting payment.`;
-    
+
+       membershipPaymentActions.hidden = false;
       return;
     }
 
