@@ -1576,8 +1576,13 @@ if (selectedPhoto) {
   additional_statement:
     document.getElementById('additional-statement').value.trim(),
   
-  qr_profile_active:
-    document.getElementById('qr-profile-active').checked,
+   qr_profile_active:
+    (
+      document.getElementById('display-name').value.trim().length > 0 &&
+      profilePhotoPreview.querySelector('img') !== null
+    )
+      ? document.getElementById('qr-profile-active').checked
+      : false,
     
   show_lymphoedema_on_qr:
     document.getElementById('show-lymphoedema-on-qr').checked,
