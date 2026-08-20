@@ -1061,10 +1061,7 @@ function updateProfileCompleteness(hasPhoto = false) {
 
   qrActivationMessage.hidden = identityComplete;
 
-  if (!identityComplete) {
-    qrProfileActive.checked = false;
-  }
-}
+ }
 
 async function loadProfile(userId) {
   const { data, error } = await supabaseClient
