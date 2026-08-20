@@ -295,6 +295,7 @@
     .select(`
       membership_status,
       payment_status,
+      initial_fee_pence,
       membership_start,
       membership_end
     `)
@@ -330,17 +331,40 @@
   }
 
 
-  if (data.membership_status === 'ACTIVE') {
-
-    membershipStatus.textContent =
-      'Active Member';
-
-    membershipMessage.textContent =
-      'Your LymphAware membership is active.';
-
-    return;
-  }
-
+      if (
+      data.membership_status === 'ACTIVE' &&
+      data.payment_status === 'PAID'
+    ) {
+    
+      membershipStatus.textContent =
+        'Active Member';
+    
+      membershipMessage.textContent =
+        'Your LymphAware membership is active and your membership payment has been received.';
+    
+      return;
+    }
+    
+    
+    if (
+      data.membership_status === 'ACTIVE' &&
+      data.payment_status === 'PENDING'
+    ) {
+    
+      const feePence =
+        Number(data.initial_fee_pence || 0);
+    
+      const feePounds =
+        (feePence / 100).toFixed(2);
+    
+      membershipStatus.textContent =
+        'Membership Payment Required';
+    
+      membershipMessage.textContent =
+        `Your LymphAware membership fee of £${feePounds} is awaiting payment.`;
+    
+      return;
+    }
 
   if (data.membership_status === 'SPONSORED') {
 
