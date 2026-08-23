@@ -185,106 +185,137 @@
     </div>
   </header>
 
+<main class="portal-page">
 
-  <main class="portal-page">
+  <div id="portal-loading">
+    Checking your secure session...
+  </div>
 
-    <div id="portal-loading">
-      Checking your secure session...
+  <section id="portal-content" class="portal-shell">
+
+    <div class="portal-welcome">
+
+      <p class="eyebrow">Patient Portal</p>
+
+      <h1>Welcome to LymphAware</h1>
+
+      <p>
+        Manage your LymphAware information and control what you choose
+        to make available through your QR-linked profile.
+      </p>
+
     </div>
 
 
-    <section id="portal-content" class="portal-shell">
+    <div class="portal-grid">
 
-      <div class="portal-welcome">
+      <a href="/profile/" class="portal-option portal-option-link">
 
-        <p class="eyebrow">Patient Portal</p>
-
-        <h1>Welcome to LymphAware</h1>
+        <h2>My Profile</h2>
 
         <p>
-          Manage your LymphAware information and control what you choose
-          to make available through your QR-linked profile.
+          View and manage the information associated with your
+          LymphAware profile.
         </p>
 
-      </div>
+      </a>
 
 
-      <div class="portal-grid">
+      <a href="/preview/" class="portal-option portal-option-link">
 
-        <a href="/profile/" class="portal-option portal-option-link">
+        <h2>Preview My QR Profile</h2>
 
-          <h2>My Profile</h2>
-        
-          <p>
-            View and manage the information associated with your
-            LymphAware profile.
-          </p>
-        
-        </a>
+        <p>
+          See what another person will see when your LymphAware
+          card QR code is scanned.
+        </p>
+
+      </a>
 
 
-       <a href="/preview/" class="portal-option portal-option-link">
-
-          <h2>Preview My QR Profile</h2>
-        
-          <p>
-            See what another person will see when your LymphAware
-            card QR code is scanned.
-          </p>
-        
-        </a>
-
-       <div
+      <div
         class="portal-option portal-membership"
         id="membership-panel">
-      
+
         <h2>LymphAware Membership</h2>
-      
+
         <p
           id="membership-status"
           class="membership-status">
           Loading membership information...
         </p>
-      
-        <p
-          id="membership-message">
-        </p>
-      
+
+        <p id="membership-message"></p>
+
         <div
           id="membership-payment-actions"
           class="membership-payment-actions"
           hidden>
-      
+
           <button
             type="button"
             id="pay-membership-button"
             class="button button-primary">
             Pay Membership
           </button>
-      
+
         </div>
 
-</div>
-        
       </div>
 
 
-      <div class="portal-actions">
+      <div
+        class="portal-option portal-accessories"
+        id="accessories-panel"
+        hidden>
 
-        <button
-          id="sign-out-button"
-          type="button"
-          class="button button-secondary">
-          Sign Out
-        </button>
+        <h2>Additional Cards &amp; Accessories</h2>
+
+        <p>
+          Order replacement LymphAware items linked to your account.
+        </p>
+
+        <div class="accessories-actions">
+
+          <a
+            href="YOUR-REPLACEMENT-CARD-STRIPE-LINK"
+            class="button button-primary"
+            target="_blank"
+            rel="noopener noreferrer">
+            Replacement ID Card — £7.50
+          </a>
+
+          <a
+            href="YOUR-REPLACEMENT-LANYARD-STRIPE-LINK"
+            class="button button-secondary"
+            target="_blank"
+            rel="noopener noreferrer">
+            Replacement Lanyard &amp; Holder — £7.50
+          </a>
+
+        </div>
 
       </div>
 
-      <p id="portal-message" role="status" aria-live="polite"></p>
+    </div>
 
-    </section>
 
-  </main>
+    <div class="portal-actions">
+
+      <button
+        id="sign-out-button"
+        type="button"
+        class="button button-secondary">
+        Sign Out
+      </button>
+
+    </div>
+
+    <p id="portal-message" role="status" aria-live="polite"></p>
+
+  </section>
+
+</main>
 
 
   <script>
