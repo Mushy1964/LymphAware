@@ -676,7 +676,7 @@
     
       const { data, error } = await supabaseClient
         .from('profiles')
-        .select('display_name')
+        .select('display_name, photo_url')
         .eq('user_id', userId)
         .maybeSingle();
     
@@ -695,45 +695,15 @@
       if (
         !data ||
         !data.display_name ||
-        !data.display_name.trim()
+        !data.display_name.trim() ||
+        !data.photo_url ||
+        !data.photo_url.trim()
       ) {
         onboardingPanel.hidden = false;
       } else {
         onboardingPanel.hidden = true;
       }
     }
-
-          async function loadOnboardingStatus(userId) {
-      
-        const { data, error } = await supabaseClient
-          .from('profiles')
-          .select('display_name')
-          .eq('user_id', userId)
-          .maybeSingle();
-      
-        if (error) {
-          console.error(
-            'Unable to load onboarding status:',
-            error
-          );
-      
-          return;
-        }
-      
-        const onboardingPanel =
-          document.getElementById('onboarding-panel');
-      
-        if (
-          !data ||
-          !data.display_name ||
-          !data.display_name.trim()
-        ) {
-          onboardingPanel.hidden = false;
-        } else {
-          onboardingPanel.hidden = true;
-        }
-      }
-
     
         async function checkPortalAccess() {
     
