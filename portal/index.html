@@ -134,6 +134,14 @@
       .accessories-actions .button {
         width: 100%;
       }
+
+      .replacement-option {
+        grid-template-columns: auto 1fr;
+      }
+      
+      .replacement-option strong {
+        grid-column: 2;
+      }
     }
     
     .portal-option-link {
@@ -162,6 +170,40 @@
       grid-column: 1 / -1;
       background: var(--green-light);
     }
+
+        .replacement-options {
+        margin-top: 18px;
+        display: grid;
+        gap: 12px;
+      }
+      
+      .replacement-option {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #fff;
+        cursor: pointer;
+      }
+      
+      .replacement-option input {
+        width: 20px;
+        height: 20px;
+      }
+      
+      .replacement-option strong {
+        white-space: nowrap;
+      }
+      
+      .replacement-total {
+        margin-top: 18px;
+        margin-bottom: 16px;
+        font-size: 1.05rem;
+      }
+          
     
     .membership-status {
       margin-bottom: 8px !important;
