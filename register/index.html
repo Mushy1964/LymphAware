@@ -460,7 +460,19 @@ async function loadRegistrationMode() {
         document.getElementById('confirm-password').value;
 
       const pilotInviteCode =
-        document.getElementById('pilot-invite-code').value.trim();
+      document.getElementById('pilot-invite-code').value
+        .trim()
+        .toUpperCase();
+
+      if (
+        registrationMode === 'PILOT' &&
+        !pilotInviteCode
+      ) {
+        registerMessage.textContent =
+          'Please enter your LymphAware pilot invitation code.';
+      
+        return;
+      }
 
       if (password !== confirmPassword) {
 
@@ -470,7 +482,6 @@ async function loadRegistrationMode() {
         return;
       }
 
-
       if (password.length < 8) {
 
         registerMessage.textContent =
@@ -478,7 +489,6 @@ async function loadRegistrationMode() {
 
         return;
       }
-
 
       registerMessage.textContent =
         'Creating your account...';
