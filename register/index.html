@@ -508,18 +508,34 @@ async function loadRegistrationMode() {
         });
 
 
-      if (error) {
+     if (error) {
 
-        console.error(
-          'Unable to create account:',
-          error
-        );
-
+      console.error(
+        'Unable to create account:',
+        error
+      );
+    
+      const errorMessage =
+        String(error.message || '').toLowerCase();
+    
+      if (
+        registrationMode === 'PILOT' &&
+        (
+          errorMessage.includes('invitation') ||
+          errorMessage.includes('invite')
+        )
+      ) {
         registerMessage.textContent =
-          'Your account could not be created. Please check your details and try again.';
-
+          'The pilot invitation code is invalid or has already been used. Please check the code and try again.';
+    
         return;
       }
+    
+      registerMessage.textContent =
+        'Your account could not be created. Please check your details and try again.';
+    
+      return;
+    }
 
 
       if (data.session) {
