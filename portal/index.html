@@ -292,37 +292,49 @@
       </div>
 
 
-      <div
-        class="portal-option portal-accessories"
-        id="accessories-panel">
+    <div
+  class="portal-option portal-accessories"
+  id="accessories-panel">
 
-        <h2>Additional Cards &amp; Accessories</h2>
+  <h2>Additional Cards &amp; Accessories</h2>
 
-        <p>
-          Order replacement LymphAware items linked to your account.
-        </p>
+  <p>
+    Select the replacement items you require, then continue to payment.
+  </p>
 
-        <div class="accessories-actions">
+  <div class="replacement-options">
 
-          <a
-            href="https://buy.stripe.com/test_28E3cx0oUgGy4oF4KnaR200"
-            class="button button-primary"
-            target="_blank"
-            rel="noopener noreferrer">
-            Replacement ID Card — £7.50
-          </a>
+    <label class="replacement-option">
+      <input
+        type="checkbox"
+        id="replacement-card">
+      <span>Replacement LymphAware ID Card</span>
+      <strong>£7.50</strong>
+    </label>
 
-          <a
-             href="https://buy.stripe.com/test_8x23cx7Rm61Uf3j2CfaR201"
-            class="button button-secondary"
-            target="_blank"
-            rel="noopener noreferrer">
-            Replacement Lanyard &amp; Holder — £7.50
-          </a>
+    <label class="replacement-option">
+      <input
+        type="checkbox"
+        id="replacement-lanyard">
+      <span>Replacement Lanyard &amp; Holder</span>
+      <strong>£7.50</strong>
+    </label>
 
-        </div>
+  </div>
 
-      </div>
+  <div class="replacement-total">
+    Total: <strong id="replacement-total">£0.00</strong>
+  </div>
+
+  <button
+    type="button"
+    id="replacement-payment-button"
+    class="button button-primary"
+    disabled>
+    Continue to Payment
+  </button>
+
+</div>
 
     </div>
 
@@ -614,9 +626,100 @@
       window.location.href = '/sign-in/';
     });
 
+    const replacementCard =
+      document.getElementById('replacement-card');
+    
+    const replacementLanyard =
+      document.getElementById('replacement-lanyard');
+    
+    const replacementTotal =
+      document.getElementById('replacement-total');
+    
+    const replacementPaymentButton =
+      document.getElementById('replacement-payment-button');
+    
+    
+    function updateReplacementOrder() {
+    
+      const cardSelected =
+        replacementCard.checked;
+    
+      const lanyardSelected =
+        replacementLanyard.checked;
+    
+      let total = 0;
+    
+      if (cardSelected) {
+        total += 7.50;
+      }
+    
+      if (lanyardSelected) {
+        total += 7.50;
+      }
+    
+      replacementTotal.textContent =
+        `£${total.toFixed(2)}`;
+    
+      replacementPaymentButton.disabled =
+        !cardSelected && !lanyardSelected;
+    }
+    
+    
+    replacementCard.addEventListener(
+      'change',
+      updateReplacementOrder
+    );
+    
+    replacementLanyard.addEventListener(
+      'change',
+      updateReplacementOrder
+    );
+    
+    
+    replacementPaymentButton.addEventListener(
+      'click',
+      () => {
+    
+        const cardSelected =
+          replacementCard.checked;
+    
+        const lanyardSelected =
+          replacementLanyard.checked;
+    
+    
+        if (
+          cardSelected &&
+          lanyardSelected
+        ) {
+    
+          window.location.href =
+            'https://buy.stripe.com/test_dRmaEZ6NigGy6wNdgTaR202';
+    
+          return;
+        }
+    
+    
+        if (cardSelected) {
+    
+          window.location.href =
+            'https://buy.stripe.com/test_28E3cx0oUgGy4oF4KnaR200';
+    
+          return;
+        }
+    
+    
+        if (lanyardSelected) {
+    
+          window.location.href =
+            'https://buy.stripe.com/test_8x23cx7Rm61Uf3j2CfaR201';
+        }
+    
+      }
+    );
+    
+    
+updateReplacementOrder();
 
-    
-    
     checkPortalAccess();
   </script>
 
