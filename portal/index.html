@@ -78,6 +78,13 @@
       justify-content: flex-end;
     }
 
+    .accessories-actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
     #portal-content {
       display: none;
     }
@@ -96,31 +103,40 @@
       .portal-page {
         padding: 40px 16px;
       }
-
+    
       .portal-grid {
         grid-template-columns: 1fr;
       }
-
+    
       .portal-welcome h1 {
         font-size: 2.2rem;
       }
-
+    
       .header-logo {
         width: calc(100% - 32px);
         max-width: 390px;
         margin-left: auto;
         margin-right: auto;
       }
-      
+    
       .portal-actions {
         justify-content: stretch;
       }
-
+    
       .portal-actions .button {
         width: 100%;
       }
+    
+      .accessories-actions {
+        flex-direction: column;
+      }
+    
+      .accessories-actions .button {
+        width: 100%;
+      }
     }
-        .portal-option-link {
+    
+    .portal-option-link {
       display: block;
       color: inherit;
       text-decoration: none;
@@ -137,7 +153,7 @@
       outline: 3px solid #2878b8;
       outline-offset: 3px;
     }
-
+    
     .portal-membership {
       grid-column: 1 / -1;
       background: var(--green-light);
@@ -153,12 +169,20 @@
     #membership-message {
       margin-top: 0;
     }
+    
     .membership-payment-actions {
       margin-top: 18px;
     }
     
     .membership-payment-actions[hidden] {
       display: none;
+    }
+    
+    .accessories-actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
     }
   </style>
 </head>
