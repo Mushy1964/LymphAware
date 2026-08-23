@@ -180,6 +180,11 @@
       background: var(--green-light);
     }
 
+      .portal-onboarding {
+        grid-column: 1 / -1;
+        background: var(--green-light);
+      }
+    
         .replacement-options {
         margin-top: 18px;
         display: grid;
@@ -288,6 +293,26 @@
 
     <div class="portal-grid">
 
+      <div
+        class="portal-option portal-onboarding"
+        id="onboarding-panel"
+        hidden>
+      
+        <h2>Welcome to LymphAware</h2>
+      
+        <p>
+          Your account is ready. Please complete your profile so your
+          LymphAware ID card and QR profile can be prepared.
+        </p>
+      
+        <a
+          href="/profile/"
+          class="button button-primary">
+          Complete My Profile
+        </a>
+      
+      </div>
+            
       <a href="/profile/" class="portal-option portal-option-link">
 
         <h2>My Profile</h2>
@@ -643,6 +668,68 @@
     'Membership information is available for your account.';
 }
 
+        async function loadOnboardingStatus(userId) {
+    
+      const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('display_name')
+        .eq('user_id', userId)
+        .maybeSingle();
+    
+      if (error) {
+        console.error(
+          'Unable to load onboarding status:',
+          error
+        );
+    
+        return;
+      }
+    
+      const onboardingPanel =
+        document.getElementById('onboarding-panel');
+    
+      if (
+        !data ||
+        !data.display_name ||
+        !data.display_name.trim()
+      ) {
+        onboardingPanel.hidden = false;
+      } else {
+        onboardingPanel.hidden = true;
+      }
+    }
+
+          async function loadOnboardingStatus(userId) {
+      
+        const { data, error } = await supabaseClient
+          .from('profiles')
+          .select('display_name')
+          .eq('user_id', userId)
+          .maybeSingle();
+      
+        if (error) {
+          console.error(
+            'Unable to load onboarding status:',
+            error
+          );
+      
+          return;
+        }
+      
+        const onboardingPanel =
+          document.getElementById('onboarding-panel');
+      
+        if (
+          !data ||
+          !data.display_name ||
+          !data.display_name.trim()
+        ) {
+          onboardingPanel.hidden = false;
+        } else {
+          onboardingPanel.hidden = true;
+        }
+      }
+
     
         async function checkPortalAccess() {
     
@@ -656,10 +743,11 @@
             return;
           }
 
-           await loadMembership(user.id);
-          
-          portalLoading.style.display = 'none';
-          portalContent.style.display = 'block';
+        await loadMembership(user.id);
+        await loadOnboardingStatus(user.id);
+        
+        portalLoading.style.display = 'none';
+        portalContent.style.display = 'block';
         }
      
     signOutButton.addEventListener('click', async () => {
