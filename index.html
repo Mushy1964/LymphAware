@@ -7,7 +7,8 @@
   <title>LymphAware | Helping People Living with Lymphoedema Be Understood</title>
 
  <link rel="stylesheet" href="/css/styles.css">
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
   <style>
      .demo-card-section {
       width: 100%;
@@ -141,9 +142,14 @@
         <a href="/help/">Help</a>
       </nav>
 
-    <div class="header-actions">
-  <a href="/sign-in/" class="button button-secondary">Sign In</a>
-</div>
+      <div class="header-actions">
+      <a
+        href="/sign-in/"
+        id="desktop-account-link"
+        class="button button-secondary">
+        Sign In
+      </a>
+    </div>
 
   <details class="mobile-menu">
     <summary>Menu</summary>
@@ -154,7 +160,11 @@
       <a href="/understanding-lymphoedema/">Understanding Lymphoedema</a>
       <a href="/for-professionals/">For Professionals</a>
       <a href="/help/">Help</a>
-      <a href="/sign-in/">Sign In</a>
+      <a
+      href="/sign-in/"
+      id="mobile-account-link">
+      Sign In
+    </a>
     </nav>
     </details>
       
@@ -579,5 +589,92 @@
 
   </footer>
 
+<script>
+  const SUPABASE_URL =
+    'https://thbhsktcenhrnxzkbjus.supabase.co';
+
+  const SUPABASE_PUBLISHABLE_KEY =
+    'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+
+  const supabaseClient =
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+  const desktopAccountLink =
+    document.getElementById(
+      'desktop-account-link'
+    );
+
+  const mobileAccountLink =
+    document.getElementById(
+      'mobile-account-link'
+    );
+
+
+  function updateAccountLinks(session) {
+
+    const isSignedIn =
+      Boolean(session?.user);
+
+
+    if (isSignedIn) {
+
+      desktopAccountLink.href =
+        '/portal/';
+
+      desktopAccountLink.textContent =
+        'Patient Portal';
+
+
+      mobileAccountLink.href =
+        '/portal/';
+
+      mobileAccountLink.textContent =
+        'Patient Portal';
+
+    } else {
+
+      desktopAccountLink.href =
+        '/sign-in/';
+
+      desktopAccountLink.textContent =
+        'Sign In';
+
+
+      mobileAccountLink.href =
+        '/sign-in/';
+
+      mobileAccountLink.textContent =
+        'Sign In';
+    }
+  }
+
+
+  async function checkAccountSession() {
+
+    const {
+      data: { session }
+    } =
+      await supabaseClient.auth.getSession();
+
+
+    updateAccountLinks(session);
+  }
+
+
+  supabaseClient.auth.onAuthStateChange(
+    (_event, session) => {
+      updateAccountLinks(session);
+    }
+  );
+
+
+  checkAccountSession();
+</script>
+
+  
 </body>
 </html>
