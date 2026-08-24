@@ -172,9 +172,12 @@
       </a>
 
       <div class="header-actions">
-        <a href="/portal/" class="button button-secondary">
-          Back to Portal
-        </a>
+        <button
+          type="button"
+          id="admin-sign-out"
+          class="button button-secondary">
+          Sign Out
+        </button>
       </div>
 
     </div>
@@ -755,8 +758,8 @@
   }
 }
 
-    function escapeHtml(value) {
-
+       function escapeHtml(value) {
+    
       return String(value ?? '')
         .replaceAll('&', '&amp;')
         .replaceAll('<', '&lt;')
@@ -764,6 +767,24 @@
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#039;');
     }
+    
+    
+    const adminSignOut =
+      document.getElementById('admin-sign-out');
+    
+    
+    adminSignOut.addEventListener(
+      'click',
+      async () => {
+    
+        await supabaseClient.auth.signOut();
+    
+        window.location.href = '/';
+      }
+    );
+
+
+loadCardProduction();
 
 
     loadCardProduction();
