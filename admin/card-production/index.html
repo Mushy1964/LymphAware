@@ -135,11 +135,44 @@
       color: var(--muted);
     }
 
+    .admin-dashboard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .dashboard-stat {
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: white;
+      box-shadow: 0 8px 22px rgba(31, 41, 51, 0.05);
+    }
+    
+    .dashboard-number {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 2rem;
+      line-height: 1;
+      font-weight: 800;
+      color: var(--blue-dark);
+    }
+    
+    .dashboard-label {
+      color: var(--muted);
+      font-weight: 700;
+    }
+    
     @media (max-width: 680px) {
       .admin-page {
         padding: 36px 14px;
       }
-
+    
+      .admin-dashboard {
+      grid-template-columns: 1fr;
+    }
+      
       .admin-heading h1 {
         font-size: 2rem;
       }
@@ -184,31 +217,88 @@
   </header>
 
 
-  <main class="admin-page">
+ <main class="admin-page">
 
-    <section class="admin-shell">
+  <section class="admin-shell">
 
-      <div class="admin-heading">
+    <div class="admin-heading">
 
-        <p class="eyebrow">LymphAware Administration</p>
+      <p class="eyebrow">
+        Private Administration Area
+      </p>
 
-        <h1>Card Production</h1>
+      <h1>
+        LymphAware Administration
+      </h1>
 
-        <p>
-          Profiles shown here have the core information required
-          to prepare a LymphAware identification card.
-        </p>
+      <p>
+        Manage LymphAware card orders and production from one place.
+        New cards awaiting action will appear automatically below.
+      </p>
+
+    </div>
+
+
+    <div class="admin-dashboard">
+
+      <div class="dashboard-stat">
+
+        <span
+          class="dashboard-number"
+          id="ready-count">
+          0
+        </span>
+
+        <span class="dashboard-label">
+          Ready for production
+        </span>
 
       </div>
 
 
-      <div class="admin-notice">
-        <strong>Card production control.</strong>
-        EasyBadge exports should be used only for producing
-        authorised LymphAware cards. Check the patient's name,
-        photograph, LymphAware ID and QR code before printing.
+      <div class="dashboard-stat">
+
+        <span
+          class="dashboard-number"
+          id="prepared-count">
+          0
+        </span>
+
+        <span class="dashboard-label">
+          Prepared for EasyBadge
+        </span>
+
       </div>
 
+
+      <div class="dashboard-stat">
+
+        <span
+          class="dashboard-number"
+          id="active-count">
+          0
+        </span>
+
+        <span class="dashboard-label">
+          Active card jobs
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <div class="admin-notice">
+
+      <strong>
+        Card production control.
+      </strong>
+
+      EasyBadge exports should be used only for producing
+      authorised LymphAware cards. Check the patient's name,
+      photograph, LymphAware ID and QR code before printing.
+
+    </div>
 
       <div
         id="production-summary"
@@ -297,6 +387,14 @@
     const prepareAllEasyBadge =
       document.getElementById('prepare-all-easybadge');
 
+    const readyCount =
+      document.getElementById('ready-count');
+    
+    const preparedCount =
+      document.getElementById('prepared-count');
+    
+    const activeCount =
+      document.getElementById('active-count');
     
     async function getAccessToken() {
 
@@ -408,6 +506,22 @@
           profile.card_production_status === 'READY'
       );
     
+    const preparedProfiles =
+      profiles.filter(
+        profile =>
+          profile.card_production_status === 'PREPARED'
+      );
+    
+    
+    readyCount.textContent =
+      readyProfiles.length;
+    
+    preparedCount.textContent =
+      preparedProfiles.length;
+    
+    activeCount.textContent =
+      profiles.length;
+    
     
     if (readyProfiles.length > 0) {
     
@@ -427,18 +541,18 @@
     
       productionSummary.hidden = true;
     }
-
-   
-  if (!profiles.length) {
-
-    cardList.innerHTML = `
-      <div class="empty-state">
-        There are currently no cards awaiting production.
-      </div>
-    `;
-
-    return;
-  }
+    
+    
+    if (!profiles.length) {
+    
+      cardList.innerHTML = `
+        <div class="empty-state">
+          There are currently no cards awaiting production.
+        </div>
+      `;
+    
+      return;
+    }
 
 
   profiles.forEach((profile) => {
