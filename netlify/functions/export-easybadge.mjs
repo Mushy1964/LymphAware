@@ -213,96 +213,12 @@ export default async (request) => {
     const qrProfileUrl =
       `https://lymphaware.com/p/${profile.qr_token}`;
 
-
-    /*
-     * Create a secure temporary photograph URL.
-     * The original photograph remains private in Supabase.
-     *
-     * 8 hours gives sufficient time to prepare and print
-     * the physical card.
-     */
-    const encodedPhotoPath =
-      profile.photo_path
-        .split('/')
-        .map(part => encodeURIComponent(part))
-        .join('/');
-
-
-    const photoResponse = await fetch(
-      `${process.env.SUPABASE_URL}` +
-      `/storage/v1/object/sign/patient-photos/${encodedPhotoPath}`,
-      {
-        method: 'POST',
-
-        headers: {
-          apikey:
-            process.env.SUPABASE_SECRET_KEY,
-
-          Authorization:
-            `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
-
-          'Content-Type':
-            'application/json'
-        },
-
-        body: JSON.stringify({
-          expiresIn: 28800
-        })
-      }
-    );
-
-
-    if (!photoResponse.ok) {
-
-      console.error(
-        'Unable to create EasyBadge photograph URL:',
-        await photoResponse.text()
-      );
-
-      return new Response(
-        JSON.stringify({
-          error:
-            'The patient photograph could not be prepared for EasyBadge.'
-        }),
-        {
-          status: 500,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-    }
-
-
-    const photoData =
-      await photoResponse.json();
-
-
-    const signedPath =
-      photoData?.signedURL ||
-      photoData?.signedUrl;
-
-
-    if (!signedPath) {
-      return new Response(
-        JSON.stringify({
-          error:
-            'The patient photograph URL could not be created.'
-        }),
-        {
-          status: 500,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-    }
-
-
     const imageUrl =
-      signedPath.startsWith('http')
-        ? signedPath
-        : `${process.env.SUPABASE_URL}/storage/v1${signedPath}`;
+      `https://lymphaware.com/ebp/${profile.qr_token}`;
+    
+          signedPath.startsWith('http')
+            ? signedPath
+            : `${process.env.SUPABASE_URL}/storage/v1${signedPath}`;
 
 
     /*
