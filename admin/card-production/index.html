@@ -1243,11 +1243,15 @@ async function exportAllEasyBadge() {
 
     adminMessage.textContent =
       'Card marked as printed.';
-
-
+    
     await loadCardProduction();
-
-
+    
+    await new Promise(
+      resolve => setTimeout(resolve, 300)
+    );
+    
+    await loadPrintedHistory();
+  
   } catch (error) {
 
     console.error(
