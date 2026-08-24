@@ -278,9 +278,16 @@
       return;
     }
     
-    loginMessage.textContent = 'Sign in successful. Redirecting...';
+   loginMessage.textContent = 'Sign in successful. Redirecting...';
+
+    const signedInEmail =
+      data?.user?.email?.toLowerCase() || '';
     
-    window.location.href = '/portal/';
+    if (signedInEmail === 'admin@lymphaware.com') {
+      window.location.href = '/admin/card-production/';
+    } else {
+      window.location.href = '/portal/';
+    }
   });
 </script>
 </body>
