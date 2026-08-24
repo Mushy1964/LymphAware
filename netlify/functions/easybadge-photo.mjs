@@ -11,14 +11,39 @@ export default async (request) => {
 
   try {
 
-    const url =
-      new URL(request.url);
+   const url =
+  new URL(request.url);
 
-    const token =
-      url.searchParams.get('token');
-
-
-    if (!token) {
+  let token =
+    url.searchParams.get('token');
+  
+  
+  /*
+   * Netlify rewrites can preserve the original /ebp/ URL.
+   * If the token was not supplied as a query parameter,
+   * read it directly from the path instead.
+   */
+  if (!token) {
+  
+    const pathParts =
+      url.pathname
+        .split('/')
+        .filter(Boolean);
+  
+    const ebpIndex =
+      pathParts.indexOf('ebp');
+  
+    if (
+      ebpIndex !== -1 &&
+      pathParts[ebpIndex + 1]
+    ) {
+      token =
+        pathParts[ebpIndex + 1];
+    }
+  }
+  
+  
+  if (!token) {
       return new Response(
         'Photo token required.',
         {
