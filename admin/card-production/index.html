@@ -348,118 +348,159 @@
     }
 
 
-    function renderProfiles(profiles) {
+ function renderProfiles(profiles) {
 
-      adminLoading.style.display =
-        'none';
+  adminLoading.style.display =
+    'none';
 
-      cardList.hidden =
-        false;
+  cardList.hidden =
+    false;
 
-      cardList.innerHTML =
-        '';
-
-
-      if (!profiles.length) {
-
-        cardList.innerHTML = `
-          <div class="empty-state">
-            There are currently no profiles ready for card production.
-          </div>
-        `;
-
-        return;
-      }
+  cardList.innerHTML =
+    '';
 
 
-      profiles.forEach((profile) => {
+  if (!profiles.length) {
 
-        const card =
-          document.createElement('article');
+    cardList.innerHTML = `
+      <div class="empty-state">
+        There are currently no cards awaiting production.
+      </div>
+    `;
 
-
-        card.className =
-          'production-card';
-
-
-        card.innerHTML = `
-          <div class="production-card-header">
-
-            <div>
-              <h2>
-                ${escapeHtml(
-                  profile.display_name ||
-                  'LymphAware Patient'
-                )}
-              </h2>
-
-              <p class="production-id">
-                ${escapeHtml(
-                  profile.lymphaware_id ||
-                  'No LymphAware ID'
-                )}
-              </p>
-            </div>
-
-            <span class="production-status">
-              Ready for Card
-            </span>
-
-          </div>
+    return;
+  }
 
 
-          <div class="production-details">
+  profiles.forEach((profile) => {
 
-            <span>
-              Photograph ✓
-            </span>
+    const card =
+      document.createElement('article');
 
-            <span>
-              QR Profile ✓
-            </span>
-
-            <span>
-              Identity ✓
-            </span>
-
-          </div>
+    card.className =
+      'production-card';
 
 
-          <div class="production-actions">
-
-            <button
-              type="button"
-              class="button button-primary easybadge-export"
-              data-profile-id="${escapeHtml(profile.id)}">
-              Prepare for EasyBadge
-            </button>
-
-          </div>
-        `;
+    const status =
+      profile.card_production_status || 'READY';
 
 
-        cardList.appendChild(card);
-      });
+    const statusLabel =
+      status === 'PREPARED'
+        ? 'Prepared for EasyBadge'
+        : 'Ready for Card';
 
 
-      document
-        .querySelectorAll(
-          '.easybadge-export'
-        )
-        .forEach((button) => {
+    const printedButton =
+      status === 'PREPARED'
+        ? `
+          <button
+            type="button"
+            class="button button-secondary mark-printed"
+            data-profile-id="${escapeHtml(profile.id)}">
+            Mark as Printed
+          </button>
+        `
+        : '';
 
-          button.addEventListener(
-            'click',
-            () => {
-              exportEasyBadge(
-                button.dataset.profileId,
-                button
-              );
-            }
+
+    card.innerHTML = `
+      <div class="production-card-header">
+
+        <div>
+          <h2>
+            ${escapeHtml(
+              profile.display_name ||
+              'LymphAware Patient'
+            )}
+          </h2>
+
+          <p class="production-id">
+            ${escapeHtml(
+              profile.lymphaware_id ||
+              'No LymphAware ID'
+            )}
+          </p>
+        </div>
+
+        <span class="production-status">
+          ${escapeHtml(statusLabel)}
+        </span>
+
+      </div>
+
+
+      <div class="production-details">
+
+        <span>
+          Photograph ✓
+        </span>
+
+        <span>
+          QR Profile ✓
+        </span>
+
+        <span>
+          Identity ✓
+        </span>
+
+      </div>
+
+
+      <div class="production-actions">
+
+        <button
+          type="button"
+          class="button button-primary easybadge-export"
+          data-profile-id="${escapeHtml(profile.id)}">
+          Prepare for EasyBadge
+        </button>
+
+        ${printedButton}
+
+      </div>
+    `;
+
+
+    cardList.appendChild(card);
+  });
+
+
+  document
+    .querySelectorAll(
+      '.easybadge-export'
+    )
+    .forEach((button) => {
+
+      button.addEventListener(
+        'click',
+        () => {
+          exportEasyBadge(
+            button.dataset.profileId,
+            button
           );
-        });
-    }
+        }
+      );
+    });
 
+
+  document
+    .querySelectorAll(
+      '.mark-printed'
+    )
+    .forEach((button) => {
+
+      button.addEventListener(
+        'click',
+        () => {
+          markCardPrinted(
+            button.dataset.profileId,
+            button
+          );
+        }
+      );
+    });
+}
 
     async function exportEasyBadge(
       profileId,
@@ -582,7 +623,7 @@
 
         adminMessage.textContent =
           'EasyBadge file prepared successfully.';
-
+          await loadCardProduction();
 
       } catch (error) {
 
@@ -606,6 +647,113 @@
       }
     }
 
+    async function markCardPrinted(
+  profileId,
+  button
+) {
+
+  const accessToken =
+    await getAccessToken();
+
+
+  if (!accessToken) {
+    return;
+  }
+
+
+  const confirmed =
+    window.confirm(
+      'Confirm that this LymphAware card has been checked and printed.'
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  adminMessage.textContent =
+    'Updating card-production status...';
+
+
+  const originalText =
+    button.textContent;
+
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    'Updating...';
+
+
+  try {
+
+    const response =
+      await fetch(
+        '/.netlify/functions/mark-card-printed',
+        {
+          method: 'POST',
+
+          headers: {
+            Authorization:
+              `Bearer ${accessToken}`,
+
+            'Content-Type':
+              'application/json'
+          },
+
+          body:
+            JSON.stringify({
+              profile_id:
+                profileId
+            })
+        }
+      );
+
+
+    const result =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      adminMessage.textContent =
+        result?.error ||
+        'The card could not be marked as printed.';
+
+      return;
+    }
+
+
+    adminMessage.textContent =
+      'Card marked as printed.';
+
+
+    await loadCardProduction();
+
+
+  } catch (error) {
+
+    console.error(
+      'Unable to mark card as printed:',
+      error
+    );
+
+
+    adminMessage.textContent =
+      'The card could not be marked as printed.';
+
+
+  } finally {
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      originalText;
+  }
+}
 
     function escapeHtml(value) {
 
