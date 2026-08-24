@@ -216,11 +216,6 @@ export default async (request) => {
     const imageUrl =
       `https://lymphaware.com/ebp/${profile.qr_token}`;
     
-          signedPath.startsWith('http')
-            ? signedPath
-            : `${process.env.SUPABASE_URL}/storage/v1${signedPath}`;
-
-
     /*
      * Protect CSV values containing commas or quotation marks.
      */
