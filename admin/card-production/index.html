@@ -163,6 +163,72 @@
       color: var(--muted);
       font-weight: 700;
     }
+
+    .printed-history {
+  margin-top: 38px;
+  padding-top: 30px;
+  border-top: 1px solid var(--border);
+}
+
+.history-heading {
+  margin-bottom: 18px;
+}
+
+.history-heading h2 {
+  margin: 4px 0 6px;
+  font-size: 1.7rem;
+}
+
+.history-heading p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.history-list {
+  display: grid;
+  gap: 12px;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 17px 20px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: white;
+}
+
+.history-person strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 1.05rem;
+}
+
+.history-id {
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.history-date {
+  text-align: right;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 680px) {
+
+  .history-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .history-date {
+    text-align: left;
+  }
+}
     
     @media (max-width: 680px) {
       .admin-page {
@@ -342,7 +408,40 @@
         hidden>
       </div>
 
+    <section
+  id="printed-history-section"
+  class="printed-history"
+  hidden>
 
+  <div class="history-heading">
+
+    <div>
+      <p class="eyebrow">
+        Production History
+      </p>
+
+      <h2>
+        Recently Printed
+      </h2>
+
+      <p>
+        The most recently completed LymphAware cards
+        are shown here for reference.
+      </p>
+    </div>
+
+  </div>
+
+
+  <div
+    id="printed-history-list"
+    class="history-list">
+  </div>
+
+</section>
+
+
+    
       <p
         id="admin-message"
         role="status"
@@ -395,6 +494,17 @@
     
     const activeCount =
       document.getElementById('active-count');
+
+      const printedHistorySection =
+        document.getElementById(
+          'printed-history-section'
+        );
+      
+      const printedHistoryList =
+        document.getElementById(
+          'printed-history-list'
+        );
+
     
     async function getAccessToken() {
 
@@ -488,6 +598,139 @@
       }
     }
 
+
+    async function loadPrintedHistory() {
+
+  const accessToken =
+    await getAccessToken();
+
+
+  if (!accessToken) {
+    return;
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+        '/.netlify/functions/card-production-history',
+        {
+          method: 'GET',
+
+          headers: {
+            Authorization:
+              `Bearer ${accessToken}`
+          }
+        }
+      );
+
+
+    const result =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      console.error(
+        'Printed history could not be loaded:',
+        result
+      );
+
+      return;
+    }
+
+
+    renderPrintedHistory(
+      result?.profiles || []
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      'Unable to load printed history:',
+      error
+    );
+  }
+}
+
+   function renderPrintedHistory(profiles) {
+
+  printedHistoryList.innerHTML = '';
+
+
+  if (!profiles.length) {
+
+    printedHistorySection.hidden = true;
+
+    return;
+  }
+
+
+  printedHistorySection.hidden = false;
+
+
+  profiles.forEach((profile) => {
+
+    const item =
+      document.createElement('div');
+
+
+    item.className =
+      'history-item';
+
+
+    const printedDate =
+      profile.card_printed_at
+        ? new Date(
+            profile.card_printed_at
+          ).toLocaleString(
+            'en-GB',
+            {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            }
+          )
+        : 'Date unavailable';
+
+
+    item.innerHTML = `
+      <div class="history-person">
+
+        <strong>
+          ${escapeHtml(
+            profile.display_name ||
+            'LymphAware Patient'
+          )}
+        </strong>
+
+        <span class="history-id">
+          ${escapeHtml(
+            profile.lymphaware_id ||
+            'No LymphAware ID'
+          )}
+        </span>
+
+      </div>
+
+      <div class="history-date">
+        Printed<br>
+        <strong>
+          ${escapeHtml(printedDate)}
+        </strong>
+      </div>
+    `;
+
+
+    printedHistoryList.appendChild(
+      item
+    );
+  });
+} 
 
  function renderProfiles(profiles) {
 
@@ -788,7 +1031,8 @@ async function exportEasyBadge(
       'EasyBadge file prepared successfully.';
 
     await loadCardProduction();
-
+    await loadPrintedHistory();
+    
   } catch (error) {
 
     console.error(
@@ -1059,6 +1303,7 @@ prepareAllEasyBadge.addEventListener(
 
 
 loadCardProduction();
+loadPrintedHistory();
 </script>
 
 </body>
