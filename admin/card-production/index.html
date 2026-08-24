@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Card Production | LymphAware</title>
+
+  <link rel="stylesheet" href="/css/styles.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    .admin-page {
+      min-height: calc(100vh - 84px);
+      padding: 50px 16px;
+      background: #f7f9fa;
+    }
+
+    .admin-shell {
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .header-logo {
+      display: block;
+      width: min(100%, 420px);
+      height: auto;
+    }
+
+    .admin-heading {
+      margin-bottom: 28px;
+    }
+
+    .admin-heading h1 {
+      margin: 6px 0 10px;
+      font-size: 2.4rem;
+      line-height: 1.15;
+    }
+
+    .admin-heading p {
+      margin: 0;
+      max-width: 760px;
+      color: var(--muted);
+    }
+
+    .admin-notice {
+      margin-bottom: 24px;
+      padding: 16px 18px;
+      border-radius: 14px;
+      background: var(--blue-light);
+      color: var(--blue-dark);
+      line-height: 1.5;
+    }
+
+    .card-list {
+      display: grid;
+      gap: 18px;
+    }
+
+    .production-card {
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: white;
+      box-shadow: 0 8px 22px rgba(31, 41, 51, 0.06);
+    }
+
+    .production-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .production-card h2 {
+      margin: 0 0 6px;
+      font-size: 1.35rem;
+    }
+
+    .production-id {
+      margin: 0;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .production-status {
+      display: inline-block;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: var(--green-light);
+      color: var(--green-dark);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .production-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 22px;
+      margin-top: 18px;
+      color: var(--muted);
+    }
+
+    .production-actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .admin-page .button {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    #admin-loading {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    #admin-message {
+      margin-top: 18px;
+      font-weight: 700;
+    }
+
+    .empty-state {
+      padding: 26px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: white;
+      color: var(--muted);
+    }
+
+    @media (max-width: 680px) {
+      .admin-page {
+        padding: 36px 14px;
+      }
+
+      .admin-heading h1 {
+        font-size: 2rem;
+      }
+
+      .header-logo {
+        width: calc(100% - 32px);
+        max-width: 390px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .production-actions .button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+
+      <a href="/" class="header-brand" aria-label="LymphAware home">
+        <img
+          class="header-logo"
+          src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg"
+          alt="LymphAware – Helping People Living with Lymphoedema Be Understood."
+        >
+      </a>
+
+      <div class="header-actions">
+        <a href="/portal/" class="button button-secondary">
+          Back to Portal
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+
+  <main class="admin-page">
+
+    <section class="admin-shell">
+
+      <div class="admin-heading">
+
+        <p class="eyebrow">LymphAware Administration</p>
+
+        <h1>Card Production</h1>
+
+        <p>
+          Profiles shown here have the core information required
+          to prepare a LymphAware identification card.
+        </p>
+
+      </div>
+
+
+      <div class="admin-notice">
+        <strong>Card production control.</strong>
+        EasyBadge exports should be used only for producing
+        authorised LymphAware cards. Check the patient's name,
+        photograph, LymphAware ID and QR code before printing.
+      </div>
+
+
+      <div id="admin-loading">
+        Loading card-production records...
+      </div>
+
+
+      <div
+        id="card-list"
+        class="card-list"
+        hidden>
+      </div>
+
+
+      <p
+        id="admin-message"
+        role="status"
+        aria-live="polite">
+      </p>
+
+    </section>
+
+  </main>
+
+
+  <script>
+    const SUPABASE_URL =
+      'https://thbhsktcenhrnxzkbjus.supabase.co';
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+
+
+    const supabaseClient =
+      supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+
+
+    const adminLoading =
+      document.getElementById('admin-loading');
+
+    const cardList =
+      document.getElementById('card-list');
+
+    const adminMessage =
+      document.getElementById('admin-message');
+
+
+    async function getAccessToken() {
+
+      const {
+        data: { session },
+        error
+      } =
+        await supabaseClient.auth.getSession();
+
+
+      if (
+        error ||
+        !session?.access_token
+      ) {
+        window.location.href = '/sign-in/';
+        return null;
+      }
+
+
+      return session.access_token;
+    }
+
+
+    async function loadCardProduction() {
+
+      const accessToken =
+        await getAccessToken();
+
+
+      if (!accessToken) {
+        return;
+      }
+
+
+      try {
+
+        const response =
+          await fetch(
+            '/.netlify/functions/card-production-list',
+            {
+              method: 'GET',
+
+              headers: {
+                Authorization:
+                  `Bearer ${accessToken}`
+              }
+            }
+          );
+
+
+        const result =
+          await response.json();
+
+
+        if (!response.ok) {
+
+          if (
+            response.status === 401 ||
+            response.status === 403
+          ) {
+            adminLoading.textContent =
+              'You do not have access to the LymphAware card-production area.';
+
+            return;
+          }
+
+
+          adminLoading.textContent =
+            result?.error ||
+            'Card-production records could not be loaded.';
+
+          return;
+        }
+
+
+        renderProfiles(
+          result?.profiles || []
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          'Unable to load card production:',
+          error
+        );
+
+
+        adminLoading.textContent =
+          'Card-production records could not be loaded.';
+      }
+    }
+
+
+    function renderProfiles(profiles) {
+
+      adminLoading.style.display =
+        'none';
+
+      cardList.hidden =
+        false;
+
+      cardList.innerHTML =
+        '';
+
+
+      if (!profiles.length) {
+
+        cardList.innerHTML = `
+          <div class="empty-state">
+            There are currently no profiles ready for card production.
+          </div>
+        `;
+
+        return;
+      }
+
+
+      profiles.forEach((profile) => {
+
+        const card =
+          document.createElement('article');
+
+
+        card.className =
+          'production-card';
+
+
+        card.innerHTML = `
+          <div class="production-card-header">
+
+            <div>
+              <h2>
+                ${escapeHtml(
+                  profile.display_name ||
+                  'LymphAware Patient'
+                )}
+              </h2>
+
+              <p class="production-id">
+                ${escapeHtml(
+                  profile.lymphaware_id ||
+                  'No LymphAware ID'
+                )}
+              </p>
+            </div>
+
+            <span class="production-status">
+              Ready for Card
+            </span>
+
+          </div>
+
+
+          <div class="production-details">
+
+            <span>
+              Photograph ✓
+            </span>
+
+            <span>
+              QR Profile ✓
+            </span>
+
+            <span>
+              Identity ✓
+            </span>
+
+          </div>
+
+
+          <div class="production-actions">
+
+            <button
+              type="button"
+              class="button button-primary easybadge-export"
+              data-profile-id="${escapeHtml(profile.id)}">
+              Prepare for EasyBadge
+            </button>
+
+          </div>
+        `;
+
+
+        cardList.appendChild(card);
+      });
+
+
+      document
+        .querySelectorAll(
+          '.easybadge-export'
+        )
+        .forEach((button) => {
+
+          button.addEventListener(
+            'click',
+            () => {
+              exportEasyBadge(
+                button.dataset.profileId,
+                button
+              );
+            }
+          );
+        });
+    }
+
+
+    async function exportEasyBadge(
+      profileId,
+      button
+    ) {
+
+      const accessToken =
+        await getAccessToken();
+
+
+      if (!accessToken) {
+        return;
+      }
+
+
+      adminMessage.textContent =
+        'Preparing EasyBadge file...';
+
+
+      const originalText =
+        button.textContent;
+
+
+      button.disabled =
+        true;
+
+      button.textContent =
+        'Preparing...';
+
+
+      try {
+
+        const response =
+          await fetch(
+            '/.netlify/functions/export-easybadge',
+            {
+              method: 'POST',
+
+              headers: {
+                Authorization:
+                  `Bearer ${accessToken}`,
+
+                'Content-Type':
+                  'application/json'
+              },
+
+              body:
+                JSON.stringify({
+                  profile_id:
+                    profileId
+                })
+            }
+          );
+
+
+        if (!response.ok) {
+
+          let errorMessage =
+            'The EasyBadge file could not be prepared.';
+
+
+          try {
+
+            const errorResult =
+              await response.json();
+
+
+            if (errorResult?.error) {
+              errorMessage =
+                errorResult.error;
+            }
+
+          } catch {
+          }
+
+
+          adminMessage.textContent =
+            errorMessage;
+
+          return;
+        }
+
+
+        const fileBlob =
+          await response.blob();
+
+
+        const downloadUrl =
+          URL.createObjectURL(
+            fileBlob
+          );
+
+
+        const link =
+          document.createElement('a');
+
+
+        link.href =
+          downloadUrl;
+
+        link.download =
+          'LymphAware_EasyBadge_Test.csv';
+
+
+        document.body.appendChild(
+          link
+        );
+
+
+        link.click();
+
+
+        link.remove();
+
+
+        URL.revokeObjectURL(
+          downloadUrl
+        );
+
+
+        adminMessage.textContent =
+          'EasyBadge file prepared successfully.';
+
+
+      } catch (error) {
+
+        console.error(
+          'EasyBadge export failed:',
+          error
+        );
+
+
+        adminMessage.textContent =
+          'The EasyBadge file could not be prepared.';
+
+
+      } finally {
+
+        button.disabled =
+          false;
+
+        button.textContent =
+          originalText;
+      }
+    }
+
+
+    function escapeHtml(value) {
+
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+
+    loadCardProduction();
+  </script>
+
+</body>
+</html>
