@@ -573,47 +573,163 @@
 
 
     
-    async function exportEasyBadge(
-      profileId,
-      button
-    ) {
+async function exportEasyBadge(
+  profileId,
+  button
+) {
+
+  const accessToken =
+    await getAccessToken();
+
+  if (!accessToken) {
+    return;
+  }
+
+  adminMessage.textContent =
+    'Preparing EasyBadge file...';
+
+  const originalText =
+    button.textContent;
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    'Preparing...';
+
+  try {
+
+    const response =
+      await fetch(
+        '/.netlify/functions/export-easybadge',
+        {
+          method: 'POST',
+
+          headers: {
+            Authorization:
+              `Bearer ${accessToken}`,
+
+            'Content-Type':
+              'application/json'
+          },
+
+          body:
+            JSON.stringify({
+              profile_id:
+                profileId
+            })
+        }
+      );
+
+    if (!response.ok) {
+
+      let errorMessage =
+        'The EasyBadge file could not be prepared.';
+
+      try {
+
+        const errorResult =
+          await response.json();
+
+        if (errorResult?.error) {
+          errorMessage =
+            errorResult.error;
+        }
+
+      } catch {
+      }
+
+      adminMessage.textContent =
+        errorMessage;
+
+      return;
+    }
+
+    const fileBlob =
+      await response.blob();
+
+    const downloadUrl =
+      URL.createObjectURL(
+        fileBlob
+      );
+
+    const link =
+      document.createElement('a');
+
+    link.href =
+      downloadUrl;
+
+    link.download =
+      'LymphAware_EasyBadge_Test.csv';
+
+    document.body.appendChild(
+      link
+    );
+
+    link.click();
+
+    link.remove();
+
+    URL.revokeObjectURL(
+      downloadUrl
+    );
+
+    adminMessage.textContent =
+      'EasyBadge file prepared successfully.';
+
+    await loadCardProduction();
+
+  } catch (error) {
+
+    console.error(
+      'EasyBadge export failed:',
+      error
+    );
+
+    adminMessage.textContent =
+      'The EasyBadge file could not be prepared.';
+
+  } finally {
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      originalText;
+  }
+}
+
+
 
 async function exportAllEasyBadge() {
 
   const accessToken =
     await getAccessToken();
 
-
   if (!accessToken) {
     return;
   }
-
 
   const confirmed =
     window.confirm(
       'Prepare all cards currently marked Ready for Card for EasyBadge?'
     );
 
-
   if (!confirmed) {
     return;
   }
 
-
   adminMessage.textContent =
     'Preparing EasyBadge batch...';
 
-
   const originalText =
     prepareAllEasyBadge.textContent;
-
 
   prepareAllEasyBadge.disabled =
     true;
 
   prepareAllEasyBadge.textContent =
     'Preparing...';
-
 
   try {
 
@@ -630,12 +746,10 @@ async function exportAllEasyBadge() {
         }
       );
 
-
     if (!response.ok) {
 
       let errorMessage =
         'The EasyBadge batch could not be prepared.';
-
 
       try {
 
@@ -650,25 +764,20 @@ async function exportAllEasyBadge() {
       } catch {
       }
 
-
       adminMessage.textContent =
         errorMessage;
 
       return;
     }
 
-
     const fileBlob =
       await response.blob();
-
 
     const downloadUrl =
       URL.createObjectURL(fileBlob);
 
-
     const link =
       document.createElement('a');
-
 
     link.href =
       downloadUrl;
@@ -676,25 +785,20 @@ async function exportAllEasyBadge() {
     link.download =
       'LymphAware_EasyBadge_Test.csv';
 
-
     document.body.appendChild(link);
 
     link.click();
 
     link.remove();
 
-
     URL.revokeObjectURL(
       downloadUrl
     );
 
-
     adminMessage.textContent =
       'All ready cards have been prepared for EasyBadge.';
 
-
     await loadCardProduction();
-
 
   } catch (error) {
 
@@ -703,10 +807,8 @@ async function exportAllEasyBadge() {
       error
     );
 
-
     adminMessage.textContent =
       'The EasyBadge batch could not be prepared.';
-
 
   } finally {
 
