@@ -371,10 +371,10 @@
   </div>
 
   <div
-  class="portal-option portal-accessories"
-  id="accessories-panel">
-
-  <h2>Additional Cards &amp; Accessories</h2>
+    class="portal-option portal-accessories"
+    id="accessories-panel"
+    hidden>
+    <h2>Additional Cards &amp; Accessories</h2>
 
   <p>
     Select the replacement items you require, then continue to payment.
@@ -455,6 +455,9 @@
     const membershipMessage =
       document.getElementById('membership-message');
 
+    const accessoriesPanel =
+      document.getElementById('accessories-panel');
+    
    const membershipPaymentActions =
       document.getElementById('membership-payment-actions');
     
@@ -583,16 +586,18 @@
    membershipPaymentActions.hidden = true;   
 
   if (data.membership_status === 'PILOT') {
-
+  
     membershipStatus.textContent =
       'Pilot Member';
-
+  
     membershipMessage.textContent =
       'You are participating in the LymphAware patient pilot. No membership payment is currently required.';
-
+  
+    accessoriesPanel.hidden = true;
+  
     return;
   }
-
+  accessoriesPanel.hidden = false;
 
       if (
       data.membership_status === 'ACTIVE' &&
