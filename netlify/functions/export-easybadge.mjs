@@ -41,7 +41,9 @@ export default async (request) => {
       authHeader.replace('Bearer ', '').trim();
 
 
-    // Verify the signed-in LymphAware user.
+    /*
+     * Verify the signed-in administrator.
+     */
     const userResponse = await fetch(
       `${process.env.SUPABASE_URL}/auth/v1/user`,
       {
@@ -76,14 +78,25 @@ export default async (request) => {
       await userResponse.json();
 
 
-    if (!user?.id) {
+    const adminEmail =
+      String(
+        process.env.LYMPHAWARE_ADMIN_EMAIL || ''
+      )
+        .trim()
+        .toLowerCase();
+
+
+    if (
+      !user?.email ||
+      user.email.toLowerCase() !== adminEmail
+    ) {
       return new Response(
         JSON.stringify({
           error:
-            'Unable to verify your LymphAware account.'
+            'Administrator access required.'
         }),
         {
-          status: 401,
+          status: 403,
           headers: {
             'Content-Type': 'application/json'
           }
@@ -92,18 +105,48 @@ export default async (request) => {
     }
 
 
-    // Retrieve only the fields required for EasyBadge.
+    /*
+     * Identify the patient whose card is being produced.
+     */
+    const body =
+      await request.json();
+
+    const profileId =
+      body?.profile_id;
+
+
+    if (!profileId) {
+      return new Response(
+        JSON.stringify({
+          error:
+            'Profile ID required.'
+        }),
+        {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+    }
+
+
+    /*
+     * Retrieve ONLY the fields required
+     * for producing this patient's card.
+     */
     const profileResponse = await fetch(
       `${process.env.SUPABASE_URL}/rest/v1/profiles` +
-      `?user_id=eq.${encodeURIComponent(user.id)}` +
-      `&select=lymphaware_id,display_name,qr_token,photo_path`,
+      `?id=eq.${encodeURIComponent(profileId)}` +
+      `&select=id,lymphaware_id,display_name,qr_token,photo_path` +
+      `&limit=1`,
       {
         headers: {
           apikey:
-            process.env.SUPABASE_PUBLISHABLE_KEY,
+            process.env.SUPABASE_SERVICE_ROLE_KEY,
 
           Authorization:
-            `Bearer ${accessToken}`,
+            `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
 
           Accept:
             'application/json'
@@ -113,13 +156,19 @@ export default async (request) => {
 
 
     if (!profileResponse.ok) {
+
+      console.error(
+        'Unable to retrieve EasyBadge record:',
+        await profileResponse.text()
+      );
+
       return new Response(
         JSON.stringify({
           error:
             'Unable to retrieve the card record.'
         }),
         {
-          status: 403,
+          status: 500,
           headers: {
             'Content-Type': 'application/json'
           }
@@ -135,6 +184,10 @@ export default async (request) => {
       profiles?.[0];
 
 
+    /*
+     * Name, photograph, LymphAware ID and QR token
+     * are required for card production.
+     */
     if (
       !profile ||
       !profile.lymphaware_id ||
@@ -162,11 +215,11 @@ export default async (request) => {
 
 
     /*
-     * Create a temporary secure URL for the patient's
-     * private Supabase photograph.
+     * Create a secure temporary photograph URL.
+     * The original photograph remains private in Supabase.
      *
-     * The link lasts 8 hours, which is sufficient for
-     * the EasyBadge card-production session.
+     * 8 hours gives sufficient time to prepare and print
+     * the physical card.
      */
     const encodedPhotoPath =
       profile.photo_path
@@ -183,10 +236,10 @@ export default async (request) => {
 
         headers: {
           apikey:
-            process.env.SUPABASE_PUBLISHABLE_KEY,
+            process.env.SUPABASE_SERVICE_ROLE_KEY,
 
           Authorization:
-            `Bearer ${accessToken}`,
+            `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
 
           'Content-Type':
             'application/json'
@@ -200,6 +253,7 @@ export default async (request) => {
 
 
     if (!photoResponse.ok) {
+
       console.error(
         'Unable to create EasyBadge photograph URL:',
         await photoResponse.text()
@@ -251,7 +305,9 @@ export default async (request) => {
         : `${process.env.SUPABASE_URL}/storage/v1${signedPath}`;
 
 
-    // Protect CSV values that may contain commas or quote marks.
+    /*
+     * Protect CSV values containing commas or quotation marks.
+     */
     function csvValue(value) {
 
       const text =
@@ -261,6 +317,9 @@ export default async (request) => {
     }
 
 
+    /*
+     * One EasyBadge export = one patient's card.
+     */
     const csv =
       [
         [
@@ -279,6 +338,9 @@ export default async (request) => {
       ].join('\r\n');
 
 
+    /*
+     * Keep the EasyBadge-linked filename fixed.
+     */
     return new Response(
       csv,
       {
@@ -312,8 +374,10 @@ export default async (request) => {
       }),
       {
         status: 500,
+
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type':
+            'application/json'
         }
       }
     );
