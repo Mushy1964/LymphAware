@@ -472,6 +472,17 @@
         `
         : '';
 
+      const prepareButton =
+        status === 'READY'
+          ? `
+            <button
+              type="button"
+              class="button button-primary easybadge-export"
+              data-profile-id="${escapeHtml(profile.id)}">
+              Prepare for EasyBadge
+            </button>
+          `
+          : '';
 
     card.innerHTML = `
       <div class="production-card-header">
@@ -516,18 +527,13 @@
       </div>
 
 
-      <div class="production-actions">
-
-        <button
-          type="button"
-          class="button button-primary easybadge-export"
-          data-profile-id="${escapeHtml(profile.id)}">
-          Prepare for EasyBadge
-        </button>
-
-        ${printedButton}
-
-      </div>
+    <div class="production-actions">
+    
+      ${prepareButton}
+    
+      ${printedButton}
+    
+    </div>
     `;
 
 
