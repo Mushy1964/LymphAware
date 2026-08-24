@@ -248,6 +248,64 @@ export default async (request) => {
         ].join(',')
       ].join('\r\n');
 
+    /*
+     * Record that this card has been prepared
+     * for EasyBadge production.
+     */
+    const preparedResponse = await fetch(
+      `${process.env.SUPABASE_URL}/rest/v1/profiles` +
+      `?id=eq.${encodeURIComponent(profile.id)}`,
+      {
+        method: 'PATCH',
+    
+        headers: {
+          apikey:
+            process.env.SUPABASE_SECRET_KEY,
+    
+          Authorization:
+            `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
+    
+          'Content-Type':
+            'application/json',
+    
+          Prefer:
+            'return=minimal'
+        },
+    
+        body: JSON.stringify({
+          card_production_status:
+            'PREPARED',
+    
+          card_prepared_at:
+            new Date().toISOString()
+        })
+      }
+    );
+    
+    
+    if (!preparedResponse.ok) {
+    
+      console.error(
+        'Unable to mark card as prepared:',
+        await preparedResponse.text()
+      );
+    
+      return new Response(
+        JSON.stringify({
+          error:
+            'The EasyBadge file was created, but the card-production status could not be updated.'
+        }),
+        {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+    }
+        
+
+    
 
     /*
      * Keep the EasyBadge-linked filename fixed.
