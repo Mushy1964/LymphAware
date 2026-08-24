@@ -2,7 +2,9 @@ export default async (request) => {
 
   if (request.method !== 'GET') {
     return new Response(
-      JSON.stringify({ error: 'Method not allowed' }),
+      JSON.stringify({
+        error: 'Method not allowed'
+      }),
       {
         status: 405,
         headers: {
@@ -39,9 +41,6 @@ export default async (request) => {
       authHeader.replace('Bearer ', '').trim();
 
 
-    /*
-     * Verify the person who is signed in.
-     */
     const userResponse = await fetch(
       `${process.env.SUPABASE_URL}/auth/v1/user`,
       {
@@ -102,18 +101,14 @@ export default async (request) => {
 
 
     /*
-     * Server-side administrator query.
-     *
-     * The service-role key NEVER reaches the browser.
+     * Show only cards that still need production action.
+     * PRINTED cards are deliberately excluded.
      */
     const profileResponse = await fetch(
       `${process.env.SUPABASE_URL}/rest/v1/profiles` +
-      `?select=id,lymphaware_id,display_name,photo_path,qr_token,qr_profile_active,updated_at` +
-      `&photo_path=not.is.null` +
-      `&display_name=not.is.null` +
-      `&qr_token=not.is.null` +
-      `&qr_profile_active=eq.true` +
-      `&order=updated_at.desc`,
+      `?select=id,lymphaware_id,display_name,photo_path,qr_token,qr_profile_active,card_production_status,card_ready_at,card_prepared_at` +
+      `&card_production_status=in.(READY,PREPARED)` +
+      `&order=card_ready_at.asc`,
       {
         headers: {
           apikey:
