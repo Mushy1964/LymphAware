@@ -143,10 +143,10 @@ export default async (request) => {
       {
         headers: {
           apikey:
-            process.env.SUPABASE_SERVICE_ROLE_KEY,
+            process.env.SUPABASE_SECRET_KEY,
 
           Authorization:
-            `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+            `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
 
           Accept:
             'application/json'
@@ -236,10 +236,10 @@ export default async (request) => {
 
         headers: {
           apikey:
-            process.env.SUPABASE_SERVICE_ROLE_KEY,
+            process.env.SUPABASE_SECRET_KEY,
 
           Authorization:
-            `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+            `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
 
           'Content-Type':
             'application/json'
