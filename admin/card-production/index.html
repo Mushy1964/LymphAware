@@ -210,6 +210,37 @@
       </div>
 
 
+      <div
+        id="production-summary"
+        class="production-card"
+        hidden>
+      
+        <div class="production-card-header">
+      
+          <div>
+            <h2>Cards Awaiting Production</h2>
+      
+            <p
+              id="ready-card-count"
+              class="production-id">
+            </p>
+          </div>
+      
+        </div>
+      
+        <div class="production-actions">
+      
+          <button
+            type="button"
+            id="prepare-all-easybadge"
+            class="button button-primary">
+            Prepare All Ready Cards for EasyBadge
+          </button>
+      
+        </div>
+      
+      </div>
+
       <div id="admin-loading">
         Loading card-production records...
       </div>
@@ -257,7 +288,16 @@
     const adminMessage =
       document.getElementById('admin-message');
 
+    const productionSummary =
+      document.getElementById('production-summary');
+    
+    const readyCardCount =
+      document.getElementById('ready-card-count');
+    
+    const prepareAllEasyBadge =
+      document.getElementById('prepare-all-easybadge');
 
+    
     async function getAccessToken() {
 
       const {
@@ -362,7 +402,33 @@
   cardList.innerHTML =
     '';
 
+    const readyProfiles =
+      profiles.filter(
+        profile =>
+          profile.card_production_status === 'READY'
+      );
+    
+    
+    if (readyProfiles.length > 0) {
+    
+      productionSummary.hidden = false;
+    
+      readyCardCount.textContent =
+        readyProfiles.length === 1
+          ? '1 card is ready for production.'
+          : `${readyProfiles.length} cards are ready for production.`;
+    
+      prepareAllEasyBadge.textContent =
+        readyProfiles.length === 1
+          ? 'Prepare Ready Card for EasyBadge'
+          : `Prepare All ${readyProfiles.length} Ready Cards for EasyBadge`;
+    
+    } else {
+    
+      productionSummary.hidden = true;
+    }
 
+   
   if (!profiles.length) {
 
     cardList.innerHTML = `
@@ -505,11 +571,154 @@
     });
 }
 
+
+    
     async function exportEasyBadge(
       profileId,
       button
     ) {
 
+async function exportAllEasyBadge() {
+
+  const accessToken =
+    await getAccessToken();
+
+
+  if (!accessToken) {
+    return;
+  }
+
+
+  const confirmed =
+    window.confirm(
+      'Prepare all cards currently marked Ready for Card for EasyBadge?'
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  adminMessage.textContent =
+    'Preparing EasyBadge batch...';
+
+
+  const originalText =
+    prepareAllEasyBadge.textContent;
+
+
+  prepareAllEasyBadge.disabled =
+    true;
+
+  prepareAllEasyBadge.textContent =
+    'Preparing...';
+
+
+  try {
+
+    const response =
+      await fetch(
+        '/.netlify/functions/export-easybadge-batch',
+        {
+          method: 'POST',
+
+          headers: {
+            Authorization:
+              `Bearer ${accessToken}`
+          }
+        }
+      );
+
+
+    if (!response.ok) {
+
+      let errorMessage =
+        'The EasyBadge batch could not be prepared.';
+
+
+      try {
+
+        const result =
+          await response.json();
+
+        if (result?.error) {
+          errorMessage =
+            result.error;
+        }
+
+      } catch {
+      }
+
+
+      adminMessage.textContent =
+        errorMessage;
+
+      return;
+    }
+
+
+    const fileBlob =
+      await response.blob();
+
+
+    const downloadUrl =
+      URL.createObjectURL(fileBlob);
+
+
+    const link =
+      document.createElement('a');
+
+
+    link.href =
+      downloadUrl;
+
+    link.download =
+      'LymphAware_EasyBadge_Test.csv';
+
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+
+    URL.revokeObjectURL(
+      downloadUrl
+    );
+
+
+    adminMessage.textContent =
+      'All ready cards have been prepared for EasyBadge.';
+
+
+    await loadCardProduction();
+
+
+  } catch (error) {
+
+    console.error(
+      'EasyBadge batch export failed:',
+      error
+    );
+
+
+    adminMessage.textContent =
+      'The EasyBadge batch could not be prepared.';
+
+
+  } finally {
+
+    prepareAllEasyBadge.disabled =
+      false;
+
+    prepareAllEasyBadge.textContent =
+      originalText;
+  }
+}
+
+      
       const accessToken =
         await getAccessToken();
 
@@ -758,37 +967,40 @@
   }
 }
 
-       function escapeHtml(value) {
-    
-      return String(value ?? '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
-    }
-    
-    
-    const adminSignOut =
-      document.getElementById('admin-sign-out');
-    
-    
-    adminSignOut.addEventListener(
-      'click',
-      async () => {
-    
-        await supabaseClient.auth.signOut();
-    
-        window.location.href = '/';
-      }
-    );
+function escapeHtml(value) {
+
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+
+const adminSignOut =
+  document.getElementById('admin-sign-out');
+
+
+adminSignOut.addEventListener(
+  'click',
+  async () => {
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href = '/';
+  }
+);
+
+
+prepareAllEasyBadge.addEventListener(
+  'click',
+  exportAllEasyBadge
+);
 
 
 loadCardProduction();
-
-
-    loadCardProduction();
-  </script>
+</script>
 
 </body>
 </html>
