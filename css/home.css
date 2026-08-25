@@ -1276,8 +1276,9 @@
    ========================================================= */
 
 .home-page .home-control-container {
-  width: min(1180px, calc(100% - 40px));
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
 }
 
 
@@ -1286,7 +1287,7 @@
   margin: 0;
   padding: 72px 46px;
 
-  border: 1px solid #e7edf1;
+  border: 1px solid #dfe7eb;
   border-radius: 24px;
 
   background:
@@ -1307,7 +1308,6 @@
   align-items: center;
   gap: 76px;
 }
-
 
 /* LEFT SIDE */
 
@@ -1452,14 +1452,20 @@
 
 @media (max-width: 520px) {
 
-   .home-page .home-control-section {
-     margin: 0 14px;
-     padding: 52px 0;
-     border-radius: 18px;
-   }
+  .home-page .home-control-container {
+    width: 100%;
+    margin: 0;
+  }
+
+  .home-page .home-control-section {
+    width: 100%;
+    margin: 0;
+    padding: 42px 18px;
+    border-radius: 18px;
+  }
 
   .home-page .home-control-grid {
-    width: min(100% - 28px, 1180px);
+    width: 100%;
     gap: 30px;
   }
 
