@@ -2021,3 +2021,16 @@
   display: none !important;
 }
 
+/* FORCE MEMBERSHIP BENEFITS INTO ONE ROW */
+
+.home-page .home-membership-summary .home-membership-items {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 18px;
+  width: 100%;
+}
+
+.home-page .home-membership-summary .home-membership-card {
+  width: 100%;
+  min-width: 0;
+}
