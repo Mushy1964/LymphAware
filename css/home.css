@@ -841,10 +841,10 @@
 
 
 .home-page .home-demo-eyebrow {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
 
   color: #16853f;
-  font-size: 0.88rem;
+  font-size: 1.05rem;
   font-weight: 800;
 
   text-transform: uppercase;
@@ -1084,25 +1084,24 @@
   padding: 12px 0 72px;
 }
 
-
 .home-page .home-understanding-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(420px, 1.1fr);
+  grid-template-columns: minmax(600px, 1fr) minmax(500px, 1fr);
   align-items: center;
-  gap: 70px;
+  gap: 64px;
 }
 
 
 .home-page .home-understanding-copy {
-  max-width: 560px;
+  max-width: 650px;
 }
 
 
 .home-page .home-understanding-eyebrow {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
 
   color: #16853f;
-  font-size: 0.88rem;
+  font-size: 1.05rem;
   font-weight: 800;
 
   text-transform: uppercase;
@@ -1114,9 +1113,9 @@
   margin: 0 0 22px;
 
   color: #17283d;
-  font-size: clamp(2.6rem, 4vw, 4rem);
-  line-height: 1.06;
-  letter-spacing: -1.8px;
+  font-size: clamp(2.6rem, 3.5vw, 3.6rem);
+  line-height: 1.07;
+  letter-spacing: -1.6px;
 }
 
 
