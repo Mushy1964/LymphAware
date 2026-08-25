@@ -412,6 +412,10 @@
      height: auto;
    }
 
+   .home-page .home-header .header-actions {
+       display: none;
+ }
+
   .home-page .home-hero {
     padding: 38px 0 44px;
     overflow: hidden;
