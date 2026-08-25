@@ -122,129 +122,118 @@
 
 <body class="home-page">
 
-  <header class="site-header">
-    <div class="container header-inner">
+<header class="site-header home-header">
+  <div class="container header-inner">
 
-      <a href="/" class="header-brand" aria-label="LymphAware home">
+    <a href="/" class="header-brand" aria-label="LymphAware home">
+      <img
+        class="header-logo"
+        src="/assets/brand/LymphAware_APPROVED_No_Tagline_Centred_v1.svg"
+        alt="LymphAware"
+      >
+    </a>
 
-       <img
-          class="header-logo"
-          src="/assets/brand/LymphAware_APPROVED_No_Tagline_Centred_v1.svg"
-          alt="LymphAware"
-        >
+    <nav class="main-nav home-nav" aria-label="Main navigation">
+      <a href="/" class="active">Home</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="/for-professionals/">For Professionals</a>
+      <a href="/privacy/">Privacy &amp; Security</a>
+      <a href="/about/">About</a>
+    </nav>
 
-     </a>
-
-     <nav class="main-nav" aria-label="Main navigation">
-        <a href="/about/">About</a>
-        <a href="/how-it-works/">How It Works</a>
-        <a href="/understanding-lymphoedema/">Understanding Lymphoedema</a>
-        <a href="/for-professionals/">For Professionals</a>
-        <a href="/help/">Help</a>
-      </nav>
-
-      <div class="header-actions">
+    <div class="header-actions">
       <a
         href="/sign-in/"
         id="desktop-account-link"
-        class="button button-secondary">
+        class="button home-account-button">
         Sign In
       </a>
     </div>
 
-  <details class="mobile-menu">
-    <summary>Menu</summary>
-  
-    <nav class="mobile-menu-panel" aria-label="Mobile navigation">
-      <a href="/about/">About</a>
-      <a href="/how-it-works/">How It Works</a>
-      <a href="/understanding-lymphoedema/">Understanding Lymphoedema</a>
-      <a href="/for-professionals/">For Professionals</a>
-      <a href="/help/">Help</a>
-      <a
-      href="/sign-in/"
-      id="mobile-account-link">
-      Sign In
-    </a>
-    </nav>
-    </details>
-      
-    </div>
-  </header>
+    <details class="mobile-menu">
+      <summary>Menu</summary>
 
+      <nav class="mobile-menu-panel" aria-label="Mobile navigation">
+        <a href="/">Home</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="/for-professionals/">For Professionals</a>
+        <a href="/privacy/">Privacy &amp; Security</a>
+        <a href="/about/">About</a>
+        <a
+          href="/sign-in/"
+          id="mobile-account-link"
+          class="mobile-primary">
+          Sign In
+        </a>
+      </nav>
+    </details>
+
+  </div>
+</header>
 
   <main>
 
-  <section class="hero">
-  <div class="container hero-grid">
+<section class="hero home-hero">
 
-    <div class="hero-content">
+  <div class="container home-hero-grid">
 
-      <div class="hero-logo">
-        <img
-          class="hero-logo-image"
-          src="/assets/brand/LymphAware_APPROVED_No_Tagline_Centred_v1.svg"
-          alt="LymphAware"
-        >
-      </div>
+    <div class="home-hero-content">
 
-      <h1>
-        <span>Helping People Living with</span>
-        <span>Lymphoedema Be Understood.</span>
+      <h1 class="home-hero-title">
+        <span class="hero-line-dark">Your lymphoedema.</span>
+        <span class="hero-line-blue">Your information.</span>
+        <span class="hero-line-green">Your choice.</span>
       </h1>
 
-      <p class="hero-copy">
-        LymphAware is a patient-led identification system designed to help
-        people living with lymphoedema communicate important information
-        when they need support, assistance or understanding.
+      <p class="home-hero-copy">
+        LymphAware is a physical ID card linked to your
+        patient-controlled QR profile. It helps you share key
+        information quickly and clearly — so you can feel confident,
+        understood and in control.
       </p>
 
-      <div class="hero-actions">
+      <div class="home-hero-actions">
+
         <a href="#how-it-works" class="button button-primary">
-          How LymphAware Works
+          See how it works
         </a>
 
-       
+        <a
+          href="/p/1babe83a-9ad9-4999-a7c4-658b1400b044"
+          class="button button-secondary">
+          View sample profile
+        </a>
+
       </div>
 
     </div>
 
-    <div class="hero-visual">
 
-      <div class="concept-card">
+    <div class="home-hero-product">
 
-        <p class="concept-heading">
-          Your information. Your choice. Your control.
-        </p>
+      <div class="hero-card-wrap">
 
-        <div class="profile-preview">
+        <img
+          class="hero-demo-card"
+          src="/assets/demo/LymphAware_Alex_Morgan_Demo_Card.png"
+          alt="Fictional LymphAware demonstration ID card for Alex Morgan"
+        >
 
-          <div class="profile-top">
-            <strong>LymphAware Patient Profile</strong>
-            <span>Shown when a valid card QR code is scanned</span>
-          </div>
+      </div>
 
-          <div class="profile-row">
-            <strong>Patient-selected information</strong>
-            <span>
-              Only information chosen by the patient is displayed.
-            </span>
-          </div>
 
-          <div class="profile-row">
-            <strong>Clear assistance information</strong>
-            <span>
-              Designed to be easy to understand on a mobile phone.
-            </span>
-          </div>
+      <div class="hero-phone" aria-label="Example LymphAware patient profile">
 
-          <div class="profile-row">
-            <strong>Privacy by design</strong>
-            <span>
-              LymphAware is being developed around data minimisation
-              and patient control.
-            </span>
-          </div>
+        <div class="hero-phone-speaker"></div>
+
+        <div class="hero-phone-screen">
+
+          <iframe
+            src="/p/1babe83a-9ad9-4999-a7c4-658b1400b044"
+            title="Example LymphAware patient profile"
+            loading="lazy"
+            tabindex="-1">
+          </iframe>
 
         </div>
 
@@ -253,6 +242,7 @@
     </div>
 
   </div>
+
 </section>
 
     <section id="how-it-works" class="content-section">
