@@ -2034,3 +2034,67 @@
   width: 100%;
   min-width: 0;
 }
+
+/* MOBILE MEMBERSHIP BENEFITS — FINAL LAYOUT */
+
+@media (max-width: 680px) {
+
+  .home-page .home-membership-summary {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    text-align: left;
+  }
+
+  .home-page .home-membership-summary .home-membership-items {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px;
+    width: 100%;
+    justify-items: start;
+  }
+
+  .home-page .home-membership-summary .home-membership-card {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    gap: 8px;
+    padding: 8px 0;
+
+    text-align: left;
+  }
+
+  .home-page .home-membership-icon {
+    width: 68px;
+    height: 68px;
+    flex: 0 0 68px;
+    margin: 0;
+
+    border-radius: 15px;
+  }
+
+  .home-page .home-membership-icon svg {
+    width: 52px;
+    height: 52px;
+  }
+
+  .home-page .home-membership-card strong {
+    width: 100%;
+    font-size: 0.82rem;
+    line-height: 1.22;
+    text-align: left;
+  }
+
+  .home-page .home-membership-closing {
+    margin-top: 12px;
+    text-align: left;
+  }
+
+}
