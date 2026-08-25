@@ -1276,13 +1276,9 @@
    ========================================================= */
 
 .home-page .home-control-section {
-  width: calc(100vw - 56px);
-  max-width: none;
-
-  margin-left: 50%;
-  margin-right: 0;
-  transform: translateX(-50%);
-
+  width: calc(100% - 56px);
+  max-width: 1380px;
+  margin: 0 auto;
   padding: 72px 0;
 
   border: 1px solid #e7edf1;
@@ -1296,11 +1292,10 @@
     );
 }
 
-
 .home-page .home-control-grid {
   width: 100%;
   margin: 0 auto;
-  padding: 0 40px;
+  padding: 0 46px;
 
   display: grid;
   grid-template-columns: minmax(420px, 0.8fr) minmax(520px, 1.2fr);
