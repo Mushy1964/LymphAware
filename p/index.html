@@ -177,62 +177,64 @@
       display: none;
     }
 
-    .public-section-button {
-      width: 100%;
-      min-height: 68px;
-      display: grid;
-      grid-template-columns: 46px 1fr 24px;
-      align-items: center;
-      gap: 12px;
+.public-section-button {
+  width: 100%;
+  min-height: 76px;
 
-      padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 54px 1fr 24px;
+  align-items: center;
+  gap: 14px;
 
-      border: 1px solid #d8e2e5;
-      border-radius: 13px;
+  padding: 11px 14px;
 
-      background: #ffffff;
-      color: #172536;
+  border: 1px solid #d8e2e5;
+  border-radius: 13px;
 
-      text-align: left;
-      cursor: pointer;
+  background: #ffffff;
+  color: #172536;
 
-      font: inherit;
-    }
+  text-align: left;
+  cursor: pointer;
 
-    .public-section-button:hover,
-    .public-section-button:focus-visible {
-      background: #f8faf9;
-    }
+  font: inherit;
+}
 
-    .public-section-button:focus-visible {
-      outline: 3px solid rgba(40, 120, 184, 0.22);
-      outline-offset: 2px;
-    }
+.public-section-button:hover,
+.public-section-button:focus-visible {
+  background: #f8faf9;
+}
+
+.public-section-button:focus-visible {
+  outline: 3px solid rgba(40, 120, 184, 0.22);
+  outline-offset: 2px;
+}
 
 .public-section-icon {
-  width: 50px;
-  height: 50px;
+  width: 52px;
+  height: 52px;
 
   display: grid;
   place-items: center;
 
-  flex: 0 0 50px;
-  border-radius: 14px;
+  flex: 0 0 52px;
+
+  border-radius: 15px;
 }
 
 .public-section-icon.green {
-  background: #e3f4e8;
+  background: #e2f4e7;
   color: #07883e;
 }
 
 .public-section-icon.blue {
-  background: #e3f0fb;
+  background: #e1effb;
   color: #0870c5;
 }
 
 .public-section-icon svg {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
 
   fill: none;
   stroke: currentColor;
@@ -246,6 +248,7 @@
   height: 31px;
 }
 
+    
     /* =====================================================
        EXPANDED CONTENT
        ===================================================== */
@@ -512,23 +515,23 @@
         padding: 10px;
       }
 
-      .public-section-button {
-        min-height: 64px;
-        grid-template-columns: 42px 1fr 20px;
-        gap: 10px;
-        padding: 9px 10px;
-      }
-
-     .public-section-icon {
-          width: 48px;
-          height: 48px;
-          flex-basis: 48px;
+       .public-section-button {
+          min-height: 78px;
+          grid-template-columns: 52px 1fr 20px;
+          gap: 12px;
+          padding: 11px 12px;
+        }
+        
+        .public-section-icon {
+          width: 50px;
+          height: 50px;
+          flex-basis: 50px;
           border-radius: 14px;
         }
         
         .public-section-icon svg {
-          width: 35px;
-          height: 35px;
+          width: 37px;
+          height: 37px;
           stroke-width: 3.6;
         }
         
@@ -536,27 +539,27 @@
           width: 30px;
           height: 30px;
         }
-
-       .public-section-label strong {
-          display: block;
-          width: 100%;
-          margin: 0 0 3px;
-        
-          color: #172536;
-          font-size: 0.94rem;
-          font-weight: 800;
-          line-height: 1.18;
-        }
-        
-        .public-section-label span {
-          display: block;
-          width: 100%;
-          margin: 0;
-        
-          color: #566575;
-          font-size: 0.76rem;
-          line-height: 1.28;
-        }
+      
+     .public-section-label strong {
+        display: block;
+        width: 100%;
+        margin: 0 0 4px;
+      
+        color: #172536;
+        font-size: 1.03rem;
+        font-weight: 800;
+        line-height: 1.22;
+      }
+      
+      .public-section-label span {
+        display: block;
+        width: 100%;
+        margin: 0;
+      
+        color: #566575;
+        font-size: 0.88rem;
+        line-height: 1.4;
+      }
 
       .public-section-panel {
         padding: 14px;
