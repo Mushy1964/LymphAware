@@ -232,7 +232,7 @@
 .home-page .hero-phone-profile-image {
   display: block;
   width: 100%;
-  height: calc(100% - 20px);
+  height: calc(100% - 24px);
   margin-top: 24px;
   object-fit: fill;
   object-position: center;
