@@ -141,13 +141,23 @@
       <a href="/about/">About</a>
     </nav>
 
-    <div class="header-actions">
+      <div class="header-actions">
+    
       <a
         href="/sign-in/"
         id="desktop-account-link"
         class="button home-account-button">
         Sign In
       </a>
+    
+      <button
+        type="button"
+        id="desktop-sign-out-button"
+        class="button button-secondary home-sign-out-button"
+        hidden>
+        Sign Out
+      </button>
+    
     </div>
 
     <details class="mobile-menu">
@@ -165,6 +175,15 @@
           class="mobile-primary">
           Sign In
         </a>
+
+        <button
+          type="button"
+          id="mobile-sign-out-button"
+          class="mobile-sign-out-button"
+          hidden>
+          Sign Out
+        </button>
+        
       </nav>
     </details>
 
@@ -1052,6 +1071,16 @@
       'mobile-account-link'
     );
 
+  const desktopSignOutButton =
+    document.getElementById(
+      'desktop-sign-out-button'
+    );
+
+  const mobileSignOutButton =
+    document.getElementById(
+      'mobile-sign-out-button'
+    );
+
 
   function updateAccountLinks(session) {
 
@@ -1067,12 +1096,18 @@
       desktopAccountLink.textContent =
         'Patient Portal';
 
+      desktopSignOutButton.hidden =
+        false;
+
 
       mobileAccountLink.href =
         '/portal/';
 
       mobileAccountLink.textContent =
         'Patient Portal';
+
+      mobileSignOutButton.hidden =
+        false;
 
     } else {
 
@@ -1082,14 +1117,71 @@
       desktopAccountLink.textContent =
         'Sign In';
 
+      desktopSignOutButton.hidden =
+        true;
+
 
       mobileAccountLink.href =
         '/sign-in/';
 
       mobileAccountLink.textContent =
         'Sign In';
+
+      mobileSignOutButton.hidden =
+        true;
     }
   }
+
+
+  async function signOutFromHomepage() {
+
+    desktopSignOutButton.disabled =
+      true;
+
+    mobileSignOutButton.disabled =
+      true;
+
+
+    const { error } =
+      await supabaseClient.auth.signOut();
+
+
+    if (error) {
+
+      console.error(
+        'Unable to sign out:',
+        error
+      );
+
+      desktopSignOutButton.disabled =
+        false;
+
+      mobileSignOutButton.disabled =
+        false;
+
+      return;
+    }
+
+
+    updateAccountLinks(null);
+
+    desktopSignOutButton.disabled =
+      false;
+
+    mobileSignOutButton.disabled =
+      false;
+  }
+
+
+  desktopSignOutButton.addEventListener(
+    'click',
+    signOutFromHomepage
+  );
+
+  mobileSignOutButton.addEventListener(
+    'click',
+    signOutFromHomepage
+  );
 
 
   async function checkAccountSession() {
@@ -1112,6 +1204,7 @@
 
 
   checkAccountSession();
+
 </script>
 
   
