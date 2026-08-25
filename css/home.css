@@ -800,3 +800,277 @@
   }
 
 }
+
+/* =========================================================
+   SEE LYMPHAWARE IN ACTION
+   ========================================================= */
+
+.home-page .home-demo-section {
+  margin-top: 64px;
+  padding: 58px 46px;
+
+  border: 1px solid #dfe7eb;
+  border-radius: 24px;
+
+  background:
+    radial-gradient(
+      circle at 85% 20%,
+      rgba(40, 120, 184, 0.08),
+      transparent 34%
+    ),
+    linear-gradient(
+      135deg,
+      #f9fcfa 0%,
+      #f7fbfd 100%
+    );
+}
+
+
+.home-page .home-demo-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(420px, 1.15fr);
+  align-items: center;
+  gap: 56px;
+}
+
+
+.home-page .home-demo-copy {
+  max-width: 520px;
+}
+
+
+.home-page .home-demo-eyebrow {
+  margin: 0 0 8px;
+
+  color: #16853f;
+  font-size: 0.88rem;
+  font-weight: 800;
+
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+
+.home-page .home-demo-copy h2 {
+  margin: 0 0 16px;
+
+  color: #17283d;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  line-height: 1.12;
+  letter-spacing: -1px;
+}
+
+
+.home-page .home-demo-intro {
+  margin: 0 0 28px;
+
+  color: #5b6873;
+  font-size: 1.03rem;
+  line-height: 1.6;
+}
+
+
+.home-page .home-demo-options {
+  display: grid;
+  gap: 18px;
+}
+
+
+.home-page .home-demo-option {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 13px;
+  align-items: start;
+}
+
+
+.home-page .home-demo-option-number {
+  width: 30px;
+  height: 30px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: #1768b0;
+  color: white;
+
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+
+.home-page .home-demo-option h3 {
+  margin: 2px 0 4px;
+
+  color: #17283d;
+  font-size: 1rem;
+}
+
+
+.home-page .home-demo-option p {
+  margin: 0;
+
+  color: #5b6873;
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+
+
+.home-page .home-demo-note {
+  margin: 24px 0 0;
+  padding-top: 18px;
+
+  border-top: 1px solid #dfe7eb;
+
+  color: #6b7782;
+  font-size: 0.87rem;
+  line-height: 1.45;
+}
+
+
+/* DEMO CARD */
+
+.home-page .home-demo-card-area {
+  text-align: center;
+}
+
+
+.home-page .home-demo-label {
+  display: inline-block;
+
+  margin-bottom: 16px;
+  padding: 7px 14px;
+
+  border-radius: 999px;
+
+  background: #eef7f0;
+  color: #16853f;
+
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+
+.home-page .home-demo-card-link {
+  display: block;
+  width: 100%;
+  max-width: 590px;
+
+  margin: 0 auto;
+
+  border-radius: 18px;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.home-page .home-demo-card-link:hover,
+.home-page .home-demo-card-link:focus {
+  transform: translateY(-3px);
+}
+
+
+.home-page .home-demo-card-link:focus-visible {
+  outline: 4px solid rgba(40, 120, 184, 0.25);
+  outline-offset: 6px;
+}
+
+
+.home-page .home-demo-card-image {
+  display: block;
+  width: 100%;
+  height: auto;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 22px 48px rgba(31, 47, 66, 0.15),
+    0 5px 14px rgba(31, 47, 66, 0.08);
+}
+
+
+.home-page .home-demo-profile-link {
+  display: inline-block;
+
+  margin-top: 18px;
+
+  color: #1768b0;
+
+  font-size: 0.96rem;
+  font-weight: 800;
+}
+
+
+.home-page .home-demo-profile-link:hover,
+.home-page .home-demo-profile-link:focus {
+  text-decoration: underline;
+}
+
+
+/* DEMONSTRATION — TABLET */
+
+@media (max-width: 900px) {
+
+  .home-page .home-demo-section {
+    padding: 44px 32px;
+  }
+
+  .home-page .home-demo-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .home-page .home-demo-copy {
+    max-width: 680px;
+  }
+
+  .home-page .home-demo-card-link {
+    max-width: 620px;
+  }
+
+}
+
+
+/* DEMONSTRATION — MOBILE */
+
+@media (max-width: 520px) {
+
+  .home-page .home-demo-section {
+    margin-top: 46px;
+    padding: 34px 18px;
+
+    border-radius: 18px;
+  }
+
+  .home-page .home-demo-grid {
+    gap: 32px;
+  }
+
+  .home-page .home-demo-copy h2 {
+    font-size: 2rem;
+  }
+
+  .home-page .home-demo-intro {
+    font-size: 1rem;
+  }
+
+  .home-page .home-demo-option {
+    grid-template-columns: 30px 1fr;
+    gap: 11px;
+  }
+
+  .home-page .home-demo-option-number {
+    width: 28px;
+    height: 28px;
+  }
+
+  .home-page .home-demo-card-link,
+  .home-page .home-demo-card-image {
+    border-radius: 12px;
+  }
+
+}
