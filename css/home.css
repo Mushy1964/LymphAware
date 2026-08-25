@@ -16,7 +16,7 @@
 }
 
 .home-page .home-header .header-logo {
-  width: 340px;
+  width: 390px;
   max-width: 100%;
   height: auto;
 }
@@ -390,10 +390,10 @@
   }
 
     .home-page .home-header .header-logo {
-        width: 270px;
-        max-width: calc(100vw - 165px);
-        height: auto;
-      }
+     width: 300px;
+     max-width: calc(100vw - 150px);
+     height: auto;
+   }
 
   .home-page .home-hero {
     padding: 38px 0 44px;
