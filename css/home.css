@@ -1986,3 +1986,8 @@
   cursor: pointer;
 }
 
+.home-page .home-sign-out-button[hidden],
+.home-page .mobile-sign-out-button[hidden] {
+  display: none !important;
+}
+
