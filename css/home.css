@@ -229,21 +229,12 @@
   background: white;
 }
 
-.home-page .hero-phone-screen iframe {
-  position: absolute;
-  top: 16px;
-  left: 0;
-
-  width: 390px;
-  height: 780px;
-
-  border: 0;
-  background: white;
-
-  transform: scale(0.606);
-  transform-origin: top left;
-
-  pointer-events: none;
+.home-page .hero-phone-profile-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
 }
 
 
@@ -271,10 +262,6 @@
   .home-page .hero-phone {
     width: 225px;
     height: 450px;
-  }
-
-  .home-page .hero-phone-screen iframe {
-    transform: scale(0.518);
   }
 
 }
@@ -404,15 +391,7 @@
     border-radius: 24px;
   }
 
-   .home-page .hero-phone-screen iframe {
-     top: 14px;
-     width: 390px;
-     height: 780px;
-     transform: scale(0.405);
-     transform-origin: top left;
-   }
-
-  .home-page .hero-phone-speaker {
+    .home-page .hero-phone-speaker {
     top: 12px;
     width: 64px;
     height: 16px;
