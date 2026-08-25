@@ -27,11 +27,30 @@
       margin: 0 auto;
     }
 
-    .header-logo {
+     .header-logo {
       display: block;
-      width: min(100%, 420px);
+      width: 340px;
+      max-width: 100%;
       height: auto;
     }
+    
+    
+    /* PORTAL HEADER */
+    
+    .portal-header .header-inner {
+      width: min(1280px, calc(100% - 48px));
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    
+    .portal-header .header-actions {
+      flex: 0 0 auto;
+    }
+    
+    .portal-header .header-actions .button {
+      white-space: nowrap;
+    }
+    
     .portal-welcome {
       margin-bottom: 30px;
     }
@@ -103,6 +122,26 @@
       font-size: 18px;
       font-weight: 700;
     }
+
+    @media (max-width: 900px) {
+
+  .portal-header .header-inner {
+    width: calc(100% - 32px);
+    gap: 20px;
+  }
+
+  .portal-header .header-logo {
+    width: 280px;
+  }
+
+  .portal-header .header-actions .button {
+    padding-left: 18px;
+    padding-right: 18px;
+    font-size: 0.95rem;
+  }
+
+}
+
     
     @media (max-width: 680px) {
       .portal-page {
@@ -117,11 +156,22 @@
         font-size: 2.2rem;
       }
     
-      .header-logo {
-        width: calc(100% - 32px);
-        max-width: 390px;
-        margin-left: auto;
-        margin-right: auto;
+      .portal-header .header-inner {
+        width: calc(100% - 24px);
+        min-height: 72px;
+        gap: 12px;
+      }
+      
+      .portal-header .header-logo {
+        width: 220px;
+        max-width: calc(100vw - 175px);
+        margin: 0;
+      }
+      
+      .portal-header .header-actions .button {
+        min-height: 44px;
+        padding: 0 14px;
+        font-size: 0.88rem;
       }
     
       .portal-actions {
@@ -253,7 +303,7 @@
 
 <body>
 
-  <header class="site-header">
+ <header class="site-header portal-header">
     <div class="container header-inner">
 
       <a href="/" class="header-brand" aria-label="LymphAware home">
