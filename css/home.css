@@ -1276,9 +1276,8 @@
    ========================================================= */
 
 .home-page .home-control-section {
-  width: calc(100% - 56px);
-  max-width: 1380px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   padding: 72px 0;
 
   border: 1px solid #e7edf1;
@@ -1294,7 +1293,7 @@
 
 .home-page .home-control-grid {
   width: 100%;
-  margin: 0 auto;
+  margin: 0;
   padding: 0 46px;
 
   display: grid;
