@@ -67,7 +67,7 @@
 
 .home-page .home-hero {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   padding: 42px 0 48px;
 
   background:
