@@ -307,6 +307,10 @@
   line-height: 1.4;
 }
 
+.home-page .home-hero {
+  padding-bottom: 38px;
+}
+
 /* TABLET */
 
 @media (max-width: 1100px) {
