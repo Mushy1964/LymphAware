@@ -65,6 +65,11 @@
   gap: 10px;
 }
 
+.home-page .header-actions .button {
+  min-width: 150px;
+  justify-content: center;
+}
+
 .home-page .home-sign-out-button {
   min-height: 46px;
   padding: 0 20px;
