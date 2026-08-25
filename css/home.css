@@ -1275,13 +1275,6 @@
    PATIENT CONTROL
    ========================================================= */
 
-.home-page .home-control-container {
-  width: 100%;
-  max-width: none;
-  margin: 0;
-}
-
-
 .home-page .home-control-section {
   width: 100%;
   margin: 0;
@@ -1451,11 +1444,6 @@
 /* MOBILE */
 
 @media (max-width: 520px) {
-
-  .home-page .home-control-container {
-    width: 100%;
-    margin: 0;
-  }
 
   .home-page .home-control-section {
     width: 100%;
