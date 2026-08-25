@@ -1276,10 +1276,11 @@
    ========================================================= */
 
 .home-page .home-control-section {
-  margin: 0;
+  margin: 0 38px;
   padding: 72px 0;
 
-  border-top: 1px solid #e7edf1;
+  border: 1px solid #e7edf1;
+  border-radius: 24px;
 
   background:
     linear-gradient(
@@ -1444,9 +1445,11 @@
 
 @media (max-width: 520px) {
 
-  .home-page .home-control-section {
-    padding: 52px 0;
-  }
+   .home-page .home-control-section {
+     margin: 0 14px;
+     padding: 52px 0;
+     border-radius: 18px;
+   }
 
   .home-page .home-control-grid {
     width: min(100% - 28px, 1180px);
