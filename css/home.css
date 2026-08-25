@@ -1276,9 +1276,13 @@
    ========================================================= */
 
 .home-page .home-control-section {
-  width: calc(100% - 56px);
+  width: calc(100vw - 56px);
   max-width: none;
-  margin: 0 auto;
+
+  margin-left: 50%;
+  margin-right: 0;
+  transform: translateX(-50%);
+
   padding: 72px 0;
 
   border: 1px solid #e7edf1;
