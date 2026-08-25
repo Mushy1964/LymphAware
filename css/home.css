@@ -154,14 +154,6 @@
 
 /* Hide the How It Works hero button on larger screens */
 
-@media (min-width: 981px) {
-
-  .home-page .home-hero-actions a[href="#how-it-works"] {
-    display: none;
-  }
-
-}
-
 
 /* PRODUCT VISUAL */
 
