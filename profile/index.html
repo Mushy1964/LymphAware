@@ -124,7 +124,25 @@
       font-size: 18px;
       font-weight: 700;
     }
+
+        @media (max-width: 900px) {
     
+      .profile-header .header-inner {
+        width: calc(100% - 32px);
+        gap: 20px;
+      }
+    
+      .profile-header .header-logo {
+        width: 280px;
+      }
+    
+      .profile-header .header-actions .button {
+        padding-left: 18px;
+        padding-right: 18px;
+        font-size: 0.95rem;
+      }
+    
+    }
     
     @media (max-width: 680px) {
       .profile-page {
@@ -144,6 +162,25 @@
         grid-template-columns: 1fr;
       }
 
+     .profile-header .header-inner {
+        width: calc(100% - 24px);
+        min-height: 72px;
+        gap: 12px;
+      }
+      
+      .profile-header .header-logo {
+        width: 220px;
+        max-width: calc(100vw - 175px);
+        margin: 0;
+      }
+      
+      .profile-header .header-actions .button {
+        min-height: 44px;
+        padding: 0 14px;
+        font-size: 0.88rem;
+      }
+
+      
       .profile-header h1 {
         font-size: 2.2rem;
       }
@@ -402,13 +439,30 @@
         gap: 18px;
       }
     
-      .header-logo {
-        width: calc(100% - 32px);
-        max-width: 390px;
-        margin-left: auto;
-        margin-right: auto;
+       .header-logo {
+        display: block;
+        width: 340px;
+        max-width: 100%;
+        height: auto;
       }
-    }
+      
+      /* PROFILE HEADER */
+      
+      .profile-header .header-inner {
+        width: min(1280px, calc(100% - 48px));
+        max-width: 1280px;
+        margin: 0 auto;
+      }
+      
+      .profile-header .header-actions {
+        flex: 0 0 auto;
+      }
+      
+      .profile-header .header-actions .button {
+        white-space: nowrap;
+      }
+      
+    )
     
     .qr-visibility-control.no-divider {
       border-top: 0 !important;
@@ -512,7 +566,7 @@
 
 <body>
 
-  <header class="site-header">
+<header class="site-header profile-header">
     <div class="container header-inner">
 
       <a href="/" class="header-brand" aria-label="LymphAware home">
