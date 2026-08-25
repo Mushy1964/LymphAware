@@ -152,6 +152,16 @@
   border-radius: 10px;
 }
 
+/* Hide the How It Works hero button on larger screens */
+
+@media (min-width: 981px) {
+
+  .home-page .home-hero-actions a[href="#how-it-works"] {
+    display: none;
+  }
+
+}
+
 
 /* PRODUCT VISUAL */
 
@@ -1801,3 +1811,16 @@
   }
 
 }
+/* Anchor scroll positioning */
+.home-page #how-it-works,
+.home-page #sample-card {
+  scroll-margin-top: 110px;
+}
+
+@media (max-width: 680px) {
+  .home-page #how-it-works,
+  .home-page #sample-card {
+    scroll-margin-top: 90px;
+  }
+}
+
