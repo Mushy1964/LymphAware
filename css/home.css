@@ -390,10 +390,10 @@
   }
 
     .home-page .home-header .header-logo {
-     width: 240px;
-     max-width: calc(100vw - 145px);
-     height: auto;
-   }
+        width: 270px;
+        max-width: calc(100vw - 165px);
+        height: auto;
+      }
 
   .home-page .home-hero {
     padding: 38px 0 44px;
