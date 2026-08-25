@@ -59,6 +59,18 @@
   color: white;
 }
 
+.home-page .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home-page .home-sign-out-button {
+  min-height: 46px;
+  padding: 0 20px;
+  border-radius: 10px;
+}
+
 .home-page .home-account-button:hover,
 .home-page .home-account-button:focus {
   background: var(--green-dark);
@@ -1950,5 +1962,18 @@
     margin: 0;
   }
 
+}
+.home-page .mobile-sign-out-button {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 8px;
+  padding: 10px 14px;
+  border: 1px solid #cfd9df;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #17283d;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
 }
 
