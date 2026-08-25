@@ -316,67 +316,112 @@
 
 /* PHONE */
 
+/* PHONE */
+
 @media (max-width: 680px) {
 
+  .home-page {
+    overflow-x: hidden;
+  }
+
   .home-page .home-header .header-logo {
-    width: 220px;
+    width: 210px;
   }
 
   .home-page .home-hero {
-    padding: 40px 0 46px;
+    padding: 38px 0 44px;
+    overflow: hidden;
   }
 
   .home-page .home-hero-grid {
-    gap: 34px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+    min-height: 0;
+  }
+
+  .home-page .home-hero-content {
+    width: 100%;
+    max-width: 100%;
   }
 
   .home-page .home-hero-title {
-    margin-bottom: 22px;
-    font-size: clamp(2.65rem, 12vw, 3.6rem);
-    line-height: 1.05;
-    letter-spacing: -1.8px;
+    margin: 0 0 22px;
+    font-size: clamp(2.35rem, 10vw, 3rem);
+    line-height: 1.08;
+    letter-spacing: -1.3px;
+  }
+
+  .home-page .home-hero-title span {
+    display: block;
+    white-space: normal;
   }
 
   .home-page .home-hero-copy {
-    font-size: 1.04rem;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 26px;
+    font-size: 1.03rem;
+    line-height: 1.6;
   }
 
   .home-page .home-hero-actions {
+    display: flex;
     flex-direction: column;
+    width: 100%;
+    gap: 12px;
   }
 
   .home-page .home-hero-actions .button {
     width: 100%;
+    min-height: 50px;
   }
 
   .home-page .home-hero-product {
-    min-height: 400px;
+    position: relative;
+    width: 100%;
+    max-width: 430px;
+    min-height: 350px;
+    margin: 4px auto 0;
+  }
+
+  .home-page .hero-phone {
+    top: 0;
+    right: 0;
+    width: 178px;
+    height: 356px;
+    padding: 8px;
+    border-radius: 32px;
+  }
+
+  .home-page .hero-phone-screen {
+    border-radius: 24px;
+  }
+
+  .home-page .hero-phone-screen iframe {
+    width: 390px;
+    height: 780px;
+    transform: scale(0.405);
+    transform-origin: top left;
+  }
+
+  .home-page .hero-phone-speaker {
+    top: 12px;
+    width: 64px;
+    height: 16px;
   }
 
   .home-page .hero-card-wrap {
     left: 0;
-    top: 145px;
-    width: 75%;
+    top: 150px;
+    width: 72%;
+    max-width: 300px;
+    transform: rotate(-1deg);
   }
 
-  .home-page .hero-phone {
-    right: 0;
-    width: 190px;
-    height: 380px;
-    border-radius: 34px;
-  }
-
-  .home-page .hero-phone-screen {
-    border-radius: 25px;
-  }
-
-  .home-page .hero-phone-screen iframe {
-    transform: scale(0.43);
-  }
-
-  .home-page .hero-phone-speaker {
-    width: 68px;
-    height: 17px;
+  .home-page .hero-demo-card {
+    width: 100%;
+    height: auto;
   }
 
 }
