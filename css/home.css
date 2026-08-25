@@ -1275,10 +1275,16 @@
    PATIENT CONTROL
    ========================================================= */
 
+.home-page .home-control-container {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+
 .home-page .home-control-section {
   width: 100%;
   margin: 0;
-  padding: 72px 0;
+  padding: 72px 46px;
 
   border: 1px solid #e7edf1;
   border-radius: 24px;
@@ -1291,10 +1297,10 @@
     );
 }
 
+
 .home-page .home-control-grid {
   width: 100%;
   margin: 0;
-  padding: 0 46px;
 
   display: grid;
   grid-template-columns: minmax(420px, 0.8fr) minmax(520px, 1.2fr);
