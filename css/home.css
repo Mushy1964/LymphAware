@@ -12,11 +12,13 @@
 }
 
 .home-page .home-header .header-inner {
-  min-height: 82px;
+  min-height: 92px;
 }
 
 .home-page .home-header .header-logo {
-  width: 300px;
+  width: 340px;
+  max-width: 100%;
+  height: auto;
 }
 
 .home-page .home-nav {
@@ -256,9 +258,9 @@
     gap: 18px;
   }
 
-  .home-page .home-header .header-logo {
-    width: 250px;
-  }
+.home-page .home-header .header-logo {
+  width: 290px;
+}
 
   .home-page .hero-card-wrap {
     width: 66%;
@@ -324,9 +326,11 @@
     overflow-x: hidden;
   }
 
-  .home-page .home-header .header-logo {
-    width: 210px;
-  }
+    .home-page .home-header .header-logo {
+     width: 240px;
+     max-width: calc(100vw - 145px);
+     height: auto;
+   }
 
   .home-page .home-hero {
     padding: 38px 0 44px;
