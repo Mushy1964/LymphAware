@@ -150,6 +150,8 @@
   min-height: 48px;
   padding: 0 24px;
   border-radius: 10px;
+    min-width: 224px;
+  justify-content: center;
 }
 
 /* Hide the How It Works hero button on larger screens */
@@ -397,7 +399,10 @@
     padding: 38px 0 44px;
     overflow: hidden;
   }
-
+   
+   .home-page .home-hero-actions .button {
+     min-width: 0;
+   }
   .home-page .home-hero-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
