@@ -278,18 +278,27 @@
 .home-page .home-membership-items {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 12px;
 }
 
 .home-page .home-membership-card {
-  min-height: 64px;
+  min-height: 90px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 10px;
   border: 1px solid #dbe6e0;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.72);
+  text-align: center;
+}
+
+.home-page .home-membership-card strong {
+  color: #17283d;
+  font-size: 0.9rem;
+  line-height: 1.25;
 }
 
 .home-page .home-membership-icon {
@@ -534,15 +543,23 @@
 
 .home-page .home-membership-items {
   grid-template-columns: 1fr;
-  gap: 14px;
+  gap: 12px;
 }
 
-.home-page .home-membership-item {
-  font-size: 0.9rem;
+.home-page .home-membership-card {
+  min-height: 76px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  text-align: left;
 }
 
-.home-page .home-membership-item strong {
+.home-page .home-membership-card strong {
   font-size: 0.98rem;
+  line-height: 1.25;
 }
    
 }
