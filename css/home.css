@@ -1891,3 +1891,64 @@
   }
 }
 
+/* =========================================================
+   MOBILE HERO SEQUENCE
+   Phone only
+   ========================================================= */
+
+@media (max-width: 680px) {
+
+  .home-page .home-hero-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /*
+    Allows the individual parts inside home-hero-content
+    to be reordered on mobile only.
+  */
+  .home-page .home-hero-content {
+    display: contents;
+  }
+
+  /* 1. Main heading */
+  .home-page .home-hero-title {
+    order: 1;
+    width: 100%;
+  }
+
+  /* 2. Introductory explanation */
+  .home-page .home-hero-copy {
+    order: 2;
+    width: 100%;
+    margin-bottom: 22px;
+  }
+
+  /* 3. Card and phone visual */
+  .home-page .home-hero-product {
+    order: 3;
+    width: 100%;
+    max-width: 430px;
+    min-height: 350px;
+    margin: 0 auto 28px;
+  }
+
+  /* 4. Membership benefits */
+  .home-page .home-membership-summary {
+    order: 4;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0;
+    margin-bottom: 26px;
+  }
+
+  /* 5. Sign Up and View sample card buttons */
+  .home-page .home-hero-actions {
+    order: 5;
+    width: 100%;
+    margin: 0;
+  }
+
+}
+
