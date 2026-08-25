@@ -209,35 +209,41 @@
       outline-offset: 2px;
     }
 
-  .public-section-icon {
-  width: 48px;
-  height: 48px;
+.public-section-icon {
+  width: 50px;
+  height: 50px;
 
   display: grid;
   place-items: center;
 
+  flex: 0 0 50px;
   border-radius: 14px;
 }
 
 .public-section-icon.green {
-  background: #e7f5eb;
+  background: #e3f4e8;
   color: #07883e;
 }
 
 .public-section-icon.blue {
-  background: #e8f2fb;
+  background: #e3f0fb;
   color: #0870c5;
 }
 
 .public-section-icon svg {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
 
   fill: none;
   stroke: currentColor;
-  stroke-width: 3.1;
+  stroke-width: 3.5;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+#emergency-section .public-section-icon svg {
+  width: 31px;
+  height: 31px;
 }
 
     /* =====================================================
@@ -513,15 +519,23 @@
         padding: 9px 10px;
       }
 
-      .public-section-icon {
-        width: 40px;
-        height: 40px;
-      }
-
-      .public-section-icon svg {
-        width: 27px;
-        height: 27px;
-      }
+     .public-section-icon {
+          width: 48px;
+          height: 48px;
+          flex-basis: 48px;
+          border-radius: 14px;
+        }
+        
+        .public-section-icon svg {
+          width: 35px;
+          height: 35px;
+          stroke-width: 3.6;
+        }
+        
+        #emergency-section .public-section-icon svg {
+          width: 30px;
+          height: 30px;
+        }
 
       .public-section-label strong {
         font-size: 0.94rem;
