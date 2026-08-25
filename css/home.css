@@ -91,9 +91,9 @@
 
 .home-page .home-hero-grid {
   display: grid;
-  grid-template-columns: minmax(420px, 0.9fr) minmax(560px, 1.1fr);
+  grid-template-columns: minmax(520px, 1fr) minmax(520px, 1fr);
   align-items: center;
-  gap: 48px;
+  gap: 38px;
   min-height: 470px;
 }
 
@@ -107,14 +107,15 @@
 
 .home-page .home-hero-title {
   margin: 0 0 22px;
-  font-size: clamp(2.8rem, 3.7vw, 4rem);
-  line-height: 1.08;
-  letter-spacing: -2px;
+  font-size: clamp(2.7rem, 3.3vw, 3.75rem);
+  line-height: 1.1;
+  letter-spacing: -1.8px;
   font-weight: 800;
 }
 
 .home-page .home-hero-title span {
   display: block;
+  white-space: nowrap;
 }
 
 .home-page .hero-line-dark {
