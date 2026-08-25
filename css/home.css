@@ -278,20 +278,27 @@
 .home-page .home-membership-items {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  align-items: start;
+  gap: 14px;
+  width: 100%;
+  padding: 18px 20px;
+
+  border: 1px solid #dbe6e0;
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.82);
 }
 
 .home-page .home-membership-card {
-  min-height: 118px;
+  min-height: 110px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 14px 10px;
-  border: none;
-  border-radius: 16px;
+
+  gap: 9px;
+  padding: 8px;
+
+  border: 0;
   background: transparent;
   text-align: center;
 }
