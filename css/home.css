@@ -1270,3 +1270,212 @@
   }
 
 }
+
+/* =========================================================
+   PATIENT CONTROL
+   ========================================================= */
+
+.home-page .home-control-section {
+  margin: 0;
+  padding: 72px 0;
+
+  border-top: 1px solid #e7edf1;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f8faf9 0%,
+      #f6fafc 100%
+    );
+}
+
+
+.home-page .home-control-grid {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: minmax(420px, 0.8fr) minmax(520px, 1.2fr);
+  align-items: center;
+  gap: 76px;
+}
+
+
+/* LEFT SIDE */
+
+.home-page .home-control-copy {
+  max-width: 540px;
+}
+
+
+.home-page .home-control-eyebrow {
+  margin: 0 0 12px;
+
+  color: #16853f;
+  font-size: 1.05rem;
+  font-weight: 800;
+
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+
+.home-page .home-control-copy h2 {
+  margin: 0 0 22px;
+
+  color: #17283d;
+  font-size: clamp(2.7rem, 4vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: -1.8px;
+}
+
+
+.home-page .home-control-lead {
+  margin: 0 0 16px;
+
+  color: #344456;
+  font-size: 1.12rem;
+  line-height: 1.6;
+}
+
+
+.home-page .home-control-copy > p:last-child {
+  margin: 0;
+
+  color: #5b6873;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+
+/* RIGHT SIDE */
+
+.home-page .home-control-actions {
+  display: grid;
+  gap: 16px;
+}
+
+
+.home-page .home-control-item {
+  display: grid;
+  grid-template-columns: 62px 1fr;
+  gap: 20px;
+  align-items: center;
+
+  padding: 22px 24px;
+
+  border: 1px solid #dfe7eb;
+  border-radius: 18px;
+
+  background: #ffffff;
+}
+
+
+.home-page .home-control-icon {
+  width: 58px;
+  height: 58px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 16px;
+}
+
+
+.home-page .home-control-icon-green {
+  background: #eef7f0;
+  color: #16853f;
+}
+
+
+.home-page .home-control-icon-blue {
+  background: #eef6fb;
+  color: #1768b0;
+}
+
+
+.home-page .home-control-icon svg {
+  width: 38px;
+  height: 38px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+.home-page .home-control-item h3 {
+  margin: 0 0 5px;
+
+  color: #17283d;
+  font-size: 1.08rem;
+  line-height: 1.3;
+}
+
+
+.home-page .home-control-item p {
+  margin: 0;
+
+  color: #5b6873;
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+
+
+/* TABLET */
+
+@media (max-width: 900px) {
+
+  .home-page .home-control-grid {
+    grid-template-columns: 1fr;
+    gap: 38px;
+  }
+
+  .home-page .home-control-copy {
+    max-width: 680px;
+  }
+
+}
+
+
+/* MOBILE */
+
+@media (max-width: 520px) {
+
+  .home-page .home-control-section {
+    padding: 52px 0;
+  }
+
+  .home-page .home-control-grid {
+    width: min(100% - 28px, 1180px);
+    gap: 30px;
+  }
+
+  .home-page .home-control-copy h2 {
+    font-size: 2.65rem;
+  }
+
+  .home-page .home-control-lead {
+    font-size: 1.04rem;
+  }
+
+  .home-page .home-control-item {
+    grid-template-columns: 52px 1fr;
+    gap: 15px;
+    padding: 20px 18px;
+  }
+
+  .home-page .home-control-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+  }
+
+  .home-page .home-control-icon svg {
+    width: 34px;
+    height: 34px;
+  }
+
+}
