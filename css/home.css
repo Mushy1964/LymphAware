@@ -2098,3 +2098,80 @@
   }
 
 }
+
+/* MOBILE MEMBERSHIP — CENTRED SINGLE CARD */
+
+@media (max-width: 680px) {
+
+  .home-page .home-membership-summary {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto 26px;
+    text-align: center;
+  }
+
+  .home-page .home-membership-heading {
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  .home-page .home-membership-summary .home-membership-items {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 10px;
+
+    width: 100%;
+    padding: 18px 12px;
+
+    border: 1px solid #dbe6e0;
+    border-radius: 18px;
+
+    background: rgba(255, 255, 255, 0.82);
+  }
+
+  .home-page .home-membership-summary .home-membership-card {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: 8px;
+    padding: 0;
+
+    border: 0;
+    background: transparent;
+    text-align: center;
+  }
+
+  .home-page .home-membership-icon {
+    width: 64px;
+    height: 64px;
+    flex: 0 0 64px;
+    margin: 0 auto;
+
+    border-radius: 14px;
+    background: #f4faf6;
+  }
+
+  .home-page .home-membership-icon svg {
+    width: 48px;
+    height: 48px;
+  }
+
+  .home-page .home-membership-card strong {
+    width: 100%;
+    font-size: 0.82rem;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .home-page .home-membership-closing {
+    margin-top: 14px;
+    text-align: center;
+  }
+
+}
