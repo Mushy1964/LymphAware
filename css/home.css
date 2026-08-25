@@ -635,3 +635,168 @@
 
 }
 
+/* =========================================================
+   WHEN COULD LYMPHAWARE HELP?
+   ========================================================= */
+
+.home-page .help-scenarios {
+  margin-top: 58px;
+  padding-top: 52px;
+  border-top: 1px solid #e7edf1;
+}
+
+.home-page .help-scenarios-heading {
+  max-width: 760px;
+  margin: 0 auto 34px;
+  text-align: center;
+}
+
+.home-page .help-scenarios-heading h2 {
+  margin: 0 0 10px;
+  color: #17283d;
+  font-size: clamp(2rem, 3vw, 2.7rem);
+  line-height: 1.15;
+  letter-spacing: -1px;
+}
+
+.home-page .help-scenarios-heading p {
+  margin: 0;
+  color: #5b6873;
+  font-size: 1.03rem;
+  line-height: 1.55;
+}
+
+
+.home-page .help-scenarios-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+
+.home-page .help-scenario-card {
+  min-height: 210px;
+  padding: 24px 20px 22px;
+
+  border: 1px solid #dfe7eb;
+  border-radius: 18px;
+  background: #ffffff;
+
+  text-align: left;
+}
+
+
+.home-page .help-scenario-icon {
+  width: 52px;
+  height: 52px;
+
+  display: grid;
+  place-items: center;
+
+  margin-bottom: 17px;
+  border-radius: 15px;
+}
+
+
+.home-page .help-icon-blue {
+  background: #eef6fb;
+  color: #1768b0;
+}
+
+
+.home-page .help-icon-green {
+  background: #eef7f0;
+  color: #16853f;
+}
+
+
+.home-page .help-scenario-icon svg {
+  width: 34px;
+  height: 34px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+.home-page .help-scenario-card h3 {
+  margin: 0 0 9px;
+  color: #17283d;
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
+
+
+.home-page .help-scenario-card p {
+  margin: 0;
+  color: #5b6873;
+  font-size: 0.91rem;
+  line-height: 1.5;
+}
+
+
+/* TABLET */
+
+@media (max-width: 1100px) {
+
+  .home-page .help-scenarios-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+}
+
+
+/* SMALL TABLET */
+
+@media (max-width: 780px) {
+
+  .home-page .help-scenarios-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+
+/* MOBILE */
+
+@media (max-width: 520px) {
+
+  .home-page .help-scenarios {
+    margin-top: 44px;
+    padding-top: 42px;
+  }
+
+  .home-page .help-scenarios-heading {
+    margin-bottom: 28px;
+  }
+
+  .home-page .help-scenarios-heading h2 {
+    font-size: 2rem;
+  }
+
+  .home-page .help-scenarios-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .home-page .help-scenario-card {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    column-gap: 15px;
+    min-height: 0;
+    padding: 20px;
+  }
+
+  .home-page .help-scenario-icon {
+    grid-row: 1 / span 2;
+    margin-bottom: 0;
+  }
+
+  .home-page .help-scenario-card h3 {
+    align-self: end;
+  }
+
+}
