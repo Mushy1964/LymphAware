@@ -235,7 +235,7 @@
 .home-page .hero-phone-profile-image {
   display: block;
   width: 100%;
-  height: calc(100% - 40px);
+  height: calc(100% - 44px);
   margin-top: 30px;
   object-fit: fill;
   object-position: center;
