@@ -303,8 +303,9 @@
 .home-page .home-membership-closing {
   margin: 11px 0 0;
   color: #566575;
-  font-size: 0.86rem;
-  line-height: 1.4;
+  font-size: 1rem;
+  line-height: 1.45;
+  font-weight: 600;
 }
 
 .home-page .home-hero {
