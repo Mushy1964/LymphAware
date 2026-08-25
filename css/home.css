@@ -1,1 +1,381 @@
+/* =========================================================
+   LYMPHAWARE HOMEPAGE
+   Homepage-only styling
+   ========================================================= */
 
+
+/* HEADER */
+
+.home-page .home-header {
+  background: rgba(255, 255, 255, 0.98);
+  border-bottom: 1px solid #e7edf1;
+}
+
+.home-page .home-header .header-inner {
+  min-height: 82px;
+}
+
+.home-page .home-header .header-logo {
+  width: 300px;
+}
+
+.home-page .home-nav {
+  gap: 32px;
+  font-size: 0.94rem;
+  font-weight: 700;
+}
+
+.home-page .home-nav a {
+  position: relative;
+  padding: 29px 0 26px;
+  color: #14243d;
+}
+
+.home-page .home-nav a:hover,
+.home-page .home-nav a:focus {
+  color: var(--blue);
+}
+
+.home-page .home-nav a.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--green);
+}
+
+.home-page .home-account-button {
+  min-width: 132px;
+  min-height: 46px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 10px;
+  background: var(--green);
+  color: white;
+}
+
+.home-page .home-account-button:hover,
+.home-page .home-account-button:focus {
+  background: var(--green-dark);
+}
+
+
+/* HERO */
+
+.home-page .home-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 54px 0 58px;
+
+  background:
+    radial-gradient(
+      circle at 82% 28%,
+      rgba(40, 120, 184, 0.08),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 15% 80%,
+      rgba(76, 155, 87, 0.08),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      #ffffff 0%,
+      #f7fbfd 48%,
+      #f4f9fc 100%
+    );
+}
+
+.home-page .home-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(390px, 0.82fr) minmax(560px, 1.18fr);
+  align-items: center;
+  gap: 52px;
+  min-height: 500px;
+}
+
+
+/* HERO COPY */
+
+.home-page .home-hero-content {
+  position: relative;
+  z-index: 5;
+}
+
+.home-page .home-hero-title {
+  margin: 0 0 26px;
+  font-size: clamp(3rem, 4.5vw, 4.6rem);
+  line-height: 1.08;
+  letter-spacing: -2.3px;
+  font-weight: 800;
+}
+
+.home-page .home-hero-title span {
+  display: block;
+}
+
+.home-page .hero-line-dark {
+  color: #10284a;
+}
+
+.home-page .hero-line-blue {
+  color: #1768b0;
+}
+
+.home-page .hero-line-green {
+  color: #16853f;
+}
+
+.home-page .home-hero-copy {
+  max-width: 590px;
+  margin: 0 0 30px;
+  color: #344456;
+  font-size: 1.11rem;
+  line-height: 1.6;
+}
+
+.home-page .home-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.home-page .home-hero-actions .button {
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: 10px;
+}
+
+
+/* PRODUCT VISUAL */
+
+.home-page .home-hero-product {
+  position: relative;
+  min-height: 480px;
+}
+
+
+/* CARD */
+
+.home-page .hero-card-wrap {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  top: 155px;
+  width: 61%;
+  max-width: 510px;
+  transform: rotate(-1.3deg);
+}
+
+.home-page .hero-demo-card {
+  width: 100%;
+  height: auto;
+  border-radius: 15px;
+  box-shadow:
+    0 22px 45px rgba(31, 47, 66, 0.17),
+    0 5px 14px rgba(31, 47, 66, 0.1);
+}
+
+
+/* PHONE */
+
+.home-page .hero-phone {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  top: 0;
+
+  width: 260px;
+  height: 520px;
+
+  padding: 10px;
+
+  border: 3px solid #252525;
+  border-radius: 42px;
+
+  background: #161616;
+
+  box-shadow:
+    0 24px 50px rgba(22, 38, 55, 0.2),
+    0 5px 16px rgba(22, 38, 55, 0.12);
+}
+
+.home-page .hero-phone-speaker {
+  position: absolute;
+  z-index: 5;
+  top: 14px;
+  left: 50%;
+  width: 82px;
+  height: 20px;
+  transform: translateX(-50%);
+  border-radius: 20px;
+  background: #090909;
+}
+
+.home-page .hero-phone-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 31px;
+  background: white;
+}
+
+.home-page .hero-phone-screen iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 390px;
+  height: 780px;
+
+  border: 0;
+  background: white;
+
+  transform: scale(0.606);
+  transform-origin: top left;
+
+  pointer-events: none;
+}
+
+
+/* TABLET */
+
+@media (max-width: 1100px) {
+
+  .home-page .home-hero-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+
+  .home-page .home-nav {
+    gap: 18px;
+  }
+
+  .home-page .home-header .header-logo {
+    width: 250px;
+  }
+
+  .home-page .hero-card-wrap {
+    width: 66%;
+  }
+
+  .home-page .hero-phone {
+    width: 225px;
+    height: 450px;
+  }
+
+  .home-page .hero-phone-screen iframe {
+    transform: scale(0.518);
+  }
+
+}
+
+
+/* MOBILE / SMALL TABLET */
+
+@media (max-width: 980px) {
+
+  .home-page .home-hero {
+    padding: 52px 0 62px;
+  }
+
+  .home-page .home-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 44px;
+  }
+
+  .home-page .home-hero-content {
+    max-width: 700px;
+  }
+
+  .home-page .home-hero-product {
+    width: 100%;
+    max-width: 700px;
+    min-height: 460px;
+    margin: 0 auto;
+  }
+
+  .home-page .hero-card-wrap {
+    left: 2%;
+    top: 145px;
+    width: 68%;
+    max-width: 480px;
+  }
+
+  .home-page .hero-phone {
+    right: 3%;
+  }
+
+}
+
+
+/* PHONE */
+
+@media (max-width: 680px) {
+
+  .home-page .home-header .header-logo {
+    width: 220px;
+  }
+
+  .home-page .home-hero {
+    padding: 40px 0 46px;
+  }
+
+  .home-page .home-hero-grid {
+    gap: 34px;
+  }
+
+  .home-page .home-hero-title {
+    margin-bottom: 22px;
+    font-size: clamp(2.65rem, 12vw, 3.6rem);
+    line-height: 1.05;
+    letter-spacing: -1.8px;
+  }
+
+  .home-page .home-hero-copy {
+    font-size: 1.04rem;
+  }
+
+  .home-page .home-hero-actions {
+    flex-direction: column;
+  }
+
+  .home-page .home-hero-actions .button {
+    width: 100%;
+  }
+
+  .home-page .home-hero-product {
+    min-height: 400px;
+  }
+
+  .home-page .hero-card-wrap {
+    left: 0;
+    top: 145px;
+    width: 75%;
+  }
+
+  .home-page .hero-phone {
+    right: 0;
+    width: 190px;
+    height: 380px;
+    border-radius: 34px;
+  }
+
+  .home-page .hero-phone-screen {
+    border-radius: 25px;
+  }
+
+  .home-page .hero-phone-screen iframe {
+    transform: scale(0.43);
+  }
+
+  .home-page .hero-phone-speaker {
+    width: 68px;
+    height: 17px;
+  }
+
+}
