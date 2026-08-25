@@ -264,8 +264,12 @@
 .home-page .home-membership-summary {
   max-width: 690px;
   margin-top: 22px;
-  padding-top: 16px;
-  border-top: 1px solid #d9e3e6;
+  padding: 22px;
+
+  border: 1px solid #dbe6e0;
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.82);
 }
 
 .home-page .home-membership-heading {
@@ -280,12 +284,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
   width: 100%;
-  padding: 18px 20px;
-
-  border: 1px solid #dbe6e0;
-  border-radius: 18px;
-
-  background: rgba(255, 255, 255, 0.82);
+  padding: 0;
 }
 
 .home-page .home-membership-card {
@@ -296,10 +295,12 @@
   justify-content: center;
 
   gap: 9px;
-  padding: 8px;
+  padding: 14px 10px;
 
-  border: 0;
-  background: transparent;
+  border: 1px solid #dbe8e0;
+  border-radius: 14px;
+
+  background: #f2f8f4;
   text-align: center;
 }
 
