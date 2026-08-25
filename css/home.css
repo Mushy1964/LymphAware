@@ -1276,7 +1276,8 @@
    ========================================================= */
 
 .home-page .home-control-section {
-  width: min(1180px, calc(100% - 40px));
+  width: calc(100% - 56px);
+  max-width: none;
   margin: 0 auto;
   padding: 72px 0;
 
@@ -1295,7 +1296,7 @@
 .home-page .home-control-grid {
   width: 100%;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 40px;
 
   display: grid;
   grid-template-columns: minmax(420px, 0.8fr) minmax(520px, 1.2fr);
