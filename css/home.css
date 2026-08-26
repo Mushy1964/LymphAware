@@ -615,16 +615,11 @@
 }
 
 
-.home-page .how-step-icon {
-  width: 58px;
-  height: 58px;
-
-  display: grid;
-  place-items: center;
-
-  border-radius: 16px;
-  background: #eef7f0;
-  color: #16853f;
+.home-page .how-step-icon-image {
+  display: block;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
 }
 
 
@@ -734,10 +729,10 @@
     border-radius: 14px;
   }
 
-  .home-page .how-step-icon svg {
-    width: 37px;
-    height: 37px;
-  }
+    .home-page .how-step-icon-image {
+     width: 39px;
+     height: 39px;
+   }
 
   .home-page .how-step-copy h3 {
     font-size: 1.04rem;
