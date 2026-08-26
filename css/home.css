@@ -620,6 +620,7 @@
   width: 44px;
   height: 44px;
   object-fit: contain;
+  margin: auto;
 }
 
 
@@ -1489,7 +1490,7 @@
 }
 
 
-.home-page .home-control-icon {
+.home-page .how-step-icon {
   width: 58px;
   height: 58px;
 
@@ -1497,6 +1498,8 @@
   place-items: center;
 
   border-radius: 16px;
+  background: #eef7f0;
+  overflow: hidden;
 }
 
 
