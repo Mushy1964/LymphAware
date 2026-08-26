@@ -314,33 +314,11 @@
   background: #ffffff;
 }
 
-.home-page .home-membership-icon svg {
+.home-page .home-membership-icon-image {
+  display: block;
   width: 64px;
   height: 64px;
-  fill: none;
-  stroke-width: 2.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.home-page .membership-green-stroke {
-  fill: none;
-  stroke: #159447;
-}
-
-.home-page .membership-blue-stroke {
-  fill: none;
-  stroke: #126fbd;
-}
-
-.home-page .membership-green-fill {
-  fill: #159447;
-  stroke: none;
-}
-
-.home-page .membership-blue-fill {
-  fill: #126fbd;
-  stroke: none;
+  object-fit: contain;
 }
 
 .home-page .home-membership-card strong {
