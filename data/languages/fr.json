@@ -3,7 +3,7 @@
     "name": "French",
     "code": "FR",
     "locale": "fr-FR",
-    "status": "DRAFT_REVIEW_REQUIRED"
+    "status": "APPROVED_FIXED_TEXT"
   },
   "card": {
     "patient_status": "PATIENT ATTEINT DE LYMPHŒDÈME",
@@ -69,9 +69,9 @@
     }
   },
   "review_notes": {
-    "purpose": "Draft fixed-text translation for the LymphAware French language package. Do not publish until reviewed and approved.",
+    "purpose": "Approved fixed-text translation for the LymphAware French language package.",
     "patient_entered_content": "Patient-entered profile information is not included in this language pack and must be translated/reviewed separately before publication.",
-    "brand": "The LymphAware logo and English tagline remain unchanged in this draft.",
-    "card_wording": "The French patient-status wording may need layout and native-language review because it is longer than the English card wording."
+    "brand": "The LymphAware logo and English tagline remain unchanged.",
+    "approval_scope": "Fixed card and QR-profile interface wording approved. This approval does not approve or publish patient-entered translated content."
   }
 }
