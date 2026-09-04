@@ -286,3 +286,9 @@
     font-size: 2rem !important;
   }
 }
+
+/* Signed-in members already have direct access to the Patient Portal in the header,
+   so do not continue to show a registration call-to-action in the hero. */
+.home-page:has(#desktop-account-link[href="/portal/"]) .home-hero-actions a[href="/register/"] {
+  display: none !important;
+}
