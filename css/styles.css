@@ -22,6 +22,7 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -74,7 +75,7 @@ svg {
 
 .header-logo {
   display: block;
-  width: 280px;
+  width: 300px;
   max-width: 100%;
   height: auto;
 }
@@ -124,6 +125,8 @@ svg {
   white-space: nowrap;
   border-radius: 9px;
   border: 2px solid transparent;
+  font-size: 1rem !important;
+  line-height: 1.2 !important;
   font-weight: 700;
   cursor: pointer;
   transition: 0.2s ease;
@@ -568,7 +571,7 @@ footer {
 
   .header-logo {
     width: 220px;
-    max-width: 100%;
+    max-width: calc(100vw - 170px);
     height: auto;
   }
 
@@ -581,9 +584,9 @@ footer {
   }
 
   .header-actions .button {
-    min-height: 42px;
+    min-height: 44px;
     padding: 0 14px;
-    font-size: 0.92rem;
+    font-size: 1rem !important;
   }
 
   .hero {
@@ -648,6 +651,8 @@ footer {
   border-radius: 9px;
   background: white;
   color: var(--blue);
+  font-size: 1rem !important;
+  line-height: 1.2 !important;
   font-weight: 700;
   cursor: pointer;
 }
@@ -763,7 +768,7 @@ footer {
 .preview-header .header-inner {
   width: min(1180px, calc(100% - 40px)) !important;
   max-width: 1180px !important;
-  min-height: 92px !important;
+  min-height: 84px !important;
   margin-left: auto !important;
   margin-right: auto !important;
 }
@@ -771,7 +776,7 @@ footer {
 .portal-header .header-logo,
 .profile-site-header .header-logo,
 .preview-header .header-logo {
-  width: 390px !important;
+  width: 300px !important;
   max-width: 100% !important;
   height: auto !important;
 }
@@ -788,9 +793,10 @@ footer {
 .profile-site-header .header-actions .button,
 .preview-header .header-actions .button {
   min-height: 46px !important;
-  padding: 0 22px !important;
-  border-radius: 10px !important;
+  padding: 0 20px !important;
+  border-radius: 9px !important;
   white-space: nowrap !important;
+  font-size: 1rem !important;
 }
 
 .portal-welcome h1,
@@ -810,6 +816,15 @@ footer {
   box-shadow: var(--feature-shadow) !important;
 }
 
+/* Scanner and preview profile logo: one centred size. */
+.public-brand-logo {
+  width: 100% !important;
+  max-width: 430px !important;
+  height: auto !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
 @media (max-width: 680px) {
   .portal-header .header-inner,
   .profile-site-header .header-inner,
@@ -822,7 +837,7 @@ footer {
   .portal-header .header-logo,
   .profile-site-header .header-logo,
   .preview-header .header-logo {
-    width: 300px !important;
+    width: 220px !important;
     max-width: calc(100vw - 170px) !important;
   }
 
@@ -839,14 +854,18 @@ footer {
   .profile-site-header .header-actions .button-secondary,
   .preview-header .header-actions .button-secondary {
     display: inline-flex !important;
-    min-height: 42px !important;
+    min-height: 44px !important;
     padding: 0 14px !important;
-    font-size: 0.9rem !important;
+    font-size: 1rem !important;
   }
 
   .portal-welcome h1,
   .profile-header h1,
   .preview-heading h1 {
     font-size: 2rem !important;
+  }
+
+  .public-brand-logo {
+    max-width: 360px !important;
   }
 }
