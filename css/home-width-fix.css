@@ -64,6 +64,13 @@
   border-bottom: 1px solid #e7edf1 !important;
 }
 
+/* Keep this main heading consistent with the other homepage section headings. */
+.home-page .home-understanding-copy h2 {
+  font-size: clamp(2rem, 3vw, 2.8rem) !important;
+  line-height: 1.15 !important;
+  letter-spacing: -1px !important;
+}
+
 
 /* HOW LYMPHAWARE WORKS */
 
@@ -198,5 +205,9 @@
   .home-page .help-scenarios {
     margin-top: 48px !important;
     padding: 52px 0 !important;
+  }
+
+  .home-page .home-understanding-copy h2 {
+    font-size: 2rem !important;
   }
 }
