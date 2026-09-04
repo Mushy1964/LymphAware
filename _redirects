@@ -1,2 +1,3 @@
-/p/*    /p/index.html    200
+/profile/*    /profile-v2/index.html    200
+/p/*    /p-v2/index.html    200
 /ebp/:token  /.netlify/functions/easybadge-photo?token=:token  200
