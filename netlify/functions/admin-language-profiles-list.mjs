@@ -49,7 +49,7 @@ export default async (request) => {
     };
 
     const languageResponse = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/language_profiles?select=id,user_id,source_profile_id,order_id,order_item_id,language_code,language_name,setup_status,qr_profile_active,card_production_status,created_at,updated_at&order=created_at.asc`,
+      `${process.env.SUPABASE_URL}/rest/v1/language_profiles?select=id,user_id,source_profile_id,order_id,order_item_id,language_code,language_name,setup_status,qr_profile_active,qr_token,card_production_status,created_at,updated_at&order=created_at.asc`,
       { headers: serviceHeaders }
     );
 
