@@ -6,118 +6,209 @@
 
   <title>LymphAware | Helping People Living with Lymphoedema Be Understood</title>
 
-   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/home.css">
-  
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-     .demo-card-section {
+    #how-it-works {
+      padding-bottom: 20px;
+    }
+
+    #about {
+      padding-top: 20px;
+    }
+
+    .home-membership-section,
+    .home-language-section {
       width: 100%;
-      max-width: none;
-      margin: 54px auto 10px;
-      padding: 34px 34px 32px;
-      border: 1px solid var(--border);
+      padding: 72px 0;
+    }
+
+    .home-membership-section {
+      background: linear-gradient(135deg, #f5faf6 0%, #ffffff 52%, #f4f9fc 100%);
+      border-top: 1px solid #e1ebe5;
+      border-bottom: 1px solid #e1eaf0;
+    }
+
+    .home-membership-grid,
+    .home-language-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+      gap: 54px;
+      align-items: center;
+    }
+
+    .home-membership-eyebrow,
+    .home-language-eyebrow {
+      margin: 0 0 10px;
+      color: #16853f;
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .home-language-eyebrow {
+      color: #1768b0;
+    }
+
+    .home-membership-copy h2,
+    .home-language-copy h2 {
+      margin: 0 0 18px;
+      color: #17283d;
+      font-size: clamp(2rem, 3.2vw, 3rem);
+      line-height: 1.12;
+      letter-spacing: -1px;
+    }
+
+    .home-membership-lead,
+    .home-language-lead {
+      margin: 0 0 16px;
+      color: #344456;
+      font-size: 1.08rem;
+      line-height: 1.65;
+    }
+
+    .home-membership-copy > p:not(.home-membership-eyebrow):not(.home-membership-lead),
+    .home-language-copy > p:not(.home-language-eyebrow):not(.home-language-lead) {
+      color: #566575;
+      line-height: 1.65;
+    }
+
+    .home-membership-price-card,
+    .home-language-card {
+      padding: 30px;
+      border: 1px solid #dce8e1;
       border-radius: 22px;
-      background: #f8faf9;
-      box-shadow: none;
-      text-align: center;
+      background: #ffffff;
+      box-shadow: 0 14px 34px rgba(31, 47, 66, 0.08);
     }
 
-  .demo-card-section h3 {
-    margin: 0 0 12px;
-    font-size: 1.8rem;
-  }
+    .home-membership-price-label {
+      margin: 0 0 4px;
+      color: #5b6873;
+      font-weight: 700;
+    }
 
-  .demo-card-intro {
-    max-width: 760px;
-    margin: 0 auto 18px;
-    color: var(--muted);
-    line-height: 1.6;
-  }
+    .home-membership-price {
+      margin: 0;
+      color: #16853f;
+      font-size: clamp(2.7rem, 5vw, 4rem);
+      font-weight: 800;
+      line-height: 1;
+    }
 
-  .demo-card-label {
-    display: inline-block;
-    margin-bottom: 20px;
-    padding: 7px 13px;
-    border-radius: 999px;
-    background: var(--green-light);
-    color: var(--green-dark);
-    font-size: 1.1rem;
-    font-weight: 700;
-  }
+    .home-membership-term {
+      margin: 8px 0 22px;
+      color: #17283d;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
 
-    .demo-card-link {
-      display: block;
+    .home-membership-benefits {
+      display: grid;
+      gap: 10px;
+      margin: 0 0 24px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .home-membership-benefits li {
+      position: relative;
+      padding-left: 28px;
+      color: #344456;
+      line-height: 1.5;
+    }
+
+    .home-membership-benefits li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: #16853f;
+      font-weight: 900;
+    }
+
+    .home-membership-renewal {
+      margin: 0 0 22px;
+      padding: 13px 15px;
+      border-radius: 12px;
+      background: #eef7f0;
+      color: #365443;
+      font-size: 0.96rem;
+      line-height: 1.5;
+    }
+
+    .home-membership-price-card .button {
       width: 100%;
-      max-width: none;
-      margin: 0 auto;
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: none;
-      transition: transform 0.2s ease;
+      justify-content: center;
     }
 
-     .demo-card-link:hover {
-      transform: translateY(-2px);
+    .home-language-section {
+      background: #ffffff;
     }
 
-  .demo-card-link:focus-visible {
-    outline: 4px solid rgba(0, 112, 192, 0.3);
-    outline-offset: 5px;
-  }
+    .home-language-card {
+      border-color: #dce8f1;
+      background: #f7fbfe;
+    }
 
-  .demo-card-image {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
+    .home-language-icon {
+      width: 86px;
+      height: 86px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 18px;
+      border-radius: 22px;
+      background: #eef6fb;
+      color: #1768b0;
+      font-size: 2.6rem;
+      line-height: 1;
+    }
 
-  .demo-card-instruction {
-    max-width: 760px;
-    margin: 20px auto 0;
-    color: var(--muted);
-    line-height: 1.6;
-  }
+    .home-language-card h3 {
+      margin: 0 0 10px;
+      color: #17283d;
+      font-size: 1.35rem;
+    }
 
-@media (max-width: 680px) {
+    .home-language-card p {
+      margin: 0;
+      color: #566575;
+      line-height: 1.65;
+    }
 
-  .demo-card-section {
-    margin-top: 40px;
-    padding: 24px 16px;
-    border-radius: 16px;
-  }
+    .home-language-note {
+      margin-top: 16px !important;
+      padding-top: 16px;
+      border-top: 1px solid #dce8f1;
+      font-weight: 700;
+      color: #355b77 !important;
+    }
 
-  .demo-card-section h3 {
-    font-size: 1.5rem;
-  }
+    @media (max-width: 900px) {
+      .home-membership-grid,
+      .home-language-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+    }
 
-  .demo-card-link {
-    border-radius: 12px;
-  }
+    @media (max-width: 680px) {
+      .home-membership-section,
+      .home-language-section {
+        padding: 52px 0;
+      }
 
-  .hero-visual {
-    width: 100%;
-  }
-
-  .concept-card {
-    width: 100%;
-    max-width: none;
-    margin-left: 0;
-    margin-right: 0;
-  }
-}
-
-
-  #how-it-works {
-    padding-bottom: 20px;
-  }
-  
-  #about {
-    padding-top: 20px;
-  }
-        
-</style>
+      .home-membership-price-card,
+      .home-language-card {
+        padding: 22px;
+        border-radius: 18px;
+      }
+    }
+  </style>
 </head>
 
 <body class="home-page">
@@ -139,15 +230,14 @@
       <a href="/about/">About</a>
     </nav>
 
-      <div class="header-actions">
-    
+    <div class="header-actions">
       <a
         href="/sign-in/"
         id="desktop-account-link"
         class="button home-account-button">
         Sign In
       </a>
-    
+
       <button
         type="button"
         id="desktop-sign-out-button"
@@ -155,7 +245,6 @@
         hidden>
         Sign Out
       </button>
-    
     </div>
 
     <details class="mobile-menu">
@@ -180,823 +269,620 @@
           hidden>
           Sign Out
         </button>
-        
       </nav>
     </details>
 
   </div>
 </header>
 
-  <main>
+<main>
 
-<section class="hero home-hero">
+  <!-- WHAT IS IT? -->
+  <section class="hero home-hero">
+    <div class="container home-hero-grid">
 
-  <div class="container home-hero-grid">
+      <div class="home-hero-content">
+        <h1 class="home-hero-title">
+          <span class="hero-line-dark">Your lymphoedema.</span>
+          <span class="hero-line-blue">Your information.</span>
+          <span class="hero-line-green">Your choice.</span>
+        </h1>
 
-    <div class="home-hero-content">
+        <p class="home-hero-copy">
+          LymphAware is a physical ID card linked to your
+          patient-controlled QR profile. It helps you share key
+          information quickly and clearly — so you can feel confident,
+          understood and in control.
+        </p>
 
-      <h1 class="home-hero-title">
-        <span class="hero-line-dark">Your lymphoedema.</span>
-        <span class="hero-line-blue">Your information.</span>
-        <span class="hero-line-green">Your choice.</span>
-      </h1>
-
-      <p class="home-hero-copy">
-        LymphAware is a physical ID card linked to your
-        patient-controlled QR profile. It helps you share key
-        information quickly and clearly — so you can feel confident,
-        understood and in control.
-      </p>
-
-      <div class="home-hero-actions">
-
-     <a href="/register/" class="button button-primary">
-        Register
-      </a>
-
-      <a
-        href="#sample-card"
-        class="button button-secondary">
-        View sample card
-      </a>
-
-      </div>
-<div class="home-membership-summary">
-
-  <p class="home-membership-heading">
-    Membership includes:
-  </p>
-
-  <div class="home-membership-items">
-
-    <div class="home-membership-card">
-
-      <span class="home-membership-icon" aria-hidden="true">
-        <img
-          src="/assets/icons/ID_Card_Green.svg"
-          alt=""
-          class="home-membership-icon-image">
-      </span>
-
-      <strong>Personal ID card</strong>
-
-    </div>
-
-
-    <div class="home-membership-card">
-
-      <span class="home-membership-icon" aria-hidden="true">
-        <img
-          src="/assets/icons/Lanyard_Blue.svg"
-          alt=""
-          class="home-membership-icon-image">
-      </span>
-
-      <strong>Lanyard &amp; holder</strong>
-
-    </div>
-
-
-    <div class="home-membership-card">
-
-      <span class="home-membership-icon" aria-hidden="true">
-        <img
-          src="/assets/icons/Secure_Portal_Green.svg"
-          alt=""
-          class="home-membership-icon-image">
-      </span>
-
-      <strong>Secure Patient Portal</strong>
-
-    </div>
-
-  </div>
-
-  <p class="home-membership-closing">
-    Your card, your profile and your information — controlled by you.
-  </p>
-
-</div>
-      
-    </div>
-
-
-    <div class="home-hero-product">
-
-      <div class="hero-card-wrap">
-
-        <img
-          class="hero-demo-card"
-          src="/assets/demo/LymphAware_Alex_Morgan_Demo_Card.png"
-          alt="Fictional LymphAware demonstration ID card for Alex Morgan"
-        >
-
-      </div>
-
-
-      <div class="hero-phone" aria-label="Example LymphAware patient profile">
-
-        <div class="hero-phone-speaker"></div>
-
-        <div class="hero-phone-screen">
-        
-          <img
-            class="hero-phone-profile-image"
-            src="/assets/demo/LymphAware_Alex_Morgan_Profile_Phone.png"
-            alt="Example LymphAware patient profile for fictional patient Alex Morgan"
-          >
-        
+        <div class="home-hero-actions">
+          <a href="/register/" class="button button-primary">Register</a>
+          <a href="#sample-card" class="button button-secondary">View sample card</a>
         </div>
 
+        <div class="home-membership-summary">
+          <p class="home-membership-heading">Membership includes:</p>
+
+          <div class="home-membership-items">
+            <div class="home-membership-card">
+              <span class="home-membership-icon" aria-hidden="true">
+                <img src="/assets/icons/ID_Card_Green.svg" alt="" class="home-membership-icon-image">
+              </span>
+              <strong>Personal ID card</strong>
+            </div>
+
+            <div class="home-membership-card">
+              <span class="home-membership-icon" aria-hidden="true">
+                <img src="/assets/icons/Lanyard_Blue.svg" alt="" class="home-membership-icon-image">
+              </span>
+              <strong>Lanyard &amp; holder</strong>
+            </div>
+
+            <div class="home-membership-card">
+              <span class="home-membership-icon" aria-hidden="true">
+                <img src="/assets/icons/Secure_Portal_Green.svg" alt="" class="home-membership-icon-image">
+              </span>
+              <strong>Secure Patient Portal</strong>
+            </div>
+          </div>
+
+          <p class="home-membership-closing">
+            Your card, your profile and your information — controlled by you.
+          </p>
+        </div>
+      </div>
+
+      <div class="home-hero-product">
+        <div class="hero-card-wrap">
+          <img
+            class="hero-demo-card"
+            src="/assets/demo/LymphAware_Alex_Morgan_Demo_Card.png"
+            alt="Fictional LymphAware demonstration ID card for Alex Morgan"
+          >
+        </div>
+
+        <div class="hero-phone" aria-label="Example LymphAware patient profile">
+          <div class="hero-phone-speaker"></div>
+          <div class="hero-phone-screen">
+            <img
+              class="hero-phone-profile-image"
+              src="/assets/demo/LymphAware_Alex_Morgan_Profile_Phone.png"
+              alt="Example LymphAware patient profile for fictional patient Alex Morgan"
+            >
+          </div>
+        </div>
       </div>
 
     </div>
+  </section>
 
-  </div>
+  <!-- WHY DOES IT EXIST? -->
+  <section id="about" class="home-understanding-section">
+    <div class="home-understanding-grid">
 
-</section>
+      <div class="home-understanding-copy">
+        <p class="home-understanding-eyebrow">Why LymphAware?</p>
+        <h2>Less explaining.<br>More understanding.</h2>
 
-          <section id="how-it-works" class="content-section">
-            <div class="container">
-      
-             <div class="how-heading">
+        <p class="home-understanding-lead">
+          Living with lymphoedema can mean repeatedly having to explain
+          your condition, your needs and the support that may help you.
+        </p>
+
+        <p>
+          LymphAware provides a simple way to share information you have
+          chosen to make available, using a physical ID card and your
+          QR-linked profile.
+        </p>
+      </div>
+
+      <div class="home-understanding-panel">
+        <div class="home-understanding-panel-icon" aria-hidden="true">
+          <img
+            src="/assets/icons/ID_Card_Green.svg"
+            alt=""
+            class="home-understanding-panel-icon-image">
+        </div>
+
+        <div class="home-understanding-panel-copy">
+          <h3>A simple card that can speak for you.</h3>
+          <p>
+            Your card provides important information at a glance, while
+            your profile can provide additional information when more
+            detail would be helpful.
+          </p>
+          <p class="home-understanding-disclaimer">
+            LymphAware supports communication and awareness. It does not
+            provide medical diagnosis or replace professional medical advice.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- HOW DOES IT WORK? / WHERE MIGHT I USE IT? -->
+  <section id="how-it-works" class="content-section">
+    <div class="container">
+
+      <div class="how-heading">
         <h2>How LymphAware works</h2>
-      
         <p>
           Your LymphAware card and patient-controlled profile work together
           to help you share important information simply and clearly.
         </p>
       </div>
-      
-      
+
       <div class="how-steps">
-      
         <article class="how-step">
-      
           <div class="how-step-number">1</div>
-      
-         <div class="how-step-icon">
-            <img
-              src="/assets/icons/ID_Card_Green.svg"
-              alt=""
-              class="how-step-icon-image">
+          <div class="how-step-icon">
+            <img src="/assets/icons/ID_Card_Green.svg" alt="" class="how-step-icon-image">
           </div>
-      
           <div class="how-step-copy">
             <h3>Carry your card</h3>
-      
             <p>
               Keep your LymphAware card with you, ready for when
               important information may need to be shared.
             </p>
           </div>
-      
         </article>
-      
-      
+
         <div class="how-arrow" aria-hidden="true">→</div>
-      
-      
+
         <article class="how-step">
-      
           <div class="how-step-number">2</div>
-      
-         <div class="how-step-icon how-step-icon-blue">
-          <img
-            src="/assets/icons/QR_Code_Blue.svg"
-            alt=""
-            class="how-step-icon-image">
-        </div>
-      
+          <div class="how-step-icon how-step-icon-blue">
+            <img src="/assets/icons/QR_Code_Blue.svg" alt="" class="how-step-icon-image">
+          </div>
           <div class="how-step-copy">
             <h3>Someone scans the QR code</h3>
-      
             <p>
               At an appointment, while travelling or in another situation,
               your card can be scanned using a phone.
             </p>
           </div>
-      
         </article>
-      
-      
+
         <div class="how-arrow" aria-hidden="true">→</div>
-      
-      
+
         <article class="how-step">
-      
           <div class="how-step-number">3</div>
-      
           <div class="how-step-icon">
-            <img
-              src="/assets/icons/Profile_Locked_Green.svg"
-              alt=""
-              class="how-step-icon-image">
+            <img src="/assets/icons/Profile_Locked_Green.svg" alt="" class="how-step-icon-image">
           </div>
-      
           <div class="how-step-copy">
             <h3>They see what you choose to share</h3>
-      
             <p>
-              Your profile opens instantly and displays only the information
+              Your profile opens instantly and displays the information
               you have chosen to make available.
             </p>
           </div>
-      
         </article>
-      
       </div>
 
       <section class="help-scenarios" aria-labelledby="help-scenarios-title">
-      
         <div class="help-scenarios-heading">
           <h2 id="help-scenarios-title">When could LymphAware help?</h2>
-      
           <p>
             LymphAware can help make important information easier to share
             in a range of everyday and unexpected situations.
           </p>
         </div>
-      
-      
+
         <div class="help-scenarios-grid">
-      
           <article class="help-scenario-card">
-      
             <div class="help-scenario-icon help-icon-blue">
-            <img
-              src="/assets/icons/Healthcare_Blue.svg"
-              alt=""
-              class="help-scenario-icon-image">
-          </div>
-      
+              <img src="/assets/icons/Healthcare_Blue.svg" alt="" class="help-scenario-icon-image">
+            </div>
             <h3>Healthcare appointments</h3>
-      
             <p>
               Help healthcare professionals understand important information
               and any assistance you may need.
             </p>
-      
           </article>
-      
-      
+
           <article class="help-scenario-card">
-      
-           <div class="help-scenario-icon help-icon-green">
-              <img
-                src="/assets/icons/Travel_Green.svg"
-                alt=""
-                class="help-scenario-icon-image">
+            <div class="help-scenario-icon help-icon-green">
+              <img src="/assets/icons/Travel_Green.svg" alt="" class="help-scenario-icon-image">
             </div>
-      
             <h3>Travel</h3>
-      
             <p>
               Share useful information when travelling or dealing with
               airline, security or other travel staff.
             </p>
-      
           </article>
-      
-      
+
           <article class="help-scenario-card">
-      
-          <div class="help-scenario-icon help-icon-blue">
-            <img
-              src="/assets/icons/Work_Blue.svg"
-              alt=""
-              class="help-scenario-icon-image">
-          </div>
-      
+            <div class="help-scenario-icon help-icon-blue">
+              <img src="/assets/icons/Work_Blue.svg" alt="" class="help-scenario-icon-image">
+            </div>
             <h3>Work</h3>
-      
             <p>
               Support conversations with employers or colleagues when
               you choose to explain your needs.
             </p>
-      
           </article>
-      
-      
+
           <article class="help-scenario-card">
-      
-               <div class="help-scenario-icon help-icon-blue">
-                <img
-                  src="/assets/icons/Alarm_Blue.svg"
-                  alt=""
-                  class="help-scenario-icon-image">
-              </div>
-      
+            <div class="help-scenario-icon help-icon-blue">
+              <img src="/assets/icons/Alarm_Blue.svg" alt="" class="help-scenario-icon-image">
+            </div>
             <h3>Unexpected situations</h3>
-      
             <p>
               Provide clear information when explaining everything yourself
               may be difficult.
             </p>
-      
           </article>
-      
-      
+
           <article class="help-scenario-card">
-      
-           <div class="help-scenario-icon help-icon-green">
-              <img
-                src="/assets/icons/Everyday_Life_Green.svg"
-                alt=""
-                class="help-scenario-icon-image">
+            <div class="help-scenario-icon help-icon-green">
+              <img src="/assets/icons/Everyday_Life_Green.svg" alt="" class="help-scenario-icon-image">
             </div>
-      
             <h3>Everyday life</h3>
-      
             <p>
               Help you communicate your needs with greater confidence
               in day-to-day situations.
             </p>
-      
           </article>
-      
         </div>
-      
       </section>
-              
-    <section
-      id="sample-card"
-      class="home-demo-section"
-      aria-labelledby="sample-card-title">
-    
-      <div class="home-demo-grid">
-    
-        <div class="home-demo-copy">
-    
-          <p class="home-demo-eyebrow">
-            Try it for yourself
-          </p>
-    
-          <h2 id="sample-card-title">
-            See LymphAware in action
-          </h2>
-    
-          <p class="home-demo-intro">
-            This demonstration card uses a fictional patient to show how
-            a LymphAware ID card connects to a patient-controlled profile.
-          </p>
-    
-          <div class="home-demo-options">
-    
-            <div class="home-demo-option">
-    
-              <div class="home-demo-option-number">1</div>
-    
-              <div>
-                <h3>Using this device?</h3>
-                <p>
-                  Click or tap the demonstration card to open the sample
-                  LymphAware profile.
-                </p>
-              </div>
-    
-            </div>
-    
-    
-            <div class="home-demo-option">
-    
-              <div class="home-demo-option-number">2</div>
-    
-              <div>
-                <h3>Have your phone with you?</h3>
-                <p>
-                  Scan the QR code on the card to experience LymphAware
-                  just as someone would when scanning a physical card.
-                </p>
-              </div>
-    
-            </div>
-    
-          </div>
-    
-          <p class="home-demo-note">
-            All names, photographs and information used in this demonstration
-            are fictional.
-          </p>
-    
-        </div>
-    
-    
-        <div class="home-demo-card-area">
-    
-          <div class="home-demo-label">
-            Demonstration card
-          </div>
-    
-          <a
-            class="home-demo-card-link"
-            href="/p/1babe83a-9ad9-4999-a7c4-658b1400b044"
-            aria-label="Open the fictional Alex Morgan LymphAware demonstration profile">
-    
-            <img
-              class="home-demo-card-image"
-              src="/assets/demo/LymphAware_Alex_Morgan_Demo_Card.png"
-              alt="Fictional LymphAware demonstration card for Alex Morgan">
-    
-          </a>
-    
-          <a
-            class="home-demo-profile-link"
-            href="/p/1babe83a-9ad9-4999-a7c4-658b1400b044">
-            Open sample profile →
-          </a>
-    
-        </div>
-    
-      </div>
-    
-    </section>
-
- <section id="about" class="home-understanding-section">
-
-  <div class="home-understanding-grid">
-
-    <div class="home-understanding-copy">
-
-      <p class="home-understanding-eyebrow">
-        Why LymphAware?
-      </p>
-
-      <h2>
-        Less explaining.<br>
-        More understanding.
-      </h2>
-
-      <p class="home-understanding-lead">
-        Living with lymphoedema can mean repeatedly having to explain
-        your condition, your needs and the support that may help you.
-      </p>
-
-      <p>
-        LymphAware provides a simple way to share information you have
-        chosen to make available, using a physical ID card and your
-        QR-linked profile.
-      </p>
 
     </div>
+  </section>
 
+  <!-- SHOW ME -->
+  <section
+    id="sample-card"
+    class="home-demo-section"
+    aria-labelledby="sample-card-title">
 
-    <div class="home-understanding-panel">
+    <div class="home-demo-grid">
+      <div class="home-demo-copy">
+        <p class="home-demo-eyebrow">Try it for yourself</p>
+        <h2 id="sample-card-title">See LymphAware in action</h2>
+        <p class="home-demo-intro">
+          This demonstration card uses a fictional patient to show how
+          a LymphAware ID card connects to a patient-controlled profile.
+        </p>
 
-      <div class="home-understanding-panel-icon" aria-hidden="true">
+        <div class="home-demo-options">
+          <div class="home-demo-option">
+            <div class="home-demo-option-number">1</div>
+            <div>
+              <h3>Using this device?</h3>
+              <p>
+                Click or tap the demonstration card to open the sample
+                LymphAware profile.
+              </p>
+            </div>
+          </div>
 
-      <img
-        src="/assets/icons/ID_Card_Green.svg"
-        alt=""
-        class="home-understanding-panel-icon-image">
+          <div class="home-demo-option">
+            <div class="home-demo-option-number">2</div>
+            <div>
+              <h3>Have your phone with you?</h3>
+              <p>
+                Scan the QR code on the card to experience LymphAware
+                just as someone would when scanning a physical card.
+              </p>
+            </div>
+          </div>
+        </div>
 
+        <p class="home-demo-note">
+          All names, photographs and information used in this demonstration
+          are fictional.
+        </p>
       </div>
 
-      <div class="home-understanding-panel-copy">
+      <div class="home-demo-card-area">
+        <div class="home-demo-label">Demonstration card</div>
+        <a
+          class="home-demo-card-link"
+          href="/p/1babe83a-9ad9-4999-a7c4-658b1400b044"
+          aria-label="Open the fictional Alex Morgan LymphAware demonstration profile">
+          <img
+            class="home-demo-card-image"
+            src="/assets/demo/LymphAware_Alex_Morgan_Demo_Card.png"
+            alt="Fictional LymphAware demonstration card for Alex Morgan">
+        </a>
+        <a
+          class="home-demo-profile-link"
+          href="/p/1babe83a-9ad9-4999-a7c4-658b1400b044">
+          Open sample profile →
+        </a>
+      </div>
+    </div>
+  </section>
 
-        <h3>A simple card that can speak for you.</h3>
+  <!-- I WANT ONE — WHAT DOES IT COST? -->
+  <section class="home-membership-section" aria-labelledby="membership-title">
+    <div class="container home-membership-grid">
+
+      <div class="home-membership-copy">
+        <p class="home-membership-eyebrow">LymphAware membership</p>
+        <h2 id="membership-title">Five years of LymphAware for £29.99.</h2>
+        <p class="home-membership-lead">
+          One straightforward membership gives you your LymphAware card,
+          QR-linked profile and access to your secure Patient Portal for five years.
+        </p>
+        <p>
+          You can keep your profile up to date during your membership period,
+          so the information available when your card is scanned can change with you.
+        </p>
+      </div>
+
+      <div class="home-membership-price-card">
+        <p class="home-membership-price-label">5-Year Membership</p>
+        <p class="home-membership-price">£29.99</p>
+        <p class="home-membership-term">One payment for five years</p>
+
+        <ul class="home-membership-benefits">
+          <li>Personal LymphAware ID card</li>
+          <li>LymphAware lanyard &amp; holder</li>
+          <li>Patient-controlled QR profile</li>
+          <li>Secure Patient Portal access</li>
+          <li>Update your information during your membership</li>
+        </ul>
+
+        <p class="home-membership-renewal">
+          We plan to remind you before your five-year membership is due to expire,
+          so you can choose whether to renew.
+        </p>
+
+        <a href="/register/" class="button button-primary">Create your account</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CAN I USE IT IN ANOTHER LANGUAGE? -->
+  <section class="home-language-section" aria-labelledby="language-title">
+    <div class="container home-language-grid">
+
+      <div class="home-language-copy">
+        <p class="home-language-eyebrow">Additional language packages</p>
+        <h2 id="language-title">Your LymphAware information in another language.</h2>
+        <p class="home-language-lead">
+          If you regularly travel, spend time abroad or would find another language
+          useful, you will be able to add an additional language package to your membership.
+        </p>
+        <p>
+          The aim is to provide a dedicated card in the chosen language, linked to a
+          QR profile presented in that same language — while keeping the familiar
+          LymphAware profile design.
+        </p>
+      </div>
+
+      <div class="home-language-card">
+        <div class="home-language-icon" aria-hidden="true">🌐</div>
+        <h3>One card. One chosen language.</h3>
+        <p>
+          For example, a French language package would provide a French-language
+          LymphAware card and a QR-linked profile presented in French.
+        </p>
+        <p class="home-language-note">
+          Additional language packages will be purchased separately from the main membership.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- AM I STILL IN CONTROL? -->
+  <section
+    id="lymphoedema"
+    class="home-control-section"
+    aria-labelledby="home-control-title">
+
+    <div class="home-control-grid">
+      <div class="home-control-copy">
+        <p class="home-control-eyebrow">Patient controlled</p>
+        <h2 id="home-control-title">
+          Your information.<br>
+          Your choice.<br>
+          Your control.
+        </h2>
+
+        <p class="home-control-lead">
+          You decide what information you want to make available
+          through your LymphAware profile.
+        </p>
 
         <p>
-          Your card provides important information at a glance, while
-          your profile can provide additional information when more
-          detail would be helpful.
+          LymphAware is designed so that you can manage what is shown,
+          preview what other people will see and update your information
+          when things change.
+        </p>
+      </div>
+
+      <div class="home-control-actions">
+        <article class="home-control-item">
+          <div class="home-control-icon home-control-icon-green" aria-hidden="true">
+            <img src="/assets/icons/Choose_Green.svg" alt="" class="home-control-icon-image">
+          </div>
+          <div>
+            <h3>Choose what to share</h3>
+            <p>
+              You select which information is available through
+              your QR-linked profile.
+            </p>
+          </div>
+        </article>
+
+        <article class="home-control-item">
+          <div class="home-control-icon home-control-icon-blue" aria-hidden="true">
+            <img src="/assets/icons/Preview_Blue.svg" alt="" class="home-control-icon-image">
+          </div>
+          <div>
+            <h3>Preview what others will see</h3>
+            <p>
+              See your public profile before sharing it, so you know
+              exactly what someone scanning your card can view.
+            </p>
+          </div>
+        </article>
+
+        <article class="home-control-item">
+          <div class="home-control-icon home-control-icon-green" aria-hidden="true">
+            <img src="/assets/icons/Update_Info_Green.svg" alt="" class="home-control-icon-image">
+          </div>
+          <div>
+            <h3>Update your information</h3>
+            <p>
+              Your profile can be reviewed and updated through your
+              LymphAware account when your needs or information change.
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT ABOUT PEOPLE USING / SCANNING IT? -->
+  <section
+    id="professionals"
+    class="home-professionals-section"
+    aria-labelledby="home-professionals-title">
+
+    <div class="home-professionals-grid">
+      <div class="home-professionals-copy">
+        <p class="home-professionals-eyebrow">For professionals</p>
+        <h2 id="home-professionals-title">
+          Clear information.<br>
+          Better understanding.
+        </h2>
+
+        <p class="home-professionals-lead">
+          A LymphAware card or QR-linked profile can help make
+          patient-selected information easier to understand when
+          someone living with lymphoedema needs support or consideration.
         </p>
 
-        <p class="home-understanding-disclaimer">
-          LymphAware supports communication and awareness. It does not
-          provide medical diagnosis or replace professional medical advice.
+        <p>
+          No app or LymphAware account is needed to scan a patient's QR code.
+          LymphAware is an additional communication aid and does not replace
+          professional assessment, clinical records or appropriate healthcare decision-making.
         </p>
 
+        <a href="/for-professionals/" class="home-text-link">
+          Information for professionals →
+        </a>
       </div>
 
+      <div class="home-professionals-cards">
+        <article class="home-professional-card">
+          <div class="home-professional-icon home-professional-icon-blue" aria-hidden="true">
+            <svg viewBox="0 0 64 64">
+              <path d="M20 10v14a12 12 0 0 0 24 0V10"></path>
+              <path d="M16 10h8"></path>
+              <path d="M40 10h8"></path>
+              <path d="M32 36v7a10 10 0 0 0 20 0"></path>
+              <circle cx="52" cy="37" r="4"></circle>
+            </svg>
+          </div>
+          <div>
+            <h3>Support communication</h3>
+            <p>Quickly see information the patient has chosen to make available.</p>
+          </div>
+        </article>
+
+        <article class="home-professional-card">
+          <div class="home-professional-icon home-professional-icon-green" aria-hidden="true">
+            <svg viewBox="0 0 64 64">
+              <circle cx="23" cy="22" r="8"></circle>
+              <path d="M9 49c2-11 7-17 14-17s12 6 14 17"></path>
+              <path d="M40 22h15"></path>
+              <path d="M40 30h12"></path>
+              <path d="M40 38h9"></path>
+            </svg>
+          </div>
+          <div>
+            <h3>Patient-selected information</h3>
+            <p>The patient remains in control of what their QR-linked profile displays.</p>
+          </div>
+        </article>
+
+        <article class="home-professional-card">
+          <div class="home-professional-icon home-professional-icon-blue" aria-hidden="true">
+            <svg viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="22"></circle>
+              <path d="M32 20v14"></path>
+              <path d="M32 43h.01"></path>
+            </svg>
+          </div>
+          <div>
+            <h3>No app required</h3>
+            <p>Scan the QR code with a phone to view the patient's chosen information.</p>
+          </div>
+        </article>
+      </div>
     </div>
+  </section>
 
-  </div>
+  <!-- WHY SHOULD I TRUST IT? -->
+  <section class="home-story-section" aria-labelledby="home-story-title">
+    <div class="home-story-grid">
 
-</section>
-
-<section
-  id="lymphoedema"
-  class="home-control-section"
-  aria-labelledby="home-control-title">
-
-  <div class="home-control-grid">
-
-    <div class="home-control-copy">
-
-      <p class="home-control-eyebrow">
-        Patient controlled
-      </p>
-
-      <h2 id="home-control-title">
-        Your information.<br>
-        Your choice.<br>
-        Your control.
-      </h2>
-
-      <p class="home-control-lead">
-        You decide what information you want to make available
-        through your LymphAware profile.
-      </p>
-
-      <p>
-        LymphAware is designed so that you can manage what is shown,
-        preview what other people will see and update your information
-        when things change.
-      </p>
-
-    </div>
-
-
-    <div class="home-control-actions">
-
-      <article class="home-control-item">
-
-        <div class="home-control-icon home-control-icon-green" aria-hidden="true">
-
-         <img
-            src="/assets/icons/Choose_Green.svg"
-            alt=""
-            class="home-control-icon-image">
-
-        </div>
-
-        <div>
-          <h3>Choose what to share</h3>
-
-          <p>
-            You select which information is available through
-            your QR-linked profile.
-          </p>
-        </div>
-
-      </article>
-
-
-      <article class="home-control-item">
-
-        <div class="home-control-icon home-control-icon-blue" aria-hidden="true">
-
-         <img
-            src="/assets/icons/Preview_Blue.svg"
-            alt=""
-            class="home-control-icon-image">
-
-        </div>
-
-        <div>
-          <h3>Preview what others will see</h3>
-
-          <p>
-            See your public profile before sharing it, so you know
-            exactly what someone scanning your card can view.
-          </p>
-        </div>
-
-      </article>
-
-
-      <article class="home-control-item">
-
-        <div class="home-control-icon home-control-icon-green" aria-hidden="true">
-
-         <img
-            src="/assets/icons/Update_Info_Green.svg"
-            alt=""
-            class="home-control-icon-image">
-
-        </div>
-
-        <div>
-          <h3>Update your information</h3>
-
-          <p>
-            Your profile can be reviewed and updated through your
-            LymphAware account when your needs or information change.
-          </p>
-        </div>
-
-      </article>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<section
-  id="professionals"
-  class="home-professionals-section"
-  aria-labelledby="home-professionals-title">
-
-  <div class="home-professionals-grid">
-
-    <div class="home-professionals-copy">
-
-      <p class="home-professionals-eyebrow">
-        For professionals
-      </p>
-
-      <h2 id="home-professionals-title">
-        Clear information.<br>
-        Better understanding.
-      </h2>
-
-      <p class="home-professionals-lead">
-        A LymphAware card or QR-linked profile can help make
-        patient-selected information easier to understand when
-        someone living with lymphoedema needs support or consideration.
-      </p>
-
-      <p>
-        LymphAware is an additional communication aid. It does not
-        replace professional assessment, clinical records or appropriate
-        healthcare decision-making.
-      </p>
-
-      <a
-        href="/for-professionals/"
-        class="home-text-link">
-        Information for professionals →
-      </a>
-
-    </div>
-
-
-    <div class="home-professionals-cards">
-
-      <article class="home-professional-card">
-
-        <div class="home-professional-icon home-professional-icon-blue" aria-hidden="true">
+      <div class="home-story-panel">
+        <div class="home-story-icon" aria-hidden="true">
           <svg viewBox="0 0 64 64">
-            <path d="M20 10v14a12 12 0 0 0 24 0V10"></path>
-            <path d="M16 10h8"></path>
-            <path d="M40 10h8"></path>
-            <path d="M32 36v7a10 10 0 0 0 20 0"></path>
-            <circle cx="52" cy="37" r="4"></circle>
+            <circle cx="32" cy="20" r="9"></circle>
+            <path d="M15 51c2-13 8-20 17-20s15 7 17 20"></path>
+            <path d="M45 14l4 4 8-9"></path>
           </svg>
         </div>
 
-        <div>
-          <h3>Support communication</h3>
-          <p>
-            Quickly see information the patient has chosen to make available.
-          </p>
-        </div>
+        <p class="home-story-eyebrow">Patient led</p>
+        <h2 id="home-story-title">Created from lived experience.</h2>
+        <p>
+          LymphAware is being developed from first-hand understanding of
+          the communication challenges that can come with living with
+          lymphoedema.
+        </p>
+        <p>
+          The aim is simple: help people living with lymphoedema be better
+          understood while keeping them in control of their information.
+        </p>
+      </div>
 
-      </article>
-
-
-      <article class="home-professional-card">
-
-        <div class="home-professional-icon home-professional-icon-green" aria-hidden="true">
+      <div class="home-privacy-panel">
+        <div class="home-story-icon home-story-icon-blue" aria-hidden="true">
           <svg viewBox="0 0 64 64">
-            <circle cx="23" cy="22" r="8"></circle>
-            <path d="M9 49c2-11 7-17 14-17s12 6 14 17"></path>
-            <path d="M40 22h15"></path>
-            <path d="M40 30h12"></path>
-            <path d="M40 38h9"></path>
+            <path d="M32 8l20 8v14c0 13-8 22-20 27C20 52 12 43 12 30V16z"></path>
+            <rect x="24" y="27" width="16" height="14" rx="3"></rect>
+            <path d="M27 27v-4a5 5 0 0 1 10 0v4"></path>
           </svg>
         </div>
 
-        <div>
-          <h3>Patient-selected information</h3>
-          <p>
-            The patient remains in control of what their QR-linked profile displays.
-          </p>
-        </div>
-
-      </article>
-
-
-      <article class="home-professional-card">
-
-        <div class="home-professional-icon home-professional-icon-blue" aria-hidden="true">
-          <svg viewBox="0 0 64 64">
-            <circle cx="32" cy="32" r="22"></circle>
-            <path d="M32 20v14"></path>
-            <path d="M32 43h.01"></path>
-          </svg>
-        </div>
-
-        <div>
-          <h3>An additional communication aid</h3>
-          <p>
-            LymphAware supports understanding without replacing professional judgement.
-          </p>
-        </div>
-
-      </article>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<section
-  class="home-story-section"
-  aria-labelledby="home-story-title">
-
-  <div class="home-story-grid">
-
-    <div class="home-story-panel">
-
-      <div class="home-story-icon" aria-hidden="true">
-        <svg viewBox="0 0 64 64">
-          <circle cx="32" cy="20" r="9"></circle>
-          <path d="M15 51c2-13 8-20 17-20s15 7 17 20"></path>
-          <path d="M45 14l4 4 8-9"></path>
-        </svg>
+        <p class="home-story-eyebrow home-story-eyebrow-blue">Privacy by design</p>
+        <h2>Your information deserves careful protection.</h2>
+        <p>
+          LymphAware is being designed around patient control and data
+          minimisation, collecting and displaying only information needed
+          for the service.
+        </p>
+        <p>Privacy and security will remain central as LymphAware develops.</p>
+        <a href="/privacy/" class="home-text-link">Privacy &amp; security →</a>
       </div>
 
-      <p class="home-story-eyebrow">
-        Patient led
-      </p>
-
-      <h2 id="home-story-title">
-        Created from lived experience.
-      </h2>
-
-      <p>
-        LymphAware is being developed from first-hand understanding of
-        the communication challenges that can come with living with
-        lymphoedema.
-      </p>
-
-      <p>
-        The aim is simple: help people living with lymphoedema be better
-        understood while keeping them in control of their information.
-      </p>
-
     </div>
+  </section>
 
+</main>
 
-    <div class="home-privacy-panel">
-
-      <div class="home-story-icon home-story-icon-blue" aria-hidden="true">
-        <svg viewBox="0 0 64 64">
-          <path d="M32 8l20 8v14c0 13-8 22-20 27C20 52 12 43 12 30V16z"></path>
-          <rect x="24" y="27" width="16" height="14" rx="3"></rect>
-          <path d="M27 27v-4a5 5 0 0 1 10 0v4"></path>
-        </svg>
-      </div>
-
-      <p class="home-story-eyebrow home-story-eyebrow-blue">
-        Privacy by design
-      </p>
-
-      <h2>
-        Your information deserves careful protection.
-      </h2>
-
-      <p>
-        LymphAware is being designed around patient control and data
-        minimisation, collecting and displaying only information needed
-        for the service.
-      </p>
-
-      <p>
-        Privacy and security will remain central as LymphAware develops.
-      </p>
-
-      <a
-        href="/privacy/"
-        class="home-text-link">
-        Privacy &amp; security →
-      </a>
-
-    </div>
-
-  </div>
-
-</section>
-
- </main>
-
-
-  <footer id="help">
-
-    <div class="container">
-
-      <div class="footer-grid">
-
-          <div class="footer-brand">
-      
+<footer id="help">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
         <img
           class="footer-logo"
           src="/assets/brand/LymphAware_APPROVED_No_Tagline_Centred_v1.svg"
           alt="LymphAware"
         >
-      
-        <p>
-          Helping People Living with Lymphoedema Be Understood.
-        </p>
-      
+        <p>Helping People Living with Lymphoedema Be Understood.</p>
       </div>
-
 
       <div class="footer-links">
         <a href="/about/">About</a>
@@ -1009,179 +895,83 @@
         <a href="/accessibility/">Accessibility</a>
         <a href="/contact/">Contact</a>
       </div>
-
-      </div>
-
-
-      <div class="footer-note">
-        LymphAware is a communication and identification aid. It does not
-        provide medical diagnosis or replace professional medical advice.
-      </div>
-
     </div>
 
-  </footer>
+    <div class="footer-note">
+      LymphAware is a communication and identification aid. It does not
+      provide medical diagnosis or replace professional medical advice.
+    </div>
+  </div>
+</footer>
 
 <script>
-  const SUPABASE_URL =
-    'https://thbhsktcenhrnxzkbjus.supabase.co';
+  const SUPABASE_URL = 'https://thbhsktcenhrnxzkbjus.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
 
-  const SUPABASE_PUBLISHABLE_KEY =
-    'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
 
-  const supabaseClient =
-    supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
-
-
-  const desktopAccountLink =
-    document.getElementById(
-      'desktop-account-link'
-    );
-
-  const mobileAccountLink =
-    document.getElementById(
-      'mobile-account-link'
-    );
-
-  const desktopSignOutButton =
-    document.getElementById(
-      'desktop-sign-out-button'
-    );
-
-  const mobileSignOutButton =
-    document.getElementById(
-      'mobile-sign-out-button'
-    );
-
+  const desktopAccountLink = document.getElementById('desktop-account-link');
+  const mobileAccountLink = document.getElementById('mobile-account-link');
+  const desktopSignOutButton = document.getElementById('desktop-sign-out-button');
+  const mobileSignOutButton = document.getElementById('mobile-sign-out-button');
 
   function updateAccountLinks(session) {
-
-    const isSignedIn =
-      Boolean(session?.user);
-
+    const isSignedIn = Boolean(session?.user);
 
     if (isSignedIn) {
+      desktopAccountLink.href = '/portal/';
+      desktopAccountLink.textContent = 'Patient Portal';
+      desktopSignOutButton.hidden = false;
 
-      desktopAccountLink.href =
-        '/portal/';
-
-      desktopAccountLink.textContent =
-        'Patient Portal';
-
-      desktopSignOutButton.hidden =
-        false;
-
-
-      mobileAccountLink.href =
-        '/portal/';
-
-      mobileAccountLink.textContent =
-        'Patient Portal';
-
-      mobileSignOutButton.hidden =
-        false;
-
+      mobileAccountLink.href = '/portal/';
+      mobileAccountLink.textContent = 'Patient Portal';
+      mobileSignOutButton.hidden = false;
     } else {
+      desktopAccountLink.href = '/sign-in/';
+      desktopAccountLink.textContent = 'Sign In';
+      desktopSignOutButton.hidden = true;
 
-      desktopAccountLink.href =
-        '/sign-in/';
-
-      desktopAccountLink.textContent =
-        'Sign In';
-
-      desktopSignOutButton.hidden =
-        true;
-
-
-      mobileAccountLink.href =
-        '/sign-in/';
-
-      mobileAccountLink.textContent =
-        'Sign In';
-
-      mobileSignOutButton.hidden =
-        true;
+      mobileAccountLink.href = '/sign-in/';
+      mobileAccountLink.textContent = 'Sign In';
+      mobileSignOutButton.hidden = true;
     }
   }
 
-
   async function signOutFromHomepage() {
+    desktopSignOutButton.disabled = true;
+    mobileSignOutButton.disabled = true;
 
-    desktopSignOutButton.disabled =
-      true;
-
-    mobileSignOutButton.disabled =
-      true;
-
-
-    const { error } =
-      await supabaseClient.auth.signOut();
-
+    const { error } = await supabaseClient.auth.signOut();
 
     if (error) {
-
-      console.error(
-        'Unable to sign out:',
-        error
-      );
-
-      desktopSignOutButton.disabled =
-        false;
-
-      mobileSignOutButton.disabled =
-        false;
-
+      console.error('Unable to sign out:', error);
+      desktopSignOutButton.disabled = false;
+      mobileSignOutButton.disabled = false;
       return;
     }
 
-
     updateAccountLinks(null);
-
-    desktopSignOutButton.disabled =
-      false;
-
-    mobileSignOutButton.disabled =
-      false;
+    desktopSignOutButton.disabled = false;
+    mobileSignOutButton.disabled = false;
   }
 
-
-  desktopSignOutButton.addEventListener(
-    'click',
-    signOutFromHomepage
-  );
-
-  mobileSignOutButton.addEventListener(
-    'click',
-    signOutFromHomepage
-  );
-
+  desktopSignOutButton.addEventListener('click', signOutFromHomepage);
+  mobileSignOutButton.addEventListener('click', signOutFromHomepage);
 
   async function checkAccountSession() {
-
-    const {
-      data: { session }
-    } =
-      await supabaseClient.auth.getSession();
-
-
+    const { data: { session } } = await supabaseClient.auth.getSession();
     updateAccountLinks(session);
   }
 
-
-  supabaseClient.auth.onAuthStateChange(
-    (_event, session) => {
-      updateAccountLinks(session);
-    }
-  );
-
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
+    updateAccountLinks(session);
+  });
 
   checkAccountSession();
-
 </script>
 
-  
 </body>
 </html>
