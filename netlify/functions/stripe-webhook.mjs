@@ -299,6 +299,7 @@ export default async (request) => {
     const extraLanyard = session.metadata?.extra_lanyard === '1';
     const languagePackage = session.metadata?.language_package === '1';
     const languageName = String(session.metadata?.language_name || '').trim();
+    const languageCode = String(session.metadata?.language_code || '').trim().toUpperCase();
 
     const items = [
       normaliseItem({
@@ -337,6 +338,7 @@ export default async (request) => {
         quantity: 1,
         unit_price_pence: 1999,
         line_total_pence: 1999,
+        language_code: languageCode || null,
         language_name: languageName || null
       }));
     }
