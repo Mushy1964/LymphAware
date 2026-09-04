@@ -16,97 +16,58 @@ export default async (request) => {
 
   try {
 
-    const authHeader =
-      request.headers.get('authorization');
+    const authHeader = request.headers.get('authorization');
 
-    if (
-      !authHeader ||
-      !authHeader.startsWith('Bearer ')
-    ) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return new Response(
-        JSON.stringify({
-          error: 'Authentication required.'
-        }),
+        JSON.stringify({ error: 'Authentication required.' }),
         {
           status: 401,
-          headers: {
-            'Content-Type': 'application/json'
-          }
+          headers: { 'Content-Type': 'application/json' }
         }
       );
     }
 
+    const accessToken = authHeader.replace('Bearer ', '').trim();
 
-    const accessToken =
-      authHeader.replace('Bearer ', '').trim();
-
-
-    /*
-     * Verify signed-in administrator.
-     */
     const userResponse = await fetch(
       `${process.env.SUPABASE_URL}/auth/v1/user`,
       {
         headers: {
-          apikey:
-            process.env.SUPABASE_PUBLISHABLE_KEY,
-
-          Authorization:
-            `Bearer ${accessToken}`
+          apikey: process.env.SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${accessToken}`
         }
       }
     );
 
-
     if (!userResponse.ok) {
       return new Response(
-        JSON.stringify({
-          error:
-            'Unable to verify your LymphAware account.'
-        }),
+        JSON.stringify({ error: 'Unable to verify your LymphAware account.' }),
         {
           status: 401,
-          headers: {
-            'Content-Type': 'application/json'
-          }
+          headers: { 'Content-Type': 'application/json' }
         }
       );
     }
 
+    const user = await userResponse.json();
+    const adminEmail = String(process.env.LYMPHAWARE_ADMIN_EMAIL || '')
+      .trim()
+      .toLowerCase();
 
-    const user =
-      await userResponse.json();
-
-
-    const adminEmail =
-      String(
-        process.env.LYMPHAWARE_ADMIN_EMAIL || ''
-      )
-        .trim()
-        .toLowerCase();
-
-
-    if (
-      !user?.email ||
-      user.email.toLowerCase() !== adminEmail
-    ) {
+    if (!user?.email || user.email.toLowerCase() !== adminEmail) {
       return new Response(
-        JSON.stringify({
-          error:
-            'Administrator access required.'
-        }),
+        JSON.stringify({ error: 'Administrator access required.' }),
         {
           status: 403,
-          headers: {
-            'Content-Type': 'application/json'
-          }
+          headers: { 'Content-Type': 'application/json' }
         }
       );
     }
 
-
     /*
-     * Retrieve every card currently READY.
+     * The database is the source of truth. Every time this endpoint is used,
+     * it builds a fresh CSV from cards that are currently READY for production.
      */
     const profileResponse = await fetch(
       `${process.env.SUPABASE_URL}/rest/v1/profiles` +
@@ -115,103 +76,65 @@ export default async (request) => {
       `&order=card_ready_at.asc`,
       {
         headers: {
-          apikey:
-            process.env.SUPABASE_SECRET_KEY,
-
-          Authorization:
-            `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
-
-          Accept:
-            'application/json'
+          apikey: process.env.SUPABASE_SECRET_KEY,
+          Authorization: `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
+          Accept: 'application/json'
         }
       }
     );
 
-
     if (!profileResponse.ok) {
-
       console.error(
         'Unable to retrieve batch EasyBadge records:',
         await profileResponse.text()
       );
 
       return new Response(
-        JSON.stringify({
-          error:
-            'Unable to retrieve cards awaiting production.'
-        }),
+        JSON.stringify({ error: 'Unable to retrieve cards awaiting production.' }),
         {
           status: 500,
-          headers: {
-            'Content-Type': 'application/json'
-          }
+          headers: { 'Content-Type': 'application/json' }
         }
       );
     }
 
-
-    const profiles =
-      await profileResponse.json();
-
+    const profiles = await profileResponse.json();
 
     if (!profiles?.length) {
       return new Response(
-        JSON.stringify({
-          error:
-            'There are currently no cards ready for EasyBadge.'
-        }),
+        JSON.stringify({ error: 'There are currently no cards ready for EasyBadge.' }),
         {
           status: 400,
-          headers: {
-            'Content-Type': 'application/json'
-          }
+          headers: { 'Content-Type': 'application/json' }
         }
       );
     }
 
-
-    /*
-     * Make sure every selected card has
-     * the minimum information required.
-     */
-    const incompleteProfile =
-      profiles.find(
-        profile =>
-          !profile.lymphaware_id ||
-          !profile.display_name ||
-          !profile.qr_token ||
-          !profile.photo_path
-      );
-
+    const incompleteProfile = profiles.find(
+      profile =>
+        !profile.lymphaware_id ||
+        !profile.display_name ||
+        !profile.qr_token ||
+        !profile.photo_path
+    );
 
     if (incompleteProfile) {
       return new Response(
         JSON.stringify({
-          error:
-            'One or more cards do not contain all information required for production.'
+          error: 'One or more cards do not contain all information required for production.'
         }),
         {
           status: 400,
-          headers: {
-            'Content-Type': 'application/json'
-          }
+          headers: { 'Content-Type': 'application/json' }
         }
       );
     }
 
-
     function csvValue(value) {
-
-      const text =
-        String(value ?? '');
-
+      const text = String(value ?? '');
       return `"${text.replace(/"/g, '""')}"`;
     }
 
-
-    /*
-     * Header row.
-     */
     const rows = [
       [
         'LymphAware ID',
@@ -221,18 +144,9 @@ export default async (request) => {
       ].join(',')
     ];
 
-
-    /*
-     * One CSV row for every READY card.
-     */
     profiles.forEach((profile) => {
-
-      const qrProfileUrl =
-        `https://lymphaware.com/p/${profile.qr_token}`;
-
-      const imageUrl =
-        `https://lymphaware.com/ebp/${profile.qr_token}`;
-
+      const qrProfileUrl = `https://lymphaware.com/p/${profile.qr_token}`;
+      const imageUrl = `https://lymphaware.com/ebp/${profile.qr_token}`;
 
       rows.push(
         [
@@ -244,53 +158,34 @@ export default async (request) => {
       );
     });
 
-
-    const csv =
-      rows.join('\r\n');
-
+    const csv = rows.join('\r\n');
+    const preparedAt = new Date().toISOString();
 
     /*
-     * Mark every exported record PREPARED.
+     * Once included in the batch, move each card from READY to PREPARED so it
+     * is not duplicated in the next batch download. It remains available in
+     * Card Production until it is marked printed.
      */
-    const preparedAt =
-      new Date().toISOString();
-
-
     for (const profile of profiles) {
-
       const preparedResponse = await fetch(
         `${process.env.SUPABASE_URL}/rest/v1/profiles` +
         `?id=eq.${encodeURIComponent(profile.id)}`,
         {
           method: 'PATCH',
-
           headers: {
-            apikey:
-              process.env.SUPABASE_SECRET_KEY,
-
-            Authorization:
-              `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
-
-            'Content-Type':
-              'application/json',
-
-            Prefer:
-              'return=minimal'
+            apikey: process.env.SUPABASE_SECRET_KEY,
+            Authorization: `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
+            'Content-Type': 'application/json',
+            Prefer: 'return=minimal'
           },
-
           body: JSON.stringify({
-            card_production_status:
-              'PREPARED',
-
-            card_prepared_at:
-              preparedAt
+            card_production_status: 'PREPARED',
+            card_prepared_at: preparedAt
           })
         }
       );
 
-
       if (!preparedResponse.ok) {
-
         console.error(
           `Unable to mark ${profile.lymphaware_id} as prepared:`,
           await preparedResponse.text()
@@ -298,59 +193,37 @@ export default async (request) => {
 
         return new Response(
           JSON.stringify({
-            error:
-              'The EasyBadge batch was created, but one or more card statuses could not be updated.'
+            error: 'The EasyBadge batch was created, but one or more card statuses could not be updated.'
           }),
           {
             status: 500,
-            headers: {
-              'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
           }
         );
       }
     }
 
-
     return new Response(
       csv,
       {
         status: 200,
-
         headers: {
-          'Content-Type':
-            'text/csv; charset=utf-8',
-
-          'Content-Disposition':
-            'attachment; filename="LymphAware_EasyBadge_Test.csv"',
-
-          'Cache-Control':
-            'no-store',
-
-          'X-LymphAware-Card-Count':
-            String(profiles.length)
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': 'attachment; filename="LymphAware_EasyBadge.csv"',
+          'Cache-Control': 'no-store',
+          'X-LymphAware-Card-Count': String(profiles.length)
         }
       }
     );
 
-
   } catch (error) {
-
-    console.error(
-      'Batch EasyBadge export error:',
-      error
-    );
+    console.error('Batch EasyBadge export error:', error);
 
     return new Response(
-      JSON.stringify({
-        error:
-          'Unable to create the EasyBadge batch.'
-      }),
+      JSON.stringify({ error: 'Unable to create the EasyBadge batch.' }),
       {
         status: 500,
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        headers: { 'Content-Type': 'application/json' }
       }
     );
   }
