@@ -3,22 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Patient Portal | LymphAware</title>
 
   <link rel="stylesheet" href="/css/styles.css">
-
+  <link rel="stylesheet" href="/css/secondary-header.css">
+  <link rel="stylesheet" href="/css/card-system.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     .portal-page {
       min-height: calc(100vh - 84px);
       padding: 60px 20px;
-      background: linear-gradient(
-        135deg,
-        rgba(76, 155, 87, 0.06),
-        rgba(40, 120, 184, 0.05)
-      );
+      background: linear-gradient(135deg, rgba(76,155,87,.06), rgba(40,120,184,.05));
     }
 
     .portal-shell {
@@ -27,44 +23,25 @@
       margin: 0 auto;
     }
 
-      .header-logo {
-      display: block;
-      width: 360px;
-      max-width: 100%;
-      height: auto;
-    }
-    
-    
-    /* PORTAL HEADER */
-    
-    .portal-header .header-inner {
-      width: min(1280px, calc(100% - 48px));
-      max-width: 1280px;
-      margin: 0 auto;
-    }
-    
-    .portal-header .header-actions {
-      flex: 0 0 auto;
-    }
-    
-    .portal-header .header-actions .button {
-      white-space: nowrap;
-    }
-    
-    .portal-welcome {
-      margin-bottom: 30px;
+    #portal-content { display: none; }
+
+    #portal-loading {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--muted);
     }
 
+    .portal-welcome { margin-bottom: 30px; }
     .portal-welcome h1 {
       margin: 6px 0 12px;
-      font-size: 2.7rem;
+      font-size: clamp(2rem, 3vw, 2.8rem);
       line-height: 1.15;
     }
-
     .portal-welcome p {
-      max-width: 680px;
+      max-width: 700px;
       color: var(--muted);
       font-size: 1.08rem;
+      line-height: 1.55;
     }
 
     .portal-grid {
@@ -76,20 +53,95 @@
 
     .portal-option {
       padding: 28px;
-      border: 1px solid var(--border);
       border-radius: 18px;
-      background: white;
+      background: #fff;
+    }
+    .portal-option h2 { margin: 0 0 10px; font-size: 1.45rem; }
+    .portal-option p { margin: 0; color: var(--muted); line-height: 1.55; }
+
+    .portal-option-link {
+      display: block;
+      color: inherit;
+      text-decoration: none;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .portal-option-link:hover,
+    .portal-option-link:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(31,47,66,.10) !important;
+    }
+    .portal-option-link:focus-visible {
+      outline: 3px solid #2878b8;
+      outline-offset: 3px;
     }
 
-    .portal-option h2 {
-      margin-top: 0;
-      font-size: 1.45rem;
+    .portal-membership,
+    .portal-onboarding,
+    .portal-accessories {
+      grid-column: 1 / -1;
     }
 
-    .portal-option p {
-      margin-bottom: 0;
-      color: var(--muted);
+    .portal-membership { background: var(--green-light); }
+    .portal-onboarding { background: var(--green-light); }
+    .portal-onboarding .button { margin-top: 16px; }
+
+    .membership-price {
+      margin: 8px 0 4px;
+      color: #16853f;
+      font-size: clamp(2.3rem, 5vw, 3.5rem);
+      line-height: 1;
+      font-weight: 800;
     }
+
+    .membership-term {
+      margin: 0 0 20px !important;
+      color: var(--text) !important;
+      font-weight: 700;
+    }
+
+    .membership-list {
+      margin: 20px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 9px;
+    }
+    .membership-list li::before {
+      content: '✓';
+      color: #16853f;
+      font-weight: 800;
+      margin-right: 10px;
+    }
+
+    .membership-payment-actions { margin-top: 24px; }
+    .membership-payment-actions[hidden] { display: none !important; }
+
+    .membership-status {
+      margin: 0 0 8px !important;
+      color: var(--green-dark) !important;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .replacement-options {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .replacement-option {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1px solid #cbd8df;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .replacement-option input { width: 20px; height: 20px; }
+    .replacement-option strong { white-space: nowrap; }
+    .replacement-total { margin: 18px 0 16px; font-size: 1.05rem; }
 
     .portal-actions {
       margin-top: 30px;
@@ -97,911 +149,385 @@
       justify-content: flex-end;
     }
 
-    .accessories-actions {
-      margin-top: 18px;
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    
-    #portal-content {
-      display: none;
-    }
+    #portal-message { margin-top: 16px; line-height: 1.5; }
+    .portal-page .button { font-size: 18px; font-weight: 700; }
 
-    #portal-loading {
-      text-align: center;
-      padding: 80px 20px;
-      color: var(--muted);
+    .payment-result {
+      margin-bottom: 24px;
+      padding: 16px 18px;
+      border: 1px solid #cbd8df;
+      border-radius: 14px;
+      background: #fff;
+      line-height: 1.5;
     }
 
-    #portal-message {
-      margin-top: 16px;
-    }
-
-    .portal-page .button {
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    @media (max-width: 900px) {
-
-  .portal-header .header-inner {
-    width: calc(100% - 32px);
-    gap: 20px;
-  }
-
-    .portal-header .header-logo {
-      width: 300px;
-    }
-
-  .portal-header .header-actions .button {
-    padding-left: 18px;
-    padding-right: 18px;
-    font-size: 0.95rem;
-  }
-
-}
-
-    
     @media (max-width: 680px) {
-      .portal-page {
-        padding: 40px 16px;
-      }
-    
-      .portal-grid {
-        grid-template-columns: 1fr;
-      }
-    
-      .portal-welcome h1 {
-        font-size: 2.2rem;
-      }
-    
-      .portal-header .header-inner {
-        width: calc(100% - 24px);
-        min-height: 72px;
-        gap: 12px;
-      }
-      
-      .portal-header .header-logo {
-        width: 250px;
-        max-width: calc(100vw - 165px);
-        margin: 0;
-      }
-      
-      .portal-header .header-actions .button {
-        min-height: 44px;
-        padding: 0 14px;
-        font-size: 0.88rem;
-      }
-    
-      .portal-actions {
-        justify-content: stretch;
-      }
-    
-      .portal-actions .button {
-        width: 100%;
-      }
-    
-      .accessories-actions {
-        flex-direction: column;
-      }
-    
-      .accessories-actions .button {
-        width: 100%;
-      }
-
-      .replacement-option {
-        grid-template-columns: auto 1fr;
-      }
-      
-      .replacement-option strong {
-        grid-column: 2;
-      }
-
-      #replacement-payment-button {
-        width: 100%;
-      }
-    }
-    
-    .portal-option-link {
-      display: block;
-      color: inherit;
-      text-decoration: none;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-    
-    .portal-option-link:hover,
-    .portal-option-link:focus-visible {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    }
-    
-    .portal-option-link:focus-visible {
-      outline: 3px solid #2878b8;
-      outline-offset: 3px;
-    }
-
-    .portal-accessories {
-      grid-column: 1 / -1;
-    }
-    
-    .portal-membership {
-      grid-column: 1 / -1;
-      background: var(--green-light);
-    }
-
-      .portal-onboarding {
-        grid-column: 1 / -1;
-        background: var(--green-light);
-      }
-
-      .portal-onboarding .button {
-        margin-top: 16px;
-      }
-    
-        .replacement-options {
-        margin-top: 18px;
-        display: grid;
-        gap: 12px;
-      }
-      
-      .replacement-option {
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        align-items: center;
-        gap: 12px;
-        padding: 14px 16px;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        background: #fff;
-        cursor: pointer;
-      }
-      
-      .replacement-option input {
-        width: 20px;
-        height: 20px;
-      }
-      
-      .replacement-option strong {
-        white-space: nowrap;
-      }
-      
-      .replacement-total {
-        margin-top: 18px;
-        margin-bottom: 16px;
-        font-size: 1.05rem;
-      }
-          
-    
-    .membership-status {
-      margin-bottom: 8px !important;
-      color: var(--green-dark) !important;
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
-    
-    #membership-message {
-      margin-top: 0;
-    }
-    
-    .membership-payment-actions {
-      margin-top: 18px;
-    }
-    
-    .membership-payment-actions[hidden] {
-      display: none;
-    }
-    
-    .accessories-actions {
-      margin-top: 18px;
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
+      .portal-page { padding: 40px 16px; }
+      .portal-grid { grid-template-columns: 1fr; }
+      .portal-actions { justify-content: stretch; }
+      .portal-actions .button,
+      #pay-membership-button,
+      #replacement-payment-button { width: 100%; }
+      .replacement-option { grid-template-columns: auto 1fr; }
+      .replacement-option strong { grid-column: 2; }
     }
   </style>
 </head>
-
 <body>
-
- <header class="site-header portal-header">
+  <header class="site-header secondary-header">
     <div class="container header-inner">
-
-      <a href="/" class="header-brand" aria-label="LymphAware home">
-
-        <img
-          class="header-logo"
-       src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg"
-          alt="LymphAware – Helping People Living with Lymphoedema Be Understood."
-        >
-      
+      <a href="/" class="header-brand" aria-label="Back to LymphAware website">
+        <img class="header-logo" src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg" alt="LymphAware – Helping People Living with Lymphoedema Be Understood">
       </a>
-
       <div class="header-actions">
-        <a href="/" class="button button-secondary">Back to Website</a>
+        <a href="/" class="button button-secondary back-to-website-button">Back to Website</a>
       </div>
-
     </div>
   </header>
 
-<main class="portal-page">
+  <main class="portal-page">
+    <div id="portal-loading">Checking your secure account...</div>
 
-  <div id="portal-loading">
-    Checking your secure session...
-  </div>
-
-  <section id="portal-content" class="portal-shell">
-
-    <div class="portal-welcome">
-
-      <p class="eyebrow">Patient Portal</p>
-
-      <h1>Welcome to LymphAware</h1>
-
-      <p>
-        Manage your LymphAware information and control what you choose
-        to make available through your QR-linked profile.
-      </p>
-
-    </div>
-
-
-    <div class="portal-grid">
-
-      <div
-        class="portal-option portal-onboarding"
-        id="onboarding-panel"
-        hidden>
-      
-        <h2>Welcome to LymphAware</h2>
-      
-        <p>
-          Your account is ready. Please complete your profile so your
-          LymphAware ID card and QR profile can be prepared.
-        </p>
-      
-        <a
-          href="/profile/"
-          class="button button-primary">
-          Complete My Profile
-        </a>
-      
+    <section id="portal-content" class="portal-shell">
+      <div class="portal-welcome">
+        <p class="eyebrow">Patient Portal</p>
+        <h1 id="portal-title">Welcome to LymphAware</h1>
+        <p id="portal-intro">Manage your LymphAware information and control what you choose to make available through your QR-linked profile.</p>
       </div>
-            
-      <a href="/profile/" class="portal-option portal-option-link">
 
-        <h2>My Profile</h2>
+      <div id="payment-result" class="payment-result" hidden></div>
 
-        <p>
-          View and manage the information associated with your
-          LymphAware profile.
-        </p>
-
-      </a>
-
-
-      <a href="/preview/" class="portal-option portal-option-link">
-
-        <h2>Preview My QR Profile</h2>
-
-        <p>
-          See what another person will see when your LymphAware
-          card QR code is scanned.
-        </p>
-
-      </a>
-
-      <div
-        class="portal-option portal-membership"
-        id="membership-panel">
-      
-        <h2>LymphAware Membership</h2>
-      
-        <p
-          id="membership-status"
-          class="membership-status">
-          Loading membership information...
-        </p>
-      
-        <p id="membership-message"></p>
-      
-        <div
-          id="membership-payment-actions"
-          class="membership-payment-actions"
-          hidden>
-      
-          <button
-            type="button"
-            id="pay-membership-button"
-            class="button button-primary">
-            Pay Membership
-          </button>
-      
+      <div class="portal-grid">
+        <div class="portal-option portal-membership" id="membership-panel">
+          <h2 id="membership-heading">LymphAware Membership</h2>
+          <p id="membership-status" class="membership-status">Loading membership information...</p>
+          <div id="membership-pending-content" hidden>
+            <div class="membership-price">£29.99</div>
+            <p class="membership-term">One payment for five years</p>
+            <p>Your free account is ready. Complete your membership to unlock your patient profile and Patient Portal features.</p>
+            <ul class="membership-list">
+              <li>Personal LymphAware ID card</li>
+              <li>LymphAware lanyard &amp; holder</li>
+              <li>Patient-controlled QR profile</li>
+              <li>Secure Patient Portal access</li>
+              <li>Five-year membership period</li>
+            </ul>
+          </div>
+          <p id="membership-message"></p>
+          <div id="membership-payment-actions" class="membership-payment-actions" hidden>
+            <button type="button" id="pay-membership-button" class="button button-primary">Complete Membership – £29.99</button>
+          </div>
         </div>
 
-  </div>
+        <div id="member-content" style="display: contents;">
+          <div class="portal-option portal-onboarding" id="onboarding-panel" hidden>
+            <h2>Complete your LymphAware profile</h2>
+            <p>Your membership is active. Add your information so your LymphAware ID card and QR profile can be prepared.</p>
+            <a href="/profile/" class="button button-primary">Complete My Profile</a>
+          </div>
 
-  <div
-    class="portal-option portal-accessories"
-    id="accessories-panel"
-    hidden>
-    <h2>Additional Cards &amp; Accessories</h2>
+          <a id="profile-link" href="/profile/" class="portal-option portal-option-link">
+            <h2>My Profile</h2>
+            <p>View and manage the information associated with your LymphAware profile.</p>
+          </a>
 
-  <p>
-    Select the replacement items you require, then continue to payment.
-  </p>
+          <a id="preview-link" href="/preview/" class="portal-option portal-option-link">
+            <h2>Preview My QR Profile</h2>
+            <p>See what another person will see when your LymphAware card QR code is scanned.</p>
+          </a>
 
-  <div class="replacement-options">
+          <div class="portal-option portal-accessories" id="accessories-panel" hidden>
+            <h2>Additional Cards &amp; Accessories</h2>
+            <p>Select the replacement items you require, then continue to payment.</p>
 
-    <label class="replacement-option">
-      <input
-        type="checkbox"
-        id="replacement-card">
-      <span>Replacement LymphAware ID Card</span>
-      <strong>£7.50</strong>
-    </label>
+            <div class="replacement-options">
+              <label class="replacement-option">
+                <input type="checkbox" id="replacement-card">
+                <span>Replacement LymphAware ID Card</span>
+                <strong>£7.50</strong>
+              </label>
+              <label class="replacement-option">
+                <input type="checkbox" id="replacement-lanyard">
+                <span>Replacement Lanyard &amp; Holder</span>
+                <strong>£7.50</strong>
+              </label>
+            </div>
 
-    <label class="replacement-option">
-      <input
-        type="checkbox"
-        id="replacement-lanyard">
-      <span>Replacement Lanyard &amp; Holder</span>
-      <strong>£7.50</strong>
-    </label>
+            <div class="replacement-total">Total: <strong id="replacement-total">£0.00</strong></div>
+            <button type="button" id="replacement-payment-button" class="button button-primary" disabled>Continue to Payment</button>
+          </div>
+        </div>
+      </div>
 
-  </div>
-
-  <div class="replacement-total">
-    Total: <strong id="replacement-total">£0.00</strong>
-  </div>
-
-  <button
-    type="button"
-    id="replacement-payment-button"
-    class="button button-primary"
-    disabled>
-    Continue to Payment
-  </button>
-
-</div>
-
-    </div>
-
-
-    <div class="portal-actions">
-
-      <button
-        id="sign-out-button"
-        type="button"
-        class="button button-secondary">
-        Sign Out
-      </button>
-
-    </div>
-
-    <p id="portal-message" role="status" aria-live="polite"></p>
-
-  </section>
-
-</main>
-
+      <div class="portal-actions">
+        <button id="sign-out-button" type="button" class="button button-secondary">Sign Out</button>
+      </div>
+      <p id="portal-message" role="status" aria-live="polite"></p>
+    </section>
+  </main>
 
   <script>
     const SUPABASE_URL = 'https://thbhsktcenhrnxzkbjus.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
-
-    const supabaseClient = supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
     const portalLoading = document.getElementById('portal-loading');
     const portalContent = document.getElementById('portal-content');
+    const portalTitle = document.getElementById('portal-title');
+    const portalIntro = document.getElementById('portal-intro');
     const portalMessage = document.getElementById('portal-message');
     const signOutButton = document.getElementById('sign-out-button');
+    const membershipStatus = document.getElementById('membership-status');
+    const membershipMessage = document.getElementById('membership-message');
+    const membershipPendingContent = document.getElementById('membership-pending-content');
+    const membershipPaymentActions = document.getElementById('membership-payment-actions');
+    const payMembershipButton = document.getElementById('pay-membership-button');
+    const memberContent = document.getElementById('member-content');
+    const onboardingPanel = document.getElementById('onboarding-panel');
+    const accessoriesPanel = document.getElementById('accessories-panel');
+    const paymentResult = document.getElementById('payment-result');
 
-    const membershipStatus =
-      document.getElementById('membership-status');
-    
-    const membershipMessage =
-      document.getElementById('membership-message');
+    let currentUserId = null;
 
-    const accessoriesPanel =
-      document.getElementById('accessories-panel');
-    
-   const membershipPaymentActions =
-      document.getElementById('membership-payment-actions');
-    
-     const payMembershipButton =
-      document.getElementById('pay-membership-button');
-    
-    const easyBadgeExportButton =
-      document.getElementById('easybadge-export-button');
-
-  payMembershipButton.addEventListener('click', async () => {
-
-  payMembershipButton.disabled = true;
-  payMembershipButton.textContent = 'Starting secure payment...';
-
-  portalMessage.textContent = '';
-
-  try {
-
-    const {
-      data: { session },
-      error: sessionError
-    } = await supabaseClient.auth.getSession();
-
-    if (
-      sessionError ||
-      !session?.access_token
-    ) {
-      portalMessage.textContent =
-        'Your secure session could not be verified. Please sign in again.';
-
-      payMembershipButton.disabled = false;
-      payMembershipButton.textContent = 'Pay Membership';
-
-      return;
-    }
-
-
-    const response = await fetch(
-      '/.netlify/functions/create-checkout-session',
-      {
-        method: 'POST',
-        headers: {
-          Authorization:
-            `Bearer ${session.access_token}`,
-          'Content-Type':
-            'application/json'
-        }
-      }
-    );
-
-
-    const result =
-      await response.json();
-
-
-    if (
-      !response.ok ||
-      !result?.url
-    ) {
-      console.error(
-        'Unable to start membership payment:',
-        result
+    function hasPortalEntitlement(membership) {
+      if (!membership) return false;
+      return (
+        (membership.membership_status === 'ACTIVE' && membership.payment_status === 'PAID') ||
+        membership.membership_status === 'PILOT' ||
+        membership.membership_status === 'SPONSORED'
       );
-
-      portalMessage.textContent =
-        result?.error ||
-        'Unable to start membership payment. Please try again.';
-
-      payMembershipButton.disabled = false;
-      payMembershipButton.textContent = 'Pay Membership';
-
-      return;
     }
 
+    function showPaymentResult() {
+      const params = new URLSearchParams(window.location.search);
+      const payment = params.get('payment');
 
-    window.location.href =
-      result.url;
-
-  } catch (error) {
-
-    console.error(
-      'Unable to start membership payment:',
-      error
-    );
-
-    portalMessage.textContent =
-      'Unable to start membership payment. Please try again.';
-
-    payMembershipButton.disabled = false;
-    payMembershipButton.textContent = 'Pay Membership';
-  }
-});
-    
-    
-    async function loadMembership(userId) {
-
-  const { data, error } = await supabaseClient
-    .from('memberships')
-    .select(`
-      membership_status,
-      payment_status,
-      initial_fee_pence,
-      membership_start,
-      membership_end
-    `)
-    .eq('user_id', userId)
-    .maybeSingle();
-
-  if (error || !data) {
-
-    console.error(
-      'Unable to load membership:',
-      error
-    );
-
-    
-    membershipStatus.textContent =
-      'Membership information unavailable';
-
-    membershipMessage.textContent =
-      'Please try again later.';
-
-    return;
-  }
-
-   membershipPaymentActions.hidden = true;   
-
-  if (data.membership_status === 'PILOT') {
-  
-    membershipStatus.textContent =
-      'Pilot Member';
-  
-    membershipMessage.textContent =
-      'You are participating in the LymphAware patient pilot. No membership payment is currently required.';
-  
-    accessoriesPanel.hidden = true;
-  
-    return;
-  }
-  accessoriesPanel.hidden = false;
-
-      if (
-      data.membership_status === 'ACTIVE' &&
-      data.payment_status === 'PAID'
-    ) {
-    
-      membershipStatus.textContent =
-        'Active Member';
-    
-      membershipMessage.textContent =
-        'Your LymphAware membership is active and your membership payment has been received.';
-    
-      return;
-    }
-    
-    
-    if (
-      data.membership_status === 'ACTIVE' &&
-      data.payment_status === 'PENDING'
-    ) {
-    
-      const feePence =
-        Number(data.initial_fee_pence || 0);
-    
-      const feePounds =
-        (feePence / 100).toFixed(2);
-    
-      membershipStatus.textContent =
-        'Membership Payment Required';
-    
-      membershipMessage.textContent =
-        `Your LymphAware membership fee of £${feePounds} is awaiting payment.`;
-
-       membershipPaymentActions.hidden = false;
-      return;
+      if (payment === 'success') {
+        paymentResult.hidden = false;
+        paymentResult.textContent = 'Thank you. We are confirming your membership payment. Your portal will unlock as soon as confirmation is complete.';
+      } else if (payment === 'cancelled') {
+        paymentResult.hidden = false;
+        paymentResult.textContent = 'Your membership payment was not completed. You can continue whenever you are ready.';
+      }
     }
 
-  if (data.membership_status === 'SPONSORED') {
-
-    membershipStatus.textContent =
-      'Sponsored Member';
-
-    membershipMessage.textContent =
-      'Your LymphAware membership is currently sponsored.';
-
-    return;
-  }
-
-
-  if (data.membership_status === 'RENEWAL_DUE') {
-
-    membershipStatus.textContent =
-      'Membership Renewal Due';
-
-    membershipMessage.textContent =
-      'Your LymphAware membership is due for renewal.';
-
-    return;
-  }
-
-
-  if (data.membership_status === 'LAPSED') {
-
-    membershipStatus.textContent =
-      'Membership Lapsed';
-
-    membershipMessage.textContent =
-      'Your LymphAware membership is currently not active.';
-
-    return;
-  }
-
-
-  membershipStatus.textContent =
-    'LymphAware Membership';
-
-  membershipMessage.textContent =
-    'Membership information is available for your account.';
-}
-
-        async function loadOnboardingStatus(userId) {
-    
+    async function fetchMembership(userId) {
       const { data, error } = await supabaseClient
-        .from('profiles')
-        .select('display_name, photo_url')
+        .from('memberships')
+        .select('membership_status,payment_status,initial_fee_pence,membership_start,membership_end')
         .eq('user_id', userId)
         .maybeSingle();
-    
+
       if (error) {
-        console.error(
-          'Unable to load onboarding status:',
-          error
-        );
-    
+        console.error('Unable to load membership:', error);
+        return null;
+      }
+      return data;
+    }
+
+    async function loadOnboardingStatus(userId) {
+      const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('display_name,photo_path')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Unable to load onboarding status:', error);
         return;
       }
-    
-      const onboardingPanel =
-        document.getElementById('onboarding-panel');
-    
-      if (
-        !data ||
-        !data.display_name ||
-        !data.display_name.trim() ||
-        !data.photo_url ||
-        !data.photo_url.trim()
-      ) {
-        onboardingPanel.hidden = false;
-      } else {
-        onboardingPanel.hidden = true;
-      }
+
+      onboardingPanel.hidden = Boolean(
+        data &&
+        data.display_name && data.display_name.trim() &&
+        data.photo_path && data.photo_path.trim()
+      );
     }
-    
-        async function checkPortalAccess() {
-    
-          const {
-            data: { user },
-            error
-          } = await supabaseClient.auth.getUser();
-    
-          if (error || !user) {
-            window.location.href = '/sign-in/';
-            return;
+
+    async function renderMembership(membership) {
+      membershipPaymentActions.hidden = true;
+      membershipPendingContent.hidden = true;
+      memberContent.style.display = 'none';
+      onboardingPanel.hidden = true;
+      accessoriesPanel.hidden = true;
+
+      if (!membership) {
+        membershipStatus.textContent = 'Membership information unavailable';
+        membershipMessage.textContent = 'Please try again later.';
+        return false;
+      }
+
+      if (hasPortalEntitlement(membership)) {
+        memberContent.style.display = 'contents';
+
+        if (membership.membership_status === 'PILOT') {
+          membershipStatus.textContent = 'Pilot Member';
+          membershipMessage.textContent = 'Your existing pilot access remains active.';
+          accessoriesPanel.hidden = true;
+        } else if (membership.membership_status === 'SPONSORED') {
+          membershipStatus.textContent = 'Sponsored Member';
+          membershipMessage.textContent = 'Your LymphAware membership is currently sponsored.';
+          accessoriesPanel.hidden = true;
+        } else {
+          membershipStatus.textContent = 'Active Member';
+          let message = 'Your LymphAware membership is active.';
+          if (membership.membership_end) {
+            const endDate = new Date(membership.membership_end);
+            message += ` Your current membership runs until ${endDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}.`;
           }
-
-        await loadMembership(user.id);
-        await loadOnboardingStatus(user.id);
-        
-        portalLoading.style.display = 'none';
-        portalContent.style.display = 'block';
+          membershipMessage.textContent = message;
+          accessoriesPanel.hidden = false;
         }
-     
-    signOutButton.addEventListener('click', async () => {
 
-      portalMessage.textContent = 'Signing out...';
-
-      const { error } = await supabaseClient.auth.signOut();
-
-      if (error) {
-        portalMessage.textContent =
-          'Unable to sign out. Please try again.';
-        return;
+        return true;
       }
 
-      window.location.href = '/sign-in/';
-    });
-
-const replacementCard =
-  document.getElementById('replacement-card');
-
-const replacementLanyard =
-  document.getElementById('replacement-lanyard');
-
-const replacementTotal =
-  document.getElementById('replacement-total');
-
-const replacementPaymentButton =
-  document.getElementById('replacement-payment-button');
-
-
-function updateReplacementOrder() {
-
-  if (
-    !replacementCard ||
-    !replacementLanyard ||
-    !replacementTotal ||
-    !replacementPaymentButton
-  ) {
-    return;
-  }
-
-  const cardSelected =
-    replacementCard.checked;
-
-  const lanyardSelected =
-    replacementLanyard.checked;
-
-  let total = 0;
-
-  if (cardSelected) {
-    total += 7.50;
-  }
-
-  if (lanyardSelected) {
-    total += 7.50;
-  }
-
-  replacementTotal.textContent =
-    `£${total.toFixed(2)}`;
-
-  replacementPaymentButton.disabled =
-    !cardSelected && !lanyardSelected;
-}
-
-
-if (
-  replacementCard &&
-  replacementLanyard &&
-  replacementPaymentButton
-) {
-
-  replacementCard.addEventListener(
-    'change',
-    updateReplacementOrder
-  );
-
-  replacementLanyard.addEventListener(
-    'change',
-    updateReplacementOrder
-  );
-
-  replacementPaymentButton.addEventListener(
-    'click',
-    () => {
-
-      const cardSelected =
-        replacementCard.checked;
-
-      const lanyardSelected =
-        replacementLanyard.checked;
-
-      if (
-        cardSelected &&
-        lanyardSelected
-      ) {
-        window.location.href =
-          'https://buy.stripe.com/test_dRmaEZ6NigGy6wNdgTaR202';
-
-        return;
+      if (membership.membership_status === 'PENDING' && membership.payment_status === 'PENDING') {
+        portalTitle.textContent = 'Complete your LymphAware membership';
+        portalIntro.textContent = 'Your free account has been created. Complete the membership step below before creating or accessing your patient profile.';
+        membershipStatus.textContent = 'Membership activation required';
+        membershipMessage.textContent = '';
+        membershipPendingContent.hidden = false;
+        membershipPaymentActions.hidden = false;
+        return false;
       }
 
-      if (cardSelected) {
-        window.location.href =
-          'https://buy.stripe.com/test_28E3cx0oUgGy4oF4KnaR200';
-
-        return;
+      if (membership.membership_status === 'RENEWAL_DUE') {
+        portalTitle.textContent = 'Membership renewal required';
+        membershipStatus.textContent = 'Membership Renewal Due';
+        membershipMessage.textContent = 'Your LymphAware membership is due for renewal before portal access can continue.';
+        return false;
       }
 
-      if (lanyardSelected) {
-        window.location.href =
-          'https://buy.stripe.com/test_8x23cx7Rm61Uf3j2CfaR201';
+      if (membership.membership_status === 'LAPSED') {
+        portalTitle.textContent = 'Membership not active';
+        membershipStatus.textContent = 'Membership Lapsed';
+        membershipMessage.textContent = 'Your LymphAware membership is currently not active.';
+        return false;
+      }
+
+      membershipStatus.textContent = 'Membership not active';
+      membershipMessage.textContent = 'Please contact LymphAware if you believe this is incorrect.';
+      return false;
+    }
+
+    async function refreshAfterSuccessfulPayment() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('payment') !== 'success' || !currentUserId) return;
+
+      for (let attempt = 0; attempt < 4; attempt += 1) {
+        const membership = await fetchMembership(currentUserId);
+        if (hasPortalEntitlement(membership)) {
+          await renderMembership(membership);
+          await loadOnboardingStatus(currentUserId);
+          paymentResult.textContent = 'Membership confirmed. Your LymphAware Patient Portal is now active.';
+          return;
+        }
+        await new Promise(resolve => setTimeout(resolve, 1500));
       }
     }
-  );
-}
 
-
-if (easyBadgeExportButton) {
-
-  easyBadgeExportButton.addEventListener(
-    'click',
-    async () => {
-
-      easyBadgeExportButton.disabled = true;
-      easyBadgeExportButton.textContent =
-        'Preparing export...';
-
+    payMembershipButton.addEventListener('click', async () => {
+      payMembershipButton.disabled = true;
+      payMembershipButton.textContent = 'Starting secure payment...';
       portalMessage.textContent = '';
 
       try {
+        const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
 
-        const {
-          data: { session },
-          error: sessionError
-        } = await supabaseClient.auth.getSession();
-
-        if (
-          sessionError ||
-          !session?.access_token
-        ) {
-          portalMessage.textContent =
-            'Your secure session could not be verified. Please sign in again.';
-
+        if (sessionError || !session?.access_token) {
+          portalMessage.textContent = 'Your secure session could not be verified. Please sign in again.';
+          payMembershipButton.disabled = false;
+          payMembershipButton.textContent = 'Complete Membership – £29.99';
           return;
         }
 
-        const response = await fetch(
-          '/.netlify/functions/export-easybadge',
-          {
-            method: 'POST',
-            headers: {
-              Authorization:
-                `Bearer ${session.access_token}`
-            }
+        const response = await fetch('/.netlify/functions/create-checkout-session', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json'
           }
-        );
+        });
 
-        if (!response.ok) {
-
-          const result =
-            await response.json();
-
-          portalMessage.textContent =
-            result?.error ||
-            'Unable to create the EasyBadge export.';
-
+        const result = await response.json();
+        if (!response.ok || !result?.url) {
+          portalMessage.textContent = result?.error || 'Unable to start membership payment. Please try again.';
+          payMembershipButton.disabled = false;
+          payMembershipButton.textContent = 'Complete Membership – £29.99';
           return;
         }
 
-        const blob =
-          await response.blob();
-
-        const disposition =
-          response.headers.get('Content-Disposition');
-
-        const fileNameMatch =
-          disposition?.match(/filename="([^"]+)"/);
-
-        const fileName =
-          fileNameMatch?.[1] ||
-          'LymphAware_EasyBadge.csv';
-
-        const downloadUrl =
-          URL.createObjectURL(blob);
-
-        const link =
-          document.createElement('a');
-
-        link.href = downloadUrl;
-        link.download = fileName;
-
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-
-        URL.revokeObjectURL(downloadUrl);
-
-        portalMessage.textContent =
-          'EasyBadge card record exported successfully.';
-
+        window.location.href = result.url;
       } catch (error) {
-
-        console.error(
-          'Unable to export EasyBadge record:',
-          error
-        );
-
-        portalMessage.textContent =
-          'Unable to create the EasyBadge export.';
-
-      } finally {
-
-        easyBadgeExportButton.disabled = false;
-        easyBadgeExportButton.textContent =
-          'Export EasyBadge Card Record';
+        console.error('Unable to start membership payment:', error);
+        portalMessage.textContent = 'Unable to start membership payment. Please try again.';
+        payMembershipButton.disabled = false;
+        payMembershipButton.textContent = 'Complete Membership – £29.99';
       }
+    });
+
+    signOutButton.addEventListener('click', async () => {
+      portalMessage.textContent = 'Signing out...';
+      const { error } = await supabaseClient.auth.signOut();
+      if (error) {
+        portalMessage.textContent = 'Unable to sign out. Please try again.';
+        return;
+      }
+      window.location.href = '/sign-in/';
+    });
+
+    const replacementCard = document.getElementById('replacement-card');
+    const replacementLanyard = document.getElementById('replacement-lanyard');
+    const replacementTotal = document.getElementById('replacement-total');
+    const replacementPaymentButton = document.getElementById('replacement-payment-button');
+
+    function updateReplacementOrder() {
+      let total = 0;
+      if (replacementCard.checked) total += 7.50;
+      if (replacementLanyard.checked) total += 7.50;
+      replacementTotal.textContent = `£${total.toFixed(2)}`;
+      replacementPaymentButton.disabled = !replacementCard.checked && !replacementLanyard.checked;
     }
-  );
-}
 
+    replacementCard.addEventListener('change', updateReplacementOrder);
+    replacementLanyard.addEventListener('change', updateReplacementOrder);
+    replacementPaymentButton.addEventListener('click', () => {
+      if (replacementCard.checked && replacementLanyard.checked) {
+        window.location.href = 'https://buy.stripe.com/test_dRmaEZ6NigGy6wNdgTaR202';
+      } else if (replacementCard.checked) {
+        window.location.href = 'https://buy.stripe.com/test_28E3cx0oUgGy4oF4KnaR200';
+      } else if (replacementLanyard.checked) {
+        window.location.href = 'https://buy.stripe.com/test_8x23cx7Rm61Uf3j2CfaR201';
+      }
+    });
 
-updateReplacementOrder();
-checkPortalAccess();
-</script>
+    async function checkPortalAccess() {
+      const { data: { user }, error } = await supabaseClient.auth.getUser();
 
+      if (error || !user) {
+        window.location.href = '/sign-in/';
+        return;
+      }
+
+      currentUserId = user.id;
+      showPaymentResult();
+
+      const membership = await fetchMembership(user.id);
+      const entitled = await renderMembership(membership);
+
+      if (entitled) {
+        await loadOnboardingStatus(user.id);
+      }
+
+      portalLoading.style.display = 'none';
+      portalContent.style.display = 'block';
+
+      await refreshAfterSuccessfulPayment();
+    }
+
+    updateReplacementOrder();
+    checkPortalAccess();
+  </script>
 </body>
 </html>
