@@ -6,7 +6,5 @@
   "engines": {
     "node": ">=20"
   },
-  "dependencies": {
-    "nodemailer": "^10.0.0"
-  }
+  "dependencies": {}
 }
