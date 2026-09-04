@@ -30,9 +30,7 @@ async function requireAdmin(request) {
     }
   });
 
-  if (!userResponse.ok) {
-    return { error: json({ error: 'Unable to verify your account.' }, 401) };
-  }
+  if (!userResponse.ok) return { error: json({ error: 'Unable to verify your account.' }, 401) };
 
   const user = await userResponse.json();
   const adminEmail = String(process.env.LYMPHAWARE_ADMIN_EMAIL || '').trim().toLowerCase();
@@ -58,6 +56,18 @@ function normaliseTranslatedContent(input = {}) {
     emergency_contact_relationship: cleanText(input.emergency_contact_relationship, 500),
     additional_statement: cleanText(input.additional_statement, 4000)
   };
+}
+
+function hasReviewableContent(t = {}) {
+  return Boolean(
+    cleanText(t.lymphoedema_type) ||
+    cleanText(t.lymphoedema_location) ||
+    cleanText(t.compression_information) ||
+    cleanText(t.treatment_considerations) ||
+    cleanText(t.assistance_needs) ||
+    cleanText(t.emergency_contact_relationship) ||
+    cleanText(t.additional_statement)
+  );
 }
 
 async function getLanguageProfile(id) {
@@ -117,29 +127,59 @@ export default async (request) => {
       if (!sourceProfile) return json({ error: 'Source profile not found.' }, 404);
 
       const assistance = await getSelectedAssistance(sourceProfile.id);
-
-      return json({
-        language_profile: languageProfile,
-        source_profile: sourceProfile,
-        assistance
-      });
+      return json({ language_profile: languageProfile, source_profile: sourceProfile, assistance });
     }
 
     if (request.method === 'POST') {
       const payload = await request.json();
       const id = cleanText(payload?.id, 100);
+      const action = cleanText(payload?.action, 40) || 'save';
       if (!id) return json({ error: 'Language profile ID is required.' }, 400);
 
       const languageProfile = await getLanguageProfile(id);
       if (!languageProfile) return json({ error: 'Language profile not found.' }, 404);
-
       if (languageProfile.language_code !== 'FR') {
         return json({ error: 'A preparation pack has not yet been approved for this language.' }, 400);
       }
 
+      if (action === 'approve') {
+        if (languageProfile.setup_status !== 'IN_REVIEW') {
+          return json({ error: 'The French profile must be saved for review before it can be approved.' }, 400);
+        }
+        if (!hasReviewableContent(languageProfile.translated_content || {})) {
+          return json({ error: 'There is no reviewed French content to approve.' }, 400);
+        }
+
+        const sourceProfile = await getSourceProfile(languageProfile.source_profile_id);
+        if (!sourceProfile?.display_name || !sourceProfile?.lymphaware_id) {
+          return json({ error: 'The source patient profile is incomplete.' }, 400);
+        }
+
+        const now = new Date().toISOString();
+        const updateResponse = await fetch(
+          `${process.env.SUPABASE_URL}/rest/v1/language_profiles?id=eq.${encodeURIComponent(id)}`,
+          {
+            method: 'PATCH',
+            headers: serviceHeaders('return=representation'),
+            body: JSON.stringify({
+              setup_status: 'APPROVED',
+              qr_profile_active: true,
+              updated_at: now
+            })
+          }
+        );
+
+        if (!updateResponse.ok) {
+          console.error('Unable to approve language profile:', await updateResponse.text());
+          return json({ error: 'The French profile could not be approved.' }, 500);
+        }
+
+        const rows = await updateResponse.json();
+        return json({ ok: true, approved: true, language_profile: rows?.[0] || null });
+      }
+
       const translatedContent = normaliseTranslatedContent(payload?.translated_content || {});
       const now = new Date().toISOString();
-
       const updateResponse = await fetch(
         `${process.env.SUPABASE_URL}/rest/v1/language_profiles?id=eq.${encodeURIComponent(id)}`,
         {
