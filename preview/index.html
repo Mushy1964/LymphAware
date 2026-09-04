@@ -3,809 +3,122 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Preview My QR Profile | LymphAware</title>
-
   <link rel="stylesheet" href="/css/styles.css">
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
-    .preview-page {
-      min-height: calc(100vh - 84px);
-      padding: 50px 16px;
-      background: #f7f9fa;
+    *{box-sizing:border-box}
+    body{margin:0;background:#f5f8f7;color:#172536}
+    .preview-page{min-height:100vh;padding:18px 12px 32px}
+    .preview-shell{width:min(100%,620px);margin:0 auto}
+    .preview-toolbar{margin-bottom:12px;padding:14px 16px;border:1px solid #cfe0e8;border-radius:14px;background:#eef6fb;color:#31566f;line-height:1.45}
+    .preview-toolbar strong{color:#172536}
+    .preview-frame-wrap{width:min(100%,520px);margin:0 auto}
+    .preview-frame{display:block;width:100%;height:900px;border:0;background:#f5f8f7}
+    .preview-actions{display:flex;gap:12px;flex-wrap:wrap;width:min(100%,520px);margin:16px auto 0}
+    .preview-actions .button{font-size:17px;font-weight:700}
+    .preview-loading,.preview-error{padding:40px 20px;text-align:center;border:1px solid #dfe7e9;border-radius:18px;background:#fff;color:#566575}
+    .preview-error{display:none}
+    @media(max-width:600px){
+      .preview-page{padding:8px 8px 24px}
+      .preview-toolbar{font-size:.9rem;padding:12px 13px}
+      .preview-frame{height:820px}
+      .preview-actions{flex-direction:column}
+      .preview-actions .button{width:100%}
     }
-
-    .preview-shell {
-      width: 100%;
-      max-width: 760px;
-      margin: 0 auto;
-    }
-
-       .header-logo {
-      display: block;
-      width: 340px;
-      max-width: 100%;
-      height: auto;
-    }
-    
-    /* PREVIEW HEADER */
-    
-    .preview-header .header-inner {
-      width: min(1280px, calc(100% - 48px));
-      max-width: 1280px;
-      margin: 0 auto;
-    }
-    
-    .preview-header .header-actions {
-      flex: 0 0 auto;
-    }
-    
-    .preview-header .header-actions .button {
-      white-space: nowrap;
-    }
-    
-    .preview-heading {
-      margin-bottom: 26px;
-    }
-
-    .preview-heading h1 {
-      margin: 6px 0 10px;
-      font-size: 2.4rem;
-      line-height: 1.15;
-    }
-
-    .preview-heading p {
-      margin: 0;
-      color: var(--muted);
-    }
-
-    .preview-notice {
-      margin-bottom: 22px;
-      padding: 16px 18px;
-      border-radius: 14px;
-      background: var(--blue-light);
-      color: var(--blue-dark);
-    }
-
-    .patient-profile-preview {
-      overflow: hidden;
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      background: white;
-      box-shadow: 0 12px 32px rgba(31, 41, 51, 0.08);
-    }
-
-    .patient-profile-header {
-      padding: 26px;
-      background: linear-gradient(
-        135deg,
-        var(--green-light),
-        var(--blue-light)
-      );
-    }
-
-    .patient-profile-header h2 {
-      margin: 0 0 6px;
-      font-size: 2rem;
-      line-height: 1.2;
-    }
-
-    .patient-profile-id {
-      margin: 0;
-      color: var(--muted);
-      font-weight: 700;
-    }
-
-    .preview-section {
-      padding: 24px 26px;
-      border-top: 1px solid var(--border);
-    }
-
-    .preview-section h3 {
-      margin: 0 0 14px;
-      font-size: 1.25rem;
-    }
-
-    .preview-section p {
-      margin: 0;
-      color: var(--muted);
-    }
-
-    .preview-details {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-
-    .preview-detail strong {
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .preview-detail span {
-      color: var(--muted);
-    }
-
-    .preview-assistance-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .preview-assistance-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 14px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: #fff;
-    }
-
-    .preview-icon {
-      width: 36px;
-      height: 36px;
-      flex: 0 0 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      background: var(--green-light);
-      color: var(--green-dark);
-      font-weight: 700;
-    }
-
-    .preview-empty {
-      color: var(--muted);
-      font-style: italic;
-    }
-
-    .preview-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 24px;
-    }
-
-    #preview-loading {
-      text-align: center;
-      padding: 80px 20px;
-      color: var(--muted);
-    }
-
-    #preview-content {
-      display: none;
-    }
-
-    .preview-page .button {
-      font-size: 18px;
-      font-weight: 700;
-    }  
-
-    @media (max-width: 900px) {
-
-  .preview-header .header-inner {
-    width: calc(100% - 32px);
-    gap: 20px;
-  }
-
-  .preview-header .header-logo {
-    width: 280px;
-  }
-
-  .preview-header .header-actions .button {
-    padding-left: 18px;
-    padding-right: 18px;
-    font-size: 0.95rem;
-  }
-
-}
-
-    @media (max-width: 680px) {
-      .preview-page {
-        padding: 36px 14px;
-      }
-
-      .preview-heading h1 {
-        font-size: 2rem;
-      }
-
-      .patient-profile-header,
-      .preview-section {
-        padding: 20px;
-      }
-        
-       .preview-header .header-inner {
-          width: calc(100% - 24px);
-          min-height: 72px;
-          gap: 12px;
-        }
-        
-        .preview-header .header-logo {
-          width: 220px;
-          max-width: calc(100vw - 175px);
-          margin: 0;
-        }
-        
-        .preview-header .header-actions .button {
-          min-height: 44px;
-          padding: 0 14px;
-          font-size: 0.88rem;
-        }
-      
-      .preview-details {
-        grid-template-columns: 1fr;
-      }
-
-      .preview-actions .button {
-        width: 100%;
-      }
-    }
-    .preview-icon {
-      overflow: hidden;
-    }
-    
-    .preview-icon-image {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-    }
-      
-    .patient-profile-status {
-        display: block;
-        width: fit-content;
-        margin: 8px 0 12px -14px;
-        padding: 8px 14px;
-        border-radius: 10px;
-        background: #eaf6ee;
-        color: #237a3b;
-        font-size: 1rem;
-        font-weight: 700;
-        letter-spacing: 0.03em;
-        text-align: left;
-      }
-    
-    .patient-profile-id {
-      margin: 0;
-      font-weight: 600;
-    }
-
-    .patient-identity {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
- .patient-photo-placeholder {
-  width: 96px;
-  height: 118px;
-  flex: 0 0 96px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px dashed #b8c7cc;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.65);
-  color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.patient-photo-placeholder.has-photo {
-  border: none;
-}
-  
-  .patient-identity-text {
-    min-width: 0;
-  }
-  
-  @media (max-width: 520px) {
-    .patient-identity {
-      align-items: flex-start;
-      gap: 14px;
-    }
-  
-    .patient-photo-placeholder {
-      width: 82px;
-      height: 102px;
-      flex-basis: 82px;
-    }
-  }
-
-  .patient-photo-placeholder img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
   </style>
 </head>
-
 <body>
-
-  <header class="site-header preview-header">
-    <div class="container header-inner">
-
-      <a href="/" class="header-brand" aria-label="LymphAware home">
-
-       <img
-          class="header-logo"
-          src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg"
-          alt="LymphAware – Helping People Living with Lymphoedema Be Understood."
-        >
-
-      </a>
-
-      <div class="header-actions">
-        <a href="/portal/" class="button button-secondary">
-          Back to Portal
-        </a>
-      </div>
-
-    </div>
-  </header>
-
-      </section>
-        
-    <main class="preview-page">
-  
-      <div id="preview-loading">
-        Loading your QR profile preview...
-      </div>
-
-
-    <section id="preview-content" class="preview-shell">
-
-      <div class="preview-heading">
-
-        <p class="eyebrow">Patient Portal</p>
-
-        <h1>Preview My QR Profile</h1>
-
-        <p>
-          This preview shows how patient-selected information may appear
-          when someone scans your LymphAware card.
-        </p>
-
-      </div>
-
-
-     <div class="preview-notice" id="preview-notice">
+  <main class="preview-page">
+    <section class="preview-shell">
+      <div class="preview-toolbar" id="preview-toolbar">
         <strong>Preview only.</strong>
-        <span id="preview-status-message">
-          Checking your QR profile status...
-        </span>
+        This is the same profile someone will see when they scan your LymphAware card.
       </div>
 
-      <article class="patient-profile-preview">
+      <div id="preview-loading" class="preview-loading">Loading your QR profile preview…</div>
+      <div id="preview-error" class="preview-error">Your QR profile preview could not be loaded.</div>
 
-      <header class="patient-profile-header">
-
-        <div class="patient-identity">
-      
-         <div
-          class="patient-photo-placeholder"
-          id="preview-photo">
-          Photo
-        </div>
-      
-          <div class="patient-identity-text">
-      
-            <h2 id="preview-name">LymphAware Patient</h2>
-      
-            <p class="patient-profile-status">
-              LYMPHOEDEMA PATIENT
-            </p>
-      
-            <p class="patient-profile-id">
-              LymphAware ID:
-              <span id="preview-id">Not provided</span>
-            </p>
-      
-          </div>
-      
-        </div>
-      
-      </header>
-
-       <section class="preview-section">
-        
-          <h3>How You Can Help Me</h3>
-        
-          <div
-            id="preview-assistance"
-            class="preview-assistance-list">
-          </div>
-        
-        </section>
-
-      <section
-        id="preview-lymphoedema-section"
-        class="preview-section">
-      
-        <h3>My Lymphoedema</h3>
-      
-        <div class="preview-details">
-      
-          <div class="preview-detail">
-            <strong>Type</strong>
-            <span id="preview-type">Not provided</span>
-          </div>
-      
-          <div class="preview-detail">
-            <strong>Location</strong>
-            <span id="preview-location">Not provided</span>
-          </div>
-      
-        </div>
-      
-      </section>
-      
-      
-      <section
-        id="preview-compression-section"
-        class="preview-section">
-      
-        <h3>Compression Information</h3>
-      
-        <p id="preview-compression">
-          No compression information has been selected for this profile.
-        </p>
-      
-      </section>
-      
-      
-      <section
-        id="preview-treatment-section"
-        class="preview-section">
-      
-        <h3>Important Treatment Considerations</h3>
-      
-        <p id="preview-treatment">
-          No treatment information has been selected for this profile.
-        </p>
-      
-      </section>
-      
-      
-      <section
-        id="preview-assistance-notes-section"
-        class="preview-section">
-      
-        <h3>Other Assistance Information</h3>
-      
-        <p id="preview-assistance-notes">
-          No additional assistance information has been selected.
-        </p>
-      
-      </section>
-      
-      
-      <section
-        id="preview-emergency-section"
-        class="preview-section">
-      
-        <h3>Emergency Contact</h3>
-      
-        <div class="preview-details">
-      
-          <div class="preview-detail">
-            <strong>Name</strong>
-            <span id="preview-emergency-name">Not provided</span>
-          </div>
-      
-          <div class="preview-detail">
-            <strong>Relationship</strong>
-            <span id="preview-emergency-relationship">Not provided</span>
-          </div>
-      
-          <div class="preview-detail">
-            <strong>Telephone</strong>
-            <span id="preview-emergency-phone">Not provided</span>
-          </div>
-      
-        </div>
-      
-      </section>
-      
-      
-      <section
-        id="preview-additional-section"
-        class="preview-section">
-      
-        <h3>Additional Information</h3>
-      
-        <p id="preview-additional">
-          No additional information has been selected for this preview.
-        </p>
-      
-      </section>
-      </article>
+      <div id="preview-frame-wrap" class="preview-frame-wrap" hidden>
+        <iframe
+          id="preview-frame"
+          class="preview-frame"
+          title="Preview of my LymphAware QR profile"
+          loading="eager">
+        </iframe>
+      </div>
 
       <div class="preview-actions">
-
-        <a href="/profile/" class="button button-primary">
-          Edit My Profile
-        </a>
-
-        <a href="/portal/" class="button button-secondary">
-          Back to Portal
-        </a>
-
+        <a href="/profile/" class="button button-primary">Edit My Profile</a>
+        <a href="/portal/" class="button button-secondary">Back to Portal</a>
       </div>
-
     </section>
-
   </main>
 
-
   <script>
-    const SUPABASE_URL = 'https://thbhsktcenhrnxzkbjus.supabase.co';
-    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+    const SUPABASE_URL='https://thbhsktcenhrnxzkbjus.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY='sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+    const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 
-    const supabaseClient = supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
+    async function loadPreview(){
+      const loading=document.getElementById('preview-loading');
+      const errorBox=document.getElementById('preview-error');
+      const wrap=document.getElementById('preview-frame-wrap');
+      const frame=document.getElementById('preview-frame');
 
-    const previewLoading =
-      document.getElementById('preview-loading');
-
-    const previewContent =
-      document.getElementById('preview-content');
-
-
-    async function loadPreview() {
-
-      const {
-        data: { user },
-        error: userError
-      } = await supabaseClient.auth.getUser();
-
-      if (userError || !user) {
-        window.location.href = '/sign-in/';
+      const {data:{user},error:userError}=await supabaseClient.auth.getUser();
+      if(userError||!user){
+        window.location.href='/sign-in/';
         return;
       }
 
+      const {data:profile,error:profileError}=await supabaseClient
+        .from('profiles')
+        .select('qr_token,public_code,qr_profile_active')
+        .eq('user_id',user.id)
+        .single();
 
-      const { data: profile, error: profileError } =
-        await supabaseClient
-          .from('profiles')
-          .select(`
-            id,
-            display_name,
-            photo_path,
-            qr_profile_active,
-            lymphaware_id,
-            lymphoedema_type,
-            lymphoedema_location,
-            compression_information,
-            treatment_considerations,
-            assistance_needs,
-            emergency_contact_name,
-            emergency_contact_relationship,
-            emergency_contact_phone,
-            additional_statement,
-            show_lymphoedema_on_qr,
-            show_compression_on_qr,
-            show_treatment_on_qr,
-            show_assistance_notes_on_qr,
-            show_emergency_contact_on_qr,
-            show_additional_on_qr
-          `)
-          .eq('user_id', user.id)
-          .single();
-
-      if (profileError || !profile) {
-        console.error(
-          'Unable to load profile preview:',
-          profileError
-        );
-
-        previewLoading.textContent =
-          'Your profile preview could not be loaded.';
-
+      if(profileError||!profile){
+        loading.style.display='none';
+        errorBox.style.display='block';
         return;
       }
 
-      const previewStatusMessage =
-        document.getElementById('preview-status-message');
-      
-      if (profile.qr_profile_active) {
-        previewStatusMessage.textContent =
-          ' This page is visible only while you are signed in. Your public QR profile is active.';
-      } else {
-        previewStatusMessage.textContent =
-          ' This page is visible only while you are signed in. Your public QR profile has not been activated.';
+      const token=profile.public_code||profile.qr_token;
+      if(!token){
+        loading.style.display='none';
+        errorBox.textContent='Your QR profile does not yet have a profile link.';
+        errorBox.style.display='block';
+        return;
       }
 
-      document.getElementById('preview-name').textContent =
-        profile.display_name || 'LymphAware Patient';
-
-      document.getElementById('preview-id').textContent =
-      profile.lymphaware_id || 'Not provided';
-
-      const previewPhoto =
-      document.getElementById('preview-photo');
-
-      if (profile.photo_path) {
-        const { data: signedData, error: signedError } =
-          await supabaseClient.storage
-            .from('patient-photos')
-            .createSignedUrl(profile.photo_path, 3600);
-      
-        if (signedError) {
-          console.error(
-            'Unable to load preview photograph:',
-            signedError
-          );
-        } else if (signedData?.signedUrl) {
-        previewPhoto.innerHTML = '';
-        previewPhoto.classList.add('has-photo');
-        
-        const image = document.createElement('img');
-        image.src = signedData.signedUrl;
-        image.alt = 'Patient photograph';
-        
-        previewPhoto.appendChild(image);
-        }
-      } else {
-        previewPhoto.style.display = 'none';
-      }
-      
-      document.getElementById('preview-type').textContent =
-        profile.lymphoedema_type || 'Not provided';
-
-      document.getElementById('preview-location').textContent =
-        profile.lymphoedema_location || 'Not provided';
-
-      const lymphoedemaSection =
-        document.getElementById('preview-lymphoedema-section');
-      
-      lymphoedemaSection.style.display =
-        profile.show_lymphoedema_on_qr ? 'block' : 'none';
-
-      document.getElementById('preview-compression').textContent =
-      profile.compression_information ||
-        'No compression information has been provided.';
-      
-      const compressionSection =
-        document.getElementById('preview-compression-section');
-      
-      compressionSection.style.display =
-        profile.show_compression_on_qr ? 'block' : 'none';
-      
-      
-      document.getElementById('preview-treatment').textContent =
-        profile.treatment_considerations ||
-        'No treatment information has been provided.';
-      
-      const treatmentSection =
-        document.getElementById('preview-treatment-section');
-      
-      treatmentSection.style.display =
-        profile.show_treatment_on_qr ? 'block' : 'none';
-      
-      
-      document.getElementById('preview-assistance-notes').textContent =
-        profile.assistance_needs ||
-        'No additional assistance information has been provided.';
-      
-      const assistanceNotesSection =
-        document.getElementById('preview-assistance-notes-section');
-      
-      assistanceNotesSection.style.display =
-        profile.show_assistance_notes_on_qr ? 'block' : 'none';
-      
-      
-      document.getElementById('preview-emergency-name').textContent =
-        profile.emergency_contact_name || 'Not provided';
-      
-      document.getElementById('preview-emergency-relationship').textContent =
-        profile.emergency_contact_relationship || 'Not provided';
-      
-      document.getElementById('preview-emergency-phone').textContent =
-        profile.emergency_contact_phone || 'Not provided';
-      
-      const emergencySection =
-        document.getElementById('preview-emergency-section');
-      
-      emergencySection.style.display =
-        profile.show_emergency_contact_on_qr ? 'block' : 'none';
-            
-      document.getElementById('preview-additional').textContent =
-        profile.additional_statement ||
-        'No additional information has been selected for this preview.';
-
-      const additionalSection =
-        document.getElementById('preview-additional-section');
-      
-      additionalSection.style.display =
-        profile.show_additional_on_qr ? 'block' : 'none';
-
-      const { data: selections, error: selectionsError } =
-        await supabaseClient
-          .from('profile_assistance')
-          .select(`
-            option_id,
-            visible_on_qr,
-            assistance_options (
-              statement,
-              icon_key
-            )
-          `)
-          .eq('profile_id', profile.id)
-          .eq('visible_on_qr', true);
-
-      if (selectionsError) {
-        console.error(
-          'Unable to load QR assistance selections:',
-          selectionsError
-        );
+      const toolbar=document.getElementById('preview-toolbar');
+      if(profile.qr_profile_active===true){
+        toolbar.innerHTML='<strong>Preview only.</strong> This is the same profile someone will see when they scan your LymphAware card. Your QR profile is currently active.';
+      }else{
+        toolbar.innerHTML='<strong>Preview only.</strong> Your QR profile is currently switched off, so a scanner will see the unavailable-profile screen until you reactivate it.';
       }
 
-
-      const assistanceContainer =
-        document.getElementById('preview-assistance');
-
-      assistanceContainer.innerHTML = '';
-
-      if (!selections || selections.length === 0) {
-
-        assistanceContainer.innerHTML =
-          '<p class="preview-empty">No assistance statements are currently selected for your QR profile.</p>';
-
-      } else {
-
-              const iconFiles = {
-        standing: 'standing.png',
-        seating: 'seating.png',
-        time: 'extra-time.png',
-        mobility: 'mobility.png',
-        'extra-space': 'extra-space.png',
-        understanding: 'understanding.png'
-      };
-        
-        selections.forEach((selection) => {
-
-          const option = selection.assistance_options;
-
-          if (!option) {
-            return;
+      frame.src=`/p/${encodeURIComponent(token)}?preview=1`;
+      frame.addEventListener('load',()=>{
+        loading.style.display='none';
+        wrap.hidden=false;
+        try{
+          const doc=frame.contentDocument;
+          if(doc){
+            const updateHeight=()=>{
+              const h=Math.max(doc.documentElement.scrollHeight,doc.body?.scrollHeight||0,700);
+              frame.style.height=`${Math.min(Math.max(h,700),1800)}px`;
+            };
+            updateHeight();
+            setTimeout(updateHeight,250);
+            setTimeout(updateHeight,800);
           }
-
-          const item = document.createElement('div');
-
-          item.className = 'preview-assistance-item';
-
-          item.innerHTML = `
-          <div class="preview-icon" aria-hidden="true">
-            <img
-              src="/assets/icons/${iconFiles[option.icon_key]}"
-              alt=""
-              class="preview-icon-image">
-          </div>
-        
-          <div>
-            ${option.statement}
-          </div>
-        `;
-
-          assistanceContainer.appendChild(item);
-        });
-
-      }
-
-
-      previewLoading.style.display = 'none';
-      previewContent.style.display = 'block';
+        }catch{}
+      },{once:true});
     }
-
 
     loadPreview();
   </script>
-
 </body>
 </html>
