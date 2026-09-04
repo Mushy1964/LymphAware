@@ -85,9 +85,7 @@ export default async (request) => {
 
     const stripeForm = new URLSearchParams();
     stripeForm.append('mode', 'payment');
-    stripeForm.append('line_items[0][price_data][currency]', 'gbp');
-    stripeForm.append('line_items[0][price_data][unit_amount]', '2999');
-    stripeForm.append('line_items[0][price_data][product_data][name]', 'LymphAware 5-Year Membership');
+    stripeForm.append('line_items[0][price]', 'price_1UBvUAPMYhQKb2OT8koXgY1w');
     stripeForm.append('line_items[0][quantity]', '1');
     stripeForm.append('allow_promotion_codes', 'true');
     stripeForm.append('client_reference_id', user.id);
