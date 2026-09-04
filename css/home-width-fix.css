@@ -1,0 +1,22 @@
+/* Homepage width alignment fix
+   Keep major homepage sections aligned with the same 1180px site container as the hero. */
+
+.home-page .home-understanding-section,
+.home-page .home-demo-section,
+.home-page .home-control-section,
+.home-page .home-professionals-section,
+.home-page .home-story-section {
+  width: min(1180px, calc(100% - 40px));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 680px) {
+  .home-page .home-understanding-section,
+  .home-page .home-demo-section,
+  .home-page .home-control-section,
+  .home-page .home-professionals-section,
+  .home-page .home-story-section {
+    width: min(100% - 28px, 1180px);
+  }
+}
