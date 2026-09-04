@@ -1,5 +1,4 @@
 import crypto from 'node:crypto';
-import nodemailer from 'nodemailer';
 
 function verifyStripeSignature(payload, signatureHeader, secret) {
   if (!signatureHeader || !secret) return false;
@@ -47,52 +46,67 @@ function supabaseHeaders(prefer = '') {
 }
 
 async function sendOrderNotification(orderNumber, session, items) {
-  const host = String(process.env.TITAN_SMTP_HOST || '').trim();
-  const port = Number(process.env.TITAN_SMTP_PORT || '465');
-  const user = String(process.env.TITAN_SMTP_USER || '').trim();
-  const password = String(process.env.TITAN_SMTP_PASSWORD || '');
+  const apiKey = String(process.env.RESEND_API_KEY || '').trim();
 
-  if (!host || !user || !password) {
-    console.log(`New LymphAware order ${orderNumber} created. Titan email notification is not configured yet.`);
+  if (!apiKey) {
+    console.log(`New LymphAware order ${orderNumber} created. Resend email notification is not configured yet.`);
     return;
   }
 
   const to = String(process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphaware.com').trim();
-  const from = String(process.env.ORDER_NOTIFICATION_FROM || `LymphAware Orders <${user}>`).trim();
-  const itemLines = items.map((item) => `${item.quantity} × ${item.description}`).join('\n');
+  const from = String(
+    process.env.ORDER_NOTIFICATION_FROM || 'LymphAware <notifications@lymphaware.com>'
+  ).trim();
+  const replyTo = 'admin@lymphaware.com';
+
+  const itemLines = items
+    .map((item) => `${item.quantity} × ${item.description}`)
+    .join('\n');
+
   const orderRef = `LA-${String(orderNumber).padStart(6, '0')}`;
-  const customerName = session.customer_details?.name || session.customer_email || 'Customer';
-  const customerEmail = session.customer_details?.email || session.customer_email || '';
+  const customerName =
+    session.customer_details?.name ||
+    session.customer_email ||
+    'Customer';
+  const customerEmail =
+    session.customer_details?.email ||
+    session.customer_email ||
+    '';
   const totalPaid = `£${((session.amount_total || 0) / 100).toFixed(2)}`;
 
-  const transporter = nodemailer.createTransport({
-    host,
-    port,
-    secure: port === 465,
-    requireTLS: port === 587,
-    auth: {
-      user,
-      pass: password
-    }
-  });
-
   try {
-    await transporter.sendMail({
-      from,
-      to,
-      subject: `New LymphAware order – ${orderRef}`,
-      text:
-        `A new LymphAware membership order has been paid and requires attention.\n\n` +
-        `Order: ${orderRef}\n` +
-        `Customer: ${customerName}\n` +
-        `Email: ${customerEmail}\n` +
-        `Total paid: ${totalPaid}\n\n` +
-        `Items:\n${itemLines}\n\n` +
-        `Open LymphAware Administration to manage fulfilment:\n` +
-        `https://lymphaware.com/admin/orders/`
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from,
+        to: [to],
+        reply_to: [replyTo],
+        subject: `New LymphAware order – ${orderRef}`,
+        text:
+          `A new LymphAware membership order has been paid and requires attention.\n\n` +
+          `Order: ${orderRef}\n` +
+          `Customer: ${customerName}\n` +
+          `Email: ${customerEmail}\n` +
+          `Total paid: ${totalPaid}\n\n` +
+          `Items:\n${itemLines}\n\n` +
+          `Open LymphAware Administration to manage fulfilment:\n` +
+          `https://lymphaware.com/admin/orders/`
+      })
     });
+
+    if (!response.ok) {
+      console.error('Resend order notification email error:', await response.text());
+      return;
+    }
+
+    const result = await response.json();
+    console.log(`LymphAware order notification sent for ${orderRef}. Resend ID: ${result?.id || 'unknown'}`);
   } catch (error) {
-    console.error('Titan order notification email error:', error);
+    console.error('Resend order notification email error:', error);
   }
 }
 
@@ -214,13 +228,25 @@ export default async (request) => {
       });
     }
 
-    const expectedSubtotal = items.reduce((sum, item) => sum + item.line_total_pence, 0);
+    const expectedSubtotal = items.reduce(
+      (sum, item) => sum + item.line_total_pence,
+      0
+    );
+
     const shipping =
       session.collected_information?.shipping_details ||
       session.shipping_details ||
       null;
-    const address = shipping?.address || session.customer_details?.address || {};
-    const deliveryName = shipping?.name || session.customer_details?.name || null;
+
+    const address =
+      shipping?.address ||
+      session.customer_details?.address ||
+      {};
+
+    const deliveryName =
+      shipping?.name ||
+      session.customer_details?.name ||
+      null;
 
     const orderPayload = {
       user_id: userId,
@@ -229,8 +255,14 @@ export default async (request) => {
       order_status: 'PAID_AWAITING_PROFILE',
       payment_status: 'PAID',
       stripe_checkout_session_id: session.id,
-      stripe_payment_intent_id: typeof session.payment_intent === 'string' ? session.payment_intent : null,
-      customer_email: session.customer_details?.email || session.customer_email || null,
+      stripe_payment_intent_id:
+        typeof session.payment_intent === 'string'
+          ? session.payment_intent
+          : null,
+      customer_email:
+        session.customer_details?.email ||
+        session.customer_email ||
+        null,
       delivery_name: deliveryName,
       delivery_line1: address.line1 || null,
       delivery_line2: address.line2 || null,
@@ -246,11 +278,14 @@ export default async (request) => {
       updated_at: membershipStart.toISOString()
     };
 
-    const orderResponse = await fetch(`${process.env.SUPABASE_URL}/rest/v1/orders`, {
-      method: 'POST',
-      headers: supabaseHeaders('return=representation'),
-      body: JSON.stringify(orderPayload)
-    });
+    const orderResponse = await fetch(
+      `${process.env.SUPABASE_URL}/rest/v1/orders`,
+      {
+        method: 'POST',
+        headers: supabaseHeaders('return=representation'),
+        body: JSON.stringify(orderPayload)
+      }
+    );
 
     if (!orderResponse.ok) {
       const errorText = await orderResponse.text();
@@ -264,15 +299,25 @@ export default async (request) => {
       const order = createdOrders?.[0];
 
       if (order?.id) {
-        const orderItems = items.map((item) => ({ ...item, order_id: order.id }));
-        const itemsResponse = await fetch(`${process.env.SUPABASE_URL}/rest/v1/order_items`, {
-          method: 'POST',
-          headers: supabaseHeaders('return=minimal'),
-          body: JSON.stringify(orderItems)
-        });
+        const orderItems = items.map((item) => ({
+          ...item,
+          order_id: order.id
+        }));
+
+        const itemsResponse = await fetch(
+          `${process.env.SUPABASE_URL}/rest/v1/order_items`,
+          {
+            method: 'POST',
+            headers: supabaseHeaders('return=minimal'),
+            body: JSON.stringify(orderItems)
+          }
+        );
 
         if (!itemsResponse.ok) {
-          console.error('Unable to create LymphAware order items:', await itemsResponse.text());
+          console.error(
+            'Unable to create LymphAware order items:',
+            await itemsResponse.text()
+          );
           return new Response('Order item creation failed', { status: 500 });
         }
 
