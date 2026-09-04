@@ -67,7 +67,8 @@
     .extra-option strong { white-space: nowrap; }
     .language-choice { margin-top: 12px; padding: 14px 16px; border: 1px solid #cbd8df; border-radius: 12px; background: #fff; }
     .language-choice label { display: block; margin-bottom: 7px; font-weight: 700; }
-    .language-choice input { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid #bfcbd2; border-radius: 9px; font: inherit; }
+    .language-choice select { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid #bfcbd2; border-radius: 9px; background: #fff; font: inherit; }
+    .language-choice-note { margin: 9px 0 0 !important; color: var(--muted); font-size: .92rem; }
     .membership-order-total { margin: 20px 0 0; font-size: 1.1rem; }
     .membership-order-total strong { font-size: 1.25rem; }
     .delivery-note { margin-top: 14px !important; font-size: .94rem; }
@@ -159,7 +160,15 @@
 
               <div id="language-choice" class="language-choice" hidden>
                 <label for="membership-language-name">Which language would you like?</label>
-                <input type="text" id="membership-language-name" maxlength="80" placeholder="For example, French or Spanish">
+                <select id="membership-language-name">
+                  <option value="">Select a language</option>
+                  <option value="French">French</option>
+                  <option value="Spanish">Spanish</option>
+                  <option value="German">German</option>
+                  <option value="Portuguese">Portuguese</option>
+                  <option value="Italian">Italian</option>
+                </select>
+                <p class="language-choice-note">Need another language? Contact LymphAware and we can record your interest for future support.</p>
               </div>
 
               <div class="membership-order-total">Order total before any promotion code: <strong id="membership-order-total">£29.99</strong></div>
@@ -389,8 +398,8 @@
     }
 
     payMembershipButton.addEventListener('click', async () => {
-      if (languagePackage.checked && !languageName.value.trim()) {
-        portalMessage.textContent = 'Please enter the language required for your additional language package.';
+      if (languagePackage.checked && !languageName.value) {
+        portalMessage.textContent = 'Please select a supported language for your additional language package.';
         languageName.focus();
         return;
       }
@@ -418,7 +427,7 @@
             extraCard: extraCard.checked,
             extraLanyard: extraLanyard.checked,
             languagePackage: languagePackage.checked,
-            languageName: languageName.value.trim()
+            languageName: languageName.value
           })
         });
 

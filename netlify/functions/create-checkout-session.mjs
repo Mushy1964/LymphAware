@@ -22,12 +22,31 @@ export default async (request) => {
     const extraCard = Boolean(body?.extraCard);
     const extraLanyard = Boolean(body?.extraLanyard);
     const languagePackage = Boolean(body?.languagePackage);
-    const languageName = languagePackage
-      ? String(body?.languageName || '').trim().slice(0, 80)
+
+    const supportedLanguages = {
+      French: 'FR',
+      Spanish: 'ES',
+      German: 'DE',
+      Portuguese: 'PT',
+      Italian: 'IT'
+    };
+
+    const requestedLanguage = languagePackage
+      ? String(body?.languageName || '').trim()
+      : '';
+
+    const languageName = Object.prototype.hasOwnProperty.call(supportedLanguages, requestedLanguage)
+      ? requestedLanguage
+      : '';
+
+    const languageCode = languageName
+      ? supportedLanguages[languageName]
       : '';
 
     if (languagePackage && !languageName) {
-      return new Response(JSON.stringify({ error: 'Please choose the language required for your additional language package.' }), {
+      return new Response(JSON.stringify({
+        error: 'Please select one of the currently supported languages: French, Spanish, German, Portuguese or Italian.'
+      }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
@@ -129,6 +148,7 @@ export default async (request) => {
     stripeForm.append('metadata[extra_lanyard]', extraLanyard ? '1' : '0');
     stripeForm.append('metadata[language_package]', languagePackage ? '1' : '0');
     stripeForm.append('metadata[language_name]', languageName);
+    stripeForm.append('metadata[language_code]', languageCode);
     stripeForm.append('success_url', 'https://lymphaware.com/portal/?payment=success');
     stripeForm.append('cancel_url', 'https://lymphaware.com/portal/?payment=cancelled');
 
