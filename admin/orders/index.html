@@ -36,6 +36,11 @@
     .profile-ready { margin-top: 18px; padding: 14px 16px; border-radius: 12px; border: 1px solid #cbd8df; }
     .profile-ready.ready { background: var(--green-light); color: var(--green-dark); }
     .profile-ready.waiting { background: #fff7e8; color: #775c20; }
+    .notice-state { margin-top: 10px; padding: 11px 13px; border-radius: 10px; font-weight: 700; }
+    .notice-state.sent { background: var(--green-light); color: var(--green-dark); }
+    .notice-state.pending { background: #fff7e8; color: #775c20; }
+    .notice-state.failed { background: #fff0f0; color: #8a2b2b; }
+    .retry-notification { margin-top: 10px; }
     #loading { padding: 60px 20px; text-align: center; color: var(--muted); }
     .empty { padding: 26px; border: 1px solid #cbd8df; border-radius: 16px; background: #fff; color: var(--muted); }
     @media (max-width: 760px) {
@@ -130,6 +135,62 @@
       return lines.length ? lines.map(line => escapeHtml(line)).join('<br>') : 'No delivery address recorded';
     }
 
+    function notificationHtml(order) {
+      const state = String(order.notification_status || 'PENDING').toUpperCase();
+      if (state === 'SENT') {
+        const when = order.notification_sent_at
+          ? new Date(order.notification_sent_at).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+          : '';
+        return `<div class="notice-state sent">Order notification sent${when ? ` – ${escapeHtml(when)}` : ''}</div>`;
+      }
+      if (state === 'FAILED') {
+        return `
+          <div class="notice-state failed">Order notification failed${order.notification_error ? ` – ${escapeHtml(order.notification_error)}` : ''}</div>
+          <button type="button" class="button button-secondary retry-notification" data-order-id="${escapeHtml(order.id)}">Retry notification</button>
+        `;
+      }
+      return '<div class="notice-state pending">Order notification pending</div>';
+    }
+
+    async function retryNotification(button) {
+      const orderId = button.dataset.orderId;
+      button.disabled = true;
+      const originalText = button.textContent;
+      button.textContent = 'Sending...';
+
+      try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        if (error || !session?.access_token) {
+          window.location.href = '/sign-in/';
+          return;
+        }
+
+        const response = await fetch('/.netlify/functions/admin-retry-order-notification', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ orderId })
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+          alert(result?.error || 'The notification could not be sent.');
+          button.disabled = false;
+          button.textContent = originalText;
+          return;
+        }
+
+        await loadOrders();
+      } catch (error) {
+        console.error('Unable to retry notification:', error);
+        alert('The notification could not be sent.');
+        button.disabled = false;
+        button.textContent = originalText;
+      }
+    }
+
     function renderOrders(orders) {
       orderList.innerHTML = '';
       totalCount.textContent = orders.length;
@@ -189,9 +250,10 @@
             </div>
 
             <div class="order-section">
-              <h3>Payment</h3>
-              <p>Status: ${escapeHtml(order.payment_status)}</p>
+              <h3>Payment &amp; notification</h3>
+              <p>Payment: ${escapeHtml(order.payment_status)}</p>
               <p>Stripe session: ${escapeHtml(order.stripe_checkout_session_id || '')}</p>
+              ${notificationHtml(order)}
             </div>
           </div>
 
@@ -205,6 +267,10 @@
 
         orderList.appendChild(card);
       }
+
+      orderList.querySelectorAll('.retry-notification').forEach(button => {
+        button.addEventListener('click', () => retryNotification(button));
+      });
 
       loading.style.display = 'none';
       orderList.hidden = false;
