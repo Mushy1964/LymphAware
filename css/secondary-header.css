@@ -1,0 +1,78 @@
+/* =========================================================
+   LYMPHAWARE SECONDARY PAGE HEADER
+
+   Used on public pages other than the homepage.
+   - same approved with-tagline logo as the homepage
+   - logo links back to the homepage
+   - one Back to Website action
+   - no secondary navigation / hamburger menu
+   ========================================================= */
+
+.secondary-header {
+  background: rgba(255, 255, 255, 0.98);
+  border-bottom: 1px solid #e7edf1;
+}
+
+.secondary-header .header-inner {
+  min-height: 92px;
+}
+
+.secondary-header .header-logo {
+  width: 390px;
+  max-width: 100%;
+  height: auto;
+}
+
+.secondary-header .header-actions {
+  display: flex !important;
+  align-items: center;
+  margin-left: auto;
+}
+
+.secondary-header .back-to-website-button {
+  min-width: 150px;
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: 10px;
+}
+
+.secondary-header .main-nav,
+.secondary-header .mobile-menu {
+  display: none !important;
+}
+
+@media (max-width: 680px) {
+  .secondary-header .header-inner {
+    min-height: 74px;
+    gap: 12px;
+  }
+
+  .secondary-header .header-logo {
+    width: 300px;
+    max-width: calc(100vw - 170px);
+    height: auto;
+  }
+
+  .secondary-header .header-actions {
+    display: flex !important;
+  }
+
+  .secondary-header .back-to-website-button {
+    min-width: 126px;
+    min-height: 42px;
+    padding: 0 14px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .secondary-header .header-logo {
+    max-width: calc(100vw - 154px);
+  }
+
+  .secondary-header .back-to-website-button {
+    min-width: 118px;
+    padding: 0 10px;
+    font-size: 0.84rem;
+  }
+}
