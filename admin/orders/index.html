@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders | LymphAware Administration</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .admin-page { min-height: calc(100vh - 84px); padding: 50px 16px; background: #f7f9fa; }
+    .admin-shell { width: 100%; max-width: 1100px; margin: 0 auto; }
+    .header-logo { display: block; width: min(100%, 420px); height: auto; }
+    .admin-heading { margin-bottom: 28px; }
+    .admin-heading h1 { margin: 6px 0 10px; font-size: 2.4rem; line-height: 1.15; }
+    .admin-heading p { margin: 0; max-width: 780px; color: var(--muted); line-height: 1.55; }
+    .admin-nav { display: flex; gap: 12px; flex-wrap: wrap; margin: 22px 0 28px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 26px; }
+    .stat { padding: 20px; border: 1px solid #cbd8df; border-radius: 16px; background: #fff; box-shadow: var(--content-shadow); }
+    .stat strong { display: block; margin-bottom: 5px; font-size: 2rem; color: var(--blue-dark); }
+    .stat span { color: var(--muted); font-weight: 700; }
+    .order-list { display: grid; gap: 18px; }
+    .order-card { padding: 24px; border: 1px solid #cbd8df; border-radius: 18px; background: #fff; box-shadow: var(--content-shadow); }
+    .order-head { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
+    .order-head h2 { margin: 0 0 6px; font-size: 1.4rem; }
+    .order-meta { color: var(--muted); font-weight: 700; }
+    .status { display: inline-block; padding: 7px 11px; border-radius: 999px; font-size: .88rem; font-weight: 800; }
+    .status-waiting { background: #fff7e8; color: #775c20; }
+    .status-ready { background: var(--green-light); color: var(--green-dark); }
+    .status-complete { background: var(--blue-light); color: var(--blue-dark); }
+    .order-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 20px; }
+    .order-section h3 { margin: 0 0 8px; font-size: 1.05rem; }
+    .order-section p { margin: 0 0 5px; color: var(--muted); line-height: 1.45; }
+    .items { margin: 0; padding-left: 20px; color: var(--muted); }
+    .items li { margin-bottom: 5px; }
+    .order-total { margin-top: 12px !important; color: var(--text) !important; font-weight: 800; }
+    .profile-ready { margin-top: 18px; padding: 14px 16px; border-radius: 12px; border: 1px solid #cbd8df; }
+    .profile-ready.ready { background: var(--green-light); color: var(--green-dark); }
+    .profile-ready.waiting { background: #fff7e8; color: #775c20; }
+    #loading { padding: 60px 20px; text-align: center; color: var(--muted); }
+    .empty { padding: 26px; border: 1px solid #cbd8df; border-radius: 16px; background: #fff; color: var(--muted); }
+    @media (max-width: 760px) {
+      .admin-page { padding: 36px 14px; }
+      .stats, .order-grid { grid-template-columns: 1fr; }
+      .admin-heading h1 { font-size: 2rem; }
+      .header-logo { width: calc(100% - 32px); max-width: 390px; margin: 0 auto; }
+      .admin-nav .button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="header-brand" aria-label="LymphAware home">
+        <img class="header-logo" src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg" alt="LymphAware – Helping People Living with Lymphoedema Be Understood.">
+      </a>
+      <div class="header-actions">
+        <button type="button" id="admin-sign-out" class="button button-secondary">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="admin-page">
+    <section class="admin-shell">
+      <div class="admin-heading">
+        <p class="eyebrow">Private Administration Area</p>
+        <h1>Orders &amp; Fulfilment</h1>
+        <p>Use this page as the main record of paid LymphAware orders. Payment creates the order automatically; card production should only begin when the member has supplied the minimum profile information required for their card.</p>
+      </div>
+
+      <div class="admin-nav">
+        <a href="/admin/orders/" class="button button-primary">Orders</a>
+        <a href="/admin/card-production/" class="button button-secondary">Card Production</a>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><strong id="new-count">0</strong><span>Paid – awaiting profile</span></div>
+        <div class="stat"><strong id="ready-count">0</strong><span>Profile ready</span></div>
+        <div class="stat"><strong id="total-count">0</strong><span>Orders shown</span></div>
+      </div>
+
+      <div id="loading">Loading orders...</div>
+      <div id="order-list" class="order-list" hidden></div>
+    </section>
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://thbhsktcenhrnxzkbjus.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+    const loading = document.getElementById('loading');
+    const orderList = document.getElementById('order-list');
+    const newCount = document.getElementById('new-count');
+    const readyCount = document.getElementById('ready-count');
+    const totalCount = document.getElementById('total-count');
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function money(pence) {
+      return `£${(Number(pence || 0) / 100).toFixed(2)}`;
+    }
+
+    function orderRef(number) {
+      return `LA-${String(number || 0).padStart(6, '0')}`;
+    }
+
+    function statusLabel(order) {
+      if (order.order_status === 'COMPLETED' || order.order_status === 'PRINTED') return ['Completed', 'status-complete'];
+      if (order.profile_ready) return ['Profile ready', 'status-ready'];
+      return ['Awaiting profile', 'status-waiting'];
+    }
+
+    function addressHtml(order) {
+      const lines = [
+        order.delivery_name,
+        order.delivery_line1,
+        order.delivery_line2,
+        order.delivery_city,
+        order.delivery_county,
+        order.delivery_postcode,
+        order.delivery_country
+      ].filter(Boolean);
+      return lines.length ? lines.map(line => escapeHtml(line)).join('<br>') : 'No delivery address recorded';
+    }
+
+    function renderOrders(orders) {
+      orderList.innerHTML = '';
+      totalCount.textContent = orders.length;
+      newCount.textContent = orders.filter(order => !order.profile_ready && !['COMPLETED','PRINTED'].includes(order.order_status)).length;
+      readyCount.textContent = orders.filter(order => order.profile_ready && !['COMPLETED','PRINTED'].includes(order.order_status)).length;
+
+      if (!orders.length) {
+        loading.style.display = 'none';
+        orderList.hidden = false;
+        orderList.innerHTML = '<div class="empty">No paid LymphAware orders have been received yet.</div>';
+        return;
+      }
+
+      for (const order of orders) {
+        const [label, statusClass] = statusLabel(order);
+        const card = document.createElement('article');
+        card.className = 'order-card';
+
+        const items = (order.items || []).map(item => {
+          const language = item.language_name ? ` – ${escapeHtml(item.language_name)}` : '';
+          return `<li>${item.quantity} × ${escapeHtml(item.description)}${language} — ${money(item.line_total_pence)}</li>`;
+        }).join('');
+
+        const paidDate = order.paid_at
+          ? new Date(order.paid_at).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+          : 'Not recorded';
+
+        const profile = order.profile || {};
+
+        card.innerHTML = `
+          <div class="order-head">
+            <div>
+              <h2>${escapeHtml(orderRef(order.order_number))}</h2>
+              <div class="order-meta">Paid ${escapeHtml(paidDate)}</div>
+            </div>
+            <span class="status ${statusClass}">${escapeHtml(label)}</span>
+          </div>
+
+          <div class="order-grid">
+            <div class="order-section">
+              <h3>Customer</h3>
+              <p><strong>${escapeHtml(profile.display_name || order.delivery_name || 'Name awaiting profile')}</strong></p>
+              <p>${escapeHtml(profile.lymphaware_id || 'LymphAware ID pending/available in profile')}</p>
+              <p>${escapeHtml(order.customer_email || '')}</p>
+            </div>
+
+            <div class="order-section">
+              <h3>Delivery</h3>
+              <p>${addressHtml(order)}</p>
+            </div>
+
+            <div class="order-section">
+              <h3>Order</h3>
+              <ul class="items">${items || '<li>No item detail recorded</li>'}</ul>
+              <p class="order-total">Paid total: ${money(order.total_pence)}</p>
+              ${Number(order.discount_pence || 0) > 0 ? `<p>Discount: ${money(order.discount_pence)}</p>` : ''}
+            </div>
+
+            <div class="order-section">
+              <h3>Payment</h3>
+              <p>Status: ${escapeHtml(order.payment_status)}</p>
+              <p>Stripe session: ${escapeHtml(order.stripe_checkout_session_id || '')}</p>
+            </div>
+          </div>
+
+          <div class="profile-ready ${order.profile_ready ? 'ready' : 'waiting'}">
+            <strong>${order.profile_ready ? 'Profile ready for card preparation' : 'Awaiting minimum profile information'}</strong><br>
+            ${order.profile_ready
+              ? 'Display name and photograph are present. Use Card Production when the profile reaches the existing READY stage.'
+              : 'Do not print yet. The member still needs to provide both a display name and photograph.'}
+          </div>
+        `;
+
+        orderList.appendChild(card);
+      }
+
+      loading.style.display = 'none';
+      orderList.hidden = false;
+    }
+
+    async function loadOrders() {
+      const { data: { session }, error } = await supabaseClient.auth.getSession();
+      if (error || !session?.access_token) {
+        window.location.href = '/sign-in/';
+        return;
+      }
+
+      try {
+        const response = await fetch('/.netlify/functions/admin-orders-list', {
+          headers: { Authorization: `Bearer ${session.access_token}` }
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+          loading.textContent = result?.error || 'Orders could not be loaded.';
+          return;
+        }
+
+        renderOrders(result?.orders || []);
+      } catch (error) {
+        console.error('Unable to load orders:', error);
+        loading.textContent = 'Orders could not be loaded.';
+      }
+    }
+
+    document.getElementById('admin-sign-out').addEventListener('click', async () => {
+      await supabaseClient.auth.signOut();
+      window.location.href = '/sign-in/';
+    });
+
+    loadOrders();
+  </script>
+</body>
+</html>
