@@ -8,6 +8,24 @@
    ========================================================= */
 
 
+/* HERO
+   Membership now has its own dedicated homepage section, so the compact
+   membership summary is removed from the hero. The card and phone positioning
+   rules in home.css are deliberately left untouched. */
+
+.home-page .home-membership-summary {
+  display: none !important;
+}
+
+/* Keep enough desktop hero height for the existing phone/card composition
+   after removing the membership summary, without changing their coordinates. */
+@media (min-width: 681px) {
+  .home-page .home-hero-grid {
+    min-height: 570px !important;
+  }
+}
+
+
 /* FULL-WIDTH SECTION BANDS */
 
 .home-page .home-understanding-section,
