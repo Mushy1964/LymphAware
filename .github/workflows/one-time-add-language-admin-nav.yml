@@ -1,0 +1,50 @@
+name: One-time add language admin navigation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/one-time-add-language-admin-nav.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  add-language-nav:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Add Languages navigation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          orders = Path('admin/orders/index.html')
+          text = orders.read_text(encoding='utf-8')
+          old = '''      <div class="admin-nav">\n        <a href="/admin/orders/" class="button button-primary">Orders</a>\n        <a href="/admin/card-production/" class="button button-secondary">Card Production</a>\n      </div>'''
+          new = '''      <div class="admin-nav">\n        <a href="/admin/orders/" class="button button-primary">Orders</a>\n        <a href="/admin/card-production/" class="button button-secondary">Card Production</a>\n        <a href="/admin/languages/" class="button button-secondary">Languages</a>\n      </div>'''
+          if old not in text:
+              raise SystemExit('Orders navigation anchor not found')
+          orders.write_text(text.replace(old,new,1), encoding='utf-8')
+
+          production = Path('admin/card-production/index.html')
+          p = production.read_text(encoding='utf-8')
+          heading_anchor = '''    <div class="admin-heading">\n'''
+          nav_block = '''    <div class="admin-nav" style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 28px;">\n      <a href="/admin/orders/" class="button button-secondary">Orders</a>\n      <a href="/admin/card-production/" class="button button-primary">Card Production</a>\n      <a href="/admin/languages/" class="button button-secondary">Languages</a>\n    </div>\n\n'''
+          if '/admin/languages/' not in p:
+              idx = p.find('</div>', p.find(heading_anchor))
+              if idx == -1:
+                  raise SystemExit('Card production heading block not found')
+              idx = p.find('\n', idx) + 1
+              p = p[:idx] + '\n' + nav_block + p[idx:]
+              production.write_text(p, encoding='utf-8')
+          PY
+
+      - name: Commit changes
+        run: |
+          git config user.name "LymphAware automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add admin/orders/index.html admin/card-production/index.html
+          git commit -m "Add language administration navigation"
+          git push
