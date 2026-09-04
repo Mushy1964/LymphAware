@@ -1,0 +1,52 @@
+/* =========================================================
+   LYMPHAWARE CARD DEFINITION SYSTEM
+
+   A consistent edge treatment for customer-facing content cards.
+   The aim is to keep cards clearly defined on white, pale green and
+   pale blue backgrounds without making the interface feel heavy.
+   Product imagery and the scanner-facing QR profile keep their own
+   stronger visual treatment.
+   ========================================================= */
+
+:root {
+  --lymphaware-card-border: #cbd8df;
+  --lymphaware-card-shadow: 0 8px 24px rgba(31, 47, 66, 0.07);
+}
+
+/* Shared public-site cards */
+.info-card,
+.privacy-card,
+.principle-card,
+.highlight-box,
+.mission-box,
+.cta-box,
+.portal-card {
+  border: 1px solid var(--lymphaware-card-border) !important;
+  box-shadow: var(--lymphaware-card-shadow) !important;
+}
+
+/* Homepage cards */
+.home-page .home-understanding-panel,
+.home-page .how-step,
+.home-page .help-scenario-card,
+.home-page .home-membership-price-card,
+.home-page .home-language-card,
+.home-page .home-control-item,
+.home-page .home-professional-card,
+.home-page .home-story-panel,
+.home-page .home-privacy-panel {
+  border: 1px solid var(--lymphaware-card-border) !important;
+  box-shadow: var(--lymphaware-card-shadow) !important;
+}
+
+/* Account-area cards that already use the shared stylesheet on public entry pages */
+.portal-option,
+.profile-card,
+.preview-notice {
+  border: 1px solid var(--lymphaware-card-border) !important;
+}
+
+/* Preserve the stronger depth of actual profile/product representations. */
+.patient-profile-preview {
+  border-color: #c4d2da !important;
+}
