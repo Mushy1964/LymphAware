@@ -1,0 +1,68 @@
+{
+  "language": {
+    "name": "French",
+    "code": "FR",
+    "locale": "fr-FR",
+    "status": "DRAFT_REVIEW_REQUIRED"
+  },
+  "card": {
+    "patient_status": "PATIENT ATTEINT DE LYMPHŒDÈME",
+    "scan_heading": "SCANNEZ LE CODE QR",
+    "scan_subheading": "pour consulter mon profil"
+  },
+  "profile": {
+    "patient_status": "PATIENT ATTEINT DE LYMPHŒDÈME",
+    "lymphaware_id_label": "Identifiant LymphAware :",
+    "sections": {
+      "lymphoedema": {
+        "title": "À propos de mon lymphœdème",
+        "description": "Un aperçu de mon lymphœdème et de ses effets sur moi."
+      },
+      "compression": {
+        "title": "Compression",
+        "description": "Mes vêtements de compression et mes préférences."
+      },
+      "treatment": {
+        "title": "Informations sur le traitement",
+        "description": "Informations importantes pour mes soins et mon traitement."
+      },
+      "assistance": {
+        "title": "Aide et assistance",
+        "description": "Comment vous pouvez m’aider et quelle assistance peut m’être nécessaire."
+      },
+      "emergency": {
+        "title": "Contact d’urgence",
+        "description": "Personne à contacter en cas d’urgence."
+      },
+      "additional": {
+        "title": "Informations complémentaires",
+        "description": "Autres informations importantes pouvant vous aider à mieux me comprendre."
+      }
+    },
+    "empty_section": "Aucune information n’a été ajoutée à cette section.",
+    "not_provided": "Non renseigné",
+    "details": {
+      "name": "Nom",
+      "relationship": "Lien avec la personne",
+      "telephone": "Téléphone"
+    },
+    "call_emergency_contact": "Appeler le contact d’urgence",
+    "footer": {
+      "heading": "À propos de ce profil LymphAware",
+      "paragraph_1": "Ce profil contient des informations que le patient a choisi de partager afin d’aider les autres à mieux comprendre son lymphœdème et toute assistance dont il peut avoir besoin.",
+      "paragraph_2": "LymphAware favorise la communication et la sensibilisation. Il ne fournit pas de conseils médicaux et ne remplace pas l’évaluation ou le traitement par des professionnels de santé."
+    },
+    "system": {
+      "loading_title": "Chargement du profil…",
+      "loading_message": "Veuillez patienter pendant le chargement du profil LymphAware.",
+      "unavailable_title": "Profil LymphAware indisponible",
+      "unavailable_message": "Ce profil LymphAware est actuellement indisponible.",
+      "urgent_message": "Si vous aidez une personne qui nécessite des soins médicaux urgents, veuillez suivre les procédures d’urgence appropriées."
+    }
+  },
+  "review_notes": {
+    "purpose": "Draft fixed-text translation for the LymphAware French language package. Do not publish until reviewed and approved.",
+    "patient_entered_content": "Patient-entered profile information is not included in this language pack and must be translated/reviewed separately before publication.",
+    "brand": "The LymphAware logo and English tagline remain unchanged in this draft."
+  }
+}
