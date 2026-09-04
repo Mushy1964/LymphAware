@@ -11,6 +11,12 @@
   margin-right: auto;
 }
 
+/* Give the white "Why LymphAware?" and "How LymphAware works" sections
+   a clear but subtle visual break. */
+.home-page .home-understanding-section {
+  border-bottom: 1px solid #e7edf1;
+}
+
 @media (max-width: 680px) {
   .home-page .home-understanding-section,
   .home-page .home-demo-section,
