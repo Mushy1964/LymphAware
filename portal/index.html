@@ -16,119 +16,43 @@
       padding: 60px 20px;
       background: linear-gradient(135deg, rgba(76,155,87,.06), rgba(40,120,184,.05));
     }
-
-    .portal-shell {
-      width: 100%;
-      max-width: 920px;
-      margin: 0 auto;
-    }
-
+    .portal-shell { width: 100%; max-width: 920px; margin: 0 auto; }
     #portal-content { display: none; }
-
-    #portal-loading {
-      text-align: center;
-      padding: 80px 20px;
-      color: var(--muted);
-    }
-
+    #portal-loading { text-align: center; padding: 80px 20px; color: var(--muted); }
     .portal-welcome { margin-bottom: 30px; }
-    .portal-welcome h1 {
-      margin: 6px 0 12px;
-      font-size: clamp(2rem, 3vw, 2.8rem);
-      line-height: 1.15;
-    }
-    .portal-welcome p {
-      max-width: 700px;
-      color: var(--muted);
-      font-size: 1.08rem;
-      line-height: 1.55;
-    }
-
-    .portal-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 22px;
-      margin-top: 30px;
-    }
-
-    .portal-option {
-      padding: 28px;
-      border-radius: 18px;
-      background: #fff;
-    }
+    .portal-welcome h1 { margin: 6px 0 12px; font-size: clamp(2rem, 3vw, 2.8rem); line-height: 1.15; }
+    .portal-welcome p { max-width: 700px; color: var(--muted); font-size: 1.08rem; line-height: 1.55; }
+    .portal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; margin-top: 30px; }
+    .portal-option { padding: 28px; border-radius: 18px; background: #fff; }
     .portal-option h2 { margin: 0 0 10px; font-size: 1.45rem; }
     .portal-option p { margin: 0; color: var(--muted); line-height: 1.55; }
-
-    .portal-option-link {
-      display: block;
-      color: inherit;
-      text-decoration: none;
-      transition: transform .15s ease, box-shadow .15s ease;
-    }
+    .portal-option-link { display: block; color: inherit; text-decoration: none; transition: transform .15s ease, box-shadow .15s ease; }
     .portal-option-link:hover,
-    .portal-option-link:focus-visible {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 28px rgba(31,47,66,.10) !important;
-    }
-    .portal-option-link:focus-visible {
-      outline: 3px solid #2878b8;
-      outline-offset: 3px;
-    }
-
+    .portal-option-link:focus-visible { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(31,47,66,.10) !important; }
+    .portal-option-link:focus-visible { outline: 3px solid #2878b8; outline-offset: 3px; }
     .portal-membership,
     .portal-onboarding,
-    .portal-accessories {
-      grid-column: 1 / -1;
-    }
-
+    .portal-accessories { grid-column: 1 / -1; }
     .portal-membership { background: var(--green-light); }
     .portal-onboarding { background: var(--green-light); }
     .portal-onboarding .button { margin-top: 16px; }
-
-    .membership-price {
-      margin: 8px 0 4px;
-      color: #16853f;
-      font-size: clamp(2.3rem, 5vw, 3.5rem);
-      line-height: 1;
-      font-weight: 800;
-    }
-
-    .membership-term {
-      margin: 0 0 20px !important;
-      color: var(--text) !important;
-      font-weight: 700;
-    }
-
-    .membership-list {
-      margin: 20px 0 0;
-      padding: 0;
-      list-style: none;
-      display: grid;
-      gap: 9px;
-    }
-    .membership-list li::before {
-      content: '✓';
-      color: #16853f;
-      font-weight: 800;
-      margin-right: 10px;
-    }
-
+    .membership-price { margin: 8px 0 4px; color: #16853f; font-size: clamp(2.3rem, 5vw, 3.5rem); line-height: 1; font-weight: 800; }
+    .membership-term { margin: 0 0 20px !important; color: var(--text) !important; font-weight: 700; }
+    .membership-list { margin: 20px 0 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+    .membership-list li::before { content: '✓'; color: #16853f; font-weight: 800; margin-right: 10px; }
     .membership-payment-actions { margin-top: 24px; }
     .membership-payment-actions[hidden] { display: none !important; }
+    .membership-status { margin: 0 0 8px !important; color: var(--green-dark) !important; font-size: 1.1rem; font-weight: 700; }
 
-    .membership-status {
-      margin: 0 0 8px !important;
-      color: var(--green-dark) !important;
-      font-size: 1.1rem;
-      font-weight: 700;
+    .membership-extras {
+      margin-top: 26px;
+      padding-top: 24px;
+      border-top: 1px solid #c8ddce;
     }
-
-    .replacement-options {
-      margin-top: 18px;
-      display: grid;
-      gap: 12px;
-    }
-    .replacement-option {
+    .membership-extras h3 { margin: 0 0 6px; font-size: 1.25rem; }
+    .membership-extras-intro { margin-bottom: 16px !important; }
+    .extra-options { display: grid; gap: 12px; }
+    .extra-option {
       display: grid;
       grid-template-columns: auto 1fr auto;
       align-items: center;
@@ -139,37 +63,32 @@
       background: #fff;
       cursor: pointer;
     }
-    .replacement-option input { width: 20px; height: 20px; }
+    .extra-option input { width: 20px; height: 20px; }
+    .extra-option strong { white-space: nowrap; }
+    .language-choice { margin-top: 12px; padding: 14px 16px; border: 1px solid #cbd8df; border-radius: 12px; background: #fff; }
+    .language-choice label { display: block; margin-bottom: 7px; font-weight: 700; }
+    .language-choice input { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid #bfcbd2; border-radius: 9px; font: inherit; }
+    .membership-order-total { margin: 20px 0 0; font-size: 1.1rem; }
+    .membership-order-total strong { font-size: 1.25rem; }
+    .delivery-note { margin-top: 14px !important; font-size: .94rem; }
+
+    .replacement-options { margin-top: 18px; display: grid; gap: 12px; }
+    .replacement-option { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 14px 16px; border: 1px solid #cbd8df; border-radius: 12px; background: #fff; }
     .replacement-option strong { white-space: nowrap; }
-    .replacement-total { margin: 18px 0 16px; font-size: 1.05rem; }
-
-    .portal-actions {
-      margin-top: 30px;
-      display: flex;
-      justify-content: flex-end;
-    }
-
+    .portal-actions { margin-top: 30px; display: flex; justify-content: flex-end; }
     #portal-message { margin-top: 16px; line-height: 1.5; }
     .portal-page .button { font-size: 18px; font-weight: 700; }
-
-    .payment-result {
-      margin-bottom: 24px;
-      padding: 16px 18px;
-      border: 1px solid #cbd8df;
-      border-radius: 14px;
-      background: #fff;
-      line-height: 1.5;
-    }
+    .payment-result { margin-bottom: 24px; padding: 16px 18px; border: 1px solid #cbd8df; border-radius: 14px; background: #fff; line-height: 1.5; }
 
     @media (max-width: 680px) {
       .portal-page { padding: 40px 16px; }
       .portal-grid { grid-template-columns: 1fr; }
       .portal-actions { justify-content: stretch; }
       .portal-actions .button,
-      #pay-membership-button,
-      #replacement-payment-button { width: 100%; }
-      .replacement-option { grid-template-columns: auto 1fr; }
-      .replacement-option strong { grid-column: 2; }
+      #pay-membership-button { width: 100%; }
+      .extra-option { grid-template-columns: auto 1fr; }
+      .extra-option strong { grid-column: 2; }
+      .replacement-option { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -199,8 +118,9 @@
 
       <div class="portal-grid">
         <div class="portal-option portal-membership" id="membership-panel">
-          <h2 id="membership-heading">LymphAware Membership</h2>
+          <h2>LymphAware Membership</h2>
           <p id="membership-status" class="membership-status">Loading membership information...</p>
+
           <div id="membership-pending-content" hidden>
             <div class="membership-price">£29.99</div>
             <p class="membership-term">One payment for five years</p>
@@ -212,10 +132,44 @@
               <li>Secure Patient Portal access</li>
               <li>Five-year membership period</li>
             </ul>
+
+            <div class="membership-extras">
+              <h3>Would you like to add anything else?</h3>
+              <p class="membership-extras-intro">These are completely optional and can be added to the same secure payment.</p>
+
+              <div class="extra-options">
+                <label class="extra-option">
+                  <input type="checkbox" id="membership-extra-card">
+                  <span><strong>Need an extra card?</strong><br>Keep a spare LymphAware ID card.</span>
+                  <strong>£6.50</strong>
+                </label>
+
+                <label class="extra-option">
+                  <input type="checkbox" id="membership-extra-lanyard">
+                  <span><strong>Need an extra lanyard &amp; holder?</strong><br>Add a spare LymphAware lanyard and landscape holder.</span>
+                  <strong>£6.50</strong>
+                </label>
+
+                <label class="extra-option">
+                  <input type="checkbox" id="membership-language-package">
+                  <span><strong>Require LymphAware in another language?</strong><br>Add a separate card and QR profile package in another language.</span>
+                  <strong>£19.99</strong>
+                </label>
+              </div>
+
+              <div id="language-choice" class="language-choice" hidden>
+                <label for="membership-language-name">Which language would you like?</label>
+                <input type="text" id="membership-language-name" maxlength="80" placeholder="For example, French or Spanish">
+              </div>
+
+              <div class="membership-order-total">Order total before any promotion code: <strong id="membership-order-total">£29.99</strong></div>
+              <p class="delivery-note">Your delivery address will be collected securely by Stripe during checkout so we can fulfil your physical card order.</p>
+            </div>
           </div>
+
           <p id="membership-message"></p>
           <div id="membership-payment-actions" class="membership-payment-actions" hidden>
-            <button type="button" id="pay-membership-button" class="button button-primary">Complete Membership – £29.99</button>
+            <button type="button" id="pay-membership-button" class="button button-primary">Continue to Secure Payment – £29.99</button>
           </div>
         </div>
 
@@ -237,24 +191,14 @@
           </a>
 
           <div class="portal-option portal-accessories" id="accessories-panel" hidden>
-            <h2>Additional Cards &amp; Accessories</h2>
-            <p>Select the replacement items you require, then continue to payment.</p>
-
+            <h2>Additional &amp; Replacement Items</h2>
+            <p>Our simplified pricing now applies whether an item is an additional item or a later replacement.</p>
             <div class="replacement-options">
-              <label class="replacement-option">
-                <input type="checkbox" id="replacement-card">
-                <span>Replacement LymphAware ID Card</span>
-                <strong>£7.50</strong>
-              </label>
-              <label class="replacement-option">
-                <input type="checkbox" id="replacement-lanyard">
-                <span>Replacement Lanyard &amp; Holder</span>
-                <strong>£7.50</strong>
-              </label>
+              <div class="replacement-option"><span>LymphAware ID Card</span><strong>£6.50</strong></div>
+              <div class="replacement-option"><span>LymphAware Lanyard &amp; Holder</span><strong>£6.50</strong></div>
+              <div class="replacement-option"><span>Additional Language Package</span><strong>£19.99</strong></div>
             </div>
-
-            <div class="replacement-total">Total: <strong id="replacement-total">£0.00</strong></div>
-            <button type="button" id="replacement-payment-button" class="button button-primary" disabled>Continue to Payment</button>
+            <p style="margin-top:16px;">Online ordering for these items from an existing membership will be added to this area as the order system is completed.</p>
           </div>
         </div>
       </div>
@@ -287,6 +231,13 @@
     const accessoriesPanel = document.getElementById('accessories-panel');
     const paymentResult = document.getElementById('payment-result');
 
+    const extraCard = document.getElementById('membership-extra-card');
+    const extraLanyard = document.getElementById('membership-extra-lanyard');
+    const languagePackage = document.getElementById('membership-language-package');
+    const languageChoice = document.getElementById('language-choice');
+    const languageName = document.getElementById('membership-language-name');
+    const orderTotal = document.getElementById('membership-order-total');
+
     let currentUserId = null;
 
     function hasPortalEntitlement(membership) {
@@ -298,16 +249,29 @@
       );
     }
 
+    function updateMembershipOrder() {
+      let totalPence = 2999;
+      if (extraCard.checked) totalPence += 650;
+      if (extraLanyard.checked) totalPence += 650;
+      if (languagePackage.checked) totalPence += 1999;
+      languageChoice.hidden = !languagePackage.checked;
+      orderTotal.textContent = `£${(totalPence / 100).toFixed(2)}`;
+      payMembershipButton.textContent = `Continue to Secure Payment – £${(totalPence / 100).toFixed(2)}`;
+    }
+
+    extraCard.addEventListener('change', updateMembershipOrder);
+    extraLanyard.addEventListener('change', updateMembershipOrder);
+    languagePackage.addEventListener('change', updateMembershipOrder);
+
     function showPaymentResult() {
       const params = new URLSearchParams(window.location.search);
       const payment = params.get('payment');
-
       if (payment === 'success') {
         paymentResult.hidden = false;
-        paymentResult.textContent = 'Thank you. We are confirming your membership payment. Your portal will unlock as soon as confirmation is complete.';
+        paymentResult.textContent = 'Thank you. We are confirming your payment and creating your LymphAware order. Your portal will unlock as soon as confirmation is complete.';
       } else if (payment === 'cancelled') {
         paymentResult.hidden = false;
-        paymentResult.textContent = 'Your membership payment was not completed. You can continue whenever you are ready.';
+        paymentResult.textContent = 'Your payment was not completed. You can continue whenever you are ready.';
       }
     }
 
@@ -317,7 +281,6 @@
         .select('membership_status,payment_status,initial_fee_pence,membership_start,membership_end')
         .eq('user_id', userId)
         .maybeSingle();
-
       if (error) {
         console.error('Unable to load membership:', error);
         return null;
@@ -331,16 +294,12 @@
         .select('display_name,photo_path')
         .eq('user_id', userId)
         .maybeSingle();
-
       if (error) {
         console.error('Unable to load onboarding status:', error);
         return;
       }
-
       onboardingPanel.hidden = Boolean(
-        data &&
-        data.display_name && data.display_name.trim() &&
-        data.photo_path && data.photo_path.trim()
+        data && data.display_name && data.display_name.trim() && data.photo_path && data.photo_path.trim()
       );
     }
 
@@ -359,15 +318,12 @@
 
       if (hasPortalEntitlement(membership)) {
         memberContent.style.display = 'contents';
-
         if (membership.membership_status === 'PILOT') {
           membershipStatus.textContent = 'Pilot Member';
           membershipMessage.textContent = 'Your existing pilot access remains active.';
-          accessoriesPanel.hidden = true;
         } else if (membership.membership_status === 'SPONSORED') {
           membershipStatus.textContent = 'Sponsored Member';
           membershipMessage.textContent = 'Your LymphAware membership is currently sponsored.';
-          accessoriesPanel.hidden = true;
         } else {
           membershipStatus.textContent = 'Active Member';
           let message = 'Your LymphAware membership is active.';
@@ -378,13 +334,12 @@
           membershipMessage.textContent = message;
           accessoriesPanel.hidden = false;
         }
-
         return true;
       }
 
       if (membership.membership_status === 'PENDING' && membership.payment_status === 'PENDING') {
         portalTitle.textContent = 'Complete your LymphAware membership';
-        portalIntro.textContent = 'Your free account has been created. Complete the membership step below before creating or accessing your patient profile.';
+        portalIntro.textContent = 'Your free account has been created. Choose any optional extras, then complete the secure membership payment before creating or accessing your patient profile.';
         membershipStatus.textContent = 'Membership activation required';
         membershipMessage.textContent = '';
         membershipPendingContent.hidden = false;
@@ -414,13 +369,12 @@
     async function refreshAfterSuccessfulPayment() {
       const params = new URLSearchParams(window.location.search);
       if (params.get('payment') !== 'success' || !currentUserId) return;
-
       for (let attempt = 0; attempt < 4; attempt += 1) {
         const membership = await fetchMembership(currentUserId);
         if (hasPortalEntitlement(membership)) {
           await renderMembership(membership);
           await loadOnboardingStatus(currentUserId);
-          paymentResult.textContent = 'Membership confirmed. Your LymphAware Patient Portal is now active.';
+          paymentResult.textContent = 'Payment confirmed. Your LymphAware Patient Portal is now active and your order has been received.';
           return;
         }
         await new Promise(resolve => setTimeout(resolve, 1500));
@@ -428,17 +382,22 @@
     }
 
     payMembershipButton.addEventListener('click', async () => {
+      if (languagePackage.checked && !languageName.value.trim()) {
+        portalMessage.textContent = 'Please enter the language required for your additional language package.';
+        languageName.focus();
+        return;
+      }
+
       payMembershipButton.disabled = true;
       payMembershipButton.textContent = 'Starting secure payment...';
       portalMessage.textContent = '';
 
       try {
         const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
-
         if (sessionError || !session?.access_token) {
           portalMessage.textContent = 'Your secure session could not be verified. Please sign in again.';
           payMembershipButton.disabled = false;
-          payMembershipButton.textContent = 'Complete Membership – £29.99';
+          updateMembershipOrder();
           return;
         }
 
@@ -447,14 +406,20 @@
           headers: {
             Authorization: `Bearer ${session.access_token}`,
             'Content-Type': 'application/json'
-          }
+          },
+          body: JSON.stringify({
+            extraCard: extraCard.checked,
+            extraLanyard: extraLanyard.checked,
+            languagePackage: languagePackage.checked,
+            languageName: languageName.value.trim()
+          })
         });
 
         const result = await response.json();
         if (!response.ok || !result?.url) {
           portalMessage.textContent = result?.error || 'Unable to start membership payment. Please try again.';
           payMembershipButton.disabled = false;
-          payMembershipButton.textContent = 'Complete Membership – £29.99';
+          updateMembershipOrder();
           return;
         }
 
@@ -463,7 +428,7 @@
         console.error('Unable to start membership payment:', error);
         portalMessage.textContent = 'Unable to start membership payment. Please try again.';
         payMembershipButton.disabled = false;
-        payMembershipButton.textContent = 'Complete Membership – £29.99';
+        updateMembershipOrder();
       }
     });
 
@@ -477,34 +442,8 @@
       window.location.href = '/sign-in/';
     });
 
-    const replacementCard = document.getElementById('replacement-card');
-    const replacementLanyard = document.getElementById('replacement-lanyard');
-    const replacementTotal = document.getElementById('replacement-total');
-    const replacementPaymentButton = document.getElementById('replacement-payment-button');
-
-    function updateReplacementOrder() {
-      let total = 0;
-      if (replacementCard.checked) total += 7.50;
-      if (replacementLanyard.checked) total += 7.50;
-      replacementTotal.textContent = `£${total.toFixed(2)}`;
-      replacementPaymentButton.disabled = !replacementCard.checked && !replacementLanyard.checked;
-    }
-
-    replacementCard.addEventListener('change', updateReplacementOrder);
-    replacementLanyard.addEventListener('change', updateReplacementOrder);
-    replacementPaymentButton.addEventListener('click', () => {
-      if (replacementCard.checked && replacementLanyard.checked) {
-        window.location.href = 'https://buy.stripe.com/test_dRmaEZ6NigGy6wNdgTaR202';
-      } else if (replacementCard.checked) {
-        window.location.href = 'https://buy.stripe.com/test_28E3cx0oUgGy4oF4KnaR200';
-      } else if (replacementLanyard.checked) {
-        window.location.href = 'https://buy.stripe.com/test_8x23cx7Rm61Uf3j2CfaR201';
-      }
-    });
-
     async function checkPortalAccess() {
       const { data: { user }, error } = await supabaseClient.auth.getUser();
-
       if (error || !user) {
         window.location.href = '/sign-in/';
         return;
@@ -512,21 +451,16 @@
 
       currentUserId = user.id;
       showPaymentResult();
-
       const membership = await fetchMembership(user.id);
       const entitled = await renderMembership(membership);
-
-      if (entitled) {
-        await loadOnboardingStatus(user.id);
-      }
+      if (entitled) await loadOnboardingStatus(user.id);
 
       portalLoading.style.display = 'none';
       portalContent.style.display = 'block';
-
       await refreshAfterSuccessfulPayment();
     }
 
-    updateReplacementOrder();
+    updateMembershipOrder();
     checkPortalAccess();
   </script>
 </body>
