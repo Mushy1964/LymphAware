@@ -90,7 +90,6 @@ export default async (request) => {
         method: 'PATCH',
         headers: {
           apikey: process.env.SUPABASE_SECRET_KEY,
-          Authorization: `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
           'Content-Type': 'application/json',
           Prefer: 'return=minimal'
         },
