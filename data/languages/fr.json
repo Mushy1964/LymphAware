@@ -39,6 +39,14 @@
         "description": "Autres informations importantes pouvant vous aider à mieux me comprendre."
       }
     },
+    "assistance_statements": {
+      "difficulty-standing": "Je peux avoir des difficultés à rester debout pendant de longues périodes.",
+      "need-seat": "Je peux avoir besoin d’un endroit où m’asseoir.",
+      "extra-time": "Je peux avoir besoin de plus de temps.",
+      "mobility-help": "Je peux avoir besoin d’aide pour me déplacer.",
+      "clear-communication": "Je peux avoir besoin de plus d’espace en raison d’un gonflement ou de vêtements de compression.",
+      "patient-understanding": "Merci de faire preuve de patience et de compréhension."
+    },
     "empty_section": "Aucune information n’a été ajoutée à cette section.",
     "not_provided": "Non renseigné",
     "details": {
@@ -49,7 +57,7 @@
     "call_emergency_contact": "Appeler le contact d’urgence",
     "footer": {
       "heading": "À propos de ce profil LymphAware",
-      "paragraph_1": "Ce profil contient des informations que le patient a choisi de partager afin d’aider les autres à mieux comprendre son lymphœdème et toute assistance dont il peut avoir besoin.",
+      "paragraph_1": "Ce profil contient des informations que la personne a choisi de partager afin d’aider les autres à mieux comprendre son lymphœdème et toute assistance dont elle peut avoir besoin.",
       "paragraph_2": "LymphAware favorise la communication et la sensibilisation. Il ne fournit pas de conseils médicaux et ne remplace pas l’évaluation ou le traitement par des professionnels de santé."
     },
     "system": {
@@ -63,6 +71,7 @@
   "review_notes": {
     "purpose": "Draft fixed-text translation for the LymphAware French language package. Do not publish until reviewed and approved.",
     "patient_entered_content": "Patient-entered profile information is not included in this language pack and must be translated/reviewed separately before publication.",
-    "brand": "The LymphAware logo and English tagline remain unchanged in this draft."
+    "brand": "The LymphAware logo and English tagline remain unchanged in this draft.",
+    "card_wording": "The French patient-status wording may need layout and native-language review because it is longer than the English card wording."
   }
 }
