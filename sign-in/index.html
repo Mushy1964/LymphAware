@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Patient Portal | LymphAware</title>
+  <title>Sign In | LymphAware</title>
 
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/secondary-header.css">
+  <link rel="stylesheet" href="/css/card-system.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     .portal-page {
       min-height: calc(100vh - 84px);
@@ -16,11 +17,7 @@
       align-items: center;
       justify-content: center;
       padding: 70px 20px;
-      background: linear-gradient(
-        135deg,
-        rgba(76, 155, 87, 0.06),
-        rgba(40, 120, 184, 0.05)
-      );
+      background: linear-gradient(135deg, rgba(76,155,87,.06), rgba(40,120,184,.05));
     }
 
     .portal-card {
@@ -28,9 +25,7 @@
       max-width: 520px;
       padding: 38px;
       border-radius: 22px;
-      background: #ffffff;
-      border: 1px solid var(--border);
-      box-shadow: 0 18px 45px rgba(31, 41, 51, 0.08);
+      background: #fff;
     }
 
     .portal-card h1 {
@@ -43,18 +38,11 @@
       margin: 0 0 28px;
       color: var(--muted);
       font-size: 1.05rem;
+      line-height: 1.55;
     }
 
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 7px;
-      font-weight: 700;
-    }
-
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 7px; font-weight: 700; }
     .form-group input {
       width: 100%;
       min-height: 48px;
@@ -62,213 +50,122 @@
       border: 1px solid #bfcbd2;
       border-radius: 9px;
       font: inherit;
-      background: white;
+      background: #fff;
     }
-
     .form-group input:focus {
-      outline: 3px solid rgba(40, 120, 184, 0.18);
+      outline: 3px solid rgba(40,120,184,.18);
       border-color: var(--blue);
     }
 
-    .portal-button {
-      width: 100%;
-      margin-top: 4px;
-    }
+    .portal-button { width: 100%; margin-top: 4px; }
+    #login-message { margin: 16px 0 0; line-height: 1.5; }
 
     .portal-links {
-      margin-top: 20px;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
       text-align: center;
     }
-
-    .portal-links a {
-      color: var(--blue);
-      font-weight: 700;
-    }
+    .portal-links span { display: block; margin-bottom: 6px; }
+    .portal-links a { color: var(--blue); font-weight: 700; }
 
     .portal-status {
       margin-top: 28px;
       padding: 18px;
+      border: 1px solid #cbd8df;
       border-radius: 14px;
       background: var(--green-light);
       color: var(--green-dark);
-      font-size: 0.96rem;
+      font-size: .96rem;
+      line-height: 1.5;
     }
-
-    .portal-status strong {
-      display: block;
-      margin-bottom: 4px;
-    }
+    .portal-status strong { display: block; margin-bottom: 4px; }
 
     @media (max-width: 680px) {
-      .portal-page {
-        padding: 40px 14px;
-      }
-
-      .portal-card {
-        padding: 26px 20px;
-      }
-
-      .portal-card h1 {
-        font-size: 2rem;
-      }
+      .portal-page { padding: 40px 14px; }
+      .portal-card { padding: 26px 20px; }
+      .portal-card h1 { font-size: 2rem; }
     }
-
-    .register-link {
-      margin-top: 22px;
-      padding-top: 18px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-    
-    .register-link span {
-      color: var(--text);
-    }
-    
-    .register-link a {
-      font-weight: 700;
-    }
-    
   </style>
 </head>
-
 <body>
-
   <header class="site-header secondary-header">
     <div class="container header-inner">
-
       <a href="/" class="header-brand" aria-label="Back to LymphAware website">
-        <img
-          class="header-logo"
-          src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg"
-          alt="LymphAware – Helping People Living with Lymphoedema Be Understood"
-        >
+        <img class="header-logo" src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg" alt="LymphAware – Helping People Living with Lymphoedema Be Understood">
       </a>
-
       <div class="header-actions">
-        <a href="/" class="button button-secondary back-to-website-button">
-          Back to Website
-        </a>
+        <a href="/" class="button button-secondary back-to-website-button">Back to Website</a>
       </div>
-
     </div>
   </header>
 
-
   <main class="portal-page">
-
     <section class="portal-card" aria-labelledby="portal-heading">
-
       <p class="eyebrow">Patient Portal</p>
-
       <h1 id="portal-heading">Sign in to LymphAware</h1>
-
       <p class="portal-intro">
-        Manage your LymphAware profile and the information you choose
-        to make available through your QR-linked profile.
+        Sign in to your LymphAware account. If your five-year membership has not yet been activated, we’ll take you to the secure membership step first.
       </p>
 
-
-     <form id="login-form">
-  
+      <form id="login-form">
         <div class="form-group">
           <label for="email">Email address</label>
-
-          <input
-            type="email"
-            id="email"
-            name="email"
-            autocomplete="email"
-            required>
+          <input type="email" id="email" name="email" autocomplete="email" required>
         </div>
-
 
         <div class="form-group">
           <label for="password">Password</label>
-
-          <input
-            type="password"
-            id="password"
-            name="password"
-            autocomplete="current-password"
-            required>
+          <input type="password" id="password" name="password" autocomplete="current-password" required>
         </div>
 
-
-         <button
-          type="submit"
-          class="button button-primary portal-button">
-          Sign In
-        </button>
-      <p id="login-message" role="status" aria-live="polite"></p>
+        <button type="submit" class="button button-primary portal-button">Sign In</button>
+        <p id="login-message" role="status" aria-live="polite"></p>
       </form>
 
-
-        <div class="portal-links">
-          <a href="#">Forgotten your password?</a>
-       </div>
-
-      <div class="register-link">
-        <span>Invited to join LymphAware?</span>
-        <a href="/register/">Create your account</a>
+      <div class="portal-links">
+        <span>New to LymphAware?</span>
+        <a href="/register/">Create your free account</a>
       </div>
 
-     <div class="portal-status">
-      
-        <strong>LymphAware Patient Pilot</strong>
-      
-        Access to LymphAware is currently limited to invited pilot participants.
-        If you have been invited to take part, please sign in using your
-        registered email address and password.
-      
+      <div class="portal-status">
+        <strong>Free account registration</strong>
+        Creating your account is free. A £29.99 five-year LymphAware membership is required before your patient profile and portal features are unlocked.
       </div>
-
     </section>
-
   </main>
-<script>
-  const SUPABASE_URL = 'https://thbhsktcenhrnxzkbjus.supabase.co';
-  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
 
-  const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
+  <script>
+    const SUPABASE_URL = 'https://thbhsktcenhrnxzkbjus.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
 
-  const loginForm = document.getElementById('login-form');
-  const loginMessage = document.getElementById('login-message');
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    const loginForm = document.getElementById('login-form');
+    const loginMessage = document.getElementById('login-message');
 
-  loginForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
+    loginForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
 
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      loginMessage.textContent = 'Signing in...';
 
-    loginMessage.textContent = 'Signing in...';
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email,
-      password
+      if (error) {
+        loginMessage.textContent = 'Sign in unsuccessful. Please check your details and try again.';
+        return;
+      }
+
+      loginMessage.textContent = 'Sign in successful. Redirecting...';
+      const signedInEmail = data?.user?.email?.toLowerCase() || '';
+
+      if (signedInEmail === 'admin@lymphaware.com') {
+        window.location.href = '/admin/card-production/';
+      } else {
+        window.location.href = '/portal/';
+      }
     });
-
-    if (error) {
-      loginMessage.textContent = 'Sign in unsuccessful. Please check your details and try again.';
-      return;
-    }
-    
-   loginMessage.textContent = 'Sign in successful. Redirecting...';
-
-    const signedInEmail =
-      data?.user?.email?.toLowerCase() || '';
-    
-    if (signedInEmail === 'admin@lymphaware.com') {
-      window.location.href = '/admin/card-production/';
-    } else {
-      window.location.href = '/';
-    }
-  });
-</script>
+  </script>
 </body>
 </html>
