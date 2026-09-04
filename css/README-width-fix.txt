@@ -1,0 +1,1 @@
+Temporary note: homepage section width alignment work in progress.
