@@ -54,15 +54,22 @@
 }
 
 /* =========================================================
-   SHARED SUPPORTING-PAGE TYPE SCALE
-   Match the homepage's hierarchy rather than allowing older
-   supporting pages to grow to oversized 4rem headings.
+   SHARED CUSTOMER-FACING TYPE SCALE
+   Match the homepage hierarchy throughout supporting pages,
+   registration, sign-in and the portal journey.
    ========================================================= */
 
 body:has(.secondary-header) .page-hero h1 {
   font-size: clamp(2.7rem, 3.3vw, 3.75rem) !important;
   line-height: 1.1 !important;
   letter-spacing: -1.5px !important;
+}
+
+body:has(.secondary-header) .portal-card h1,
+body:has(.secondary-header) .portal-welcome h1 {
+  font-size: clamp(2rem, 3vw, 2.8rem) !important;
+  line-height: 1.15 !important;
+  letter-spacing: -1px !important;
 }
 
 body:has(.secondary-header) .page-hero p,
@@ -79,6 +86,15 @@ body:has(.secondary-header) .mission-box h2,
 body:has(.secondary-header) .cta-box h2 {
   font-size: clamp(2rem, 3vw, 2.8rem) !important;
   line-height: 1.15 !important;
+}
+
+body:has(.secondary-header) .section-heading p,
+body:has(.secondary-header) .copy p,
+body:has(.secondary-header) .split-copy p,
+body:has(.secondary-header) .mission-box p,
+body:has(.secondary-header) .cta-box p {
+  font-size: 1.08rem !important;
+  line-height: 1.6 !important;
 }
 
 body:has(.secondary-header) .button {
@@ -104,8 +120,8 @@ body:has(.secondary-header) .button {
   }
 
   /* A full 'Back to Website' label cannot sit beside the approved
-     mobile logo on narrow phones. Keep the action, but use a compact
-     Home label so the header remains fully within the viewport. */
+     mobile logo on narrow phones. Keep the same destination but use
+     a compact Home label so the header stays fully on-screen. */
   .secondary-header .back-to-website-button {
     min-width: 82px !important;
     min-height: 44px !important;
@@ -136,18 +152,27 @@ body:has(.secondary-header) .button {
     letter-spacing: -1.2px !important;
   }
 
-  body:has(.secondary-header) .page-hero p,
-  body:has(.secondary-header) .portal-intro,
-  body:has(.secondary-header) .portal-welcome p {
-    font-size: 1.03rem !important;
-  }
-
+  body:has(.secondary-header) .portal-card h1,
+  body:has(.secondary-header) .portal-welcome h1,
   body:has(.secondary-header) .section-heading h2,
   body:has(.secondary-header) .copy h2,
   body:has(.secondary-header) .split-copy h2,
   body:has(.secondary-header) .mission-box h2,
   body:has(.secondary-header) .cta-box h2 {
     font-size: 2rem !important;
+    line-height: 1.15 !important;
+  }
+
+  body:has(.secondary-header) .page-hero p,
+  body:has(.secondary-header) .portal-intro,
+  body:has(.secondary-header) .portal-welcome p,
+  body:has(.secondary-header) .section-heading p,
+  body:has(.secondary-header) .copy p,
+  body:has(.secondary-header) .split-copy p,
+  body:has(.secondary-header) .mission-box p,
+  body:has(.secondary-header) .cta-box p {
+    font-size: 1.03rem !important;
+    line-height: 1.6 !important;
   }
 }
 
