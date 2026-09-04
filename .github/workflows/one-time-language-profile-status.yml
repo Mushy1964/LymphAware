@@ -1,0 +1,89 @@
+name: One-time language profile status
+
+on:
+  push:
+    paths:
+      - '.github/workflows/one-time-language-profile-status.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-language-profile-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Update webhook and portal
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          # --- Stripe webhook: persist controlled language code on order items ---
+          webhook = Path('netlify/functions/stripe-webhook.mjs')
+          w = webhook.read_text(encoding='utf-8')
+
+          old = """    const languagePackage = session.metadata?.language_package === '1';\n    const languageName = String(session.metadata?.language_name || '').trim();\n"""
+          new = """    const languagePackage = session.metadata?.language_package === '1';\n    const languageName = String(session.metadata?.language_name || '').trim();\n    const languageCode = String(session.metadata?.language_code || '').trim().toUpperCase();\n"""
+          if old not in w:
+              raise SystemExit('Webhook language metadata anchor not found')
+          w = w.replace(old, new, 1)
+
+          old_item = """        line_total_pence: 1999,\n        language_name: languageName || null\n"""
+          new_item = """        line_total_pence: 1999,\n        language_code: languageCode || null,\n        language_name: languageName || null\n"""
+          if old_item not in w:
+              raise SystemExit('Webhook language item anchor not found')
+          w = w.replace(old_item, new_item, 1)
+          webhook.write_text(w, encoding='utf-8')
+
+          # --- Portal: show purchased language profile packages and status ---
+          portal = Path('portal/index.html')
+          p = portal.read_text(encoding='utf-8')
+
+          p = p.replace(
+            "    .portal-accessories { grid-column: 1 / -1; }",
+            "    .portal-accessories,\n    .portal-language-profiles { grid-column: 1 / -1; }",
+            1
+          )
+
+          css_anchor = """    .replacement-options { margin-top: 18px; display: grid; gap: 12px; }\n"""
+          css_add = """    .language-profile-list { margin-top: 16px; display: grid; gap: 12px; }\n    .language-profile-item { padding: 15px 16px; border: 1px solid #cbd8df; border-radius: 12px; background: #fff; }\n    .language-profile-item-header { display: flex; justify-content: space-between; gap: 16px; align-items: center; flex-wrap: wrap; }\n    .language-profile-name { font-weight: 800; }\n    .language-profile-status { display: inline-block; padding: 6px 10px; border-radius: 999px; background: var(--blue-light); color: var(--blue-dark); font-size: .9rem; font-weight: 700; }\n    .language-profile-item p { margin-top: 8px !important; }\n\n"""
+          if css_anchor not in p:
+              raise SystemExit('Portal CSS anchor not found')
+          p = p.replace(css_anchor, css_add + css_anchor, 1)
+
+          html_anchor = """          <div class=\"portal-option portal-accessories\" id=\"accessories-panel\" hidden>\n"""
+          language_panel = """          <div class=\"portal-option portal-language-profiles\" id=\"language-profiles-panel\" hidden>\n            <h2>My Additional Languages</h2>\n            <p>Your additional-language card and QR profile packages will appear here while they are being prepared.</p>\n            <div id=\"language-profile-list\" class=\"language-profile-list\"></div>\n          </div>\n\n"""
+          if html_anchor not in p:
+              raise SystemExit('Portal language panel anchor not found')
+          p = p.replace(html_anchor, language_panel + html_anchor, 1)
+
+          const_anchor = """    const accessoriesPanel = document.getElementById('accessories-panel');\n    const paymentResult = document.getElementById('payment-result');\n"""
+          const_new = """    const accessoriesPanel = document.getElementById('accessories-panel');\n    const languageProfilesPanel = document.getElementById('language-profiles-panel');\n    const languageProfileList = document.getElementById('language-profile-list');\n    const paymentResult = document.getElementById('payment-result');\n"""
+          if const_anchor not in p:
+              raise SystemExit('Portal constants anchor not found')
+          p = p.replace(const_anchor, const_new, 1)
+
+          fn_anchor = """    async function loadOnboardingStatus(userId) {\n"""
+          language_fn = """    function languageStatusLabel(status) {\n      if (status === 'APPROVED') return 'Approved';\n      if (status === 'IN_REVIEW') return 'In review';\n      return 'Setup required';\n    }\n\n    function languageStatusMessage(profile) {\n      if (profile.setup_status === 'APPROVED') {\n        return `Your ${profile.language_name} language profile has been approved and is being prepared for card production.`;\n      }\n      if (profile.setup_status === 'IN_REVIEW') {\n        return `Your ${profile.language_name} language profile is being reviewed before it is made available.`;\n      }\n      return `Your ${profile.language_name} card and QR profile have been purchased and are awaiting preparation.`;\n    }\n\n    async function loadLanguageProfiles(userId) {\n      const { data, error } = await supabaseClient\n        .from('language_profiles')\n        .select('id,language_name,language_code,setup_status,qr_profile_active,card_production_status,created_at')\n        .eq('user_id', userId)\n        .order('created_at', { ascending: true });\n\n      if (error) {\n        console.error('Unable to load language profiles:', error);\n        languageProfilesPanel.hidden = true;\n        return;\n      }\n\n      if (!data?.length) {\n        languageProfilesPanel.hidden = true;\n        languageProfileList.innerHTML = '';\n        return;\n      }\n\n      languageProfilesPanel.hidden = false;\n      languageProfileList.innerHTML = '';\n\n      data.forEach((profile) => {\n        const item = document.createElement('div');\n        item.className = 'language-profile-item';\n\n        const status = profile.qr_profile_active\n          ? 'Active'\n          : languageStatusLabel(profile.setup_status);\n\n        const message = profile.qr_profile_active\n          ? `Your ${profile.language_name} QR profile is active.`\n          : languageStatusMessage(profile);\n\n        item.innerHTML = `\n          <div class=\"language-profile-item-header\">\n            <span class=\"language-profile-name\">${profile.language_name}</span>\n            <span class=\"language-profile-status\">${status}</span>\n          </div>\n          <p>${message}</p>\n        `;\n\n        languageProfileList.appendChild(item);\n      });\n    }\n\n"""
+          if fn_anchor not in p:
+              raise SystemExit('Portal onboarding function anchor not found')
+          p = p.replace(fn_anchor, language_fn + fn_anchor, 1)
+
+          init_anchor = """        if (hasPortalEntitlement(membership)) {\n          await renderMembership(membership);\n          await loadOnboardingStatus(currentUserId);\n"""
+          init_new = """        if (hasPortalEntitlement(membership)) {\n          await renderMembership(membership);\n          await loadOnboardingStatus(currentUserId);\n          await loadLanguageProfiles(currentUserId);\n"""
+          if init_anchor not in p:
+              raise SystemExit('Portal entitlement load anchor not found')
+          p = p.replace(init_anchor, init_new, 1)
+
+          portal.write_text(p, encoding='utf-8')
+          PY
+
+      - name: Commit changes
+        run: |
+          git config user.name "LymphAware automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add portal/index.html netlify/functions/stripe-webhook.mjs
+          git commit -m "Show additional language profile status in portal"
+          git push
