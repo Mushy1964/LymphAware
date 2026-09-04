@@ -104,6 +104,32 @@
       color: var(--muted);
     }
 
+    .production-fulfilment {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border: 1px solid #dce8e1;
+      border-radius: 12px;
+      background: #f7fbf8;
+      line-height: 1.55;
+    }
+
+    .production-fulfilment strong {
+      color: var(--text);
+    }
+
+    .production-fulfilment-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 22px;
+      margin-top: 6px;
+    }
+
+    .production-language-note {
+      margin-top: 8px;
+      color: var(--blue-dark);
+      font-weight: 700;
+    }
+
     .production-actions {
       margin-top: 20px;
       display: flex;
@@ -360,9 +386,9 @@
         Card production control.
       </strong>
 
-      EasyBadge exports should be used only for producing
-      authorised LymphAware cards. Check the patient's name,
-      photograph, LymphAware ID and QR code before printing.
+      EasyBadge exports are generated fresh from all cards currently marked Ready.
+      Check the patient's name, photograph, LymphAware ID and QR code before printing,
+      and use the fulfilment quantities shown on each job for duplicate cards and lanyards.
 
     </div>
 
@@ -817,6 +843,22 @@
         : 'Ready for Card';
 
 
+    const fulfilment = profile.fulfilment || {};
+    const orderNumbers = Array.isArray(fulfilment.order_numbers)
+      ? fulfilment.order_numbers
+      : [];
+    const cardCopies = Number(fulfilment.card_copies || 1);
+    const lanyardHolders = Number(fulfilment.lanyard_holders || 0);
+    const languagePackages = Array.isArray(fulfilment.language_packages)
+      ? fulfilment.language_packages
+      : [];
+
+    const languageSummary = languagePackages.length
+      ? languagePackages
+          .map(item => `${escapeHtml(item.language_name || 'Language not specified')} × ${Number(item.quantity || 0)}`)
+          .join(', ')
+      : '';
+
     const printedButton =
       status === 'PREPARED'
         ? `
@@ -866,6 +908,18 @@
 
       </div>
 
+
+      <div class="production-fulfilment">
+        <strong>Fulfilment</strong>
+        <div class="production-fulfilment-row">
+          <span>Order: ${escapeHtml(orderNumbers.length ? orderNumbers.join(', ') : 'No linked order')}</span>
+          <span>Card copies: <strong>${cardCopies}</strong></span>
+          <span>Lanyard &amp; holders: <strong>${lanyardHolders}</strong></span>
+        </div>
+        ${languageSummary
+          ? `<div class="production-language-note">Additional language package: ${languageSummary} — separate language card/profile setup required.</div>`
+          : ''}
+      </div>
 
       <div class="production-details">
 
