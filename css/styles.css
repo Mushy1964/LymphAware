@@ -12,6 +12,8 @@
   --border: #dfe7eb;
   --background: #ffffff;
   --soft: #f7f9fa;
+  --content-shadow: 0 8px 24px rgba(31, 47, 66, 0.06);
+  --feature-shadow: 0 12px 32px rgba(31, 41, 51, 0.08);
 }
 
 * {
@@ -288,7 +290,8 @@ svg {
   margin: 0 0 12px;
   color: var(--green-dark);
   font-weight: 700;
-  font-size: 0.98rem;
+  font-size: 1.05rem;
+  line-height: 1.3;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -311,7 +314,7 @@ svg {
 /* CONTENT */
 
 .content-section {
-  padding: 78px 0;
+  padding: 72px 0;
 }
 
 .section-heading {
@@ -322,8 +325,9 @@ svg {
 
 .section-heading h2 {
   margin: 0 0 14px;
-  font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1.2;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  line-height: 1.15;
+  letter-spacing: -1px;
 }
 
 .section-heading p {
@@ -343,6 +347,7 @@ svg {
   border: 1px solid var(--border);
   border-radius: 18px;
   background: white;
+  box-shadow: var(--content-shadow);
 }
 
 .step-number {
@@ -378,8 +383,9 @@ svg {
 .copy h2,
 .split-copy h2 {
   margin: 0 0 18px;
-  font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1.2;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  line-height: 1.15;
+  letter-spacing: -1px;
 }
 
 .copy p,
@@ -393,6 +399,7 @@ svg {
   border-radius: 20px;
   padding: 34px;
   background: var(--green-light);
+  box-shadow: var(--content-shadow);
 }
 
 .highlight-box h2,
@@ -426,6 +433,7 @@ svg {
   border-radius: 18px;
   background: white;
   border: 1px solid var(--border);
+  box-shadow: var(--content-shadow);
 }
 
 .privacy-card h3,
@@ -446,12 +454,15 @@ svg {
   padding: 48px 40px;
   background: linear-gradient(135deg, var(--green-light), var(--blue-light));
   text-align: center;
+  box-shadow: var(--content-shadow);
 }
 
 .mission-box h2,
 .cta-box h2 {
   margin: 0 0 16px;
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  line-height: 1.15;
+  letter-spacing: -1px;
 }
 
 .mission-box p,
@@ -579,15 +590,15 @@ footer {
     padding: 52px 0 58px;
   }
 
-    .hero-logo {
-      margin-bottom: 24px;
-    }
-    
-    .hero-logo-image {
-      width: 100%;
-      max-width: 560px;
-      height: auto;
-    }
+  .hero-logo {
+    margin-bottom: 24px;
+  }
+
+  .hero-logo-image {
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+  }
 
   .hero-wordmark {
     font-size: clamp(2.6rem, 11vw, 4rem);
@@ -611,13 +622,14 @@ footer {
   }
 
   .content-section {
-    padding: 58px 0;
+    padding: 52px 0;
   }
 
   .footer-grid {
     flex-direction: column;
   }
 }
+
 /* MOBILE NAVIGATION */
 
 .mobile-menu {
@@ -659,7 +671,7 @@ footer {
   top: calc(100% + 10px);
   right: 0;
   z-index: 200;
-   width: calc(100vw - 32px);
+  width: calc(100vw - 32px);
   max-width: 420px;
   padding: 12px;
   border: 1px solid var(--border);
@@ -694,7 +706,6 @@ footer {
   color: white;
 }
 
-
 /* MOBILE REFINEMENTS */
 
 @media (max-width: 680px) {
@@ -713,7 +724,7 @@ footer {
   }
 
   .content-section {
-    padding: 48px 0;
+    padding: 52px 0;
   }
 
   .section-heading {
@@ -723,8 +734,9 @@ footer {
   .section-heading h2,
   .copy h2,
   .split-copy h2 {
-    font-size: 2.15rem;
+    font-size: 2rem;
     line-height: 1.15;
+    letter-spacing: -0.6px;
   }
 
   .mission-box,
@@ -734,7 +746,107 @@ footer {
 
   .mission-box h2,
   .cta-box h2 {
-    font-size: 2.15rem;
+    font-size: 2rem;
     line-height: 1.2;
+    letter-spacing: -0.6px;
+  }
+}
+
+/* =========================================================
+   ACCOUNT AREA CONSISTENCY
+   Portal, Profile and Preview retain their own actions but use the same
+   visual header system and heading scale as the rest of LymphAware.
+   ========================================================= */
+
+.portal-header .header-inner,
+.profile-site-header .header-inner,
+.preview-header .header-inner {
+  width: min(1180px, calc(100% - 40px)) !important;
+  max-width: 1180px !important;
+  min-height: 92px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.portal-header .header-logo,
+.profile-site-header .header-logo,
+.preview-header .header-logo {
+  width: 390px !important;
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+.portal-header .header-actions,
+.profile-site-header .header-actions,
+.preview-header .header-actions {
+  display: flex !important;
+  align-items: center !important;
+  margin-left: auto !important;
+}
+
+.portal-header .header-actions .button,
+.profile-site-header .header-actions .button,
+.preview-header .header-actions .button {
+  min-height: 46px !important;
+  padding: 0 22px !important;
+  border-radius: 10px !important;
+  white-space: nowrap !important;
+}
+
+.portal-welcome h1,
+.profile-header h1,
+.preview-heading h1 {
+  font-size: clamp(2rem, 3vw, 2.8rem) !important;
+  line-height: 1.15 !important;
+  letter-spacing: -1px !important;
+}
+
+.portal-option,
+.profile-card {
+  box-shadow: var(--content-shadow);
+}
+
+.patient-profile-preview {
+  box-shadow: var(--feature-shadow) !important;
+}
+
+@media (max-width: 680px) {
+  .portal-header .header-inner,
+  .profile-site-header .header-inner,
+  .preview-header .header-inner {
+    width: min(100% - 28px, 1180px) !important;
+    min-height: 74px !important;
+    gap: 12px !important;
+  }
+
+  .portal-header .header-logo,
+  .profile-site-header .header-logo,
+  .preview-header .header-logo {
+    width: 300px !important;
+    max-width: calc(100vw - 170px) !important;
+  }
+
+  .portal-header .header-actions,
+  .profile-site-header .header-actions,
+  .preview-header .header-actions {
+    display: flex !important;
+  }
+
+  .portal-header .header-actions .button,
+  .profile-site-header .header-actions .button,
+  .preview-header .header-actions .button,
+  .portal-header .header-actions .button-secondary,
+  .profile-site-header .header-actions .button-secondary,
+  .preview-header .header-actions .button-secondary {
+    display: inline-flex !important;
+    min-height: 42px !important;
+    padding: 0 14px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .portal-welcome h1,
+  .profile-header h1,
+  .preview-heading h1 {
+    font-size: 2rem !important;
   }
 }
