@@ -13,12 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Add central logo and button consistency rules
-        shell: python
         run: |
+          python <<'PY'
           from pathlib import Path
 
           path = Path('css/styles.css')
@@ -94,6 +92,7 @@ input.button,
 
           if marker not in css:
               path.write_text(css.rstrip() + block + '\n', encoding='utf-8')
+          PY
 
       - name: Commit consistency update
         run: |
