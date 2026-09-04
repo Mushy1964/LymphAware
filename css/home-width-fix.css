@@ -1,28 +1,184 @@
-/* Homepage width alignment fix
-   Keep major homepage sections aligned with the same 1180px site container as the hero. */
+/* =========================================================
+   LYMPHAWARE HOMEPAGE SECTION SYSTEM
+
+   One consistent rule throughout the homepage:
+   - each major section background runs full browser width
+   - the content inside is constrained to the same 1180px width as the hero
+   - subtle full-width borders / background changes separate each section
+   ========================================================= */
+
+
+/* FULL-WIDTH SECTION BANDS */
 
 .home-page .home-understanding-section,
 .home-page .home-demo-section,
 .home-page .home-control-section,
 .home-page .home-professionals-section,
 .home-page .home-story-section {
-  width: min(1180px, calc(100% - 40px));
-  margin-left: auto;
-  margin-right: auto;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-radius: 0 !important;
 }
 
-/* Give the white "Why LymphAware?" and "How LymphAware works" sections
-   a clear but subtle visual break. */
-.home-page .home-understanding-section {
-  border-bottom: 1px solid #e7edf1;
+
+/* SAME INNER CONTENT WIDTH AS THE HERO */
+
+.home-page .home-understanding-grid,
+.home-page .home-demo-grid,
+.home-page .home-control-grid,
+.home-page .home-professionals-grid,
+.home-page .home-story-grid {
+  width: min(1180px, calc(100% - 40px));
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
+
+
+/* WHY LYMPHAWARE? */
+
+.home-page #about.home-understanding-section {
+  padding: 72px 0 !important;
+  background: #ffffff;
+  border-top: 1px solid #e7edf1 !important;
+  border-bottom: 1px solid #e7edf1 !important;
+}
+
+
+/* HOW LYMPHAWARE WORKS */
+
+.home-page #how-it-works {
+  padding-top: 72px !important;
+  padding-bottom: 0 !important;
+  background: #f7fafc;
+}
+
+
+/* WHEN COULD LYMPHAWARE HELP?
+   This block sits inside the How section in the HTML, so the wide background
+   is extended to the edges of the viewport while the content remains aligned. */
+
+.home-page .help-scenarios {
+  position: relative;
+  margin-top: 64px !important;
+  padding: 64px 0 72px !important;
+  border-top: 0 !important;
+  background: #ffffff;
+  box-shadow: 0 0 0 100vmax #ffffff;
+  clip-path: inset(0 -100vmax);
+}
+
+.home-page .help-scenarios::before,
+.home-page .help-scenarios::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  border-top: 1px solid #e7edf1;
+  pointer-events: none;
+}
+
+.home-page .help-scenarios::before {
+  top: 0;
+}
+
+.home-page .help-scenarios::after {
+  bottom: 0;
+}
+
+
+/* SEE LYMPHAWARE IN ACTION */
+
+.home-page .home-demo-section {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 72px 0 !important;
+  border-top: 0 !important;
+  border-bottom: 1px solid #e7edf1 !important;
+  background:
+    radial-gradient(
+      circle at 85% 20%,
+      rgba(40, 120, 184, 0.08),
+      transparent 34%
+    ),
+    linear-gradient(
+      135deg,
+      #f9fcfa 0%,
+      #f7fbfd 100%
+    ) !important;
+}
+
+
+/* PATIENT CONTROLLED */
+
+.home-page .home-control-section {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 72px 0 !important;
+  border-top: 1px solid #e7edf1 !important;
+  border-bottom: 1px solid #e7edf1 !important;
+  background:
+    linear-gradient(
+      135deg,
+      #f8faf9 0%,
+      #f6fafc 100%
+    ) !important;
+}
+
+
+/* FOR PROFESSIONALS */
+
+.home-page .home-professionals-section {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 72px 0 !important;
+  border-top: 0 !important;
+  border-bottom: 1px solid #e7edf1 !important;
+  background: #ffffff !important;
+}
+
+
+/* PATIENT LED + PRIVACY */
+
+.home-page .home-story-section {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 72px 0 !important;
+  border-top: 0 !important;
+  border-bottom: 1px solid #e7edf1 !important;
+  background: #f7fafc;
+}
+
+
+/* MOBILE / SMALL SCREENS */
 
 @media (max-width: 680px) {
-  .home-page .home-understanding-section,
+
+  .home-page .home-understanding-grid,
+  .home-page .home-demo-grid,
+  .home-page .home-control-grid,
+  .home-page .home-professionals-grid,
+  .home-page .home-story-grid {
+    width: min(100% - 28px, 1180px);
+  }
+
+  .home-page #about.home-understanding-section,
   .home-page .home-demo-section,
   .home-page .home-control-section,
   .home-page .home-professionals-section,
   .home-page .home-story-section {
-    width: min(100% - 28px, 1180px);
+    padding: 52px 0 !important;
+  }
+
+  .home-page #how-it-works {
+    padding-top: 52px !important;
+  }
+
+  .home-page .help-scenarios {
+    margin-top: 48px !important;
+    padding: 52px 0 !important;
   }
 }
