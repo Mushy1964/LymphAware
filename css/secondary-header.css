@@ -3,8 +3,9 @@
 /* =========================================================
    LYMPHAWARE SECONDARY PAGE HEADER
 
-   Used on public pages other than the homepage.
-   - same approved with-tagline logo as the homepage
+   Used on public/account pages that need a simple return action.
+   - approved with-tagline logo
+   - same logo dimensions as the main account header system
    - logo links back to the homepage
    - one Back to Website action
    - no secondary navigation / hamburger menu
@@ -16,11 +17,16 @@
 }
 
 .secondary-header .header-inner {
-  min-height: 92px;
+  width: min(1180px, calc(100% - 40px));
+  max-width: 1180px;
+  min-height: 84px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .secondary-header .header-logo {
-  width: 390px;
+  display: block;
+  width: 300px;
   max-width: 100%;
   height: auto;
 }
@@ -29,13 +35,18 @@
   display: flex !important;
   align-items: center;
   margin-left: auto;
+  flex: 0 0 auto;
 }
 
 .secondary-header .back-to-website-button {
+  display: inline-flex !important;
   min-width: 150px;
   min-height: 46px;
   padding: 0 22px;
   border-radius: 10px;
+  font-size: 1rem !important;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .secondary-header .main-nav,
@@ -45,12 +56,13 @@
 
 @media (max-width: 680px) {
   .secondary-header .header-inner {
+    width: min(100% - 28px, 1180px);
     min-height: 74px;
     gap: 12px;
   }
 
   .secondary-header .header-logo {
-    width: 300px;
+    width: 220px;
     max-width: calc(100vw - 170px);
     height: auto;
   }
@@ -59,11 +71,13 @@
     display: flex !important;
   }
 
-  .secondary-header .back-to-website-button {
+  .secondary-header .back-to-website-button,
+  .secondary-header .header-actions .button-secondary {
+    display: inline-flex !important;
     min-width: 126px;
-    min-height: 42px;
+    min-height: 44px;
     padding: 0 14px;
-    font-size: 0.9rem;
+    font-size: 1rem !important;
   }
 }
 
@@ -72,9 +86,10 @@
     max-width: calc(100vw - 154px);
   }
 
-  .secondary-header .back-to-website-button {
+  .secondary-header .back-to-website-button,
+  .secondary-header .header-actions .button-secondary {
     min-width: 118px;
     padding: 0 10px;
-    font-size: 0.84rem;
+    font-size: 0.9rem !important;
   }
 }
