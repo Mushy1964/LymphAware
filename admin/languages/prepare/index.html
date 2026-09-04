@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prepare Language Profile | LymphAware Administration</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .admin-page{min-height:calc(100vh - 92px);padding:46px 16px;background:#f7f9fa}
+    .admin-shell{width:100%;max-width:1180px;margin:0 auto}
+    .admin-heading{margin-bottom:24px}
+    .admin-heading h1{margin:6px 0 10px;font-size:clamp(2rem,4vw,2.6rem);line-height:1.12}
+    .admin-heading p{margin:0;max-width:840px;color:var(--muted);line-height:1.55}
+    .admin-nav{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 28px}
+    .summary-card{padding:18px 20px;border:1px solid var(--border);border-radius:16px;background:#fff;margin-bottom:22px}
+    .summary-row{display:flex;gap:20px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+    .summary-card h2{margin:0 0 6px;font-size:1.45rem}
+    .summary-card p{margin:0;color:var(--muted);line-height:1.5}
+    .status-pill{display:inline-block;padding:7px 11px;border-radius:999px;background:var(--blue-light);color:var(--blue-dark);font-size:.9rem;font-weight:800}
+    .fixed-pack{margin-top:14px;padding:12px 14px;border-radius:11px;background:var(--green-light);color:var(--green-dark);font-weight:700}
+    .preparation-note{margin:0 0 22px;padding:15px 17px;border:1px solid #d9e5dc;border-radius:13px;background:#f0f8f2;color:#385446;line-height:1.55}
+    .translation-form{display:grid;gap:18px}
+    .translation-section{padding:20px;border:1px solid var(--border);border-radius:16px;background:#fff}
+    .translation-section h2{margin:0 0 14px;font-size:1.3rem}
+    .translation-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .translation-column{min-width:0}
+    .translation-column h3{margin:0 0 8px;font-size:1rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+    .source-box{min-height:120px;padding:13px 14px;border:1px solid #dbe3e7;border-radius:11px;background:#f7f9fa;color:#354657;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+    .source-box.empty{color:#778693;font-style:italic}
+    .translation-column textarea,.translation-column input{width:100%;padding:12px 13px;border:1px solid #bfcbd2;border-radius:10px;background:#fff;color:var(--text);font:inherit;line-height:1.5}
+    .translation-column textarea{min-height:120px;resize:vertical}
+    .translation-column label{display:block;margin-bottom:7px;font-weight:800}
+    .detail-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .assistance-list{display:grid;gap:10px}
+    .assistance-item{padding:12px 14px;border:1px solid #dbe3e7;border-radius:11px;background:#f7f9fa}
+    .assistance-item strong{display:block;margin-bottom:4px}
+    .assistance-item span{display:block;color:var(--muted);line-height:1.45}
+    .save-actions{display:flex;justify-content:flex-end;gap:12px;align-items:center;margin-top:4px}
+    .save-message{margin-right:auto;color:var(--muted);font-weight:700}
+    #loading{padding:60px 20px;text-align:center;color:var(--muted)}
+    #prep-content[hidden]{display:none!important}
+    @media(max-width:760px){.admin-page{padding:34px 14px}.translation-grid,.detail-pair{grid-template-columns:1fr}.admin-nav .button,.save-actions .button{width:100%}.save-actions{flex-direction:column;align-items:stretch}.save-message{margin-right:0}}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="header-brand" aria-label="LymphAware home">
+        <img class="header-logo" src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg" alt="LymphAware – Helping People Living with Lymphoedema Be Understood.">
+      </a>
+      <div class="header-actions"><button type="button" id="admin-sign-out" class="button button-secondary">Sign Out</button></div>
+    </div>
+  </header>
+
+  <main class="admin-page">
+    <section class="admin-shell">
+      <div class="admin-heading">
+        <p class="eyebrow">Private Administration Area</p>
+        <h1>Prepare French Profile</h1>
+        <p>Review the patient's existing English information alongside the French version. Saving a draft moves the language profile to <strong>In review</strong>; it does not make the QR profile public.</p>
+      </div>
+
+      <div class="admin-nav">
+        <a href="/admin/orders/" class="button button-secondary">Orders</a>
+        <a href="/admin/card-production/" class="button button-secondary">Card Production</a>
+        <a href="/admin/languages/" class="button button-primary">Languages</a>
+      </div>
+
+      <div id="loading">Loading patient and language profile...</div>
+
+      <div id="prep-content" hidden>
+        <div class="summary-card">
+          <div class="summary-row">
+            <div>
+              <h2 id="patient-name">LymphAware Patient</h2>
+              <p><span id="patient-id"></span> · <span id="language-name"></span></p>
+            </div>
+            <span id="setup-status" class="status-pill">Setup required</span>
+          </div>
+          <div class="fixed-pack">French fixed wording: Approved</div>
+        </div>
+
+        <p class="preparation-note">Standard French headings, card wording and selected assistance statements are already controlled by the approved French language pack. Only the patient's own profile information is edited here.</p>
+
+        <form id="translation-form" class="translation-form">
+          <section class="translation-section">
+            <h2>About My Lymphoedema</h2>
+            <div class="translation-grid">
+              <div class="translation-column">
+                <h3>English source</h3>
+                <div class="detail-pair">
+                  <div><label>Type</label><div id="source-type" class="source-box"></div></div>
+                  <div><label>Location</label><div id="source-location" class="source-box"></div></div>
+                </div>
+              </div>
+              <div class="translation-column">
+                <h3>French translation</h3>
+                <div class="detail-pair">
+                  <div><label for="fr-type">Type</label><textarea id="fr-type"></textarea></div>
+                  <div><label for="fr-location">Localisation</label><textarea id="fr-location"></textarea></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="translation-section">
+            <h2>Compression</h2>
+            <div class="translation-grid">
+              <div class="translation-column"><h3>English source</h3><div id="source-compression" class="source-box"></div></div>
+              <div class="translation-column"><h3>French translation</h3><label for="fr-compression">Informations de compression</label><textarea id="fr-compression"></textarea></div>
+            </div>
+          </section>
+
+          <section class="translation-section">
+            <h2>Treatment Considerations</h2>
+            <div class="translation-grid">
+              <div class="translation-column"><h3>English source</h3><div id="source-treatment" class="source-box"></div></div>
+              <div class="translation-column"><h3>French translation</h3><label for="fr-treatment">Informations sur le traitement</label><textarea id="fr-treatment"></textarea></div>
+            </div>
+          </section>
+
+          <section class="translation-section">
+            <h2>Assistance Information</h2>
+            <div class="translation-grid">
+              <div class="translation-column"><h3>English source notes</h3><div id="source-assistance-notes" class="source-box"></div></div>
+              <div class="translation-column"><h3>French translation</h3><label for="fr-assistance-notes">Notes d’assistance</label><textarea id="fr-assistance-notes"></textarea></div>
+            </div>
+            <div style="margin-top:16px">
+              <h3 style="margin:0 0 10px;font-size:1rem">Selected standard assistance statements</h3>
+              <div id="assistance-list" class="assistance-list"></div>
+            </div>
+          </section>
+
+          <section class="translation-section">
+            <h2>Emergency Contact</h2>
+            <div class="translation-grid">
+              <div class="translation-column">
+                <h3>English source</h3>
+                <div id="source-emergency" class="source-box"></div>
+              </div>
+              <div class="translation-column">
+                <h3>French translation</h3>
+                <p style="margin:0 0 12px;color:var(--muted)">The contact name and telephone number remain unchanged. Translate only the relationship if needed.</p>
+                <label for="fr-relationship">Lien avec la personne</label>
+                <input id="fr-relationship" type="text" autocomplete="off">
+              </div>
+            </div>
+          </section>
+
+          <section class="translation-section">
+            <h2>Additional Information</h2>
+            <div class="translation-grid">
+              <div class="translation-column"><h3>English source</h3><div id="source-additional" class="source-box"></div></div>
+              <div class="translation-column"><h3>French translation</h3><label for="fr-additional">Informations complémentaires</label><textarea id="fr-additional"></textarea></div>
+            </div>
+          </section>
+
+          <div class="save-actions">
+            <span id="save-message" class="save-message" role="status" aria-live="polite"></span>
+            <a href="/admin/languages/" class="button button-secondary">Cancel</a>
+            <button type="submit" id="save-button" class="button button-primary">Save French Draft for Review</button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const SUPABASE_URL='https://thbhsktcenhrnxzkbjus.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY='sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+    const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+
+    const FR_ASSISTANCE={
+      'difficulty-standing':'Je peux avoir des difficultés à rester debout pendant de longues périodes.',
+      'need-seat':'Je peux avoir besoin d’un endroit où m’asseoir.',
+      'extra-time':'Je peux avoir besoin de plus de temps.',
+      'mobility-help':'Je peux avoir besoin d’aide pour me déplacer.',
+      'clear-communication':'Je peux avoir besoin de plus d’espace en raison d’un gonflement ou de vêtements de compression.',
+      'patient-understanding':'Merci de faire preuve de patience et de compréhension.'
+    };
+
+    const params=new URLSearchParams(location.search);
+    const languageProfileId=params.get('id');
+    const loading=document.getElementById('loading');
+    const prepContent=document.getElementById('prep-content');
+    const form=document.getElementById('translation-form');
+    const saveButton=document.getElementById('save-button');
+    const saveMessage=document.getElementById('save-message');
+
+    function statusLabel(status){if(status==='APPROVED')return'Approved';if(status==='IN_REVIEW')return'In review';return'Setup required'}
+    function sourceValue(value){return String(value||'').trim()||'No information added.'}
+    function setSource(id,value){const el=document.getElementById(id);const text=sourceValue(value);el.textContent=text;el.classList.toggle('empty',text==='No information added.')}
+    function escapeHtml(value){return String(value??'').replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':'&quot;'}[c]))}
+
+    async function getToken(){const {data:{session}}=await supabaseClient.auth.getSession();if(!session?.access_token){location.href='/sign-in/';return null}return session.access_token}
+
+    async function load(){
+      if(!languageProfileId){loading.textContent='No language profile was selected.';return}
+      const token=await getToken();if(!token)return;
+      try{
+        const response=await fetch(`/.netlify/functions/admin-language-profile?id=${encodeURIComponent(languageProfileId)}`,{headers:{Authorization:`Bearer ${token}`}});
+        const result=await response.json();
+        if(!response.ok){loading.textContent=result?.error||'Language profile could not be loaded.';return}
+        const lp=result.language_profile||{};
+        const p=result.source_profile||{};
+        if(lp.language_code!=='FR'){loading.textContent='The preparation screen is currently available for French profiles only.';return}
+
+        document.getElementById('patient-name').textContent=p.display_name||'LymphAware Patient';
+        document.getElementById('patient-id').textContent=p.lymphaware_id||'No LymphAware ID';
+        document.getElementById('language-name').textContent=lp.language_name||'French';
+        document.getElementById('setup-status').textContent=statusLabel(lp.setup_status);
+
+        setSource('source-type',p.lymphoedema_type);
+        setSource('source-location',p.lymphoedema_location);
+        setSource('source-compression',p.compression_information);
+        setSource('source-treatment',p.treatment_considerations);
+        setSource('source-assistance-notes',p.assistance_needs);
+        setSource('source-additional',p.additional_statement);
+        document.getElementById('source-emergency').textContent=[
+          `Name: ${p.emergency_contact_name||'Not provided'}`,
+          `Relationship: ${p.emergency_contact_relationship||'Not provided'}`,
+          `Telephone: ${p.emergency_contact_phone||'Not provided'}`
+        ].join('\n');
+
+        const t=lp.translated_content||{};
+        document.getElementById('fr-type').value=t.lymphoedema_type||'';
+        document.getElementById('fr-location').value=t.lymphoedema_location||'';
+        document.getElementById('fr-compression').value=t.compression_information||'';
+        document.getElementById('fr-treatment').value=t.treatment_considerations||'';
+        document.getElementById('fr-assistance-notes').value=t.assistance_needs||'';
+        document.getElementById('fr-relationship').value=t.emergency_contact_relationship||'';
+        document.getElementById('fr-additional').value=t.additional_statement||'';
+
+        const assistanceList=document.getElementById('assistance-list');
+        assistanceList.innerHTML='';
+        const assistance=Array.isArray(result.assistance)?result.assistance:[];
+        if(!assistance.length){assistanceList.innerHTML='<div class="source-box empty">No standard assistance statements selected.</div>'}
+        else assistance.forEach(item=>{
+          const div=document.createElement('div');div.className='assistance-item';
+          div.innerHTML=`<strong>${escapeHtml(item.statement)}</strong><span>${escapeHtml(FR_ASSISTANCE[item.slug]||'French wording not yet available.')}</span>`;
+          assistanceList.appendChild(div);
+        });
+
+        loading.style.display='none';prepContent.hidden=false;
+      }catch(error){console.error(error);loading.textContent='Language profile could not be loaded.'}
+    }
+
+    form.addEventListener('submit',async(event)=>{
+      event.preventDefault();
+      const token=await getToken();if(!token)return;
+      saveButton.disabled=true;saveMessage.textContent='Saving...';
+      const translated_content={
+        lymphoedema_type:document.getElementById('fr-type').value,
+        lymphoedema_location:document.getElementById('fr-location').value,
+        compression_information:document.getElementById('fr-compression').value,
+        treatment_considerations:document.getElementById('fr-treatment').value,
+        assistance_needs:document.getElementById('fr-assistance-notes').value,
+        emergency_contact_relationship:document.getElementById('fr-relationship').value,
+        additional_statement:document.getElementById('fr-additional').value
+      };
+      try{
+        const response=await fetch('/.netlify/functions/admin-language-profile',{method:'POST',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({id:languageProfileId,translated_content})});
+        const result=await response.json();
+        if(!response.ok)throw new Error(result?.error||'Unable to save draft.');
+        document.getElementById('setup-status').textContent='In review';
+        saveMessage.textContent='French draft saved. The profile remains private and is now marked In review.';
+      }catch(error){console.error(error);saveMessage.textContent=error.message||'Unable to save draft.'}
+      finally{saveButton.disabled=false}
+    });
+
+    document.getElementById('admin-sign-out').addEventListener('click',async()=>{await supabaseClient.auth.signOut();location.href='/sign-in/'});
+    load();
+  </script>
+</body>
+</html>
