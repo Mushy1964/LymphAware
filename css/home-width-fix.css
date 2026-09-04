@@ -65,6 +65,25 @@
 }
 
 
+/* =========================================================
+   CONSISTENT CARD DEPTH
+   Use one restrained shadow across content cards. The physical ID-card and
+   phone imagery keep their stronger photographic shadows in home.css.
+   ========================================================= */
+
+.home-page .home-understanding-panel,
+.home-page .how-step,
+.home-page .help-scenario-card,
+.home-page .home-membership-price-card,
+.home-page .home-language-card,
+.home-page .home-control-item,
+.home-page .home-professional-card,
+.home-page .home-story-panel,
+.home-page .home-privacy-panel {
+  box-shadow: 0 8px 24px rgba(31, 47, 66, 0.06) !important;
+}
+
+
 /* FULL-WIDTH SECTION BANDS */
 
 .home-page .home-understanding-section,
