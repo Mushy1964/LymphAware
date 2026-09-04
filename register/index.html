@@ -90,6 +90,45 @@
     .portal-button { width: 100%; margin-top: 4px; }
     #register-message { margin: 16px 0 0; line-height: 1.5; }
 
+    .register-success {
+      padding: 28px 24px;
+      border: 1px solid #b9d8c0;
+      border-radius: 18px;
+      background: #f1f9f3;
+      box-shadow: var(--content-shadow);
+      text-align: center;
+    }
+
+    .register-success-icon {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 16px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 1px solid #b9d8c0;
+      color: var(--green-dark);
+      font-size: 1.7rem;
+      font-weight: 800;
+    }
+
+    .register-success h2 {
+      margin: 0 0 12px;
+      font-size: 1.65rem;
+      color: var(--text);
+    }
+
+    .register-success p {
+      margin: 0 0 14px;
+      color: #465661;
+      line-height: 1.55;
+    }
+
+    .register-success .button {
+      margin-top: 8px;
+    }
+
     .portal-links {
       margin-top: 24px;
       padding-top: 20px;
@@ -115,6 +154,7 @@
       .portal-page { padding: 40px 14px; }
       .portal-card { padding: 26px 20px; }
       .portal-card h1 { font-size: 2rem; }
+      .register-success { padding: 24px 18px; }
     }
   </style>
 </head>
@@ -132,13 +172,13 @@
 
   <main class="portal-page">
     <section class="portal-card" aria-labelledby="register-heading">
-      <p class="eyebrow">Join LymphAware</p>
+      <p class="eyebrow" id="register-eyebrow">Join LymphAware</p>
       <h1 id="register-heading">Create your free account</h1>
-      <p class="portal-intro">
+      <p class="portal-intro" id="register-intro">
         Start by creating your LymphAware account. There is no charge to register.
       </p>
 
-      <div class="account-note">
+      <div class="account-note" id="membership-note">
         <strong>Membership comes next.</strong><br>
         After confirming your email and signing in, you’ll be asked to activate your five-year LymphAware membership for £29.99 before your patient profile and portal features are unlocked.
       </div>
@@ -174,12 +214,24 @@
         <p id="register-message" role="status" aria-live="polite"></p>
       </form>
 
-      <div class="portal-links">
+      <div id="register-success" class="register-success" role="status" aria-live="polite" hidden>
+        <div class="register-success-icon" aria-hidden="true">✓</div>
+        <h2>Account created successfully</h2>
+        <p>
+          We’ve sent you a confirmation email. Open that email and select the confirmation link to verify your LymphAware account.
+        </p>
+        <p>
+          Once confirmed, you can sign in and complete your £29.99 five-year membership to unlock your Patient Portal and profile.
+        </p>
+        <a href="/sign-in/" class="button button-secondary">Go to Sign In</a>
+      </div>
+
+      <div class="portal-links" id="existing-account-links">
         <span>Already have a LymphAware account?</span>
         <a href="/sign-in/">Sign in</a>
       </div>
 
-      <div class="portal-status">
+      <div class="portal-status" id="next-steps-box">
         <strong>What happens next?</strong>
         Confirm your email, sign in, then complete the £29.99 five-year membership step. Your patient profile and portal features become available once membership is active.
       </div>
@@ -194,6 +246,13 @@
     const registerForm = document.getElementById('register-form');
     const registerMessage = document.getElementById('register-message');
     const submitButton = registerForm.querySelector('button[type="submit"]');
+    const registerSuccess = document.getElementById('register-success');
+    const membershipNote = document.getElementById('membership-note');
+    const existingAccountLinks = document.getElementById('existing-account-links');
+    const nextStepsBox = document.getElementById('next-steps-box');
+    const registerEyebrow = document.getElementById('register-eyebrow');
+    const registerHeading = document.getElementById('register-heading');
+    const registerIntro = document.getElementById('register-intro');
     let registrationMode = 'CLOSED';
 
     async function loadRegistrationMode() {
@@ -267,8 +326,14 @@
       }
 
       registerForm.reset();
-      registerMessage.textContent = 'Your free LymphAware account has been created. Please check your email and follow the confirmation link. Once confirmed, sign in to complete your five-year membership.';
-      submitButton.disabled = false;
+      registerForm.hidden = true;
+      membershipNote.hidden = true;
+      existingAccountLinks.hidden = true;
+      nextStepsBox.hidden = true;
+      registerSuccess.hidden = false;
+      registerEyebrow.textContent = 'Account created';
+      registerHeading.textContent = 'Check your email';
+      registerIntro.textContent = 'Your free LymphAware account has been created successfully.';
     });
   </script>
 </body>
