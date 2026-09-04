@@ -151,8 +151,8 @@ export default async (request) => {
         }
 
         const sourceProfile = await getSourceProfile(languageProfile.source_profile_id);
-        if (!sourceProfile?.display_name || !sourceProfile?.lymphaware_id) {
-          return json({ error: 'The source patient profile is incomplete.' }, 400);
+        if (!sourceProfile?.display_name || !sourceProfile?.lymphaware_id || !sourceProfile?.photo_path) {
+          return json({ error: 'The source patient profile must include a display name, LymphAware ID and photograph before a translated profile can be activated.' }, 400);
         }
 
         const now = new Date().toISOString();
