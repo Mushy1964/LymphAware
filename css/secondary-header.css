@@ -5,7 +5,7 @@
 
    Used on public/account pages that need a simple return action.
    - approved with-tagline logo
-   - same logo dimensions as the main account header system
+   - same logo dimensions as the original homepage header
    - logo links back to the homepage
    - one Back to Website action
    - no secondary navigation / hamburger menu
@@ -19,14 +19,14 @@
 .secondary-header .header-inner {
   width: min(1180px, calc(100% - 40px));
   max-width: 1180px;
-  min-height: 84px;
+  min-height: 92px;
   margin-left: auto;
   margin-right: auto;
 }
 
 .secondary-header .header-logo {
   display: block;
-  width: 300px;
+  width: 390px;
   max-width: 100%;
   height: auto;
 }
@@ -62,8 +62,8 @@
   }
 
   .secondary-header .header-logo {
-    width: 220px;
-    max-width: calc(100vw - 170px);
+    width: 300px;
+    max-width: calc(100vw - 150px);
     height: auto;
   }
 
@@ -83,7 +83,7 @@
 
 @media (max-width: 420px) {
   .secondary-header .header-logo {
-    max-width: calc(100vw - 154px);
+    max-width: calc(100vw - 142px);
   }
 
   .secondary-header .back-to-website-button,
