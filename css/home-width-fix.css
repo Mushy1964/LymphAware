@@ -293,10 +293,9 @@
   display: none !important;
 }
 
-/* Keep the approved LymphAware header logo identical in size and position
-   when moving between the homepage, Portal and supporting pages. */
+/* The original homepage header size is the master LymphAware header standard. */
 .home-page .home-header .header-logo {
-  width: 300px !important;
+  width: 390px !important;
   max-width: 100% !important;
   height: auto !important;
 }
@@ -304,17 +303,19 @@
 .home-page .home-header .header-inner {
   width: min(1180px, calc(100% - 40px)) !important;
   max-width: 1180px !important;
+  min-height: 92px !important;
   margin-left: auto !important;
   margin-right: auto !important;
 }
 
 @media (max-width: 680px) {
   .home-page .home-header .header-logo {
-    width: 220px !important;
-    max-width: calc(100vw - 170px) !important;
+    width: 300px !important;
+    max-width: calc(100vw - 150px) !important;
   }
 
   .home-page .home-header .header-inner {
     width: min(100% - 28px, 1180px) !important;
+    min-height: 74px !important;
   }
 }
