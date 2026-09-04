@@ -303,6 +303,17 @@
       );
     }
 
+    function activeMembershipMessage(membership) {
+      if (!membership?.membership_end) return 'Your LymphAware membership is active.';
+      const endDate = new Date(membership.membership_end);
+      const formattedEnd = endDate.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      return `Your LymphAware membership is active until ${formattedEnd}.`;
+    }
+
     async function renderMembership(membership) {
       membershipPaymentActions.hidden = true;
       membershipPendingContent.hidden = true;
@@ -318,21 +329,17 @@
 
       if (hasPortalEntitlement(membership)) {
         memberContent.style.display = 'contents';
-        if (membership.membership_status === 'PILOT') {
-          membershipStatus.textContent = 'Pilot Member';
-          membershipMessage.textContent = 'Your existing pilot access remains active.';
-        } else if (membership.membership_status === 'SPONSORED') {
+        if (membership.membership_status === 'SPONSORED') {
           membershipStatus.textContent = 'Sponsored Member';
-          membershipMessage.textContent = 'Your LymphAware membership is currently sponsored.';
+          membershipMessage.textContent = membership.membership_end
+            ? activeMembershipMessage(membership)
+            : 'Your LymphAware membership is currently sponsored.';
         } else {
           membershipStatus.textContent = 'Active Member';
-          let message = 'Your LymphAware membership is active.';
-          if (membership.membership_end) {
-            const endDate = new Date(membership.membership_end);
-            message += ` Your current membership runs until ${endDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}.`;
+          membershipMessage.textContent = activeMembershipMessage(membership);
+          if (membership.membership_status === 'ACTIVE') {
+            accessoriesPanel.hidden = false;
           }
-          membershipMessage.textContent = message;
-          accessoriesPanel.hidden = false;
         }
         return true;
       }
