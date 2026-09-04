@@ -3,12 +3,11 @@
 /* =========================================================
    LYMPHAWARE SECONDARY PAGE HEADER
 
-   Used on public/account pages that need a simple return action.
+   The original homepage header is the visual reference:
    - approved with-tagline logo
-   - same logo dimensions as the original homepage header
-   - logo links back to the homepage
-   - one Back to Website action
-   - no secondary navigation / hamburger menu
+   - 390px logo on desktop
+   - 300px logo target on mobile, constrained only when needed
+   - consistent 1180px content width
    ========================================================= */
 
 .secondary-header {
@@ -54,6 +53,39 @@
   display: none !important;
 }
 
+/* =========================================================
+   SHARED SUPPORTING-PAGE TYPE SCALE
+   Match the homepage's hierarchy rather than allowing older
+   supporting pages to grow to oversized 4rem headings.
+   ========================================================= */
+
+body:has(.secondary-header) .page-hero h1 {
+  font-size: clamp(2.7rem, 3.3vw, 3.75rem) !important;
+  line-height: 1.1 !important;
+  letter-spacing: -1.5px !important;
+}
+
+body:has(.secondary-header) .page-hero p,
+body:has(.secondary-header) .portal-intro,
+body:has(.secondary-header) .portal-welcome p {
+  font-size: 1.08rem !important;
+  line-height: 1.6 !important;
+}
+
+body:has(.secondary-header) .section-heading h2,
+body:has(.secondary-header) .copy h2,
+body:has(.secondary-header) .split-copy h2,
+body:has(.secondary-header) .mission-box h2,
+body:has(.secondary-header) .cta-box h2 {
+  font-size: clamp(2rem, 3vw, 2.8rem) !important;
+  line-height: 1.15 !important;
+}
+
+body:has(.secondary-header) .button {
+  font-size: 1rem !important;
+  line-height: 1.2 !important;
+}
+
 @media (max-width: 680px) {
   .secondary-header .header-inner {
     width: min(100% - 28px, 1180px);
@@ -71,25 +103,61 @@
     display: flex !important;
   }
 
-  .secondary-header .back-to-website-button,
-  .secondary-header .header-actions .button-secondary {
-    display: inline-flex !important;
-    min-width: 126px;
-    min-height: 44px;
-    padding: 0 14px;
+  /* A full 'Back to Website' label cannot sit beside the approved
+     mobile logo on narrow phones. Keep the action, but use a compact
+     Home label so the header remains fully within the viewport. */
+  .secondary-header .back-to-website-button {
+    min-width: 82px !important;
+    min-height: 44px !important;
+    padding: 0 12px !important;
+    font-size: 0 !important;
+  }
+
+  .secondary-header .back-to-website-button::after {
+    content: 'Home';
+    font-size: 1rem;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  .secondary-header .header-actions .button-secondary:not(.back-to-website-button) {
+    min-height: 44px !important;
+    padding: 0 12px !important;
     font-size: 1rem !important;
+  }
+
+  body:has(.secondary-header) .page-hero {
+    padding: 52px 0 54px !important;
+  }
+
+  body:has(.secondary-header) .page-hero h1 {
+    font-size: clamp(2.35rem, 10vw, 3rem) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -1.2px !important;
+  }
+
+  body:has(.secondary-header) .page-hero p,
+  body:has(.secondary-header) .portal-intro,
+  body:has(.secondary-header) .portal-welcome p {
+    font-size: 1.03rem !important;
+  }
+
+  body:has(.secondary-header) .section-heading h2,
+  body:has(.secondary-header) .copy h2,
+  body:has(.secondary-header) .split-copy h2,
+  body:has(.secondary-header) .mission-box h2,
+  body:has(.secondary-header) .cta-box h2 {
+    font-size: 2rem !important;
   }
 }
 
 @media (max-width: 420px) {
   .secondary-header .header-logo {
-    max-width: calc(100vw - 142px);
+    max-width: calc(100vw - 132px);
   }
 
-  .secondary-header .back-to-website-button,
-  .secondary-header .header-actions .button-secondary {
-    min-width: 118px;
-    padding: 0 10px;
-    font-size: 0.9rem !important;
+  .secondary-header .back-to-website-button {
+    min-width: 76px !important;
+    padding: 0 9px !important;
   }
 }
