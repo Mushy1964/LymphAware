@@ -171,6 +171,68 @@
   justify-content: center;
 }
 
+.home-page .home-hero-reassurance {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: 690px;
+  margin-top: 28px;
+}
+
+.home-page .home-hero-reassurance-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  min-height: 92px;
+  padding: 14px 13px;
+  border: 1px solid #dbe6e0;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 8px 20px rgba(31, 47, 66, 0.045);
+}
+
+.home-page .home-hero-reassurance-icon {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: #eef7f0;
+}
+
+.home-page .home-hero-reassurance-icon-blue {
+  background: #eef6fb;
+}
+
+.home-page .home-hero-reassurance-icon img {
+  display: block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.home-page .home-hero-reassurance-copy {
+  display: block;
+  min-width: 0;
+}
+
+.home-page .home-hero-reassurance-copy strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #17283d;
+  font-size: 0.93rem;
+  line-height: 1.28;
+}
+
+.home-page .home-hero-reassurance-copy small {
+  display: block;
+  color: #5b6873;
+  font-size: 0.81rem;
+  line-height: 1.4;
+}
+
 /* Hide the How It Works hero button on larger screens */
 
 
@@ -409,6 +471,10 @@
 /* PHONE */
 
 @media (max-width: 680px) {
+
+  .home-page .home-hero-reassurance {
+    display: none;
+  }
 
   .home-page {
     overflow-x: hidden;
