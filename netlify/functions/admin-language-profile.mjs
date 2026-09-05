@@ -82,7 +82,7 @@ async function getLanguageProfile(id) {
 
 async function getSourceProfile(id) {
   const response = await fetch(
-    `${process.env.SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(id)}&select=id,display_name,lymphaware_id,photo_path,lymphoedema_type,lymphoedema_location,compression_information,treatment_considerations,assistance_needs,emergency_contact_name,emergency_contact_relationship,emergency_contact_phone,additional_statement&limit=1`,
+    `${process.env.SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(id)}&select=id,display_name,lymphaware_id,photo_path,qr_profile_active,lymphoedema_type,lymphoedema_location,compression_information,treatment_considerations,assistance_needs,emergency_contact_name,emergency_contact_relationship,emergency_contact_phone,additional_statement&limit=1`,
     { headers: serviceHeaders() }
   );
   if (!response.ok) return null;
@@ -151,8 +151,8 @@ export default async (request) => {
         }
 
         const sourceProfile = await getSourceProfile(languageProfile.source_profile_id);
-        if (!sourceProfile?.display_name || !sourceProfile?.lymphaware_id || !sourceProfile?.photo_path) {
-          return json({ error: 'The source patient profile must include a display name, LymphAware ID and photograph before a translated profile can be activated.' }, 400);
+        if (!sourceProfile?.display_name || !sourceProfile?.lymphaware_id || !sourceProfile?.photo_path || sourceProfile?.qr_profile_active !== true) {
+          return json({ error: 'The main patient profile must include a display name and photograph and must be switched on before a translated profile can be activated.' }, 400);
         }
 
         const now = new Date().toISOString();
