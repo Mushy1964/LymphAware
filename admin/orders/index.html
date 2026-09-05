@@ -38,6 +38,8 @@
     .profile-ready { margin-top: 18px; padding: 14px 16px; border-radius: 12px; border: 1px solid #cbd8df; }
     .profile-ready.ready { background: var(--green-light); color: var(--green-dark); }
     .profile-ready.waiting { background: #fff7e8; color: #775c20; }
+    .order-complete-action { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 14px; padding: 16px; border: 1px solid #b8d7bf; border-radius: 12px; background: var(--green-light); color: var(--green-dark); }
+    .order-complete-action p { margin: 3px 0 0; line-height: 1.45; }
     .notice-state { margin-top: 10px; padding: 11px 13px; border-radius: 10px; font-weight: 700; }
     .notice-state.sent { background: var(--green-light); color: var(--green-dark); }
     .notice-state.pending { background: #fff7e8; color: #775c20; }
@@ -51,6 +53,8 @@
       .admin-heading h1 { font-size: 2rem; }
       .header-logo { width: calc(100% - 32px); max-width: 390px; margin: 0 auto; }
       .admin-nav .button { width: 100%; }
+      .order-complete-action { align-items: stretch; flex-direction: column; }
+      .order-complete-action .button { width: 100%; }
     }
   </style>
 </head>
@@ -70,15 +74,13 @@
     <section class="admin-shell">
       <div class="admin-heading">
         <p class="eyebrow">Private Administration Area</p>
-        <h1>Orders &amp; Fulfilment</h1>
-        <p>Use this page as the main record of paid LymphAware orders. Payment creates the order automatically; card production should only begin when the member has supplied the minimum profile information required for their card.</p>
+        <h1>Order Details</h1>
+        <p>These are the full details for orders still being processed. Completed orders are kept separately in Completed Orders.</p>
       </div>
 
       <div class="admin-nav">
-        <a href="/admin/" class="button button-secondary">Overview</a>
-        <a href="/admin/orders/" class="button button-primary">Orders</a>
-        <a href="/admin/languages/" class="button button-secondary">Languages</a>
-        <a href="/admin/card-production/" class="button button-secondary">Card Production</a>
+        <a href="/admin/" class="button button-primary">Orders to Process</a>
+        <a href="/admin/completed-orders/" class="button button-secondary">Completed Orders</a>
       </div>
 
       <div class="stats">
@@ -121,7 +123,7 @@
     }
 
     function statusLabel(order) {
-      if (order.order_status === 'COMPLETED' || order.order_status === 'PRINTED') return ['Completed', 'status-complete'];
+      if (order.ready_to_complete) return ['Ready to complete', 'status-ready'];
       if (order.profile_ready) return ['Profile ready', 'status-ready'];
       return ['Awaiting profile', 'status-waiting'];
     }
@@ -131,7 +133,7 @@
       const membership = items.find(item => item.item_type === 'MEMBERSHIP');
       const language = items.find(item => item.item_type === 'LANGUAGE_PACKAGE');
       const languageName = language?.language_name || 'additional language';
-      if (order.order_type === 'ADDITIONAL_LANGUAGE') {
+      if (['LANGUAGE_PACKAGE', 'ADDITIONAL_LANGUAGE'].includes(order.order_type)) {
         return { name: `Additional Language Package – ${languageName}`, fulfilment: `1 ${languageName} ID card · 1 lanyard & holder` };
       }
       const description = String(membership?.description || '');
@@ -213,7 +215,36 @@
       }
     }
 
+    async function completeOrder(button) {
+      if (!window.confirm('Confirm that this order has been checked, packed and is complete.')) return;
+      const orderId = button.dataset.orderId;
+      button.disabled = true;
+      button.textContent = 'Completing...';
+
+      try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        if (error || !session?.access_token) {
+          window.location.href = '/sign-in/';
+          return;
+        }
+        const response = await fetch('/.netlify/functions/admin-complete-order', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order_id: orderId })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result?.error || 'The order could not be completed.');
+        window.location.href = '/admin/completed-orders/';
+      } catch (error) {
+        console.error('Unable to complete order:', error);
+        alert(error.message || 'The order could not be completed.');
+        button.disabled = false;
+        button.textContent = 'Move to Completed Orders';
+      }
+    }
+
     function renderOrders(orders) {
+      orders = orders.filter(order => !['COMPLETED', 'CANCELLED', 'REFUNDED'].includes(order.order_status));
       orderList.innerHTML = '';
       totalCount.textContent = orders.length;
       newCount.textContent = orders.filter(order => !order.profile_ready && !['COMPLETED','PRINTED'].includes(order.order_status)).length;
@@ -230,6 +261,7 @@
         const [label, statusClass] = statusLabel(order);
         const card = document.createElement('article');
         card.className = 'order-card';
+        card.id = `order-${order.id}`;
 
         const items = (order.items || []).map(item => {
           const language = item.language_name ? ` – ${escapeHtml(item.language_name)}` : '';
@@ -288,6 +320,7 @@
               ? 'Display name and photograph are present. Use Card Production when the profile reaches the existing READY stage.'
               : 'Do not print yet. The member still needs to provide both a display name and photograph.'}
           </div>
+          ${order.ready_to_complete ? `<div class="order-complete-action"><div><strong>Ready to complete</strong><p>All required cards are marked as printed. Check that the order is packed before moving it to Completed Orders.</p></div><button type="button" class="button button-primary complete-order" data-order-id="${escapeHtml(order.id)}">Move to Completed Orders</button></div>` : ''}
         `;
 
         orderList.appendChild(card);
@@ -295,6 +328,9 @@
 
       orderList.querySelectorAll('.retry-notification').forEach(button => {
         button.addEventListener('click', () => retryNotification(button));
+      });
+      orderList.querySelectorAll('.complete-order').forEach(button => {
+        button.addEventListener('click', () => completeOrder(button));
       });
 
       loading.style.display = 'none';
