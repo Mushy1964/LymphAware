@@ -231,10 +231,6 @@
         <a href="/sign-in/">Sign in</a>
       </div>
 
-      <div class="portal-status" id="next-steps-box">
-        <strong>What happens next?</strong>
-        Confirm your email and sign in. You can then compare the three five-year membership packages and choose the one that best suits you. Your patient profile and portal features become available once your chosen membership is active.
-      </div>
     </section>
   </main>
 
@@ -249,7 +245,6 @@
     const registerSuccess = document.getElementById('register-success');
     const membershipNote = document.getElementById('membership-note');
     const existingAccountLinks = document.getElementById('existing-account-links');
-    const nextStepsBox = document.getElementById('next-steps-box');
     const registerEyebrow = document.getElementById('register-eyebrow');
     const registerHeading = document.getElementById('register-heading');
     const registerIntro = document.getElementById('register-intro');
@@ -329,7 +324,6 @@
       registerForm.hidden = true;
       membershipNote.hidden = true;
       existingAccountLinks.hidden = true;
-      nextStepsBox.hidden = true;
       registerSuccess.hidden = false;
       registerEyebrow.textContent = 'Account created';
       registerHeading.textContent = 'Check your email';
