@@ -1,0 +1,197 @@
+name: One-time homepage hero reassurance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-time-hero-reassurance.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-hero:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add reassurance strip
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          index_path = Path('index.html')
+          index = index_path.read_text(encoding='utf-8')
+          marker = '\n'.join([
+            '        <div class="home-hero-actions">',
+            '          <a href="/register/" class="button button-primary">Create your account</a>',
+            '          <a href="#sample-card" class="button button-secondary">View sample card</a>',
+            '        </div>',
+            '',
+            '        <div class="home-membership-summary">'
+          ])
+          replacement = '\n'.join([
+            '        <div class="home-hero-actions">',
+            '          <a href="/register/" class="button button-primary">Create your account</a>',
+            '          <a href="#sample-card" class="button button-secondary">View sample card</a>',
+            '        </div>',
+            '',
+            '        <div class="home-hero-reassurance" aria-label="LymphAware key benefits">',
+            '          <div class="home-hero-reassurance-item">',
+            '            <span class="home-hero-reassurance-icon" aria-hidden="true">',
+            '              <img src="/assets/icons/ID_Card_Green.svg" alt="">',
+            '            </span>',
+            '            <span class="home-hero-reassurance-copy">',
+            '              <strong>5-year membership from £29.99</strong>',
+            '              <small>One payment for five years.</small>',
+            '            </span>',
+            '          </div>',
+            '',
+            '          <div class="home-hero-reassurance-item">',
+            '            <span class="home-hero-reassurance-icon home-hero-reassurance-icon-blue" aria-hidden="true">',
+            '              <img src="/assets/icons/Choose_Blue.svg" alt="">',
+            '            </span>',
+            '            <span class="home-hero-reassurance-copy">',
+            '              <strong>Patient controlled</strong>',
+            '              <small>You choose what your QR profile shows.</small>',
+            '            </span>',
+            '          </div>',
+            '',
+            '          <div class="home-hero-reassurance-item">',
+            '            <span class="home-hero-reassurance-icon" aria-hidden="true">',
+            '              <img src="/assets/icons/QR_Code_Green.svg" alt="">',
+            '            </span>',
+            '            <span class="home-hero-reassurance-copy">',
+            '              <strong>No app needed</strong>',
+            '              <small>Scan with a standard smartphone.</small>',
+            '            </span>',
+            '          </div>',
+            '        </div>',
+            '',
+            '        <div class="home-membership-summary">'
+          ])
+          if marker not in index:
+            raise SystemExit('Hero HTML marker not found')
+          index_path.write_text(index.replace(marker, replacement, 1), encoding='utf-8')
+
+          css_path = Path('css/home.css')
+          css = css_path.read_text(encoding='utf-8')
+          css_marker = '\n'.join([
+            '.home-page .home-hero-actions .button {',
+            '  min-height: 48px;',
+            '  padding: 0 24px;',
+            '  border-radius: 10px;',
+            '    min-width: 224px;',
+            '  justify-content: center;',
+            '}',
+            '',
+            '/* Hide the How It Works hero button on larger screens */'
+          ])
+          css_insert = '\n'.join([
+            '.home-page .home-hero-actions .button {',
+            '  min-height: 48px;',
+            '  padding: 0 24px;',
+            '  border-radius: 10px;',
+            '    min-width: 224px;',
+            '  justify-content: center;',
+            '}',
+            '',
+            '.home-page .home-hero-reassurance {',
+            '  display: grid;',
+            '  grid-template-columns: repeat(3, minmax(0, 1fr));',
+            '  gap: 12px;',
+            '  width: 100%;',
+            '  max-width: 690px;',
+            '  margin-top: 28px;',
+            '}',
+            '',
+            '.home-page .home-hero-reassurance-item {',
+            '  display: flex;',
+            '  align-items: flex-start;',
+            '  gap: 11px;',
+            '  min-height: 92px;',
+            '  padding: 14px 13px;',
+            '  border: 1px solid #dbe6e0;',
+            '  border-radius: 14px;',
+            '  background: rgba(255, 255, 255, 0.78);',
+            '  box-shadow: 0 8px 20px rgba(31, 47, 66, 0.045);',
+            '}',
+            '',
+            '.home-page .home-hero-reassurance-icon {',
+            '  width: 42px;',
+            '  height: 42px;',
+            '  flex: 0 0 42px;',
+            '  display: grid;',
+            '  place-items: center;',
+            '  border-radius: 11px;',
+            '  background: #eef7f0;',
+            '}',
+            '',
+            '.home-page .home-hero-reassurance-icon-blue {',
+            '  background: #eef6fb;',
+            '}',
+            '',
+            '.home-page .home-hero-reassurance-icon img {',
+            '  display: block;',
+            '  width: 28px;',
+            '  height: 28px;',
+            '  object-fit: contain;',
+            '}',
+            '',
+            '.home-page .home-hero-reassurance-copy {',
+            '  display: block;',
+            '  min-width: 0;',
+            '}',
+            '',
+            '.home-page .home-hero-reassurance-copy strong {',
+            '  display: block;',
+            '  margin-bottom: 4px;',
+            '  color: #17283d;',
+            '  font-size: 0.93rem;',
+            '  line-height: 1.28;',
+            '}',
+            '',
+            '.home-page .home-hero-reassurance-copy small {',
+            '  display: block;',
+            '  color: #5b6873;',
+            '  font-size: 0.81rem;',
+            '  line-height: 1.4;',
+            '}',
+            '',
+            '/* Hide the How It Works hero button on larger screens */'
+          ])
+          if css_marker not in css:
+            raise SystemExit('Hero CSS marker not found')
+          css = css.replace(css_marker, css_insert, 1)
+
+          mobile_marker = '\n'.join([
+            '@media (max-width: 680px) {',
+            '',
+            '  .home-page {',
+            '    overflow-x: hidden;',
+            '  }'
+          ])
+          mobile_insert = '\n'.join([
+            '@media (max-width: 680px) {',
+            '',
+            '  .home-page .home-hero-reassurance {',
+            '    display: none;',
+            '  }',
+            '',
+            '  .home-page {',
+            '    overflow-x: hidden;',
+            '  }'
+          ])
+          if mobile_marker not in css:
+            raise SystemExit('Mobile CSS marker not found')
+          css_path.write_text(css.replace(mobile_marker, mobile_insert, 1), encoding='utf-8')
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/one-time-hero-reassurance.yml
+          git add index.html css/home.css
+          git commit -m "Add desktop and tablet hero reassurance strip"
+          git push
