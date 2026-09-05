@@ -33,12 +33,59 @@
       border-bottom: 1px solid #e1eaf0;
     }
 
-    .home-membership-grid,
+    .home-membership-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
     .home-language-grid {
       display: grid;
       grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
       gap: 54px;
       align-items: center;
+    }
+
+    .home-membership-packages {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .home-membership-packages .home-membership-price-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .home-membership-package-featured {
+      border: 2px solid #7ab58a;
+      box-shadow: 0 16px 36px rgba(31, 47, 66, 0.11);
+    }
+
+    .home-membership-package-badge {
+      align-self: flex-start;
+      margin: 0 0 10px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #eef7f0;
+      color: #16853f;
+      font-size: .82rem;
+      font-weight: 800;
+    }
+
+    .home-membership-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      text-align: center;
+    }
+
+    .home-membership-actions .button {
+      min-width: 230px;
+      justify-content: center;
     }
 
     .home-membership-eyebrow,
@@ -190,7 +237,10 @@
     }
 
     @media (max-width: 900px) {
-      .home-membership-grid,
+      .home-membership-packages {
+        grid-template-columns: 1fr;
+      }
+
       .home-language-grid {
         grid-template-columns: 1fr;
         gap: 32px;
@@ -603,35 +653,61 @@
 
       <div class="home-membership-copy">
         <p class="home-membership-eyebrow">LymphAware membership</p>
-        <h2 id="membership-title">LymphAware membership, made simple.</h2>
+        <h2 id="membership-title">Choose the LymphAware package that suits you.</h2>
         <p class="home-membership-lead">
-          One straightforward membership gives you your LymphAware card,
-          QR-linked profile and access to your secure Patient Portal for five years.
-        </p>
-        <p>
-          You can keep your profile up to date during your membership period,
-          so the information available when your card is scanned can change with you.
+          Each option gives you five years of LymphAware membership, access to your secure Patient Portal
+          and a patient-controlled QR profile. Choose the package that best matches how you expect to use LymphAware.
         </p>
       </div>
 
-      <div class="home-membership-price-card">
-        <p class="home-membership-price-label">5-Year Membership</p>
-        <p class="home-membership-price">£29.99</p>
-        <p class="home-membership-term">One payment for five years</p>
+      <div class="home-membership-packages">
+        <article class="home-membership-price-card">
+          <p class="home-membership-price-label">5-Year Membership</p>
+          <p class="home-membership-price">£29.99</p>
+          <p class="home-membership-term">One payment for five years</p>
+          <ul class="home-membership-benefits">
+            <li>1 English QR profile</li>
+            <li>1 English LymphAware ID card</li>
+            <li>1 lanyard &amp; holder</li>
+            <li>Secure Patient Portal access</li>
+            <li>Update your information during membership</li>
+          </ul>
+        </article>
 
-        <ul class="home-membership-benefits">
-          <li>Personal LymphAware ID card</li>
-          <li>LymphAware lanyard &amp; holder</li>
-          <li>Patient-controlled QR profile</li>
-          <li>Secure Patient Portal access</li>
-          <li>Update your information during your membership</li>
-        </ul>
+        <article class="home-membership-price-card home-membership-package-featured">
+          <p class="home-membership-package-badge">Extra card &amp; holder</p>
+          <p class="home-membership-price-label">5-Year Plus</p>
+          <p class="home-membership-price">£#39.99</p>
+          <p class="home-membership-term">One payment for five years</p>
+          <ul class="home-membership-benefits">
+            <li>1 English QR profile</li>
+            <li>2 English LymphAware ID cards</li>
+            <li>2 lanyards &amp; holders</li>
+            <li>Secure Patient Portal access</li>
+            <li>Update your information during membership</li>
+          </ul>
+        </article>
 
+        <article class="home-membership-price-card">
+          <p class="home-membership-package-badge">For use in two languages</p>
+          <p class="home-membership-price-label">5-Year Multilingual</p>
+          <p class="home-membership-price">£49.99</p>
+          <p class="home-membership-term">One payment for five years</p>
+          <ul class="home-membership-benefits">
+            <li>1 English QR profile</li>
+            <li>1 additional-language QR profile</li>
+            <li>2 English ID cards</li>
+            <li>2 translated-language ID cards</li>
+            <li>2 lanyards &amp; holders in total</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="home-membership-actions">
         <p class="home-membership-renewal">
-          You will be reminded before your five-year membership is due to expire,
-          so you can choose whether to renew.
+          Postage &amp; packing is added according to delivery destination: United Kingdom, Europe or Rest of World.
+          You will be reminded before your five-year membership is due to expire, so you can choose whether to renew.
         </p>
-
         <a href="/register/" class="button button-primary">Create your account</a>
       </div>
 
@@ -664,7 +740,8 @@
           LymphAware card and a QR-linked profile presented in French.
         </p>
         <p class="home-language-note">
-          Additional language packages will be purchased separately from the main membership.
+          Choose the 5-Year Multilingual package when joining, or add another language later from your Patient Portal.
+          Only languages currently available from LymphAware can be selected.
         </p>
       </div>
 
