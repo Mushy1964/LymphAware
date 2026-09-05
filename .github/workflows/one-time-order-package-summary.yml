@@ -1,0 +1,120 @@
+name: One-time order package summary
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/one-time-order-package-summary.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-orders:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Add package and fulfilment summaries
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('admin/orders/index.html')
+          s = p.read_text(encoding='utf-8')
+
+          css_marker = '    .order-meta { color: var(--muted); font-weight: 700; }\n'
+          css_add = '''    .order-meta { color: var(--muted); font-weight: 700; }
+    .package-name { display: inline-block; margin-top: 9px; padding: 6px 10px; border-radius: 999px; background: var(--blue-light); color: var(--blue-dark); font-size: .88rem; font-weight: 800; }
+    .fulfilment-summary { margin-top: 10px !important; padding: 10px 12px; border-radius: 10px; background: #f4f8fa; color: #344456 !important; font-weight: 700; }
+'''
+          if css_marker not in s:
+              raise SystemExit('CSS marker not found')
+          s = s.replace(css_marker, css_add, 1)
+
+          helper_marker = '''    function statusLabel(order) {
+      if (order.order_status === 'COMPLETED' || order.order_status === 'PRINTED') return ['Completed', 'status-complete'];
+      if (order.profile_ready) return ['Profile ready', 'status-ready'];
+      return ['Awaiting profile', 'status-waiting'];
+    }
+'''
+          helper_add = helper_marker + '''
+    function packageSummary(order) {
+      const items = order.items || [];
+      const membership = items.find(item => item.item_type === 'MEMBERSHIP');
+      const language = items.find(item => item.item_type === 'LANGUAGE_PACKAGE');
+      const languageName = language?.language_name || 'additional language';
+
+      if (order.order_type === 'ADDITIONAL_LANGUAGE') {
+        return {
+          name: `Additional Language Package – ${languageName}`,
+          fulfilment: `1 ${languageName} ID card · 1 lanyard & holder`
+        };
+      }
+
+      const description = String(membership?.description || '');
+      if (description.includes('Multilingual')) {
+        return {
+          name: '5-Year Multilingual',
+          fulfilment: `2 English ID cards · 2 ${languageName} ID cards · 2 lanyards & holders`
+        };
+      }
+      if (description.includes('Plus')) {
+        return {
+          name: '5-Year Plus',
+          fulfilment: '2 English ID cards · 2 lanyards & holders'
+        };
+      }
+      return {
+        name: '5-Year Membership',
+        fulfilment: '1 English ID card · 1 lanyard & holder'
+      };
+    }
+'''
+          if helper_marker not in s:
+              raise SystemExit('Helper marker not found')
+          s = s.replace(helper_marker, helper_add, 1)
+
+          render_marker = '''        const profile = order.profile || {};
+
+        card.innerHTML = `
+'''
+          render_add = '''        const profile = order.profile || {};
+        const packageInfo = packageSummary(order);
+
+        card.innerHTML = `
+'''
+          if render_marker not in s:
+              raise SystemExit('Render marker not found')
+          s = s.replace(render_marker, render_add, 1)
+
+          head_marker = '''              <h2>${escapeHtml(orderRef(order.order_number))}</h2>
+              <div class="order-meta">Paid ${escapeHtml(paidDate)}</div>
+'''
+          head_add = '''              <h2>${escapeHtml(orderRef(order.order_number))}</h2>
+              <div class="order-meta">Paid ${escapeHtml(paidDate)}</div>
+              <div class="package-name">${escapeHtml(packageInfo.name)}</div>
+'''
+          if head_marker not in s:
+              raise SystemExit('Order head marker not found')
+          s = s.replace(head_marker, head_add, 1)
+
+          order_marker = '''              <ul class="items">${items || '<li>No item detail recorded</li>'}</ul>
+              <p class="order-total">Paid total: ${money(order.total_pence)}</p>
+'''
+          order_add = '''              <ul class="items">${items || '<li>No item detail recorded</li>'}</ul>
+              <p class="fulfilment-summary">Fulfilment: ${escapeHtml(packageInfo.fulfilment)}</p>
+              <p class="order-total">Paid total: ${money(order.total_pence)}</p>
+'''
+          if order_marker not in s:
+              raise SystemExit('Order summary marker not found')
+          s = s.replace(order_marker, order_add, 1)
+
+          p.write_text(s, encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add admin/orders/index.html
+          git commit -m "Show package and fulfilment summaries in orders"
+          git push
