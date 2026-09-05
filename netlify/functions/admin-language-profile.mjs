@@ -156,16 +156,23 @@ export default async (request) => {
         }
 
         const now = new Date().toISOString();
+        const approvalUpdate = {
+          setup_status: 'APPROVED',
+          qr_profile_active: true,
+          updated_at: now
+        };
+
+        if (!languageProfile.card_production_status) {
+          approvalUpdate.card_production_status = 'READY';
+          approvalUpdate.card_ready_at = now;
+        }
+
         const updateResponse = await fetch(
           `${process.env.SUPABASE_URL}/rest/v1/language_profiles?id=eq.${encodeURIComponent(id)}`,
           {
             method: 'PATCH',
             headers: serviceHeaders('return=representation'),
-            body: JSON.stringify({
-              setup_status: 'APPROVED',
-              qr_profile_active: true,
-              updated_at: now
-            })
+            body: JSON.stringify(approvalUpdate)
           }
         );
 
@@ -180,17 +187,24 @@ export default async (request) => {
 
       const translatedContent = normaliseTranslatedContent(payload?.translated_content || {});
       const now = new Date().toISOString();
+      const draftUpdate = {
+        translated_content: translatedContent,
+        setup_status: 'IN_REVIEW',
+        qr_profile_active: false,
+        updated_at: now
+      };
+
+      if (languageProfile.card_production_status === 'READY') {
+        draftUpdate.card_production_status = null;
+        draftUpdate.card_ready_at = null;
+      }
+
       const updateResponse = await fetch(
         `${process.env.SUPABASE_URL}/rest/v1/language_profiles?id=eq.${encodeURIComponent(id)}`,
         {
           method: 'PATCH',
           headers: serviceHeaders('return=representation'),
-          body: JSON.stringify({
-            translated_content: translatedContent,
-            setup_status: 'IN_REVIEW',
-            qr_profile_active: false,
-            updated_at: now
-          })
+          body: JSON.stringify(draftUpdate)
         }
       );
 
