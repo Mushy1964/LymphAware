@@ -15,9 +15,9 @@ async function requireAdmin(request) {
   }
 
   const accessToken = authHeader.replace('Bearer ', '').trim();
-  const userResponse = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
+  const userResponse = await fetch(`${Netlify.env.get('SUPABASE_URL')}/auth/v1/user`, {
     headers: {
-      apikey: process.env.SUPABASE_PUBLISHABLE_KEY,
+      apikey: Netlify.env.get('SUPABASE_PUBLISHABLE_KEY'),
       Authorization: `Bearer ${accessToken}`
     }
   });
@@ -27,7 +27,7 @@ async function requireAdmin(request) {
   }
 
   const user = await userResponse.json();
-  const adminEmail = String(process.env.LYMPHAWARE_ADMIN_EMAIL || '').trim().toLowerCase();
+  const adminEmail = String(Netlify.env.get('LYMPHAWARE_ADMIN_EMAIL') || '').trim().toLowerCase();
   if (!user?.email || user.email.toLowerCase() !== adminEmail) {
     return { error: json({ error: 'Administrator access required.' }, 403) };
   }
@@ -56,14 +56,14 @@ export default async (request) => {
     const now = new Date().toISOString();
 
     const updateResponse = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(profileId)}`,
+      `${Netlify.env.get('SUPABASE_URL')}/rest/v1/${table}?id=eq.${encodeURIComponent(profileId)}`,
       {
         method: 'PATCH',
         headers: {
-          apikey: process.env.SUPABASE_SECRET_KEY,
-          Authorization: `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
+          apikey: Netlify.env.get('SUPABASE_SECRET_KEY'),
+          Authorization: `Bearer ${Netlify.env.get('SUPABASE_SECRET_KEY')}`,
           'Content-Type': 'application/json',
-          Prefer: 'return=minimal'
+          Prefer: 'return=representation'
         },
         body: JSON.stringify({
           card_production_status: 'PRINTED',
@@ -78,7 +78,13 @@ export default async (request) => {
       return json({ error: 'The card could not be marked as printed.' }, 500);
     }
 
-    return json({ success: true });
+    const updatedRecords = await updateResponse.json();
+    if (!Array.isArray(updatedRecords) || updatedRecords.length !== 1) {
+      console.error('Mark card printed did not update exactly one record:', { profileId, recordType, count: updatedRecords?.length });
+      return json({ error: 'The card record was not updated. Please try again.' }, 409);
+    }
+
+    return json({ success: true, profile_id: profileId, record_type: recordType, card_printed_at: now });
   } catch (error) {
     console.error('Mark card printed error:', error);
     return json({ error: 'The card could not be marked as printed.' }, 500);
