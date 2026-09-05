@@ -1,0 +1,181 @@
+name: One-time membership tier styling
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-time-membership-tier-styling.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-membership-tiers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Style membership cards as bronze silver gold tiers
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+
+          old_css='''    .home-membership-packages .home-membership-price-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .home-membership-package-featured {
+      border: 2px solid #7ab58a;
+      box-shadow: 0 16px 36px rgba(31, 47, 66, 0.11);
+    }
+
+    .home-membership-package-badge {
+      align-self: flex-start;
+      margin: 0 0 10px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #eef7f0;
+      color: #16853f;
+      font-size: .82rem;
+      font-weight: 800;
+    }
+'''
+          new_css='''    .home-membership-packages .home-membership-price-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      border-width: 1px;
+      border-top-width: 6px;
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+
+    .home-membership-packages .home-membership-price-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 38px rgba(31, 47, 66, 0.11);
+    }
+
+    .home-membership-tier-bronze {
+      border-color: #b88663;
+      background: linear-gradient(180deg, #fffaf6 0%, #ffffff 34%);
+    }
+
+    .home-membership-tier-silver {
+      border-color: #aab4be;
+      background: linear-gradient(180deg, #f8fafc 0%, #ffffff 34%);
+    }
+
+    .home-membership-tier-gold {
+      border-color: #d2ac4d;
+      background: linear-gradient(180deg, #fffaf0 0%, #ffffff 34%);
+      box-shadow: 0 16px 36px rgba(149, 111, 20, 0.11);
+    }
+
+    .home-membership-package-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      align-self: flex-start;
+      min-width: 72px;
+      min-height: 30px;
+      margin: 0 0 14px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: .82rem;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .home-membership-tier-bronze .home-membership-package-badge {
+      background: #f2e3d8;
+      color: #87502f;
+    }
+
+    .home-membership-tier-silver .home-membership-package-badge {
+      background: #e9edf1;
+      color: #566370;
+    }
+
+    .home-membership-tier-gold .home-membership-package-badge {
+      background: #f7eac4;
+      color: #8a650c;
+    }
+
+    .home-membership-tier-bronze .home-membership-price { color: #9a5d37; }
+    .home-membership-tier-silver .home-membership-price { color: #667481; }
+    .home-membership-tier-gold .home-membership-price { color: #a77a0d; }
+'''
+          if old_css not in s:
+              raise SystemExit('Current membership tier CSS block not found')
+          s=s.replace(old_css,new_css,1)
+
+          old_label='''    .home-membership-price-label {
+      margin: 0 0 4px;
+      color: #5b6873;
+      font-weight: 700;
+    }
+'''
+          new_label='''    .home-membership-price-label {
+      display: flex;
+      align-items: flex-end;
+      min-height: 30px;
+      margin: 0 0 4px;
+      color: #5b6873;
+      font-weight: 700;
+    }
+'''
+          if old_label not in s:
+              raise SystemExit('Membership price label CSS block not found')
+          s=s.replace(old_label,new_label,1)
+
+          old_cards='''        <article class="home-membership-price-card">
+          <p class="home-membership-price-label">5-Year Membership</p>
+          <p class="home-membership-price">£29.99</p>
+'''
+          new_cards='''        <article class="home-membership-price-card home-membership-tier-bronze">
+          <p class="home-membership-package-badge">Bronze</p>
+          <p class="home-membership-price-label">5-Year Membership</p>
+          <p class="home-membership-price">£29.99</p>
+'''
+          if old_cards not in s:
+              raise SystemExit('Bronze membership card block not found')
+          s=s.replace(old_cards,new_cards,1)
+
+          old_plus='''        <article class="home-membership-price-card home-membership-package-featured">
+          <p class="home-membership-package-badge">Extra card &amp; holder</p>
+          <p class="home-membership-price-label">5-Year Plus</p>
+'''
+          new_plus='''        <article class="home-membership-price-card home-membership-tier-silver">
+          <p class="home-membership-package-badge">Silver</p>
+          <p class="home-membership-price-label">5-Year Plus</p>
+'''
+          if old_plus not in s:
+              raise SystemExit('Silver membership card block not found')
+          s=s.replace(old_plus,new_plus,1)
+
+          old_multi='''        <article class="home-membership-price-card">
+          <p class="home-membership-package-badge">For use in two languages</p>
+          <p class="home-membership-price-label">5-Year Multilingual</p>
+'''
+          new_multi='''        <article class="home-membership-price-card home-membership-tier-gold">
+          <p class="home-membership-package-badge">Gold</p>
+          <p class="home-membership-price-label">5-Year Multilingual</p>
+'''
+          if old_multi not in s:
+              raise SystemExit('Gold membership card block not found')
+          s=s.replace(old_multi,new_multi,1)
+
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Style membership packages as bronze silver and gold"
+          git push
