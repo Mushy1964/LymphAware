@@ -1,0 +1,109 @@
+name: One-time language card production UI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-time-language-card-production-ui.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-card-production-ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add language-aware card production UI
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('admin/card-production/index.html')
+          s = path.read_text(encoding='utf-8')
+
+          old = """      EasyBadge exports are generated fresh from all cards currently marked Ready.\n      Check the patient's name, photograph, LymphAware ID and QR code before printing,\n      and use the fulfilment quantities shown on each job for duplicate cards and lanyards."""
+          new = """      EasyBadge exports are generated fresh from all cards currently marked Ready, including approved additional-language cards.\n      Check the patient's name, photograph, LymphAware ID, QR code and card language before printing,\n      and use the fulfilment quantities shown on each job for duplicate cards and lanyards."""
+          if old not in s:
+              raise SystemExit('Admin notice pattern not found')
+          s = s.replace(old, new, 1)
+
+          old = """        <span class=\"history-id\">\n          ${escapeHtml(\n            profile.lymphaware_id ||\n            'No LymphAware ID'\n          )}\n        </span>"""
+          new = """        <span class=\"history-id\">\n          ${escapeHtml(\n            profile.lymphaware_id ||\n            'No LymphAware ID'\n          )} · ${escapeHtml(profile.language_name || 'English')}\n        </span>"""
+          if old not in s:
+              raise SystemExit('History ID pattern not found')
+          s = s.replace(old, new, 1)
+
+          old = """            data-profile-id=\"${escapeHtml(profile.id)}\">\n            Mark as Printed"""
+          new = """            data-profile-id=\"${escapeHtml(profile.id)}\"\n            data-record-type=\"${escapeHtml(profile.record_type || 'PRIMARY')}\">\n            Mark as Printed"""
+          if old not in s:
+              raise SystemExit('Printed button pattern not found')
+          s = s.replace(old, new, 1)
+
+          old = """              data-profile-id=\"${escapeHtml(profile.id)}\">\n              Prepare for EasyBadge"""
+          new = """              data-profile-id=\"${escapeHtml(profile.id)}\"\n              data-record-type=\"${escapeHtml(profile.record_type || 'PRIMARY')}\">\n              Prepare for EasyBadge"""
+          if old not in s:
+              raise SystemExit('Prepare button pattern not found')
+          s = s.replace(old, new, 1)
+
+          old = """          <p class=\"production-id\">\n            ${escapeHtml(\n              profile.lymphaware_id ||\n              'No LymphAware ID'\n            )}\n          </p>"""
+          new = """          <p class=\"production-id\">\n            ${escapeHtml(\n              profile.lymphaware_id ||\n              'No LymphAware ID'\n            )}\n          </p>\n          <p class=\"production-id\" style=\"margin-top:5px;\">\n            Card language: ${escapeHtml(profile.language_name || 'English')} (${escapeHtml(profile.language_code || 'EN')})\n          </p>"""
+          if old not in s:
+              raise SystemExit('Production identity pattern not found')
+          s = s.replace(old, new, 1)
+
+          old = """        ${languageSummary\n          ? `<div class=\"production-language-note\">Additional language package: ${languageSummary} — separate language card/profile setup required.</div>`\n          : ''}"""
+          new = """        ${profile.record_type === 'LANGUAGE'\n          ? `<div class=\"production-language-note\">Additional-language card ready: ${escapeHtml(profile.language_name || 'Language')} (${escapeHtml(profile.language_code || '')}).</div>`\n          : languageSummary\n            ? `<div class=\"production-language-note\">Additional language package: ${languageSummary} — separate language card/profile setup required.</div>`\n            : ''}"""
+          if old not in s:
+              raise SystemExit('Language summary pattern not found')
+          s = s.replace(old, new, 1)
+
+          old = """          exportEasyBadge(\n            button.dataset.profileId,\n            button\n          );"""
+          new = """          exportEasyBadge(\n            button.dataset.profileId,\n            button.dataset.recordType || 'PRIMARY',\n            button\n          );"""
+          if old not in s:
+              raise SystemExit('Export call pattern not found')
+          s = s.replace(old, new, 1)
+
+          old = """          markCardPrinted(\n            button.dataset.profileId,\n            button\n          );"""
+          new = """          markCardPrinted(\n            button.dataset.profileId,\n            button.dataset.recordType || 'PRIMARY',\n            button\n          );"""
+          if old not in s:
+              raise SystemExit('Printed call pattern not found')
+          s = s.replace(old, new, 1)
+
+          old = """async function exportEasyBadge(\n  profileId,\n  button\n)"""
+          new = """async function exportEasyBadge(\n  profileId,\n  recordType,\n  button\n)"""
+          if old not in s:
+              raise SystemExit('Export function signature pattern not found')
+          s = s.replace(old, new, 1)
+
+          old = """            JSON.stringify({\n              profile_id: profileId\n            })"""
+          new = """            JSON.stringify({\n              profile_id: profileId,\n              record_type: recordType\n            })"""
+          if old not in s:
+              raise SystemExit('Export request body pattern not found')
+          s = s.replace(old, new, 1)
+
+          old = """    async function markCardPrinted(\n  profileId,\n  button\n)"""
+          new = """    async function markCardPrinted(\n  profileId,\n  recordType,\n  button\n)"""
+          if old not in s:
+              raise SystemExit('Printed function signature pattern not found')
+          s = s.replace(old, new, 1)
+
+          old = """            JSON.stringify({\n              profile_id:\n                profileId\n            })"""
+          new = """            JSON.stringify({\n              profile_id:\n                profileId,\n              record_type:\n                recordType\n            })"""
+          if old not in s:
+              raise SystemExit('Printed request body pattern not found')
+          s = s.replace(old, new, 1)
+
+          s = s.replace('LymphAware_EasyBadge_Test.csv', 'LymphAware_EasyBadge.csv')
+
+          path.write_text(s, encoding='utf-8')
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add admin/card-production/index.html
+          git commit -m "Show language cards in card production"
+          git push
