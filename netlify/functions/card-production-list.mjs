@@ -45,7 +45,7 @@ async function requireAdmin(request) {
 
 function formatOrderNumber(orderNumber) {
   if (orderNumber === null || orderNumber === undefined || orderNumber === '') return null;
-  return `LA-${String(orderNumber).padStart(6, '0')}`;
+  return `ORD-${String(orderNumber).padStart(6, '0')}`;
 }
 
 export default async (request) => {
