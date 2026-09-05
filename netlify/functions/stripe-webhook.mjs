@@ -56,7 +56,7 @@ async function patchOrder(orderId, values) {
 
 async function sendOrderNotification(order, session, items) {
   const apiKey = String(process.env.RESEND_API_KEY || '').trim();
-  const orderRef = `LA-${String(order.order_number).padStart(6, '0')}`;
+  const orderRef = `ORD-${String(order.order_number).padStart(6, '0')}`;
   if (!apiKey) {
     const error = 'RESEND_API_KEY is not configured.';
     await patchOrder(order.id, { notification_status: 'FAILED', notification_error: error, notification_sent_at: null });
