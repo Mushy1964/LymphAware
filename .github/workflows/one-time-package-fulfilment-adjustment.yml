@@ -1,0 +1,61 @@
+name: One-time package fulfilment adjustment
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-time-package-fulfilment-adjustment.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-fulfilment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Update package fulfilment allocation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('netlify/functions/card-production-list.mjs')
+          s=p.read_text(encoding='utf-8')
+          old="""            } else if (item.item_type === 'LANYARD_HOLDER') {
+              fulfilment.lanyard_holders += quantity;
+            } else if (item.item_type === 'LANGUAGE_PACKAGE') {"""
+          new="""            } else if (item.item_type === 'LANYARD_HOLDER') {
+              if (!item.language_name) fulfilment.lanyard_holders += quantity;
+            } else if (item.item_type === 'LANGUAGE_PACKAGE') {"""
+          if old not in s:
+              raise SystemExit('Primary lanyard block not found')
+          s=s.replace(old,new,1)
+
+          old2="""      const quantity = Math.max(1, Number(languageItem?.quantity || 1));
+      const orderNumber = formatOrderNumber(order?.order_number);"""
+          new2="""      const quantity = Math.max(1, Number(languageItem?.quantity || 1));
+      const languageLanyardItem = orderItems.find(item =>
+        item.item_type === 'LANYARD_HOLDER' &&
+        String(item.language_name || '').trim().toLowerCase() === String(languageProfile.language_name || '').trim().toLowerCase()
+      );
+      const lanyardQuantity = Math.max(0, Number(languageLanyardItem?.quantity || 0));
+      const orderNumber = formatOrderNumber(order?.order_number);"""
+          if old2 not in s:
+              raise SystemExit('Language quantity block not found')
+          s=s.replace(old2,new2,1)
+
+          old3="""          card_copies: quantity,
+          lanyard_holders: quantity,"""
+          new3="""          card_copies: quantity,
+          lanyard_holders: lanyardQuantity,"""
+          if old3 not in s:
+              raise SystemExit('Language fulfilment block not found')
+          s=s.replace(old3,new3,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add netlify/functions/card-production-list.mjs
+          git commit -m "Allocate package lanyards to the correct card job"
+          git push
