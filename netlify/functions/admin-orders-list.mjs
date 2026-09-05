@@ -66,7 +66,7 @@ export default async (request) => {
     const orderIds = orders.map(order => order.id).join(',');
     const userIds = [...new Set(orders.map(order => order.user_id))].join(',');
 
-    const [itemsResponse, profilesResponse] = await Promise.all([
+    const [itemsResponse, profilesResponse, languageProfilesResponse] = await Promise.all([
       fetch(
         `${process.env.SUPABASE_URL}/rest/v1/order_items?select=*&order_id=in.(${orderIds})&order=created_at.asc`,
         { headers: serviceHeaders() }
@@ -74,11 +74,16 @@ export default async (request) => {
       fetch(
         `${process.env.SUPABASE_URL}/rest/v1/profiles?select=user_id,display_name,lymphaware_id,photo_path,card_production_status,card_ready_at,card_printed_at&user_id=in.(${userIds})`,
         { headers: serviceHeaders() }
+      ),
+      fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/language_profiles?select=order_id,order_item_id,language_name,setup_status,card_production_status,card_printed_at&order_id=in.(${orderIds})`,
+        { headers: serviceHeaders() }
       )
     ]);
 
     const items = itemsResponse.ok ? await itemsResponse.json() : [];
     const profiles = profilesResponse.ok ? await profilesResponse.json() : [];
+    const languageProfiles = languageProfilesResponse.ok ? await languageProfilesResponse.json() : [];
 
     const itemsByOrder = new Map();
     for (const item of items) {
@@ -87,19 +92,45 @@ export default async (request) => {
     }
 
     const profileByUser = new Map(profiles.map(profile => [profile.user_id, profile]));
+    const languageProfilesByOrder = new Map();
+    for (const profile of languageProfiles) {
+      if (!languageProfilesByOrder.has(profile.order_id)) languageProfilesByOrder.set(profile.order_id, []);
+      languageProfilesByOrder.get(profile.order_id).push(profile);
+    }
 
     const result = orders.map(order => {
       const profile = profileByUser.get(order.user_id) || null;
+      const orderItems = itemsByOrder.get(order.id) || [];
+      const orderLanguageProfiles = languageProfilesByOrder.get(order.id) || [];
       const profileReady = Boolean(
         profile?.display_name?.trim() &&
         profile?.photo_path?.trim()
       );
+      const needsPrimaryCard = orderItems.some(item => ['MEMBERSHIP', 'EXTRA_CARD'].includes(item.item_type));
+      const languageItems = orderItems.filter(item => item.item_type === 'LANGUAGE_PACKAGE');
+      const primaryCardPrinted = !needsPrimaryCard || profile?.card_production_status === 'PRINTED';
+      const languageCardsPrinted = languageItems.every(item => orderLanguageProfiles.some(languageProfile => {
+        const linkedItem = languageProfile.order_item_id && languageProfile.order_item_id === item.id;
+        const sameLanguage = !languageProfile.order_item_id && languageProfile.language_name === item.language_name;
+        return (linkedItem || sameLanguage) && languageProfile.card_production_status === 'PRINTED';
+      }));
+      const isClosed = ['COMPLETED', 'CANCELLED', 'REFUNDED'].includes(order.order_status);
+      const readyToComplete = order.payment_status === 'PAID' && !isClosed && primaryCardPrinted && languageCardsPrinted;
 
       return {
         ...order,
-        items: itemsByOrder.get(order.id) || [],
+        items: orderItems,
         profile,
-        profile_ready: profileReady
+        profile_ready: profileReady,
+        language_profiles: orderLanguageProfiles,
+        ready_to_complete: readyToComplete,
+        completion_stage: isClosed
+          ? 'COMPLETED'
+          : !profileReady && needsPrimaryCard
+            ? 'WAITING_FOR_CUSTOMER'
+            : readyToComplete
+              ? 'READY_TO_COMPLETE'
+              : 'IN_PROGRESS'
       };
     });
 
