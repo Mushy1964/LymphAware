@@ -137,6 +137,16 @@
       flex-wrap: wrap;
     }
 
+    .card-action-message {
+      width: 100%;
+      margin: 0 0 4px;
+      padding: 11px 13px;
+      border-radius: 10px;
+      background: #fff0f0;
+      color: #8a2b2b;
+      font-weight: 700;
+    }
+
     .admin-page .button {
       font-size: 18px;
       font-weight: 700;
@@ -853,6 +863,9 @@
     const orderNumbers = Array.isArray(fulfilment.order_numbers)
       ? fulfilment.order_numbers
       : [];
+    const orderIds = Array.isArray(fulfilment.order_ids)
+      ? fulfilment.order_ids.filter(Boolean)
+      : [];
     const cardCopies = Number(fulfilment.card_copies || 1);
     const lanyardHolders = Number(fulfilment.lanyard_holders || 0);
     const languagePackages = Array.isArray(fulfilment.language_packages)
@@ -886,7 +899,8 @@
             type="button"
             class="button button-secondary mark-printed"
             data-profile-id="${escapeHtml(profile.id)}"
-            data-record-type="${escapeHtml(profile.record_type || 'PRIMARY')}">
+            data-record-type="${escapeHtml(profile.record_type || 'PRIMARY')}"
+            data-order-ids="${escapeHtml(orderIds.join(','))}">
             Mark as Printed
           </button>
         `
@@ -968,6 +982,7 @@
 
 
     <div class="production-actions">
+      <p class="card-action-message" role="alert" hidden></p>
     
       ${prepareButton}
     
@@ -1012,6 +1027,7 @@
           markCardPrinted(
             button.dataset.profileId,
             button.dataset.recordType || 'PRIMARY',
+            String(button.dataset.orderIds || '').split(',').filter(Boolean),
             button
           );
         }
@@ -1252,6 +1268,7 @@ async function exportAllEasyBadge() {
     async function markCardPrinted(
   profileId,
   recordType,
+  orderIds,
   button
 ) {
 
@@ -1289,6 +1306,12 @@ async function exportAllEasyBadge() {
   button.textContent =
     'Updating...';
 
+  const cardMessage = button.closest('.production-card')?.querySelector('.card-action-message');
+  if (cardMessage) {
+    cardMessage.hidden = true;
+    cardMessage.textContent = '';
+  }
+
 
   try {
 
@@ -1323,9 +1346,12 @@ async function exportAllEasyBadge() {
 
     if (!response.ok) {
 
-      adminMessage.textContent =
-        result?.error ||
-        'The card could not be marked as printed.';
+      const message = result?.error || 'The card could not be marked as printed.';
+      adminMessage.textContent = message;
+      if (cardMessage) {
+        cardMessage.textContent = message;
+        cardMessage.hidden = false;
+      }
 
       return;
     }
@@ -1333,6 +1359,20 @@ async function exportAllEasyBadge() {
 
     adminMessage.textContent =
       'Card marked as printed.';
+
+    if (orderIds.length) {
+      const ordersResponse = await fetch('/.netlify/functions/admin-orders-list', {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+      const ordersResult = await ordersResponse.json();
+      if (ordersResponse.ok) {
+        const readyOrder = (ordersResult.orders || []).find(order => orderIds.includes(order.id) && order.ready_to_complete);
+        if (readyOrder) {
+          window.location.href = `/admin/orders/?order=${encodeURIComponent(readyOrder.id)}#order-${encodeURIComponent(readyOrder.id)}`;
+          return;
+        }
+      }
+    }
     
     await loadCardProduction();
     
@@ -1352,6 +1392,11 @@ async function exportAllEasyBadge() {
 
     adminMessage.textContent =
       'The card could not be marked as printed.';
+
+    if (cardMessage) {
+      cardMessage.textContent = 'The card could not be marked as printed. Please try again.';
+      cardMessage.hidden = false;
+    }
 
 
   } finally {
