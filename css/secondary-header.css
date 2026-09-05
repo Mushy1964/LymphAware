@@ -48,6 +48,10 @@
   white-space: nowrap;
 }
 
+.secondary-header .mobile-home-button {
+  display: none !important;
+}
+
 .secondary-header .main-nav,
 .secondary-header .mobile-menu {
   display: none !important;
@@ -102,44 +106,42 @@ body:has(.secondary-header) .button {
   line-height: 1.2 !important;
 }
 
-@media (max-width: 680px) {
+/* Use the compact header on phones and tablets. */
+@media (max-width: 900px) {
   .secondary-header .header-inner {
     width: min(100% - 28px, 1180px);
     min-height: 74px;
-    gap: 12px;
+    gap: 10px;
+  }
+
+  .secondary-header .header-brand {
+    min-width: 0;
+    flex: 1 1 auto;
   }
 
   .secondary-header .header-logo {
     width: 300px;
-    max-width: calc(100vw - 150px);
+    max-width: calc(100vw - 118px);
     height: auto;
   }
 
   .secondary-header .header-actions {
     display: flex !important;
+    flex: 0 0 auto;
   }
 
-  /* A full 'Back to Website' label cannot sit beside the approved
-     mobile logo on narrow phones. Keep the same destination but use
-     a compact Home label so the header stays fully on-screen. */
   .secondary-header .back-to-website-button {
-    min-width: 82px !important;
-    min-height: 44px !important;
-    padding: 0 12px !important;
-    font-size: 0 !important;
+    display: none !important;
   }
 
-  .secondary-header .back-to-website-button::after {
-    content: 'Home';
-    font-size: 1rem;
-    line-height: 1.2;
-    font-weight: 700;
-  }
-
-  .secondary-header .header-actions .button-secondary:not(.back-to-website-button) {
+  .secondary-header .mobile-home-button {
+    display: inline-flex !important;
+    min-width: 72px !important;
     min-height: 44px !important;
     padding: 0 12px !important;
+    border-radius: 10px;
     font-size: 1rem !important;
+    white-space: nowrap;
   }
 
   body:has(.secondary-header) .page-hero {
@@ -178,11 +180,11 @@ body:has(.secondary-header) .button {
 
 @media (max-width: 420px) {
   .secondary-header .header-logo {
-    max-width: calc(100vw - 132px);
+    max-width: calc(100vw - 108px);
   }
 
-  .secondary-header .back-to-website-button {
-    min-width: 76px !important;
-    padding: 0 9px !important;
+  .secondary-header .mobile-home-button {
+    min-width: 68px !important;
+    padding: 0 10px !important;
   }
 }
