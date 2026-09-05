@@ -23,6 +23,8 @@
     .order-head { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
     .order-head h2 { margin: 0 0 6px; font-size: 1.4rem; }
     .order-meta { color: var(--muted); font-weight: 700; }
+    .package-name { display: inline-block; margin-top: 9px; padding: 6px 10px; border-radius: 999px; background: var(--blue-light); color: var(--blue-dark); font-size: .88rem; font-weight: 800; }
+    .fulfilment-summary { margin-top: 10px !important; padding: 10px 12px; border-radius: 10px; background: #f4f8fa; color: #344456 !important; font-weight: 700; }
     .status { display: inline-block; padding: 7px 11px; border-radius: 999px; font-size: .88rem; font-weight: 800; }
     .status-waiting { background: #fff7e8; color: #775c20; }
     .status-ready { background: var(--green-light); color: var(--green-dark); }
@@ -123,6 +125,24 @@
       return ['Awaiting profile', 'status-waiting'];
     }
 
+    function packageSummary(order) {
+      const items = order.items || [];
+      const membership = items.find(item => item.item_type === 'MEMBERSHIP');
+      const language = items.find(item => item.item_type === 'LANGUAGE_PACKAGE');
+      const languageName = language?.language_name || 'additional language';
+      if (order.order_type === 'ADDITIONAL_LANGUAGE') {
+        return { name: `Additional Language Package – ${languageName}`, fulfilment: `1 ${languageName} ID card · 1 lanyard & holder` };
+      }
+      const description = String(membership?.description || '');
+      if (description.includes('Multilingual')) {
+        return { name: '5-Year Multilingual', fulfilment: `2 English ID cards · 2 ${languageName} ID cards · 2 lanyards & holders` };
+      }
+      if (description.includes('Plus')) {
+        return { name: '5-Year Plus', fulfilment: '2 English ID cards · 2 lanyards & holders' };
+      }
+      return { name: '5-Year Membership', fulfilment: '1 English ID card · 1 lanyard & holder' };
+    }
+
     function addressHtml(order) {
       const lines = [
         order.delivery_name,
@@ -220,12 +240,14 @@
           : 'Not recorded';
 
         const profile = order.profile || {};
+        const packageInfo = packageSummary(order);
 
         card.innerHTML = `
           <div class="order-head">
             <div>
               <h2>${escapeHtml(orderRef(order.order_number))}</h2>
               <div class="order-meta">Paid ${escapeHtml(paidDate)}</div>
+              <div class="package-name">${escapeHtml(packageInfo.name)}</div>
             </div>
             <span class="status ${statusClass}">${escapeHtml(label)}</span>
           </div>
@@ -246,6 +268,7 @@
             <div class="order-section">
               <h3>Order</h3>
               <ul class="items">${items || '<li>No item detail recorded</li>'}</ul>
+              <p class="fulfilment-summary">Fulfilment: ${escapeHtml(packageInfo.fulfilment)}</p>
               <p class="order-total">Paid total: ${money(order.total_pence)}</p>
               ${Number(order.discount_pence || 0) > 0 ? `<p>Discount: ${money(order.discount_pence)}</p>` : ''}
             </div>
