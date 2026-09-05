@@ -1,0 +1,45 @@
+{
+  "language": {"name":"German","code":"DE","locale":"de-DE","status":"DRAFT_NEEDS_REVIEW"},
+  "card": {
+    "patient_status":"LYMPHÖDEM-PATIENT",
+    "scan_heading":"QR-CODE SCANNEN",
+    "scan_subheading":"um mein Profil anzusehen"
+  },
+  "profile": {
+    "patient_status":"LYMPHÖDEM-PATIENT",
+    "lymphaware_id_label":"LymphAware-ID:",
+    "sections": {
+      "lymphoedema":{"title":"Über mein Lymphödem","description":"Ein Überblick über mein Lymphödem und darüber, wie es mich betrifft."},
+      "compression":{"title":"Kompression","description":"Meine Kompressionskleidung und meine Präferenzen."},
+      "treatment":{"title":"Hinweise zur Behandlung","description":"Wichtige Informationen für meine Versorgung und Behandlung."},
+      "assistance":{"title":"Hilfe und Unterstützung","description":"Wie Sie mir helfen können und welche Unterstützung ich möglicherweise benötige."},
+      "emergency":{"title":"Notfallkontakt","description":"Kontaktperson für den Notfall."},
+      "additional":{"title":"Zusätzliche Informationen","description":"Weitere wichtige Informationen, die Ihnen helfen können, mich besser zu verstehen."}
+    },
+    "assistance_statements": {
+      "difficulty-standing":"Ich kann Schwierigkeiten haben, längere Zeit zu stehen.",
+      "need-seat":"Ich benötige möglicherweise eine Sitzgelegenheit.",
+      "extra-time":"Ich benötige möglicherweise mehr Zeit.",
+      "mobility-help":"Ich benötige möglicherweise Hilfe bei der Fortbewegung.",
+      "clear-communication":"Aufgrund von Schwellungen oder Kompressionskleidung benötige ich möglicherweise mehr Platz.",
+      "patient-understanding":"Vielen Dank für Ihre Geduld und Ihr Verständnis."
+    },
+    "empty_section":"Zu diesem Abschnitt wurden keine Informationen hinzugefügt.",
+    "not_provided":"Nicht angegeben",
+    "details":{"name":"Name","relationship":"Beziehung","telephone":"Telefon"},
+    "call_emergency_contact":"Notfallkontakt anrufen",
+    "footer": {
+      "heading":"Über dieses LymphAware-Profil",
+      "paragraph_1":"Dieses Profil enthält Informationen, die die Person freiwillig teilt, damit andere ihr Lymphödem und mögliche Unterstützungsbedürfnisse besser verstehen können.",
+      "paragraph_2":"LymphAware unterstützt Kommunikation und Bewusstseinsbildung. Es bietet keine medizinische Beratung und ersetzt keine Beurteilung oder Behandlung durch medizinisches Fachpersonal."
+    },
+    "system": {
+      "loading_title":"Profil wird geladen…",
+      "loading_message":"Bitte warten Sie, während das LymphAware-Profil geladen wird.",
+      "unavailable_title":"LymphAware-Profil nicht verfügbar",
+      "unavailable_message":"Dieses LymphAware-Profil ist derzeit nicht verfügbar.",
+      "urgent_message":"Wenn Sie einer Person helfen, die dringend medizinische Versorgung benötigt, befolgen Sie bitte die entsprechenden Notfallverfahren."
+    }
+  },
+  "review_notes": {"purpose":"Draft fixed-text translation for review before German is activated.","approval_scope":"Not approved for patient publication or card production until reviewed."}
+}
