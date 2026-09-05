@@ -50,6 +50,26 @@ function csvValue(value) {
   return `"${text.replace(/"/g, '""')}"`;
 }
 
+function cardCopyForLanguage(languageCode) {
+  const code = String(languageCode || '').trim().toUpperCase();
+
+  if (code === 'EN') {
+    return {
+      patient_label: 'LYMPHOEDEMA PATIENT',
+      qr_instruction: 'SCAN QR CODE to view my profile'
+    };
+  }
+
+  if (code === 'FR') {
+    return {
+      patient_label: 'PATIENT ATTEINT DE LYMPHŒDÈME',
+      qr_instruction: 'SCANNEZ LE CODE QR pour consulter mon profil'
+    };
+  }
+
+  return null;
+}
+
 export default async (request) => {
   if (request.method !== 'POST') {
     return json({ error: 'Method not allowed' }, 405);
@@ -111,19 +131,25 @@ export default async (request) => {
     }
 
     const jobs = [
-      ...(primaryProfiles || []).map(profile => ({
-        record_type: 'PRIMARY',
-        record_id: profile.id,
-        lymphaware_id: profile.lymphaware_id,
-        display_name: profile.display_name,
-        qr_token: profile.qr_token,
-        photo_path: profile.photo_path,
-        language_code: 'EN',
-        language_name: 'English',
-        card_ready_at: profile.card_ready_at
-      })),
+      ...(primaryProfiles || []).map(profile => {
+        const cardCopy = cardCopyForLanguage('EN');
+        return {
+          record_type: 'PRIMARY',
+          record_id: profile.id,
+          lymphaware_id: profile.lymphaware_id,
+          display_name: profile.display_name,
+          qr_token: profile.qr_token,
+          photo_path: profile.photo_path,
+          language_code: 'EN',
+          language_name: 'English',
+          patient_label: cardCopy?.patient_label || null,
+          qr_instruction: cardCopy?.qr_instruction || null,
+          card_ready_at: profile.card_ready_at
+        };
+      }),
       ...(languageProfiles || []).map(languageProfile => {
         const source = sourceById.get(languageProfile.source_profile_id) || {};
+        const cardCopy = cardCopyForLanguage(languageProfile.language_code);
         return {
           record_type: 'LANGUAGE',
           record_id: languageProfile.id,
@@ -133,6 +159,8 @@ export default async (request) => {
           photo_path: source.photo_path,
           language_code: languageProfile.language_code,
           language_name: languageProfile.language_name,
+          patient_label: cardCopy?.patient_label || null,
+          qr_instruction: cardCopy?.qr_instruction || null,
           card_ready_at: languageProfile.card_ready_at
         };
       })
@@ -151,12 +179,14 @@ export default async (request) => {
       !job.display_name ||
       !job.qr_token ||
       !job.photo_path ||
+      !job.patient_label ||
+      !job.qr_instruction ||
       !job.language_code ||
       !job.language_name
     );
 
     if (incomplete) {
-      return json({ error: 'One or more cards do not contain all information required for production.' }, 400);
+      return json({ error: 'One or more cards do not contain approved fixed wording or all information required for production.' }, 400);
     }
 
     const rows = [[
@@ -164,6 +194,8 @@ export default async (request) => {
       'Display Name',
       'QR Profile URL',
       'ImageURL',
+      'Patient Label',
+      'QR Instruction',
       'Language Code',
       'Card Language'
     ].join(',')];
@@ -176,6 +208,8 @@ export default async (request) => {
         csvValue(job.display_name),
         csvValue(qrProfileUrl),
         csvValue(imageUrl),
+        csvValue(job.patient_label),
+        csvValue(job.qr_instruction),
         csvValue(job.language_code),
         csvValue(job.language_name)
       ].join(','));
