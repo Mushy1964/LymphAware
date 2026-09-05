@@ -1,0 +1,85 @@
+name: One-time profile header and unsaved changes fix
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/one-time-profile-header-unsaved-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-profile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Align header and restore unsaved changes protection
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('profile-v2/index.html')
+          s = p.read_text(encoding='utf-8')
+
+          # Remove profile-only header sizing so the shared secondary header owns all dimensions.
+          s = s.replace('.header-logo{display:block;width:390px;max-width:100%;height:auto}', '')
+          s = s.replace('.profile-site-header .header-inner{width:min(1180px,calc(100% - 40px));max-width:1180px;min-height:92px;margin:0 auto}', '')
+          s = s.replace('.profile-site-header .header-actions .button{min-width:150px;min-height:46px;padding:0 22px;border-radius:10px;font-size:1rem}', '')
+          s = s.replace('.profile-site-header .header-inner{width:min(100% - 28px,1180px);min-height:74px;gap:12px}', '')
+          s = s.replace('.profile-site-header .header-logo{width:300px;max-width:calc(100vw - 150px)}', '')
+          s = s.replace('.profile-site-header .header-actions .button{min-width:82px!important;min-height:44px;padding:0 12px!important;font-size:0!important}', '')
+          s = s.replace('.profile-site-header .header-actions .button::after{content:"Portal";font-size:1rem;font-weight:700;line-height:1.2}', '')
+          s = s.replace('@media(max-width:420px){.profile-site-header .header-logo{max-width:calc(100vw - 132px)}.profile-site-header .header-actions .button{min-width:76px!important;padding:0 9px!important}}', '')
+          s = s.replace('@media(max-width:360px){.profile-site-header .header-logo{max-width:calc(100vw - 132px)}', '@media(max-width:360px){')
+
+          # Use exactly the same desktop/mobile header classes as the Patient Portal.
+          old_header = '<div class="header-actions"><a href="/portal/" class="button button-secondary back-to-portal-button">Back to Portal</a></div>'
+          new_header = '<div class="header-actions"><a href="/portal/" class="button button-secondary back-to-website-button">Back to Portal</a><a href="/portal/" class="button button-secondary mobile-home-button">Portal</a></div>'
+          if old_header not in s:
+              raise SystemExit('Profile header marker not found')
+          s = s.replace(old_header, new_header, 1)
+
+          # Add a clear, accessible LymphAware unsaved-changes dialog.
+          style_close = '</style>'
+          dialog_css = '''.unsaved-dialog[hidden]{display:none!important}.unsaved-dialog{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(18,37,58,.48)}.unsaved-dialog-card{width:min(520px,100%);padding:26px;border-radius:18px;background:#fff;box-shadow:0 22px 60px rgba(19,42,62,.24)}.unsaved-dialog-card h2{margin:0 0 10px;font-size:1.55rem;color:#172536}.unsaved-dialog-card p{margin:0;color:#566575;line-height:1.55}.unsaved-dialog-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.unsaved-dialog-actions .button{font-size:1rem;font-weight:700}@media(max-width:680px){.unsaved-dialog{padding:14px}.unsaved-dialog-card{padding:22px 18px}.unsaved-dialog-actions{flex-direction:column}.unsaved-dialog-actions .button{width:100%}}\n'''
+          if dialog_css not in s:
+              s = s.replace(style_close, dialog_css + style_close, 1)
+
+          main_close = '</main>\n<script>'
+          dialog_html = '''</main>\n<div id="unsaved-dialog" class="unsaved-dialog" hidden>\n  <div class="unsaved-dialog-card" role="dialog" aria-modal="true" aria-labelledby="unsaved-dialog-title">\n    <h2 id="unsaved-dialog-title">Save your changes?</h2>\n    <p>You have changes to your LymphAware profile that have not been saved. Would you like to save them before leaving this page?</p>\n    <div class="unsaved-dialog-actions">\n      <button type="button" id="unsaved-save" class="button button-primary">Save changes</button>\n      <button type="button" id="unsaved-leave" class="button button-secondary">Leave without saving</button>\n      <button type="button" id="unsaved-stay" class="button button-secondary">Stay on page</button>\n    </div>\n  </div>\n</div>\n<script>'''
+          if main_close not in s:
+              raise SystemExit('Main/script marker not found')
+          s = s.replace(main_close, dialog_html, 1)
+
+          # On successful save, clear dirty state and continue a pending navigation when appropriate.
+          old_success = "profile={...profile,...payload};await renderPhoto(photoPath);$('photo-input').value='';setStatus('Your LymphAware profile has been saved.');"
+          new_success = "profile={...profile,...payload};await renderPhoto(photoPath);$('photo-input').value='';unsavedChanges=false;setStatus('Your LymphAware profile has been saved.');const destination=pendingNavigationUrl;pendingNavigationUrl=null;if(destination){hideUnsavedDialog();location.href=destination;return;}"
+          if old_success not in s:
+              raise SystemExit('Save success marker not found')
+          s = s.replace(old_success, new_success, 1)
+
+          old_catch = "}catch(err){console.error(err);setStatus('Your changes could not be saved. Please try again.','error')}finally{$('save-button').disabled=false}});"
+          new_catch = "}catch(err){console.error(err);pendingNavigationUrl=null;setStatus('Your changes could not be saved. Please try again.','error')}finally{$('save-button').disabled=false;$('unsaved-save').disabled=false}});"
+          if old_catch not in s:
+              raise SystemExit('Save catch marker not found')
+          s = s.replace(old_catch, new_catch, 1)
+
+          old_guard = '''let unsavedChanges=false;\nconst profileFormForChanges=$('profile-form');\nfunction markProfileDirty(event){if(event&&event.target&&event.target.id==='photo-input'&&!event.target.files?.length)return;unsavedChanges=true;}\nprofileFormForChanges.addEventListener('input',markProfileDirty);\nprofileFormForChanges.addEventListener('change',markProfileDirty);\nwindow.addEventListener('beforeunload',event=>{if(!unsavedChanges)return;event.preventDefault();event.returnValue='';});\ndocument.addEventListener('click',event=>{if(!unsavedChanges)return;const link=event.target.closest('a[href]');if(!link)return;const href=link.getAttribute('href')||'';if(!href||href.startsWith('#')||href.startsWith('javascript:'))return;if(window.confirm('You have unsaved changes to your LymphAware profile. Leave this page without saving them?')){unsavedChanges=false;return;}event.preventDefault();});\nconst saveStatusObserver=new MutationObserver(()=>{const status=$('status');if(status&&!status.hidden&&status.classList.contains('success'))unsavedChanges=false;});\nsaveStatusObserver.observe($('status'),{attributes:true,childList:true,subtree:true});'''
+
+          new_guard = '''let unsavedChanges=false;\nlet pendingNavigationUrl=null;\nconst profileFormForChanges=$('profile-form');\nconst unsavedDialog=$('unsaved-dialog');\nconst unsavedSave=$('unsaved-save');\nconst unsavedLeave=$('unsaved-leave');\nconst unsavedStay=$('unsaved-stay');\nfunction markProfileDirty(event){if(event&&event.target&&event.target.id==='photo-input'&&!event.target.files?.length)return;unsavedChanges=true;}\nfunction showUnsavedDialog(url){pendingNavigationUrl=url;unsavedDialog.hidden=false;document.body.style.overflow='hidden';setTimeout(()=>unsavedSave.focus(),0);}\nfunction hideUnsavedDialog(){unsavedDialog.hidden=true;document.body.style.overflow='';}\nprofileFormForChanges.addEventListener('input',markProfileDirty);\nprofileFormForChanges.addEventListener('change',markProfileDirty);\nwindow.addEventListener('beforeunload',event=>{if(!unsavedChanges)return;event.preventDefault();event.returnValue='';});\ndocument.addEventListener('click',event=>{if(!unsavedChanges)return;const link=event.target.closest('a[href]');if(!link)return;const href=link.getAttribute('href')||'';if(!href||href.startsWith('#')||href.startsWith('javascript:')||link.target==='_blank')return;event.preventDefault();event.stopImmediatePropagation();showUnsavedDialog(link.href);},true);\nunsavedSave.addEventListener('click',()=>{unsavedSave.disabled=true;hideUnsavedDialog();profileFormForChanges.requestSubmit();});\nunsavedLeave.addEventListener('click',()=>{const destination=pendingNavigationUrl;pendingNavigationUrl=null;unsavedChanges=false;hideUnsavedDialog();if(destination)location.href=destination;});\nunsavedStay.addEventListener('click',()=>{pendingNavigationUrl=null;hideUnsavedDialog();});\nunsavedDialog.addEventListener('click',event=>{if(event.target===unsavedDialog){pendingNavigationUrl=null;hideUnsavedDialog();}});\ndocument.addEventListener('keydown',event=>{if(event.key==='Escape'&&!unsavedDialog.hidden){pendingNavigationUrl=null;hideUnsavedDialog();}});'''
+
+          if old_guard not in s:
+              raise SystemExit('Existing unsaved guard marker not found')
+          s = s.replace(old_guard, new_guard, 1)
+
+          p.write_text(s, encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add profile-v2/index.html
+          git commit -m "Align profile header and strengthen unsaved changes warning"
+          git push
