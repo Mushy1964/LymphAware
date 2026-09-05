@@ -259,6 +259,22 @@
         border-radius: 18px;
       }
     }
+
+    /* Bronze / Silver / Gold membership tiers */
+    .home-membership-packages .home-membership-price-card { position: relative; overflow: hidden; border-width: 1px; border-top-width: 6px; transition: transform .16s ease, box-shadow .16s ease; }
+    .home-membership-packages .home-membership-price-card:hover { transform: translateY(-2px); box-shadow: 0 18px 38px rgba(31, 47, 66, 0.11); }
+    .home-membership-tier-bronze { border-color: #b88663; background: linear-gradient(180deg, #fffaf6 0%, #ffffff 34%); }
+    .home-membership-tier-silver { border-color: #aab4be; background: linear-gradient(180deg, #f8fafc 0%, #ffffff 34%); }
+    .home-membership-tier-gold { border-color: #d2ac4d; background: linear-gradient(180deg, #fffaf0 0%, #ffffff 34%); box-shadow: 0 16px 36px rgba(149, 111, 20, 0.11); }
+    .home-membership-packages .home-membership-package-badge { display: inline-flex; align-items: center; justify-content: center; align-self: flex-start; min-width: 72px; min-height: 30px; margin: 0 0 14px; padding: 5px 12px; border-radius: 999px; font-size: .82rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+    .home-membership-tier-bronze .home-membership-package-badge { background: #f2e3d8; color: #87502f; }
+    .home-membership-tier-silver .home-membership-package-badge { background: #e9edf1; color: #566370; }
+    .home-membership-tier-gold .home-membership-package-badge { background: #f7eac4; color: #8a650c; }
+    .home-membership-tier-bronze .home-membership-price { color: #9a5d37; }
+    .home-membership-tier-silver .home-membership-price { color: #667481; }
+    .home-membership-tier-gold .home-membership-price { color: #a77a0d; }
+    .home-membership-packages .home-membership-price-label { display: flex; align-items: flex-end; min-height: 30px; }
+
   </style>
 </head>
 
@@ -661,7 +677,8 @@
       </div>
 
       <div class="home-membership-packages">
-        <article class="home-membership-price-card">
+        <article class="home-membership-price-card home-membership-tier-bronze">
+          <p class="home-membership-package-badge">Bronze</p>
           <p class="home-membership-price-label">5-Year Membership</p>
           <p class="home-membership-price">£29.99</p>
           <p class="home-membership-term">One payment for five years</p>
@@ -674,8 +691,8 @@
           </ul>
         </article>
 
-        <article class="home-membership-price-card home-membership-package-featured">
-          <p class="home-membership-package-badge">Extra card &amp; holder</p>
+        <article class="home-membership-price-card home-membership-tier-silver">
+          <p class="home-membership-package-badge">Silver</p>
           <p class="home-membership-price-label">5-Year Plus</p>
           <p class="home-membership-price">£39.99</p>
           <p class="home-membership-term">One payment for five years</p>
@@ -688,8 +705,8 @@
           </ul>
         </article>
 
-        <article class="home-membership-price-card">
-          <p class="home-membership-package-badge">For use in two languages</p>
+        <article class="home-membership-price-card home-membership-tier-gold">
+          <p class="home-membership-package-badge">Gold</p>
           <p class="home-membership-price-label">5-Year Multilingual</p>
           <p class="home-membership-price">£49.99</p>
           <p class="home-membership-term">One payment for five years</p>
