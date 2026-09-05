@@ -1,0 +1,45 @@
+{
+  "language": {"name":"Spanish","code":"ES","locale":"es-ES","status":"DRAFT_NEEDS_REVIEW"},
+  "card": {
+    "patient_status":"PACIENTE CON LINFEDEMA",
+    "scan_heading":"ESCANEE EL CÓDIGO QR",
+    "scan_subheading":"para ver mi perfil"
+  },
+  "profile": {
+    "patient_status":"PACIENTE CON LINFEDEMA",
+    "lymphaware_id_label":"ID LymphAware:",
+    "sections": {
+      "lymphoedema":{"title":"Acerca de mi linfedema","description":"Una visión general de mi linfedema y de cómo me afecta."},
+      "compression":{"title":"Compresión","description":"Mis prendas de compresión y mis preferencias."},
+      "treatment":{"title":"Información sobre el tratamiento","description":"Información importante para mi atención y tratamiento."},
+      "assistance":{"title":"Ayuda y asistencia","description":"Cómo puede ayudarme y qué asistencia puedo necesitar."},
+      "emergency":{"title":"Contacto de emergencia","description":"Persona a contactar en caso de emergencia."},
+      "additional":{"title":"Información adicional","description":"Otra información importante que puede ayudarle a comprenderme mejor."}
+    },
+    "assistance_statements": {
+      "difficulty-standing":"Puedo tener dificultades para permanecer de pie durante largos periodos.",
+      "need-seat":"Puede que necesite un lugar donde sentarme.",
+      "extra-time":"Puede que necesite más tiempo.",
+      "mobility-help":"Puede que necesite ayuda para desplazarme.",
+      "clear-communication":"Puede que necesite más espacio debido a la hinchazón o a las prendas de compresión.",
+      "patient-understanding":"Gracias por su paciencia y comprensión."
+    },
+    "empty_section":"No se ha añadido información a esta sección.",
+    "not_provided":"No indicado",
+    "details":{"name":"Nombre","relationship":"Relación","telephone":"Teléfono"},
+    "call_emergency_contact":"Llamar al contacto de emergencia",
+    "footer": {
+      "heading":"Acerca de este perfil LymphAware",
+      "paragraph_1":"Este perfil contiene información que la persona ha elegido compartir para ayudar a otras personas a comprender mejor su linfedema y cualquier asistencia que pueda necesitar.",
+      "paragraph_2":"LymphAware facilita la comunicación y la sensibilización. No proporciona asesoramiento médico ni sustituye la evaluación o el tratamiento por profesionales sanitarios."
+    },
+    "system": {
+      "loading_title":"Cargando perfil…",
+      "loading_message":"Espere mientras se carga el perfil LymphAware.",
+      "unavailable_title":"Perfil LymphAware no disponible",
+      "unavailable_message":"Este perfil LymphAware no está disponible actualmente.",
+      "urgent_message":"Si está ayudando a una persona que necesita atención médica urgente, siga los procedimientos de emergencia adecuados."
+    }
+  },
+  "review_notes": {"purpose":"Draft fixed-text translation for review before Spanish is activated.","approval_scope":"Not approved for patient publication or card production until reviewed."}
+}
