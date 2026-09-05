@@ -177,7 +177,7 @@ export default async (request) => {
             } else if (item.item_type === 'EXTRA_CARD') {
               fulfilment.card_copies += quantity;
             } else if (item.item_type === 'LANYARD_HOLDER') {
-              fulfilment.lanyard_holders += quantity;
+              if (!item.language_name) fulfilment.lanyard_holders += quantity;
             } else if (item.item_type === 'LANGUAGE_PACKAGE') {
               fulfilment.language_packages.push({
                 language_name: item.language_name || 'Language not specified',
@@ -230,6 +230,11 @@ export default async (request) => {
         ? orderItems.find(item => item.id === languageProfile.order_item_id)
         : orderItems.find(item => item.item_type === 'LANGUAGE_PACKAGE' && (!item.language_name || item.language_name === languageProfile.language_name));
       const quantity = Math.max(1, Number(languageItem?.quantity || 1));
+      const languageLanyardItem = orderItems.find(item =>
+        item.item_type === 'LANYARD_HOLDER' &&
+        String(item.language_name || '').trim().toLowerCase() === String(languageProfile.language_name || '').trim().toLowerCase()
+      );
+      const lanyardQuantity = Math.max(0, Number(languageLanyardItem?.quantity || 0));
       const orderNumber = formatOrderNumber(order?.order_number);
 
       return {
@@ -250,7 +255,7 @@ export default async (request) => {
         fulfilment: {
           order_numbers: orderNumber ? [orderNumber] : [],
           card_copies: quantity,
-          lanyard_holders: quantity,
+          lanyard_holders: lanyardQuantity,
           language_packages: [{
             language_name: languageProfile.language_name,
             quantity
