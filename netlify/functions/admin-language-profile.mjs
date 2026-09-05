@@ -16,6 +16,8 @@ function serviceHeaders(prefer = '') {
   return headers;
 }
 
+const APPROVED_FIXED_PACKS = new Set(['FR']);
+
 async function requireAdmin(request) {
   const authHeader = request.headers.get('authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -127,7 +129,12 @@ export default async (request) => {
       if (!sourceProfile) return json({ error: 'Source profile not found.' }, 404);
 
       const assistance = await getSelectedAssistance(sourceProfile.id);
-      return json({ language_profile: languageProfile, source_profile: sourceProfile, assistance });
+      return json({
+        language_profile: languageProfile,
+        source_profile: sourceProfile,
+        assistance,
+        fixed_pack_approved: APPROVED_FIXED_PACKS.has(languageProfile.language_code)
+      });
     }
 
     if (request.method === 'POST') {
@@ -138,16 +145,18 @@ export default async (request) => {
 
       const languageProfile = await getLanguageProfile(id);
       if (!languageProfile) return json({ error: 'Language profile not found.' }, 404);
-      if (languageProfile.language_code !== 'FR') {
-        return json({ error: 'A preparation pack has not yet been approved for this language.' }, 400);
+
+      const languageName = languageProfile.language_name || 'language';
+      if (!APPROVED_FIXED_PACKS.has(languageProfile.language_code)) {
+        return json({ error: `The fixed ${languageName} language pack must be reviewed and approved before patient translation can proceed.` }, 400);
       }
 
       if (action === 'approve') {
         if (languageProfile.setup_status !== 'IN_REVIEW') {
-          return json({ error: 'The French profile must be saved for review before it can be approved.' }, 400);
+          return json({ error: `The ${languageName} profile must be saved for review before it can be approved.` }, 400);
         }
         if (!hasReviewableContent(languageProfile.translated_content || {})) {
-          return json({ error: 'There is no reviewed French content to approve.' }, 400);
+          return json({ error: `There is no reviewed ${languageName} content to approve.` }, 400);
         }
 
         const sourceProfile = await getSourceProfile(languageProfile.source_profile_id);
@@ -178,7 +187,7 @@ export default async (request) => {
 
         if (!updateResponse.ok) {
           console.error('Unable to approve language profile:', await updateResponse.text());
-          return json({ error: 'The French profile could not be approved.' }, 500);
+          return json({ error: `The ${languageName} profile could not be approved.` }, 500);
         }
 
         const rows = await updateResponse.json();
@@ -210,7 +219,7 @@ export default async (request) => {
 
       if (!updateResponse.ok) {
         console.error('Unable to save language profile draft:', await updateResponse.text());
-        return json({ error: 'The French draft could not be saved.' }, 500);
+        return json({ error: `The ${languageName} draft could not be saved.` }, 500);
       }
 
       const rows = await updateResponse.json();
