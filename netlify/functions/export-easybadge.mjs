@@ -50,6 +50,26 @@ function csvValue(value) {
   return `"${text.replace(/"/g, '""')}"`;
 }
 
+function cardCopyForLanguage(languageCode) {
+  const code = String(languageCode || '').trim().toUpperCase();
+
+  if (code === 'EN') {
+    return {
+      patient_label: 'LYMPHOEDEMA PATIENT',
+      qr_instruction: 'SCAN QR CODE to view my profile'
+    };
+  }
+
+  if (code === 'FR') {
+    return {
+      patient_label: 'PATIENT ATTEINT DE LYMPHŒDÈME',
+      qr_instruction: 'SCANNEZ LE CODE QR pour consulter mon profil'
+    };
+  }
+
+  return null;
+}
+
 export default async (request) => {
   if (request.method !== 'POST') {
     return json({ error: 'Method not allowed' }, 405);
@@ -146,6 +166,11 @@ export default async (request) => {
       return json({ error: 'The profile does not contain all information required for card production.' }, 400);
     }
 
+    const cardCopy = cardCopyForLanguage(job.language_code);
+    if (!cardCopy) {
+      return json({ error: 'Approved fixed card wording is not available for this language.' }, 400);
+    }
+
     const qrProfileUrl = `https://lymphaware.com/p/${job.qr_token}`;
     const imageUrl = `https://lymphaware.com/ebp/${job.qr_token}`;
 
@@ -155,6 +180,8 @@ export default async (request) => {
         'Display Name',
         'QR Profile URL',
         'ImageURL',
+        'Patient Label',
+        'QR Instruction',
         'Language Code',
         'Card Language'
       ].join(','),
@@ -163,6 +190,8 @@ export default async (request) => {
         csvValue(job.display_name),
         csvValue(qrProfileUrl),
         csvValue(imageUrl),
+        csvValue(cardCopy.patient_label),
+        csvValue(cardCopy.qr_instruction),
         csvValue(job.language_code),
         csvValue(job.language_name)
       ].join(',')
