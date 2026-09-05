@@ -1,3 +1,16 @@
+const FETCH_TIMEOUT_MS = 10000;
+
+async function fetchWithTimeout(url, options = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 export default async (request) => {
   if (request.method !== 'GET') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
@@ -18,7 +31,7 @@ export default async (request) => {
 
     const accessToken = authHeader.replace('Bearer ', '').trim();
 
-    const userResponse = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
+    const userResponse = await fetchWithTimeout(`${process.env.SUPABASE_URL}/auth/v1/user`, {
       headers: {
         apikey: process.env.SUPABASE_PUBLISHABLE_KEY,
         Authorization: `Bearer ${accessToken}`
@@ -48,7 +61,7 @@ export default async (request) => {
       Accept: 'application/json'
     };
 
-    const languageResponse = await fetch(
+    const languageResponse = await fetchWithTimeout(
       `${process.env.SUPABASE_URL}/rest/v1/language_profiles?select=id,user_id,source_profile_id,order_id,order_item_id,language_code,language_name,setup_status,qr_profile_active,qr_token,card_production_status,created_at,updated_at&order=created_at.asc`,
       { headers: serviceHeaders }
     );
@@ -76,7 +89,7 @@ export default async (request) => {
     const profilesById = new Map();
     if (profileIds.length) {
       const profileFilter = encodeURIComponent(`(${profileIds.join(',')})`);
-      const response = await fetch(
+      const response = await fetchWithTimeout(
         `${process.env.SUPABASE_URL}/rest/v1/profiles?id=in.${profileFilter}&select=id,display_name,lymphaware_id,photo_path,qr_token`,
         { headers: serviceHeaders }
       );
@@ -89,7 +102,7 @@ export default async (request) => {
     const ordersById = new Map();
     if (orderIds.length) {
       const orderFilter = encodeURIComponent(`(${orderIds.join(',')})`);
-      const response = await fetch(
+      const response = await fetchWithTimeout(
         `${process.env.SUPABASE_URL}/rest/v1/orders?id=in.${orderFilter}&select=id,order_number,order_status,payment_status,paid_at`,
         { headers: serviceHeaders }
       );
