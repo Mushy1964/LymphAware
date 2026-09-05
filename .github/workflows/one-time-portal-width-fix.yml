@@ -1,0 +1,36 @@
+name: One-time portal width fix
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/one-time-portal-width-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-portal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prevent replacement controls widening portal
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('portal/index.html')
+          s=p.read_text(encoding='utf-8')
+          marker='  </style>'
+          css='''    .portal-page,.portal-shell,.portal-grid,.portal-option,.replacement-options,.replacement-purchase{min-width:0;max-width:100%;box-sizing:border-box}\n    .replacement-option{grid-template-columns:24px minmax(0,1fr) 64px;width:100%;max-width:100%;box-sizing:border-box;overflow:hidden}\n    .replacement-option span{min-width:0;overflow-wrap:anywhere}\n    .replacement-option strong{width:64px;text-align:right;font-variant-numeric:tabular-nums}\n    .replacement-purchase .delivery-choice{max-width:100%;box-sizing:border-box}\n    .replacement-purchase select{max-width:100%;box-sizing:border-box}\n    @media(max-width:900px){body{overflow-x:hidden}.portal-page{overflow-x:hidden}.replacement-option{gap:10px;padding:14px 12px}.replacement-option span{font-size:.98rem;line-height:1.25}.replacement-option strong{width:58px;font-size:.96rem}.portal-accessories{overflow:hidden}.replacement-purchase{padding:12px}.replacement-total{font-size:.98rem}}\n'''
+          if marker not in s: raise SystemExit('Style close marker not found')
+          s=s.replace(marker,css+marker,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add portal/index.html
+          git commit -m "Keep portal purchase controls within mobile width"
+          git push
