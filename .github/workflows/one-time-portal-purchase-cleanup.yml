@@ -1,0 +1,96 @@
+name: One-time portal purchase cleanup
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/one-time-portal-purchase-cleanup.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-portal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Simplify member purchase controls
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('portal/index.html')
+          s=p.read_text(encoding='utf-8')
+
+          old_css="""    .replacement-options{margin-top:18px;display:grid;gap:12px}.replacement-option{display:grid;grid-template-columns:1fr auto;gap:12px;padding:14px 16px;border:1px solid #cbd8df;border-radius:12px;background:#fff}.replacement-option strong{white-space:nowrap}.additional-language-box h3{margin:0 0 6px}.additional-language-actions{margin-top:14px}.additional-language-message{margin-top:10px!important;font-weight:700}.portal-actions{margin-top:30px;display:flex;justify-content:flex-end}#portal-message{margin-top:16px;line-height:1.5}.portal-page .button{font-size:18px;font-weight:700}.payment-result{margin-bottom:24px;padding:16px 18px;border:1px solid #cbd8df;border-radius:14px;background:#fff;line-height:1.5}
+    @media(max-width:680px){.portal-page{padding:40px 16px}.portal-grid{grid-template-columns:1fr}.portal-actions{justify-content:stretch}.portal-actions .button,#pay-membership-button,#buy-language-button{width:100%}.package-option{grid-template-columns:auto 1fr}.package-option-price{grid-column:2}.replacement-option{grid-template-columns:1fr}}"""
+          new_css="""    .replacement-options{margin-top:18px;display:grid;gap:12px}.replacement-option{display:grid;grid-template-columns:auto 1fr auto;gap:13px;align-items:center;padding:16px;border:1px solid #cbd8df;border-radius:12px;background:#fff;cursor:pointer}.replacement-option:hover{border-color:#9db9c9}.replacement-option input{width:21px;height:21px;margin:0}.replacement-option span{font-weight:700}.replacement-option strong{white-space:nowrap}.replacement-purchase{margin-top:14px;padding:15px 16px;border:1px solid #cbd8df;border-radius:12px;background:#f8fbfc}.replacement-purchase[hidden],.additional-language-box[hidden]{display:none!important}.replacement-total{margin:14px 0!important;color:var(--text)!important;font-weight:700}.replacement-total strong{font-size:1.15rem}.replacement-message{margin-top:10px!important;font-weight:700}.additional-language-box{margin-top:22px!important;padding-top:20px!important;border-top:1px solid #dbe5ea!important}.additional-language-box h3{margin:0 0 6px}.additional-language-actions{margin-top:14px}.additional-language-message{margin-top:10px!important;font-weight:700}.portal-actions{margin-top:30px;display:flex;justify-content:flex-end}#portal-message{margin-top:16px;line-height:1.5}.portal-page .button{font-size:18px;font-weight:700}.payment-result{margin-bottom:24px;padding:16px 18px;border:1px solid #cbd8df;border-radius:14px;background:#fff;line-height:1.5}.mobile-home-button{display:none!important}
+    @media(max-width:680px){.portal-page{padding:32px 14px}.portal-grid{grid-template-columns:1fr;gap:16px}.portal-option{padding:22px 18px}.portal-actions{justify-content:stretch}.portal-actions .button,#pay-membership-button,#buy-language-button,#buy-replacement-button{width:100%}.package-option{grid-template-columns:auto 1fr}.package-option-price{grid-column:2}.replacement-option{grid-template-columns:auto 1fr auto}.back-to-website-button{display:none!important}.mobile-home-button{display:inline-flex!important;min-width:0!important;padding:0 16px!important}.secondary-header .header-logo{max-width:calc(100vw - 120px)!important}}"""
+          if old_css not in s: raise SystemExit('CSS block not found')
+          s=s.replace(old_css,new_css,1)
+
+          old_header='<div class="header-actions"><a href="/" class="button button-secondary back-to-website-button">Back to Website</a></div>'
+          new_header='<div class="header-actions"><a href="/" class="button button-secondary back-to-website-button">Back to Website</a><a href="/" class="button button-secondary mobile-home-button">Home</a></div>'
+          if old_header not in s: raise SystemExit('Header marker not found')
+          s=s.replace(old_header,new_header,1)
+
+          old_html="""          <h2>Additional &amp; Replacement Items</h2><p>Additional and replacement items can be purchased from your existing membership.</p>
+          <div class="replacement-options"><div class="replacement-option"><span>LymphAware ID Card</span><strong>£6.50</strong></div><div class="replacement-option"><span>LymphAware Lanyard &amp; Holder</span><strong>£6.50</strong></div></div>
+          <div class="additional-language-box"><h3>Add another language – £19.99</h3><p>Add one additional-language QR profile, translated ID card and lanyard &amp; holder.</p><label for="additional-language-code" style="margin-top:14px">Language</label><select id="additional-language-code"><option value="">Select a language</option><option value="FR">French</option></select><label for="additional-delivery-country" style="margin-top:14px">Delivery country</label><select id="additional-delivery-country"></select><p class="field-note">Languages already on your account are removed from the list.</p><div class="additional-language-actions"><button type="button" id="buy-language-button" class="button button-primary">Continue to Secure Payment – £19.99</button></div><p id="additional-language-message" class="additional-language-message"></p></div>"""
+          new_html="""          <h2>Additional &amp; Replacement Items</h2><p>Select an item only when you need another card or lanyard &amp; holder.</p>
+          <div class="replacement-options">
+            <label class="replacement-option"><input type="checkbox" id="replacement-card"><span>LymphAware ID Card</span><strong>£6.50</strong></label>
+            <label class="replacement-option"><input type="checkbox" id="replacement-lanyard"><span>LymphAware Lanyard &amp; Holder</span><strong>£6.50</strong></label>
+          </div>
+          <div id="replacement-purchase" class="replacement-purchase" hidden>
+            <div class="delivery-choice"><label for="replacement-delivery-country">Delivery country</label><select id="replacement-delivery-country"></select></div>
+            <p class="replacement-total">Selected items: <strong id="replacement-total">£0.00</strong></p>
+            <button type="button" id="buy-replacement-button" class="button button-primary">Continue to Secure Payment</button>
+            <p id="replacement-message" class="replacement-message"></p>
+          </div>
+          <div id="additional-language-box" class="additional-language-box" hidden><h3>Add another language – £19.99</h3><p>Add one additional-language QR profile, translated ID card and lanyard &amp; holder.</p><label for="additional-language-code" style="margin-top:14px">Language</label><select id="additional-language-code"><option value="">Select a language</option><option value="FR">French</option></select><label for="additional-delivery-country" style="margin-top:14px">Delivery country</label><select id="additional-delivery-country"></select><div class="additional-language-actions"><button type="button" id="buy-language-button" class="button button-primary">Continue to Secure Payment – £19.99</button></div><p id="additional-language-message" class="additional-language-message"></p></div>"""
+          if old_html not in s: raise SystemExit('Accessories HTML not found')
+          s=s.replace(old_html,new_html,1)
+
+          old_const="""const ownedPackageSummary=document.getElementById('owned-package-summary'),ownedPackageName=document.getElementById('owned-package-name'),ownedPackageIncludes=document.getElementById('owned-package-includes'),ownedPackageAdded=document.getElementById('owned-package-added');
+let currentUserId=null;"""
+          new_const="""const ownedPackageSummary=document.getElementById('owned-package-summary'),ownedPackageName=document.getElementById('owned-package-name'),ownedPackageIncludes=document.getElementById('owned-package-includes'),ownedPackageAdded=document.getElementById('owned-package-added');
+const additionalLanguageBox=document.getElementById('additional-language-box'),replacementCard=document.getElementById('replacement-card'),replacementLanyard=document.getElementById('replacement-lanyard'),replacementPurchase=document.getElementById('replacement-purchase'),replacementDeliveryCountry=document.getElementById('replacement-delivery-country'),replacementTotal=document.getElementById('replacement-total'),buyReplacementButton=document.getElementById('buy-replacement-button'),replacementMessage=document.getElementById('replacement-message');
+let currentUserId=null;"""
+          if old_const not in s: raise SystemExit('Const marker not found')
+          s=s.replace(old_const,new_const,1)
+
+          old_fill="fillCountries(membershipDeliveryCountry);fillCountries(additionalDeliveryCountry);"
+          new_fill="fillCountries(membershipDeliveryCountry);fillCountries(additionalDeliveryCountry);fillCountries(replacementDeliveryCountry);"
+          if old_fill not in s: raise SystemExit('Country fill marker not found')
+          s=s.replace(old_fill,new_fill,1)
+
+          old_show="function showPaymentResult(){const p=new URLSearchParams(location.search),payment=p.get('payment'),type=p.get('type');if(payment==='success'){paymentResult.hidden=false;paymentResult.textContent=type==='language'?'Thank you. Your additional-language order has been received.':'Thank you. We are confirming your payment and creating your LymphAware order.'}else if(payment==='cancelled'){paymentResult.hidden=false;paymentResult.textContent='Your payment was not completed. You can continue whenever you are ready.'}}"
+          new_show="function showPaymentResult(){const p=new URLSearchParams(location.search),payment=p.get('payment'),type=p.get('type');if(payment==='success'){paymentResult.hidden=false;paymentResult.textContent=type==='language'?'Thank you. Your additional-language order has been received.':type==='replacement'?'Thank you. Your replacement-item order has been received.':'Thank you. We are confirming your payment and creating your LymphAware order.'}else if(payment==='cancelled'){paymentResult.hidden=false;paymentResult.textContent='Your payment was not completed. You can continue whenever you are ready.'}}"
+          if old_show not in s: raise SystemExit('Payment result marker not found')
+          s=s.replace(old_show,new_show,1)
+
+          old_lang="function updateAvailableLanguages(profiles){const owned=new Set((profiles||[]).map(p=>String(p.language_code||'').toUpperCase()));additionalLanguageCode.innerHTML='<option value=\"\">Select a language</option>'+Object.entries(APPROVED_LANGUAGES).filter(([code])=>!owned.has(code)).map(([code,name])=>`<option value=\"${code}\">${name}</option>`).join('');buyLanguageButton.disabled=additionalLanguageCode.options.length<=1;if(buyLanguageButton.disabled)additionalLanguageMessage.textContent='There are no further approved languages available to add at present.';else additionalLanguageMessage.textContent=''}"
+          new_lang="function updateAvailableLanguages(profiles){const owned=new Set((profiles||[]).map(p=>String(p.language_code||'').toUpperCase())),available=Object.entries(APPROVED_LANGUAGES).filter(([code])=>!owned.has(code));additionalLanguageCode.innerHTML='<option value=\"\">Select a language</option>'+available.map(([code,name])=>`<option value=\"${code}\">${name}</option>`).join('');additionalLanguageBox.hidden=available.length===0;buyLanguageButton.disabled=available.length===0;additionalLanguageMessage.textContent=''}"
+          if old_lang not in s: raise SystemExit('Language function marker not found')
+          s=s.replace(old_lang,new_lang,1)
+
+          onb="async function loadOnboardingStatus(userId){const {data,error}=await supabaseClient.from('profiles').select('display_name,photo_path').eq('user_id',userId).maybeSingle();if(error){console.error(error);return}onboardingPanel.hidden=Boolean(data&&data.display_name?.trim()&&data.photo_path?.trim())}"
+          repl_fn=onb+"\nfunction updateReplacementOrder(){const total=(replacementCard.checked?650:0)+(replacementLanyard.checked?650:0);replacementPurchase.hidden=total===0;replacementTotal.textContent=`£${(total/100).toFixed(2)}`;buyReplacementButton.textContent=total?`Continue to Secure Payment – £${(total/100).toFixed(2)}`:'Continue to Secure Payment';replacementMessage.textContent=''}"
+          if onb not in s: raise SystemExit('Onboarding marker not found')
+          s=s.replace(onb,repl_fn,1)
+
+          old_listener="buyLanguageButton.addEventListener('click',()=>{if(!additionalLanguageCode.value){additionalLanguageMessage.textContent='Please select the language you would like to add.';additionalLanguageCode.focus();return}if(!additionalDeliveryCountry.value){additionalLanguageMessage.textContent='Please select your delivery country.';additionalDeliveryCountry.focus();return}startCheckout({paymentType:'additional_language',languageCode:additionalLanguageCode.value,deliveryCountry:additionalDeliveryCountry.value},buyLanguageButton,additionalLanguageMessage,()=>{buyLanguageButton.textContent='Continue to Secure Payment – £19.99'})});"
+          new_listener=old_listener+"\nreplacementCard.addEventListener('change',updateReplacementOrder);replacementLanyard.addEventListener('change',updateReplacementOrder);buyReplacementButton.addEventListener('click',()=>{if(!replacementCard.checked&&!replacementLanyard.checked)return;if(!replacementDeliveryCountry.value){replacementMessage.textContent='Please select your delivery country.';replacementDeliveryCountry.focus();return}startCheckout({paymentType:'replacement_items',replacementCard:replacementCard.checked,replacementLanyard:replacementLanyard.checked,deliveryCountry:replacementDeliveryCountry.value},buyReplacementButton,replacementMessage,updateReplacementOrder)});"
+          if old_listener not in s: raise SystemExit('Language listener marker not found')
+          s=s.replace(old_listener,new_listener,1)
+
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add portal/index.html
+          git commit -m "Simplify portal replacement and language purchases"
+          git push
