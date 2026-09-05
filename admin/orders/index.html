@@ -40,6 +40,7 @@
     .profile-ready.waiting { background: #fff7e8; color: #775c20; }
     .order-complete-action { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 14px; padding: 16px; border: 1px solid #b8d7bf; border-radius: 12px; background: var(--green-light); color: var(--green-dark); }
     .order-complete-action p { margin: 3px 0 0; line-height: 1.45; }
+    .order-complete-buttons { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
     .notice-state { margin-top: 10px; padding: 11px 13px; border-radius: 10px; font-weight: 700; }
     .notice-state.sent { background: var(--green-light); color: var(--green-dark); }
     .notice-state.pending { background: #fff7e8; color: #775c20; }
@@ -55,6 +56,7 @@
       .admin-nav .button { width: 100%; }
       .order-complete-action { align-items: stretch; flex-direction: column; }
       .order-complete-action .button { width: 100%; }
+      .order-complete-buttons { flex-direction: column; }
     }
   </style>
 </head>
@@ -74,7 +76,7 @@
     <section class="admin-shell">
       <div class="admin-heading">
         <p class="eyebrow">Private Administration Area</p>
-        <h1>Order Details</h1>
+        <h1 id="order-heading">Order Details</h1>
         <p>These are the full details for orders still being processed. Completed orders are kept separately in Completed Orders.</p>
       </div>
 
@@ -104,6 +106,7 @@
     const newCount = document.getElementById('new-count');
     const readyCount = document.getElementById('ready-count');
     const totalCount = document.getElementById('total-count');
+    const selectedOrderId = new URLSearchParams(window.location.search).get('order');
 
     function escapeHtml(value) {
       return String(value ?? '')
@@ -128,22 +131,32 @@
       return ['Awaiting profile', 'status-waiting'];
     }
 
+    function fulfilmentDetails(order) {
+      const items = order.items || [];
+      const hasMembership = items.some(item => item.item_type === 'MEMBERSHIP');
+      const englishCards = (hasMembership ? 1 : 0) + items.filter(item => item.item_type === 'EXTRA_CARD').reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+      const lanyards = (hasMembership ? 1 : 0) + items.filter(item => item.item_type === 'LANYARD_HOLDER').reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+      const languageCards = [];
+      for (const item of items.filter(item => item.item_type === 'LANGUAGE_PACKAGE')) {
+        const name = item.language_name || 'Additional-language';
+        const existing = languageCards.find(entry => entry.name.toLowerCase() === name.toLowerCase());
+        if (existing) existing.quantity += Number(item.quantity || 0);
+        else languageCards.push({ name, quantity: Number(item.quantity || 0) });
+      }
+      const parts = [];
+      if (englishCards) parts.push(`${englishCards} English ID card${englishCards === 1 ? '' : 's'}`);
+      languageCards.forEach(entry => parts.push(`${entry.quantity} ${entry.name} ID card${entry.quantity === 1 ? '' : 's'}`));
+      if (lanyards) parts.push(`${lanyards} lanyard${lanyards === 1 ? '' : 's'} & holder${lanyards === 1 ? '' : 's'}`);
+      return { englishCards, languageCards, lanyards, text: parts.join(' · ') || 'No physical items recorded', lines: parts };
+    }
+
     function packageSummary(order) {
       const items = order.items || [];
       const membership = items.find(item => item.item_type === 'MEMBERSHIP');
-      const language = items.find(item => item.item_type === 'LANGUAGE_PACKAGE');
-      const languageName = language?.language_name || 'additional language';
-      if (['LANGUAGE_PACKAGE', 'ADDITIONAL_LANGUAGE'].includes(order.order_type)) {
-        return { name: `Additional Language Package – ${languageName}`, fulfilment: `1 ${languageName} ID card · 1 lanyard & holder` };
-      }
-      const description = String(membership?.description || '');
-      if (description.includes('Multilingual')) {
-        return { name: '5-Year Multilingual', fulfilment: `2 English ID cards · 2 ${languageName} ID cards · 2 lanyards & holders` };
-      }
-      if (description.includes('Plus')) {
-        return { name: '5-Year Plus', fulfilment: '2 English ID cards · 2 lanyards & holders' };
-      }
-      return { name: '5-Year Membership', fulfilment: '1 English ID card · 1 lanyard & holder' };
+      const languages = [...new Set(items.filter(item => item.item_type === 'LANGUAGE_PACKAGE').map(item => item.language_name || 'Additional'))];
+      let name = String(membership?.description || '').replace(/^LymphAware\s+/i, '') || (languages.length ? `${languages.join(' + ')} Language Package` : 'Replacement Items');
+      if (membership && languages.length && !/multilingual/i.test(name)) name += ` + ${languages.join(' + ')} Language Package`;
+      return { name, fulfilment: fulfilmentDetails(order).text };
     }
 
     function addressHtml(order) {
@@ -245,6 +258,7 @@
 
     function renderOrders(orders) {
       orders = orders.filter(order => !['COMPLETED', 'CANCELLED', 'REFUNDED'].includes(order.order_status));
+      if (selectedOrderId) orders = orders.filter(order => order.id === selectedOrderId);
       orderList.innerHTML = '';
       totalCount.textContent = orders.length;
       newCount.textContent = orders.filter(order => !order.profile_ready && !['COMPLETED','PRINTED'].includes(order.order_status)).length;
@@ -253,9 +267,11 @@
       if (!orders.length) {
         loading.style.display = 'none';
         orderList.hidden = false;
-        orderList.innerHTML = '<div class="empty">No paid LymphAware orders have been received yet.</div>';
+        orderList.innerHTML = selectedOrderId ? '<div class="empty">This order is no longer awaiting processing. <a href="/admin/completed-orders/">Check Completed Orders</a> or return to <a href="/admin/">Orders to Process</a>.</div>' : '<div class="empty">No LymphAware orders are currently awaiting processing.</div>';
         return;
       }
+
+      if (selectedOrderId && orders[0]) document.getElementById('order-heading').textContent = `Order ${orderRef(orders[0].order_number)}`;
 
       for (const order of orders) {
         const [label, statusClass] = statusLabel(order);
@@ -320,7 +336,7 @@
               ? 'Display name and photograph are present. Use Card Production when the profile reaches the existing READY stage.'
               : 'Do not print yet. The member still needs to provide both a display name and photograph.'}
           </div>
-          ${order.ready_to_complete ? `<div class="order-complete-action"><div><strong>Ready to complete</strong><p>All required cards are marked as printed. Check that the order is packed before moving it to Completed Orders.</p></div><button type="button" class="button button-primary complete-order" data-order-id="${escapeHtml(order.id)}">Move to Completed Orders</button></div>` : ''}
+          ${order.ready_to_complete ? `<div class="order-complete-action"><div><strong>Ready to complete</strong><p>All required cards are marked as printed. Print the welcome letter and check that everything is packed before completing the order.</p></div><div class="order-complete-buttons"><a class="button button-secondary" href="/admin/welcome-letter/?order=${encodeURIComponent(order.id)}" target="_blank" rel="noopener">Print Welcome Letter</a><button type="button" class="button button-primary complete-order" data-order-id="${escapeHtml(order.id)}">Move to Completed Orders</button></div></div>` : ''}
         `;
 
         orderList.appendChild(card);
