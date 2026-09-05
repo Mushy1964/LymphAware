@@ -393,8 +393,8 @@
         Card production control.
       </strong>
 
-      EasyBadge exports are generated fresh from all cards currently marked Ready.
-      Check the patient's name, photograph, LymphAware ID and QR code before printing,
+      EasyBadge exports are generated fresh from all cards currently marked Ready, including approved additional-language cards.
+      Check the patient's name, photograph, LymphAware ID, QR code and card language before printing,
       and use the fulfilment quantities shown on each job for duplicate cards and lanyards.
 
     </div>
@@ -745,7 +745,7 @@
           ${escapeHtml(
             profile.lymphaware_id ||
             'No LymphAware ID'
-          )}
+          )} · ${escapeHtml(profile.language_name || 'English')}
         </span>
 
       </div>
@@ -872,7 +872,8 @@
           <button
             type="button"
             class="button button-secondary mark-printed"
-            data-profile-id="${escapeHtml(profile.id)}">
+            data-profile-id="${escapeHtml(profile.id)}"
+            data-record-type="${escapeHtml(profile.record_type || 'PRIMARY')}">
             Mark as Printed
           </button>
         `
@@ -884,7 +885,8 @@
             <button
               type="button"
               class="button button-primary easybadge-export"
-              data-profile-id="${escapeHtml(profile.id)}">
+              data-profile-id="${escapeHtml(profile.id)}"
+              data-record-type="${escapeHtml(profile.record_type || 'PRIMARY')}">
               Prepare for EasyBadge
             </button>
           `
@@ -907,6 +909,9 @@
               'No LymphAware ID'
             )}
           </p>
+          <p class="production-id" style="margin-top:5px;">
+            Card language: ${escapeHtml(profile.language_name || 'English')} (${escapeHtml(profile.language_code || 'EN')})
+          </p>
         </div>
 
         <span class="production-status">
@@ -923,9 +928,11 @@
           <span>Card copies: <strong>${cardCopies}</strong></span>
           <span>Lanyard &amp; holders: <strong>${lanyardHolders}</strong></span>
         </div>
-        ${languageSummary
-          ? `<div class="production-language-note">Additional language package: ${languageSummary} — separate language card/profile setup required.</div>`
-          : ''}
+        ${profile.record_type === 'LANGUAGE'
+          ? `<div class="production-language-note">Additional-language card ready: ${escapeHtml(profile.language_name || 'Language')} (${escapeHtml(profile.language_code || '')}).</div>`
+          : languageSummary
+            ? `<div class="production-language-note">Additional language package: ${languageSummary} — separate language card/profile setup required.</div>`
+            : ''}
       </div>
 
       <div class="production-details">
@@ -970,6 +977,7 @@
         () => {
           exportEasyBadge(
             button.dataset.profileId,
+            button.dataset.recordType || 'PRIMARY',
             button
           );
         }
@@ -988,6 +996,7 @@
         () => {
           markCardPrinted(
             button.dataset.profileId,
+            button.dataset.recordType || 'PRIMARY',
             button
           );
         }
@@ -999,6 +1008,7 @@
     
 async function exportEasyBadge(
   profileId,
+  recordType,
   button
 ) {
 
@@ -1036,7 +1046,8 @@ async function exportEasyBadge(
 
           body:
             JSON.stringify({
-              profile_id: profileId
+              profile_id: profileId,
+              record_type: recordType
             })
         }
       );
@@ -1078,7 +1089,7 @@ async function exportEasyBadge(
       downloadUrl;
 
     link.download =
-      'LymphAware_EasyBadge_Test.csv';
+      'LymphAware_EasyBadge.csv';
 
     document.body.appendChild(link);
 
@@ -1192,7 +1203,7 @@ async function exportAllEasyBadge() {
       downloadUrl;
 
     link.download =
-      'LymphAware_EasyBadge_Test.csv';
+      'LymphAware_EasyBadge.csv';
 
     document.body.appendChild(link);
 
@@ -1225,6 +1236,7 @@ async function exportAllEasyBadge() {
 }
     async function markCardPrinted(
   profileId,
+  recordType,
   button
 ) {
 
@@ -1282,7 +1294,9 @@ async function exportAllEasyBadge() {
           body:
             JSON.stringify({
               profile_id:
-                profileId
+                profileId,
+              record_type:
+                recordType
             })
         }
       );
