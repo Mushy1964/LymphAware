@@ -19,7 +19,6 @@ function serviceHeaders() {
 async function getUser(request) {
   const authHeader = request.headers.get('authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
-
   const accessToken = authHeader.replace('Bearer ', '').trim();
   const response = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
     headers: {
@@ -27,7 +26,6 @@ async function getUser(request) {
       Authorization: `Bearer ${accessToken}`
     }
   });
-
   if (!response.ok) return null;
   const user = await response.json();
   return user?.id ? user : null;
@@ -49,7 +47,6 @@ function packageFromItems(items) {
         : '2 QR profiles · 2 English ID cards · 2 translated-language ID cards · 2 lanyards & holders'
     };
   }
-
   if (description.includes('Plus')) {
     return {
       code: 'PLUS',
@@ -58,7 +55,6 @@ function packageFromItems(items) {
       included_summary: '1 English QR profile · 2 English ID cards · 2 lanyards & holders'
     };
   }
-
   return {
     code: 'STANDARD',
     name: '5-Year Membership',
@@ -78,7 +74,6 @@ export default async (request) => {
       `${process.env.SUPABASE_URL}/rest/v1/orders?user_id=eq.${encodeURIComponent(user.id)}&payment_status=eq.PAID&select=id,order_type,paid_at&order=paid_at.asc`,
       { headers: serviceHeaders() }
     );
-
     if (!ordersResponse.ok) {
       console.error('Unable to load member orders:', await ordersResponse.text());
       return json({ error: 'Package information could not be loaded.' }, 500);
@@ -93,7 +88,6 @@ export default async (request) => {
       `${process.env.SUPABASE_URL}/rest/v1/order_items?order_id=in.(${encodedIds})&select=id,order_id,item_type,description,quantity,language_code,language_name&order=created_at.asc`,
       { headers: serviceHeaders() }
     );
-
     if (!itemsResponse.ok) {
       console.error('Unable to load member order items:', await itemsResponse.text());
       return json({ error: 'Package information could not be loaded.' }, 500);
@@ -110,16 +104,13 @@ export default async (request) => {
     const packageInfo = initialOrder ? packageFromItems(itemsByOrder.get(initialOrder.id) || []) : null;
 
     const extraLanguages = [];
-    for (const order of orders.filter(order => order.order_type === 'ADDITIONAL_LANGUAGE')) {
+    for (const order of orders.filter(order => ['LANGUAGE_PACKAGE', 'ADDITIONAL_LANGUAGE'].includes(order.order_type))) {
       const languageItem = (itemsByOrder.get(order.id) || []).find(item => item.item_type === 'LANGUAGE_PACKAGE');
       const languageName = String(languageItem?.language_name || '').trim();
       if (languageName && !extraLanguages.includes(languageName)) extraLanguages.push(languageName);
     }
 
-    return json({
-      package: packageInfo,
-      additional_languages: extraLanguages
-    });
+    return json({ package: packageInfo, additional_languages: extraLanguages });
   } catch (error) {
     console.error('Member package summary error:', error);
     return json({ error: 'Package information could not be loaded.' }, 500);
