@@ -11,18 +11,12 @@ function verifyStripeSignature(payload, signatureHeader, secret) {
     if (key === 'v1') signatures.push(value);
   }
   if (!timestamp || signatures.length === 0) return false;
-
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(`${timestamp}.${payload}`, 'utf8')
-    .digest('hex');
+  const expectedSignature = crypto.createHmac('sha256', secret).update(`${timestamp}.${payload}`, 'utf8').digest('hex');
   const expectedBuffer = Buffer.from(expectedSignature, 'hex');
-
   return signatures.some((signature) => {
     try {
       const receivedBuffer = Buffer.from(signature, 'hex');
-      return receivedBuffer.length === expectedBuffer.length &&
-        crypto.timingSafeEqual(receivedBuffer, expectedBuffer);
+      return receivedBuffer.length === expectedBuffer.length && crypto.timingSafeEqual(receivedBuffer, expectedBuffer);
     } catch {
       return false;
     }
@@ -52,14 +46,11 @@ function normaliseItem(item) {
 }
 
 async function patchOrder(orderId, values) {
-  const response = await fetch(
-    `${process.env.SUPABASE_URL}/rest/v1/orders?id=eq.${orderId}`,
-    {
-      method: 'PATCH',
-      headers: supabaseHeaders('return=minimal'),
-      body: JSON.stringify({ ...values, updated_at: new Date().toISOString() })
-    }
-  );
+  const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/orders?id=eq.${orderId}`, {
+    method: 'PATCH',
+    headers: supabaseHeaders('return=minimal'),
+    body: JSON.stringify({ ...values, updated_at: new Date().toISOString() })
+  });
   if (!response.ok) console.error('Unable to update LymphAware order:', await response.text());
 }
 
@@ -78,7 +69,6 @@ async function sendOrderNotification(order, session, items) {
     const language = item.language_name ? ` – ${item.language_name}` : '';
     return `${item.quantity} × ${item.description}${language}`;
   }).join('\n');
-
   const customerName = session.customer_details?.name || session.customer_email || 'Customer';
   const customerEmail = session.customer_details?.email || session.customer_email || '';
   const totalPaid = `£${((session.amount_total || 0) / 100).toFixed(2)}`;
@@ -99,19 +89,13 @@ async function sendOrderNotification(order, session, items) {
           `Open LymphAware Administration to manage fulfilment:\nhttps://lymphaware.com/admin/orders/`
       })
     });
-
     if (!response.ok) {
       const error = await response.text();
       await patchOrder(order.id, { notification_status: 'FAILED', notification_error: error, notification_sent_at: null });
       return { ok: false, error };
     }
-
     const result = await response.json();
-    await patchOrder(order.id, {
-      notification_status: 'SENT',
-      notification_error: null,
-      notification_sent_at: new Date().toISOString()
-    });
+    await patchOrder(order.id, { notification_status: 'SENT', notification_error: null, notification_sent_at: new Date().toISOString() });
     return { ok: true, id: result?.id || null };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -136,14 +120,11 @@ async function ensureOrderItems(orderId, items) {
     { headers: supabaseHeaders() }
   );
   if (!existingResponse.ok) return { ok: false, error: await existingResponse.text() };
-
   const existing = await existingResponse.json();
   const existingKeys = new Set(existing.map((item) => `${item.item_type}|${item.language_name || ''}`));
-  const missing = items
-    .map(normaliseItem)
+  const missing = items.map(normaliseItem)
     .filter((item) => !existingKeys.has(`${item.item_type}|${item.language_name || ''}`))
     .map((item) => ({ ...item, order_id: orderId }));
-
   if (!missing.length) return { ok: true };
   const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/order_items`, {
     method: 'POST',
@@ -162,58 +143,61 @@ function buildInitialItems(packageType, languageCode, languageName) {
       normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Additional Lanyard & Holder – included in Plus package', quantity: 1, unit_price_pence: 0, line_total_pence: 0 })
     ];
   }
-
   if (packageType === 'MULTILINGUAL') {
     return [
       normaliseItem({ item_type: 'MEMBERSHIP', description: 'LymphAware 5-Year Multilingual', quantity: 1, unit_price_pence: 4999, line_total_pence: 4999 }),
       normaliseItem({ item_type: 'EXTRA_CARD', description: 'Second English ID Card – included in Multilingual package', quantity: 1, unit_price_pence: 0, line_total_pence: 0 }),
-      normaliseItem({
-        item_type: 'LANGUAGE_PACKAGE',
-        description: 'Multilingual translated ID Cards & QR Profile',
-        quantity: 2,
-        unit_price_pence: 0,
-        line_total_pence: 0,
-        language_code: languageCode,
-        language_name: languageName
-      }),
-      normaliseItem({
-        item_type: 'LANYARD_HOLDER',
-        description: 'Translated-language Lanyard & Holder – included in Multilingual package',
-        quantity: 1,
-        unit_price_pence: 0,
-        line_total_pence: 0,
-        language_code: languageCode,
-        language_name: languageName
-      })
+      normaliseItem({ item_type: 'LANGUAGE_PACKAGE', description: 'Multilingual translated ID Cards & QR Profile', quantity: 2, unit_price_pence: 0, line_total_pence: 0, language_code: languageCode, language_name: languageName }),
+      normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Translated-language Lanyard & Holder – included in Multilingual package', quantity: 1, unit_price_pence: 0, line_total_pence: 0, language_code: languageCode, language_name: languageName })
     ];
   }
-
-  return [
-    normaliseItem({ item_type: 'MEMBERSHIP', description: 'LymphAware 5-Year Membership', quantity: 1, unit_price_pence: 2999, line_total_pence: 2999 })
-  ];
+  return [normaliseItem({ item_type: 'MEMBERSHIP', description: 'LymphAware 5-Year Membership', quantity: 1, unit_price_pence: 2999, line_total_pence: 2999 })];
 }
 
 function buildAdditionalLanguageItems(languageCode, languageName) {
   return [
-    normaliseItem({
-      item_type: 'LANGUAGE_PACKAGE',
-      description: 'Additional Language Package',
-      quantity: 1,
-      unit_price_pence: 1999,
-      line_total_pence: 1999,
-      language_code: languageCode,
-      language_name: languageName
-    }),
-    normaliseItem({
-      item_type: 'LANYARD_HOLDER',
-      description: 'Lanyard & Holder – included in Additional Language Package',
-      quantity: 1,
-      unit_price_pence: 0,
-      line_total_pence: 0,
-      language_code: languageCode,
-      language_name: languageName
-    })
+    normaliseItem({ item_type: 'LANGUAGE_PACKAGE', description: 'Additional Language Package', quantity: 1, unit_price_pence: 1999, line_total_pence: 1999, language_code: languageCode, language_name: languageName }),
+    normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Lanyard & Holder – included in Additional Language Package', quantity: 1, unit_price_pence: 0, line_total_pence: 0, language_code: languageCode, language_name: languageName })
   ];
+}
+
+function buildReplacementItems(cardSelected, lanyardSelected) {
+  const items = [];
+  if (cardSelected) {
+    items.push(normaliseItem({ item_type: 'EXTRA_CARD', description: 'Replacement LymphAware ID Card', quantity: 1, unit_price_pence: 650, line_total_pence: 650 }));
+  }
+  if (lanyardSelected) {
+    items.push(normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Replacement Lanyard & Holder', quantity: 1, unit_price_pence: 650, line_total_pence: 650 }));
+  }
+  return items;
+}
+
+async function reopenPrimaryCardForReplacement(userId) {
+  const profileResponse = await fetch(
+    `${process.env.SUPABASE_URL}/rest/v1/profiles?user_id=eq.${encodeURIComponent(userId)}&select=id,display_name,photo_path,qr_token,qr_profile_active&limit=1`,
+    { headers: supabaseHeaders() }
+  );
+  if (!profileResponse.ok) return;
+  const rows = await profileResponse.json();
+  const profile = rows?.[0];
+  if (!profile?.id || !profile.display_name?.trim() || !profile.photo_path?.trim() || !profile.qr_token || profile.qr_profile_active !== true) return;
+
+  const now = new Date().toISOString();
+  const updateResponse = await fetch(
+    `${process.env.SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(profile.id)}`,
+    {
+      method: 'PATCH',
+      headers: supabaseHeaders('return=minimal'),
+      body: JSON.stringify({
+        card_production_status: 'READY',
+        card_ready_at: now,
+        card_prepared_at: null,
+        card_printed_at: null,
+        updated_at: now
+      })
+    }
+  );
+  if (!updateResponse.ok) console.error('Unable to reopen replacement card job:', await updateResponse.text());
 }
 
 export default async (request) => {
@@ -223,10 +207,7 @@ export default async (request) => {
     const payload = await request.text();
     const stripeSignature = request.headers.get('stripe-signature');
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-    if (!verifyStripeSignature(payload, stripeSignature, webhookSecret)) {
-      return new Response('Invalid signature', { status: 400 });
-    }
+    if (!verifyStripeSignature(payload, stripeSignature, webhookSecret)) return new Response('Invalid signature', { status: 400 });
 
     const event = JSON.parse(payload);
     if (event.type !== 'checkout.session.completed') {
@@ -237,8 +218,7 @@ export default async (request) => {
     const userId = session?.metadata?.lymphaware_user_id;
     const membershipId = session?.metadata?.membership_id || null;
     const paymentType = String(session?.metadata?.payment_type || '').trim();
-
-    if (!userId || !['initial_membership', 'additional_language'].includes(paymentType)) {
+    if (!userId || !['initial_membership', 'additional_language', 'replacement_items'].includes(paymentType)) {
       return new Response('Invalid payment metadata', { status: 400 });
     }
 
@@ -251,6 +231,8 @@ export default async (request) => {
     const packageType = String(session.metadata?.package_type || 'STANDARD').trim().toUpperCase();
     const languageName = String(session.metadata?.language_name || '').trim();
     const languageCode = String(session.metadata?.language_code || '').trim().toUpperCase();
+    const replacementCard = String(session.metadata?.replacement_card || '') === '1';
+    const replacementLanyard = String(session.metadata?.replacement_lanyard || '') === '1';
 
     if (paymentType === 'initial_membership') {
       const membershipEnd = new Date(paidAt);
@@ -261,14 +243,8 @@ export default async (request) => {
           method: 'PATCH',
           headers: supabaseHeaders('return=minimal'),
           body: JSON.stringify({
-            membership_status: 'ACTIVE',
-            payment_status: 'PAID',
-            payment_provider: 'STRIPE',
-            payment_reference: session.id,
-            paid_at: paidAt.toISOString(),
-            membership_start: paidAt.toISOString(),
-            membership_end: membershipEnd.toISOString(),
-            updated_at: paidAt.toISOString()
+            membership_status: 'ACTIVE', payment_status: 'PAID', payment_provider: 'STRIPE', payment_reference: session.id,
+            paid_at: paidAt.toISOString(), membership_start: paidAt.toISOString(), membership_end: membershipEnd.toISOString(), updated_at: paidAt.toISOString()
           })
         }
       );
@@ -280,17 +256,24 @@ export default async (request) => {
 
     const items = paymentType === 'initial_membership'
       ? buildInitialItems(packageType, languageCode, languageName)
-      : buildAdditionalLanguageItems(languageCode, languageName);
+      : paymentType === 'additional_language'
+        ? buildAdditionalLanguageItems(languageCode, languageName)
+        : buildReplacementItems(replacementCard, replacementLanyard);
 
     const expectedSubtotal = items.reduce((sum, item) => sum + item.line_total_pence, 0);
     const shipping = session.collected_information?.shipping_details || session.shipping_details || null;
     const address = shipping?.address || session.customer_details?.address || {};
     const deliveryName = shipping?.name || session.customer_details?.name || null;
+    const orderType = paymentType === 'initial_membership'
+      ? 'INITIAL_MEMBERSHIP'
+      : paymentType === 'additional_language'
+        ? 'LANGUAGE_PACKAGE'
+        : 'REPLACEMENT';
 
     const orderPayload = {
       user_id: userId,
       membership_id: membershipId,
-      order_type: paymentType === 'initial_membership' ? 'INITIAL_MEMBERSHIP' : 'ADDITIONAL_LANGUAGE',
+      order_type: orderType,
       order_status: 'PAID_AWAITING_PROFILE',
       payment_status: 'PAID',
       stripe_checkout_session_id: session.id,
@@ -317,7 +300,6 @@ export default async (request) => {
       headers: supabaseHeaders('return=representation'),
       body: JSON.stringify(orderPayload)
     });
-
     if (orderResponse.ok) {
       const createdOrders = await orderResponse.json();
       order = createdOrders?.[0] || null;
@@ -329,7 +311,6 @@ export default async (request) => {
       }
       order = await getExistingOrder(session.id);
     }
-
     if (!order?.id) return new Response('Order could not be resolved', { status: 500 });
 
     const itemResult = await ensureOrderItems(order.id, items);
@@ -338,12 +319,13 @@ export default async (request) => {
       return new Response('Order item creation failed', { status: 500 });
     }
 
+    if (paymentType === 'replacement_items' && replacementCard) {
+      await reopenPrimaryCardForReplacement(userId);
+    }
+
     if (order.notification_status !== 'SENT') await sendOrderNotification(order, session, items);
 
-    return new Response(JSON.stringify({ received: true }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return new Response(JSON.stringify({ received: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
   } catch (error) {
     console.error('Stripe webhook error:', error);
     return new Response('Webhook processing failed', { status: 500 });
