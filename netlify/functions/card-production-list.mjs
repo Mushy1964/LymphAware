@@ -191,18 +191,36 @@ export default async (request) => {
       }
     }
 
-    const primaryJobs = (primaryProfiles || []).map(profile => ({
-      ...profile,
-      record_type: 'PRIMARY',
-      language_code: 'EN',
-      language_name: 'English',
-      fulfilment: fulfilmentByUser.get(profile.user_id) || {
+    const activeLanguageKeys = new Set(
+      (languageProfiles || []).map(row =>
+        `${row.user_id || ''}|${String(row.language_name || '').trim().toLowerCase()}`
+      )
+    );
+
+    const primaryJobs = (primaryProfiles || []).map(profile => {
+      const baseFulfilment = fulfilmentByUser.get(profile.user_id) || {
         order_numbers: [],
         card_copies: 1,
         lanyard_holders: 1,
         language_packages: []
-      }
-    }));
+      };
+
+      return {
+        ...profile,
+        record_type: 'PRIMARY',
+        language_code: 'EN',
+        language_name: 'English',
+        fulfilment: {
+          ...baseFulfilment,
+          language_packages: (baseFulfilment.language_packages || []).map(item => ({
+            ...item,
+            setup_complete: activeLanguageKeys.has(
+              `${profile.user_id || ''}|${String(item.language_name || '').trim().toLowerCase()}`
+            )
+          }))
+        }
+      };
+    });
 
     const languageJobs = (languageProfiles || []).map(languageProfile => {
       const source = sourceById.get(languageProfile.source_profile_id) || {};
@@ -232,7 +250,7 @@ export default async (request) => {
         fulfilment: {
           order_numbers: orderNumber ? [orderNumber] : [],
           card_copies: quantity,
-          lanyard_holders: 0,
+          lanyard_holders: quantity,
           language_packages: [{
             language_name: languageProfile.language_name,
             quantity

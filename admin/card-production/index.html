@@ -866,6 +866,20 @@
           .join(', ')
       : '';
 
+    const completedLanguageSummary = languagePackages.length
+      ? languagePackages
+          .filter(item => item.setup_complete === true)
+          .map(item => `${escapeHtml(item.language_name || 'Language')} × ${Number(item.quantity || 0)}`)
+          .join(', ')
+      : '';
+
+    const pendingLanguageSummary = languagePackages.length
+      ? languagePackages
+          .filter(item => item.setup_complete !== true)
+          .map(item => `${escapeHtml(item.language_name || 'Language')} × ${Number(item.quantity || 0)}`)
+          .join(', ')
+      : '';
+
     const printedButton =
       status === 'PREPARED'
         ? `
@@ -930,9 +944,11 @@
         </div>
         ${profile.record_type === 'LANGUAGE'
           ? `<div class="production-language-note">Additional-language card ready: ${escapeHtml(profile.language_name || 'Language')} (${escapeHtml(profile.language_code || '')}).</div>`
-          : languageSummary
-            ? `<div class="production-language-note">Additional language package: ${languageSummary} — separate language card/profile setup required.</div>`
-            : ''}
+          : completedLanguageSummary
+            ? `<div class="production-language-note">Additional language card ready: ${completedLanguageSummary} — see the separate language card job.</div>`
+            : pendingLanguageSummary
+              ? `<div class="production-language-note">Additional language package: ${pendingLanguageSummary} — language card/profile setup still required.</div>`
+              : ''}
       </div>
 
       <div class="production-details">
