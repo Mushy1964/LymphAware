@@ -181,29 +181,30 @@ export default async (request) => {
       ].join(','));
     });
 
-    const csv = rows.join('\r\n');
-    const preparedAt = new Date().toISOString();
+    const primaryIds = jobs.filter(job => job.record_type === 'PRIMARY').map(job => job.record_id);
+    const languageIds = jobs.filter(job => job.record_type === 'LANGUAGE').map(job => job.record_id);
 
-    for (const job of jobs) {
-      const table = job.record_type === 'LANGUAGE' ? 'language_profiles' : 'profiles';
-      const preparedResponse = await fetch(
-        `${process.env.SUPABASE_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(job.record_id)}`,
-        {
-          method: 'PATCH',
-          headers: serviceHeaders('return=minimal'),
-          body: JSON.stringify({
-            card_production_status: 'PREPARED',
-            card_prepared_at: preparedAt,
-            updated_at: preparedAt
-          })
-        }
-      );
-
-      if (!preparedResponse.ok) {
-        console.error(`Unable to mark ${job.lymphaware_id} ${job.language_code} as prepared:`, await preparedResponse.text());
-        return json({ error: 'The EasyBadge batch was created, but one or more card statuses could not be updated.' }, 500);
+    const prepareResponse = await fetch(
+      `${process.env.SUPABASE_URL}/rest/v1/rpc/prepare_easybadge_batch`,
+      {
+        method: 'POST',
+        headers: {
+          ...serviceHeaders(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          primary_ids: primaryIds,
+          language_ids: languageIds
+        })
       }
+    );
+
+    if (!prepareResponse.ok) {
+      console.error('Unable to prepare EasyBadge batch transactionally:', await prepareResponse.text());
+      return json({ error: 'The EasyBadge batch could not be prepared. No card statuses were changed.' }, 500);
     }
+
+    const csv = rows.join('\r\n');
 
     return new Response(csv, {
       status: 200,
