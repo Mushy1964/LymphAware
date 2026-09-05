@@ -1,0 +1,45 @@
+name: One-time profile single Portal button fix
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/one-time-profile-single-portal-button.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-profile-header:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Replace duplicate Portal controls with one responsive button
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('profile-v2/index.html')
+          s = p.read_text(encoding='utf-8')
+
+          old = '<div class="header-actions"><a href="/portal/" class="button button-secondary back-to-website-button">Back to Portal</a><a href="/portal/" class="button button-secondary mobile-home-button">Portal</a></div>'
+          new = '<div class="header-actions"><a href="/portal/" class="button button-secondary profile-portal-button"><span class="profile-portal-desktop">Back to Portal</span><span class="profile-portal-mobile">Portal</span></a></div>'
+          if old not in s:
+              raise SystemExit('Duplicate Portal button markup not found')
+          s = s.replace(old, new, 1)
+
+          marker = '.unsaved-dialog[hidden]{display:none!important}'
+          css = '.profile-portal-button{display:inline-flex!important;align-items:center;justify-content:center;min-width:150px;min-height:46px;padding:0 22px!important;border-radius:10px;white-space:nowrap}.profile-portal-mobile{display:none}@media(max-width:900px){.profile-portal-button{min-width:72px!important;min-height:44px!important;padding:0 12px!important}.profile-portal-desktop{display:none}.profile-portal-mobile{display:inline}}\n'
+          if marker not in s:
+              raise SystemExit('CSS insertion marker not found')
+          s = s.replace(marker, css + marker, 1)
+
+          p.write_text(s, encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add profile-v2/index.html
+          git commit -m "Use one responsive Portal button on profile page"
+          git push
