@@ -1,193 +1,134 @@
-export default async (request) => {
+function json(body, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-store'
+    }
+  });
+}
 
-  if (request.method !== 'GET') {
-    return new Response(
-      JSON.stringify({
-        error: 'Method not allowed'
-      }),
-      {
-        status: 405,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+function serviceHeaders() {
+  return {
+    apikey: process.env.SUPABASE_SECRET_KEY,
+    Authorization: `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
+    Accept: 'application/json'
+  };
+}
+
+async function requireAdmin(request) {
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return { error: json({ error: 'Authentication required.' }, 401) };
   }
 
+  const accessToken = authHeader.replace('Bearer ', '').trim();
+  const userResponse = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
+    headers: {
+      apikey: process.env.SUPABASE_PUBLISHABLE_KEY,
+      Authorization: `Bearer ${accessToken}`
+    }
+  });
+
+  if (!userResponse.ok) {
+    return { error: json({ error: 'Unable to verify your account.' }, 401) };
+  }
+
+  const user = await userResponse.json();
+  const adminEmail = String(process.env.LYMPHAWARE_ADMIN_EMAIL || '').trim().toLowerCase();
+  if (!user?.email || user.email.toLowerCase() !== adminEmail) {
+    return { error: json({ error: 'Administrator access required.' }, 403) };
+  }
+
+  return { user };
+}
+
+export default async (request) => {
+  if (request.method !== 'GET') {
+    return json({ error: 'Method not allowed' }, 405);
+  }
+
+  const auth = await requireAdmin(request);
+  if (auth.error) return auth.error;
+
   try {
+    const headers = serviceHeaders();
 
-    const authHeader =
-      request.headers.get('authorization');
-
-
-    if (
-      !authHeader ||
-      !authHeader.startsWith('Bearer ')
-    ) {
-      return new Response(
-        JSON.stringify({
-          error: 'Authentication required.'
-        }),
-        {
-          status: 401,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-    }
-
-
-    const accessToken =
-      authHeader.replace('Bearer ', '').trim();
-
-
-    /*
-     * Confirm the signed-in user.
-     */
-    const userResponse =
-      await fetch(
-        `${process.env.SUPABASE_URL}/auth/v1/user`,
-        {
-          headers: {
-            apikey:
-              process.env.SUPABASE_PUBLISHABLE_KEY,
-
-            Authorization:
-              `Bearer ${accessToken}`
-          }
-        }
-      );
-
-
-    if (!userResponse.ok) {
-      return new Response(
-        JSON.stringify({
-          error: 'Unable to verify your account.'
-        }),
-        {
-          status: 401,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-    }
-
-
-    const user =
-      await userResponse.json();
-
-
-    const adminEmail =
-      String(
-        process.env.LYMPHAWARE_ADMIN_EMAIL || ''
-      )
-        .trim()
-        .toLowerCase();
-
-
-    if (
-      !user?.email ||
-      user.email.toLowerCase() !== adminEmail
-    ) {
-      return new Response(
-        JSON.stringify({
-          error: 'Administrator access required.'
-        }),
-        {
-          status: 403,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-    }
-
-
-    /*
-     * Retrieve the 20 most recently printed cards.
-     */
-    const historyResponse =
-      await fetch(
+    const [primaryResponse, languageResponse] = await Promise.all([
+      fetch(
         `${process.env.SUPABASE_URL}/rest/v1/profiles` +
         `?select=id,lymphaware_id,display_name,card_printed_at` +
         `&card_production_status=eq.PRINTED` +
         `&order=card_printed_at.desc` +
         `&limit=20`,
-        {
-          headers: {
-            apikey:
-              process.env.SUPABASE_SECRET_KEY,
+        { headers }
+      ),
+      fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/language_profiles` +
+        `?select=id,source_profile_id,language_code,language_name,card_printed_at` +
+        `&card_production_status=eq.PRINTED` +
+        `&order=card_printed_at.desc` +
+        `&limit=20`,
+        { headers }
+      )
+    ]);
 
-            Authorization:
-              `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
-
-            Accept:
-              'application/json'
-          }
-        }
-      );
-
-
-    if (!historyResponse.ok) {
-
-      console.error(
-        'Unable to retrieve card history:',
-        await historyResponse.text()
-      );
-
-      return new Response(
-        JSON.stringify({
-          error:
-            'Printed-card history could not be loaded.'
-        }),
-        {
-          status: 500,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+    if (!primaryResponse.ok || !languageResponse.ok) {
+      if (!primaryResponse.ok) console.error('Unable to retrieve primary card history:', await primaryResponse.text());
+      if (!languageResponse.ok) console.error('Unable to retrieve language card history:', await languageResponse.text());
+      return json({ error: 'Printed-card history could not be loaded.' }, 500);
     }
 
+    const primaryRows = await primaryResponse.json();
+    const languageRows = await languageResponse.json();
 
-    const profiles =
-      await historyResponse.json();
+    const sourceIds = [...new Set((languageRows || []).map(row => row.source_profile_id).filter(Boolean))];
+    const sourceById = new Map();
 
+    if (sourceIds.length) {
+      const encoded = sourceIds.map(id => encodeURIComponent(id)).join(',');
+      const sourceResponse = await fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/profiles` +
+        `?select=id,lymphaware_id,display_name` +
+        `&id=in.(${encoded})`,
+        { headers }
+      );
 
-    return new Response(
-      JSON.stringify({
-        profiles
-      }),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-store'
-        }
+      if (sourceResponse.ok) {
+        const sources = await sourceResponse.json();
+        sources.forEach(source => sourceById.set(source.id, source));
+      } else {
+        console.error('Unable to retrieve language history source profiles:', await sourceResponse.text());
       }
-    );
+    }
 
+    const primaryHistory = (primaryRows || []).map(row => ({
+      ...row,
+      record_type: 'PRIMARY',
+      language_code: 'EN',
+      language_name: 'English'
+    }));
 
+    const languageHistory = (languageRows || []).map(row => {
+      const source = sourceById.get(row.source_profile_id) || {};
+      return {
+        id: row.id,
+        lymphaware_id: source.lymphaware_id || null,
+        display_name: source.display_name || null,
+        card_printed_at: row.card_printed_at,
+        record_type: 'LANGUAGE',
+        language_code: row.language_code,
+        language_name: row.language_name
+      };
+    });
+
+    const profiles = [...primaryHistory, ...languageHistory]
+      .sort((a, b) => new Date(b.card_printed_at || 0).getTime() - new Date(a.card_printed_at || 0).getTime())
+      .slice(0, 20);
+
+    return json({ profiles });
   } catch (error) {
-
-    console.error(
-      'Card history error:',
-      error
-    );
-
-    return new Response(
-      JSON.stringify({
-        error:
-          'Printed-card history could not be loaded.'
-      }),
-      {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+    console.error('Card history error:', error);
+    return json({ error: 'Printed-card history could not be loaded.' }, 500);
   }
 };
