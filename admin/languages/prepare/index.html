@@ -75,7 +75,7 @@
           <div class="summary-row">
             <div>
               <h2 id="patient-name">LymphAware Patient</h2>
-              <p><span id="patient-id"></span> · <span id="language-name"></span></p>
+              <p>Patient ID: <span id="patient-id"></span> · Language: <span id="language-name"></span></p>
             </div>
             <span id="setup-status" class="status-pill">Setup required</span>
           </div>
@@ -206,6 +206,10 @@
         const lp=result.language_profile||{};
         const p=result.source_profile||{};
         if(lp.language_code!=='FR'){loading.textContent='The preparation screen is currently available for French profiles only.';return}
+        if(!p.display_name?.trim()||!p.photo_path?.trim()){
+          loading.innerHTML='This customer is still completing their English profile. There is no language work for you to do yet.<br><br><a class="button button-secondary" href="/admin/">Return to Administration Overview</a>';
+          return;
+        }
 
         document.getElementById('patient-name').textContent=p.display_name||'LymphAware Patient';
         document.getElementById('patient-id').textContent=p.lymphaware_id||'No LymphAware ID';
