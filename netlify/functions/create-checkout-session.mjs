@@ -1,56 +1,120 @@
-export default async (request) => {
-  if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' }
-    });
+const APPROVED_LANGUAGES = {
+  FR: 'French'
+};
+
+const PACKAGE_DEFINITIONS = {
+  STANDARD: {
+    name: 'LymphAware 5-Year Membership',
+    amountPence: 2999,
+    englishCards: 1,
+    lanyards: 1,
+    requiresLanguage: false
+  },
+  PLUS: {
+    name: 'LymphAware 5-Year Plus',
+    amountPence: 3999,
+    englishCards: 2,
+    lanyards: 2,
+    requiresLanguage: false
+  },
+  MULTILINGUAL: {
+    name: 'LymphAware 5-Year Multilingual',
+    amountPence: 4999,
+    englishCards: 2,
+    translatedCards: 2,
+    lanyards: 2,
+    requiresLanguage: true
   }
+};
+
+const EUROPE_COUNTRIES = new Set([
+  'AL','AD','AT','BE','BA','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IS','IE','IT',
+  'XK','LV','LI','LT','LU','MT','MD','MC','ME','NL','MK','NO','PL','PT','RO','SM','RS','SK','SI',
+  'ES','SE','CH','UA','VA'
+]);
+
+const CHECKOUT_COUNTRIES = new Set([
+  'GB','IE','FR','ES','PT','DE','NL','BE','LU','IT','AT','DK','SE','NO','FI','CH','US','CA','AU','NZ',
+  'CY','MT','GR','PL','CZ','SK','SI','HR','HU','RO','BG','EE','LV','LT','IS','AL','AD','BA','MD','MC',
+  'ME','MK','RS','UA','AE','ZA','IN','JP','SG','HK'
+]);
+
+function json(body, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+  });
+}
+
+function serviceHeaders() {
+  return {
+    apikey: process.env.SUPABASE_SECRET_KEY,
+    Authorization: `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
+  };
+}
+
+function normaliseLanguageCode(value) {
+  return String(value || '').trim().toUpperCase();
+}
+
+function normaliseCountry(value) {
+  return String(value || '').trim().toUpperCase();
+}
+
+function shippingBand(country) {
+  if (country === 'GB') return 'UK';
+  if (EUROPE_COUNTRIES.has(country)) return 'EUROPE';
+  return 'REST_OF_WORLD';
+}
+
+function shippingRateIdForBand(band) {
+  if (band === 'UK') return String(process.env.STRIPE_SHIPPING_RATE_UK || '').trim();
+  if (band === 'EUROPE') return String(process.env.STRIPE_SHIPPING_RATE_EUROPE || '').trim();
+  return String(process.env.STRIPE_SHIPPING_RATE_REST_OF_WORLD || '').trim();
+}
+
+function appendInlinePrice(stripeForm, name, amountPence, description = '') {
+  stripeForm.append('line_items[0][price_data][currency]', 'gbp');
+  stripeForm.append('line_items[0][price_data][unit_amount]', String(amountPence));
+  stripeForm.append('line_items[0][price_data][product_data][name]', name);
+  if (description) stripeForm.append('line_items[0][price_data][product_data][description]', description);
+  stripeForm.append('line_items[0][quantity]', '1');
+}
+
+async function getMembership(userId) {
+  const response = await fetch(
+    `${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${encodeURIComponent(userId)}&select=id,membership_status,payment_status,initial_fee_pence,membership_end&limit=1`,
+    { headers: serviceHeaders() }
+  );
+  if (!response.ok) return null;
+  const rows = await response.json();
+  return rows?.[0] || null;
+}
+
+async function alreadyOwnsLanguage(userId, languageCode) {
+  const response = await fetch(
+    `${process.env.SUPABASE_URL}/rest/v1/language_profiles?user_id=eq.${encodeURIComponent(userId)}&language_code=eq.${encodeURIComponent(languageCode)}&select=id&limit=1`,
+    { headers: serviceHeaders() }
+  );
+  if (!response.ok) return false;
+  const rows = await response.json();
+  return Boolean(rows?.length);
+}
+
+export default async (request) => {
+  if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
 
   try {
     const authHeader = request.headers.get('authorization');
-
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ error: 'Authentication required.' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return json({ error: 'Authentication required.' }, 401);
     }
 
     const accessToken = authHeader.replace('Bearer ', '').trim();
     const body = await request.json().catch(() => ({}));
-
-    const extraCard = Boolean(body?.extraCard);
-    const extraLanyard = Boolean(body?.extraLanyard);
-    const languagePackage = Boolean(body?.languagePackage);
-
-    const supportedLanguages = {
-      French: 'FR',
-      Spanish: 'ES',
-      German: 'DE',
-      Portuguese: 'PT',
-      Italian: 'IT'
-    };
-
-    const requestedLanguage = languagePackage
-      ? String(body?.languageName || '').trim()
-      : '';
-
-    const languageName = Object.prototype.hasOwnProperty.call(supportedLanguages, requestedLanguage)
-      ? requestedLanguage
-      : '';
-
-    const languageCode = languageName
-      ? supportedLanguages[languageName]
-      : '';
-
-    if (languagePackage && !languageName) {
-      return new Response(JSON.stringify({
-        error: 'Please select one of the currently supported languages: French, Spanish, German, Portuguese or Italian.'
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
+    const paymentType = String(body?.paymentType || 'initial_membership').trim();
 
     const userResponse = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
       headers: {
@@ -59,102 +123,109 @@ export default async (request) => {
       }
     });
 
-    if (!userResponse.ok) {
-      return new Response(JSON.stringify({ error: 'Unable to verify your LymphAware account.' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
+    if (!userResponse.ok) return json({ error: 'Unable to verify your LymphAware account.' }, 401);
     const user = await userResponse.json();
+    if (!user?.id) return json({ error: 'Unable to verify your LymphAware account.' }, 401);
 
-    if (!user?.id) {
-      return new Response(JSON.stringify({ error: 'Unable to verify your LymphAware account.' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
+    const membership = await getMembership(user.id);
+    if (!membership) return json({ error: 'Unable to verify your membership.' }, 403);
+
+    const deliveryCountry = normaliseCountry(body?.deliveryCountry);
+    if (!CHECKOUT_COUNTRIES.has(deliveryCountry)) {
+      return json({ error: 'Please select a supported delivery country.' }, 400);
     }
 
-    const membershipResponse = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${user.id}&select=id,membership_status,payment_status,initial_fee_pence`,
-      {
-        headers: {
-          apikey: process.env.SUPABASE_PUBLISHABLE_KEY,
-          Authorization: `Bearer ${accessToken}`,
-          Accept: 'application/json'
+    const band = shippingBand(deliveryCountry);
+    const shippingRateId = shippingRateIdForBand(band);
+
+    let checkoutName = '';
+    let checkoutDescription = '';
+    let amountPence = 0;
+    let packageType = '';
+    let languageCode = '';
+    let languageName = '';
+
+    if (paymentType === 'initial_membership') {
+      if (membership.membership_status !== 'PENDING' || membership.payment_status !== 'PENDING') {
+        return json({ error: 'No membership payment is currently due.' }, 403);
+      }
+      if (Number(membership.initial_fee_pence) !== 2999) {
+        return json({ error: 'Membership fee could not be verified.' }, 400);
+      }
+
+      packageType = String(body?.packageType || 'STANDARD').trim().toUpperCase();
+      const packageDefinition = PACKAGE_DEFINITIONS[packageType];
+      if (!packageDefinition) return json({ error: 'Please select a valid LymphAware membership package.' }, 400);
+
+      if (packageDefinition.requiresLanguage) {
+        languageCode = normaliseLanguageCode(body?.languageCode);
+        languageName = APPROVED_LANGUAGES[languageCode] || '';
+        if (!languageName) {
+          return json({ error: 'Please select an additional language that is currently available.' }, 400);
         }
       }
-    );
 
-    if (!membershipResponse.ok) {
-      return new Response(JSON.stringify({ error: 'Unable to verify your membership.' }), {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
+      checkoutName = packageDefinition.name;
+      checkoutDescription = packageType === 'MULTILINGUAL'
+        ? `Five-year membership with English and ${languageName} profiles, 2 English cards, 2 ${languageName} cards and 2 lanyards & holders.`
+        : packageType === 'PLUS'
+          ? 'Five-year membership with 2 English ID cards and 2 lanyards & holders.'
+          : 'Five-year membership with 1 English ID card and 1 lanyard & holder.';
+      amountPence = packageDefinition.amountPence;
+    } else if (paymentType === 'additional_language') {
+      const entitled =
+        (membership.membership_status === 'ACTIVE' && membership.payment_status === 'PAID') ||
+        membership.membership_status === 'PILOT' ||
+        membership.membership_status === 'SPONSORED';
+      if (!entitled) return json({ error: 'An active LymphAware membership is required.' }, 403);
 
-    const memberships = await membershipResponse.json();
-    const membership = memberships?.[0];
+      languageCode = normaliseLanguageCode(body?.languageCode);
+      languageName = APPROVED_LANGUAGES[languageCode] || '';
+      if (!languageName) {
+        return json({ error: 'Please select an additional language that is currently available.' }, 400);
+      }
+      if (await alreadyOwnsLanguage(user.id, languageCode)) {
+        return json({ error: `Your account already has a ${languageName} language profile.` }, 400);
+      }
 
-    if (
-      !membership ||
-      membership.membership_status !== 'PENDING' ||
-      membership.payment_status !== 'PENDING'
-    ) {
-      return new Response(JSON.stringify({ error: 'No membership payment is currently due.' }), {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    if (Number(membership.initial_fee_pence) !== 2999) {
-      return new Response(JSON.stringify({ error: 'Membership fee could not be verified.' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      checkoutName = `LymphAware Additional Language Package – ${languageName}`;
+      checkoutDescription = `One ${languageName} QR profile, one ${languageName} ID card and one lanyard & holder.`;
+      amountPence = 1999;
+      packageType = 'ADDITIONAL_LANGUAGE';
+    } else {
+      return json({ error: 'Unsupported payment type.' }, 400);
     }
 
     const stripeForm = new URLSearchParams();
     stripeForm.append('mode', 'payment');
-
-    let itemIndex = 0;
-    const addLineItem = (priceId) => {
-      stripeForm.append(`line_items[${itemIndex}][price]`, priceId);
-      stripeForm.append(`line_items[${itemIndex}][quantity]`, '1');
-      itemIndex += 1;
-    };
-
-    addLineItem('price_1UBvUAPMYhQKb2OT8koXgY1w');
-    if (extraCard) addLineItem('price_1UBw5vPMYhQKb2OTcMbClQbh');
-    if (extraLanyard) addLineItem('price_1UBw6APMYhQKb2OT3HefM6zT');
-    if (languagePackage) addLineItem('price_1UBw6XPMYhQKb2OTlE9VQDd5');
-
+    appendInlinePrice(stripeForm, checkoutName, amountPence, checkoutDescription);
     stripeForm.append('allow_promotion_codes', 'true');
     stripeForm.append('billing_address_collection', 'required');
+    stripeForm.append('shipping_address_collection[allowed_countries][0]', deliveryCountry);
 
-    const allowedCountries = [
-      'GB','IE','FR','ES','PT','DE','NL','BE','LU','IT','AT','DK','SE','NO','FI','CH',
-      'US','CA','AU','NZ','CY','MT','GR','PL','CZ','SK','SI','HR','HU','RO','BG'
-    ];
-    allowedCountries.forEach((country, index) => {
-      stripeForm.append(`shipping_address_collection[allowed_countries][${index}]`, country);
-    });
+    if (shippingRateId) {
+      stripeForm.append('shipping_options[0][shipping_rate]', shippingRateId);
+    }
 
     stripeForm.append('client_reference_id', user.id);
     stripeForm.append('metadata[lymphaware_user_id]', user.id);
     stripeForm.append('metadata[membership_id]', membership.id);
-    stripeForm.append('metadata[payment_type]', 'initial_membership');
-    stripeForm.append('metadata[extra_card]', extraCard ? '1' : '0');
-    stripeForm.append('metadata[extra_lanyard]', extraLanyard ? '1' : '0');
-    stripeForm.append('metadata[language_package]', languagePackage ? '1' : '0');
-    stripeForm.append('metadata[language_name]', languageName);
+    stripeForm.append('metadata[payment_type]', paymentType);
+    stripeForm.append('metadata[package_type]', packageType);
     stripeForm.append('metadata[language_code]', languageCode);
-    stripeForm.append('success_url', 'https://lymphaware.com/portal/?payment=success');
+    stripeForm.append('metadata[language_name]', languageName);
+    stripeForm.append('metadata[delivery_country_selected]', deliveryCountry);
+    stripeForm.append('metadata[shipping_band]', band);
+    stripeForm.append('metadata[shipping_rate_configured]', shippingRateId ? '1' : '0');
+    stripeForm.append(
+      'success_url',
+      paymentType === 'additional_language'
+        ? 'https://lymphaware.com/portal/?payment=success&type=language'
+        : 'https://lymphaware.com/portal/?payment=success&type=membership'
+    );
     stripeForm.append('cancel_url', 'https://lymphaware.com/portal/?payment=cancelled');
 
-    if (user.email) {
-      stripeForm.append('customer_email', user.email);
-    }
+    if (user.email) stripeForm.append('customer_email', user.email);
 
     const stripeResponse = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
@@ -166,24 +237,14 @@ export default async (request) => {
     });
 
     const checkoutSession = await stripeResponse.json();
-
     if (!stripeResponse.ok || !checkoutSession?.url) {
       console.error('Stripe Checkout error:', checkoutSession);
-      return new Response(JSON.stringify({ error: 'Unable to create the secure payment page.' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return json({ error: 'Unable to create the secure payment page.' }, 500);
     }
 
-    return new Response(JSON.stringify({ url: checkoutSession.url }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ url: checkoutSession.url });
   } catch (error) {
     console.error('Unable to create Stripe Checkout session:', error);
-    return new Response(JSON.stringify({ error: 'Unable to start membership payment.' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ error: 'Unable to start secure payment.' }, 500);
   }
 };
