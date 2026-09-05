@@ -28,7 +28,7 @@
   <script>
     const SUPABASE_URL='https://thbhsktcenhrnxzkbjus.supabase.co',SUPABASE_PUBLISHABLE_KEY='sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi',supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY),loading=document.getElementById('admin-loading'),errorBox=document.getElementById('admin-error'),workList=document.getElementById('work-list'),actionCount=document.getElementById('action-count'),waitingCount=document.getElementById('waiting-count'),printedCount=document.getElementById('printed-count');
     function esc(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-    function orderRef(number){return number?`LA-${String(number).padStart(6,'0')}`:'Order reference unavailable'}
+    function orderRef(number){return number?`ORD-${String(number).padStart(6,'0')}`:'Order reference unavailable'}
     async function token(){const {data:{session},error}=await supabaseClient.auth.getSession();if(error||!session?.access_token){location.href='/sign-in/';return null}return session.access_token}
     async function request(path,accessToken){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);try{const response=await fetch(path,{headers:{Authorization:`Bearer ${accessToken}`},signal:controller.signal}),body=await response.text();let result={};try{result=body?JSON.parse(body):{}}catch{}if(!response.ok)throw new Error(result?.error||'Information could not be loaded.');return result}finally{clearTimeout(timer)}}
     function task(title,detail,href,label,kind='action'){return{title,detail,href,label,kind}}
