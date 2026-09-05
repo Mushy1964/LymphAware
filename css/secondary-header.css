@@ -106,7 +106,7 @@ body:has(.secondary-header) .button {
   line-height: 1.2 !important;
 }
 
-/* Use the compact header on phones and tablets. */
+/* Use exactly the same compact header geometry on phones and tablets. */
 @media (max-width: 900px) {
   .secondary-header .header-inner {
     width: min(100% - 28px, 1180px);
@@ -115,19 +115,24 @@ body:has(.secondary-header) .button {
   }
 
   .secondary-header .header-brand {
+    width: min(300px, calc(100vw - 116px));
     min-width: 0;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
   }
 
   .secondary-header .header-logo {
-    width: 300px;
-    max-width: calc(100vw - 118px);
+    display: block;
+    width: 100% !important;
+    max-width: 100% !important;
     height: auto;
   }
 
   .secondary-header .header-actions {
     display: flex !important;
-    flex: 0 0 auto;
+    width: 78px;
+    min-width: 78px;
+    flex: 0 0 78px;
+    justify-content: flex-end;
   }
 
   .secondary-header .back-to-website-button {
@@ -136,9 +141,18 @@ body:has(.secondary-header) .button {
 
   .secondary-header .mobile-home-button {
     display: inline-flex !important;
-    min-width: 72px !important;
+  }
+
+  .secondary-header .mobile-home-button,
+  .secondary-header .profile-portal-button,
+  .secondary-header .header-actions > .button {
+    width: 78px !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
     min-height: 44px !important;
-    padding: 0 12px !important;
+    padding: 0 8px !important;
+    align-items: center;
+    justify-content: center;
     border-radius: 10px;
     font-size: 1rem !important;
     white-space: nowrap;
@@ -175,16 +189,5 @@ body:has(.secondary-header) .button {
   body:has(.secondary-header) .cta-box p {
     font-size: 1.03rem !important;
     line-height: 1.6 !important;
-  }
-}
-
-@media (max-width: 420px) {
-  .secondary-header .header-logo {
-    max-width: calc(100vw - 108px);
-  }
-
-  .secondary-header .mobile-home-button {
-    min-width: 68px !important;
-    padding: 0 10px !important;
   }
 }
