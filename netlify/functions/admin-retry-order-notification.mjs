@@ -90,7 +90,7 @@ export default async (request) => {
       });
     }
 
-    const orderRef = `LA-${String(order.order_number).padStart(6, '0')}`;
+    const orderRef = `ORD-${String(order.order_number).padStart(6, '0')}`;
     const itemLines = items.map(item => `${item.quantity} × ${item.description}`).join('\n');
     const to = String(process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphaware.com').trim();
     const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware <notifications@lymphaware.com>').trim();
