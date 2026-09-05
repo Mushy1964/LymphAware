@@ -1,0 +1,194 @@
+name: Hero reassurance build
+
+on:
+  push:
+    branches:
+      - temp/hero-reassurance-final
+    paths:
+      - '.github/workflows/hero-reassurance-build.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-hero-reassurance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: temp/hero-reassurance-final
+          fetch-depth: 0
+
+      - name: Add desktop and tablet reassurance strip
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          index_path = Path('index.html')
+          index = index_path.read_text(encoding='utf-8')
+
+          marker = '''        <div class="home-hero-actions">
+          <a href="/register/" class="button button-primary">Create your account</a>
+          <a href="#sample-card" class="button button-secondary">View sample card</a>
+        </div>
+
+        <div class="home-membership-summary">'''
+
+          replacement = '''        <div class="home-hero-actions">
+          <a href="/register/" class="button button-primary">Create your account</a>
+          <a href="#sample-card" class="button button-secondary">View sample card</a>
+        </div>
+
+        <div class="home-hero-reassurance" aria-label="LymphAware key benefits">
+          <div class="home-hero-reassurance-item">
+            <span class="home-hero-reassurance-icon" aria-hidden="true">
+              <img src="/assets/icons/ID_Card_Green.svg" alt="">
+            </span>
+            <span class="home-hero-reassurance-copy">
+              <strong>5-year membership from £29.99</strong>
+              <small>One payment for five years.</small>
+            </span>
+          </div>
+
+          <div class="home-hero-reassurance-item">
+            <span class="home-hero-reassurance-icon home-hero-reassurance-icon-blue" aria-hidden="true">
+              <img src="/assets/icons/Choose_Blue.svg" alt="">
+            </span>
+            <span class="home-hero-reassurance-copy">
+              <strong>Patient controlled</strong>
+              <small>You choose what your QR profile shows.</small>
+            </span>
+          </div>
+
+          <div class="home-hero-reassurance-item">
+            <span class="home-hero-reassurance-icon" aria-hidden="true">
+              <img src="/assets/icons/QR_Code_Green.svg" alt="">
+            </span>
+            <span class="home-hero-reassurance-copy">
+              <strong>No app needed</strong>
+              <small>Scan with a standard smartphone.</small>
+            </span>
+          </div>
+        </div>
+
+        <div class="home-membership-summary">'''
+
+          if marker not in index:
+              raise SystemExit('Hero action marker not found')
+          index = index.replace(marker, replacement, 1)
+          index_path.write_text(index, encoding='utf-8')
+
+          css_path = Path('css/home.css')
+          css = css_path.read_text(encoding='utf-8')
+
+          css_marker = '''.home-page .home-hero-actions .button {
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: 10px;
+    min-width: 224px;
+  justify-content: center;
+}
+
+/* Hide the How It Works hero button on larger screens */'''
+
+          css_replacement = '''.home-page .home-hero-actions .button {
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: 10px;
+    min-width: 224px;
+  justify-content: center;
+}
+
+.home-page .home-hero-reassurance {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: 690px;
+  margin-top: 28px;
+}
+
+.home-page .home-hero-reassurance-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  min-height: 92px;
+  padding: 14px 13px;
+  border: 1px solid #dbe6e0;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 8px 20px rgba(31, 47, 66, 0.045);
+}
+
+.home-page .home-hero-reassurance-icon {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: #eef7f0;
+}
+
+.home-page .home-hero-reassurance-icon-blue {
+  background: #eef6fb;
+}
+
+.home-page .home-hero-reassurance-icon img {
+  display: block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.home-page .home-hero-reassurance-copy {
+  display: block;
+  min-width: 0;
+}
+
+.home-page .home-hero-reassurance-copy strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #17283d;
+  font-size: 0.93rem;
+  line-height: 1.28;
+}
+
+.home-page .home-hero-reassurance-copy small {
+  display: block;
+  color: #5b6873;
+  font-size: 0.81rem;
+  line-height: 1.4;
+}
+
+/* Hide the How It Works hero button on larger screens */'''
+
+          if css_marker not in css:
+              raise SystemExit('Hero CSS marker not found')
+          css = css.replace(css_marker, css_replacement, 1)
+
+          mobile_marker = '''@media (max-width: 680px) {
+
+  .home-page {
+    overflow-x: hidden;
+  }'''
+          mobile_replacement = '''@media (max-width: 680px) {
+
+  .home-page .home-hero-reassurance {
+    display: none;
+  }
+
+  .home-page {
+    overflow-x: hidden;
+  }'''
+          if mobile_marker not in css:
+              raise SystemExit('Mobile CSS marker not found')
+          css = css.replace(mobile_marker, mobile_replacement, 1)
+          css_path.write_text(css, encoding='utf-8')
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html css/home.css
+          git commit -m "Add desktop and tablet hero reassurance strip"
+          git push origin HEAD:temp/hero-reassurance-final
