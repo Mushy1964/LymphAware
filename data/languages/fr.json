@@ -12,7 +12,7 @@
   },
   "profile": {
     "patient_status": "PATIENT ATTEINT DE LYMPHŒDÈME",
-    "lymphaware_id_label": "Identifiant LymphAware :",
+    "lymphaware_id_label": "ID LymphAware :",
     "sections": {
       "lymphoedema": {
         "title": "À propos de mon lymphœdème",
