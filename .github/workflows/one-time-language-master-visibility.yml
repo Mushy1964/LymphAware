@@ -1,0 +1,47 @@
+name: One-time language master visibility safeguard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-time-language-master-visibility.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-language-approval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require source master QR visibility for language activation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('netlify/functions/admin-language-profile.mjs')
+          s = path.read_text(encoding='utf-8')
+
+          old = "select=id,display_name,lymphaware_id,photo_path,lymphoedema_type,lymphoedema_location,compression_information,treatment_considerations,assistance_needs,emergency_contact_name,emergency_contact_relationship,emergency_contact_phone,additional_statement"
+          new = "select=id,display_name,lymphaware_id,photo_path,qr_profile_active,lymphoedema_type,lymphoedema_location,compression_information,treatment_considerations,assistance_needs,emergency_contact_name,emergency_contact_relationship,emergency_contact_phone,additional_statement"
+          if old not in s:
+              raise SystemExit('Source select pattern not found')
+          s = s.replace(old, new, 1)
+
+          old = "if (!sourceProfile?.display_name || !sourceProfile?.lymphaware_id || !sourceProfile?.photo_path) {\n          return json({ error: 'The source patient profile must include a display name, LymphAware ID and photograph before a translated profile can be activated.' }, 400);\n        }"
+          new = "if (!sourceProfile?.display_name || !sourceProfile?.lymphaware_id || !sourceProfile?.photo_path || sourceProfile?.qr_profile_active !== true) {\n          return json({ error: 'The main patient profile must include a display name and photograph and must be switched on before a translated profile can be activated.' }, 400);\n        }"
+          if old not in s:
+              raise SystemExit('Approval validation pattern not found')
+          s = s.replace(old, new, 1)
+
+          path.write_text(s, encoding='utf-8')
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add netlify/functions/admin-language-profile.mjs
+          git commit -m "Respect master QR visibility for language profiles"
+          git push
