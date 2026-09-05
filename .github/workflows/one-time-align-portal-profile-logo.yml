@@ -1,0 +1,54 @@
+name: One-time Portal Profile logo alignment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/one-time-align-portal-profile-logo.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  align-logo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Remove Portal-only mobile logo sizing
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('portal/index.html')
+          s = p.read_text(encoding='utf-8')
+          old = '.secondary-header .header-logo{max-width:calc(100vw - 120px)!important}'
+          if old not in s:
+              raise SystemExit('Portal-only logo override not found')
+          s = s.replace(old, '', 1)
+          p.write_text(s, encoding='utf-8')
+
+          css = Path('css/secondary-header.css')
+          c = css.read_text(encoding='utf-8')
+          old_mobile = '''  .secondary-header .header-logo {
+    width: 300px;
+    max-width: calc(100vw - 118px);
+    height: auto;
+  }'''
+          new_mobile = '''  .secondary-header .header-logo {
+    width: 300px !important;
+    max-width: calc(100vw - 118px) !important;
+    height: auto;
+  }'''
+          if old_mobile not in c:
+              raise SystemExit('Shared mobile logo rule not found')
+          c = c.replace(old_mobile, new_mobile, 1)
+          css.write_text(c, encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add portal/index.html css/secondary-header.css
+          git commit -m "Align Portal and My Profile logo sizing"
+          git push
