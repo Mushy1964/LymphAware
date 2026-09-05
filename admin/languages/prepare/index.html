@@ -62,10 +62,8 @@
       </div>
 
       <div class="admin-nav">
-        <a href="/admin/" class="button button-secondary">Overview</a>
-        <a href="/admin/orders/" class="button button-secondary">Orders</a>
-        <a href="/admin/languages/" class="button button-primary">Languages</a>
-        <a href="/admin/card-production/" class="button button-secondary">Card Production</a>
+        <a href="/admin/" class="button button-secondary">Orders to Process</a>
+        <a href="/admin/completed-orders/" class="button button-secondary">Completed Orders</a>
       </div>
 
       <div id="loading">Loading patient and language profile...</div>
@@ -207,7 +205,7 @@
         const p=result.source_profile||{};
         if(lp.language_code!=='FR'){loading.textContent='The preparation screen is currently available for French profiles only.';return}
         if(!p.display_name?.trim()||!p.photo_path?.trim()){
-          loading.innerHTML='This customer is still completing their English profile. There is no language work for you to do yet.<br><br><a class="button button-secondary" href="/admin/">Return to Administration Overview</a>';
+          loading.innerHTML='This customer is still completing their English profile. There is no language work for you to do yet.<br><br><a class="button button-secondary" href="/admin/">Return to Orders to Process</a>';
           return;
         }
 
