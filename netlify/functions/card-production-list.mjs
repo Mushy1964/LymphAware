@@ -10,8 +10,8 @@ function json(body, status = 200) {
 
 function serviceHeaders() {
   return {
-    apikey: process.env.SUPABASE_SECRET_KEY,
-    Authorization: `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
+    apikey: Netlify.env.get('SUPABASE_SECRET_KEY'),
+    Authorization: `Bearer ${Netlify.env.get('SUPABASE_SECRET_KEY')}`,
     Accept: 'application/json'
   };
 }
@@ -23,9 +23,9 @@ async function requireAdmin(request) {
   }
 
   const accessToken = authHeader.replace('Bearer ', '').trim();
-  const userResponse = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
+  const userResponse = await fetch(`${Netlify.env.get('SUPABASE_URL')}/auth/v1/user`, {
     headers: {
-      apikey: process.env.SUPABASE_PUBLISHABLE_KEY,
+      apikey: Netlify.env.get('SUPABASE_PUBLISHABLE_KEY'),
       Authorization: `Bearer ${accessToken}`
     }
   });
@@ -35,7 +35,7 @@ async function requireAdmin(request) {
   }
 
   const user = await userResponse.json();
-  const adminEmail = String(process.env.LYMPHAWARE_ADMIN_EMAIL || '').trim().toLowerCase();
+  const adminEmail = String(Netlify.env.get('LYMPHAWARE_ADMIN_EMAIL') || '').trim().toLowerCase();
   if (!user?.email || user.email.toLowerCase() !== adminEmail) {
     return { error: json({ error: 'Administrator access required.' }, 403) };
   }
@@ -61,14 +61,14 @@ export default async (request) => {
 
     const [primaryResponse, languageResponse] = await Promise.all([
       fetch(
-        `${process.env.SUPABASE_URL}/rest/v1/profiles` +
+        `${Netlify.env.get('SUPABASE_URL')}/rest/v1/profiles` +
         `?select=id,user_id,lymphaware_id,display_name,photo_path,qr_token,qr_profile_active,card_production_status,card_ready_at,card_prepared_at` +
         `&card_production_status=in.(READY,PREPARED)` +
         `&order=card_ready_at.asc`,
         { headers }
       ),
       fetch(
-        `${process.env.SUPABASE_URL}/rest/v1/language_profiles` +
+        `${Netlify.env.get('SUPABASE_URL')}/rest/v1/language_profiles` +
         `?select=id,user_id,source_profile_id,order_id,order_item_id,language_code,language_name,qr_token,qr_profile_active,setup_status,card_production_status,card_ready_at,card_prepared_at` +
         `&setup_status=eq.APPROVED` +
         `&qr_profile_active=eq.true` +
@@ -93,7 +93,7 @@ export default async (request) => {
     if (sourceProfileIds.length) {
       const encoded = sourceProfileIds.map(id => encodeURIComponent(id)).join(',');
       const sourceResponse = await fetch(
-        `${process.env.SUPABASE_URL}/rest/v1/profiles` +
+        `${Netlify.env.get('SUPABASE_URL')}/rest/v1/profiles` +
         `?select=id,user_id,lymphaware_id,display_name,photo_path` +
         `&id=in.(${encoded})`,
         { headers }
@@ -120,7 +120,7 @@ export default async (request) => {
     if (allUserIds.length) {
       const encodedUsers = allUserIds.map(id => encodeURIComponent(id)).join(',');
       const ordersResponse = await fetch(
-        `${process.env.SUPABASE_URL}/rest/v1/orders` +
+        `${Netlify.env.get('SUPABASE_URL')}/rest/v1/orders` +
         `?select=id,user_id,order_number,order_status,payment_status,created_at` +
         `&user_id=in.(${encodedUsers})` +
         `&payment_status=eq.PAID` +
@@ -137,7 +137,7 @@ export default async (request) => {
         if (orderIds.length) {
           const encodedOrders = orderIds.map(id => encodeURIComponent(id)).join(',');
           const itemsResponse = await fetch(
-            `${process.env.SUPABASE_URL}/rest/v1/order_items` +
+            `${Netlify.env.get('SUPABASE_URL')}/rest/v1/order_items` +
             `?select=id,order_id,item_type,quantity,language_name` +
             `&order_id=in.(${encodedOrders})`,
             { headers }
@@ -157,6 +157,7 @@ export default async (request) => {
         orders.forEach(order => {
           if (!fulfilmentByUser.has(order.user_id)) {
             fulfilmentByUser.set(order.user_id, {
+              order_ids: [],
               order_numbers: [],
               card_copies: 0,
               lanyard_holders: 0,
@@ -165,6 +166,7 @@ export default async (request) => {
           }
 
           const fulfilment = fulfilmentByUser.get(order.user_id);
+          fulfilment.order_ids.push(order.id);
           const number = formatOrderNumber(order.order_number);
           if (number) fulfilment.order_numbers.push(number);
 
@@ -199,6 +201,7 @@ export default async (request) => {
 
     const primaryJobs = (primaryProfiles || []).map(profile => {
       const baseFulfilment = fulfilmentByUser.get(profile.user_id) || {
+        order_ids: [],
         order_numbers: [],
         card_copies: 1,
         lanyard_holders: 1,
@@ -253,6 +256,7 @@ export default async (request) => {
         language_code: languageProfile.language_code,
         language_name: languageProfile.language_name,
         fulfilment: {
+          order_ids: languageProfile.order_id ? [languageProfile.order_id] : [],
           order_numbers: orderNumber ? [orderNumber] : [],
           card_copies: quantity,
           lanyard_holders: lanyardQuantity,
