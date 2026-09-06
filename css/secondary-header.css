@@ -198,7 +198,8 @@ body:has(.secondary-header) .button {
   .secondary-header .header-inner {
     width: calc(100% - 28px);
     flex-wrap: wrap;
-    gap: 0;
+    column-gap: 0;
+    row-gap: 14px;
     padding-bottom: 0;
   }
 
@@ -236,7 +237,7 @@ body:has(.secondary-header) .button {
   }
 
   .secondary-header .header-actions > .back-to-website-button::before {
-    content: "← Home";
+    content: "Return to website";
     font-size: 1rem;
     line-height: 1.2;
     font-weight: 700;
