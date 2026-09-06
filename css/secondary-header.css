@@ -197,6 +197,9 @@ body:has(.secondary-header) .button {
 @media (max-width: 680px) {
   .secondary-header .header-inner {
     width: calc(100% - 28px);
+    flex-wrap: wrap;
+    gap: 0;
+    padding-bottom: 0;
   }
 
   .secondary-header .header-brand {
@@ -205,28 +208,26 @@ body:has(.secondary-header) .button {
     flex: 1 1 auto;
   }
 
-  .secondary-header .header-inner {
-    flex-wrap: wrap;
-    gap: 0;
-    padding-bottom: 6px;
-  }
-
   .secondary-header .header-actions {
     display: flex !important;
-    width: 100%;
-    min-width: 100%;
-    flex: 0 0 100%;
-    margin-left: 0;
-    justify-content: center;
+    width: 100vw;
+    min-width: 100vw;
+    flex: 0 0 100vw;
+    margin-left: calc(50% - 50vw);
+    justify-content: flex-start;
+    background: #eef6fb;
+    border-top: 1px solid #dce8f0;
   }
 
   .secondary-header .header-actions > .back-to-website-button {
     display: inline-flex !important;
-    width: auto !important;
+    width: calc(100% - 28px) !important;
     min-width: 0 !important;
     max-width: none !important;
     min-height: 44px !important;
-    padding: 0 12px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    justify-content: flex-start !important;
     border: 0 !important;
     background: transparent !important;
     box-shadow: none !important;
@@ -235,7 +236,7 @@ body:has(.secondary-header) .button {
   }
 
   .secondary-header .header-actions > .back-to-website-button::before {
-    content: "← Back to main website";
+    content: "← Home";
     font-size: 1rem;
     line-height: 1.2;
     font-weight: 700;
