@@ -127,6 +127,12 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
       nextSteps +=
         `\n\nYour package includes a ${languageName} profile and card. You do not need to translate anything yourself. LymphAware will prepare the ${languageName} version for you from the information in your main English profile. Empty English sections will also remain empty in the translated profile.`;
     }
+  } else if (paymentType === 'additional_items') {
+    subject = `Your LymphAware additional order is confirmed – ${orderRef}`;
+    if (languageName) {
+      nextSteps +=
+        `\n\nYour order includes a ${languageName} language package. You do not need to translate your profile yourself. LymphAware will prepare the ${languageName} version from your main English profile and check it before publication. Any English sections left empty will also be empty in the translated profile.`;
+    }
   } else if (paymentType === 'additional_language') {
     subject = `Your ${languageName || 'additional-language'} LymphAware package is confirmed`;
     nextSteps =
@@ -229,6 +235,18 @@ function buildReplacementItems(cardSelected, lanyardSelected) {
   return items;
 }
 
+function buildAdditionalPurchaseItems(cardQuantity, lanyardQuantity, languageCode, languageName) {
+  const items = [];
+  if (cardQuantity > 0) {
+    items.push(normaliseItem({ item_type: 'EXTRA_CARD', description: 'Additional or Replacement LymphAware ID Card', quantity: cardQuantity, unit_price_pence: 650, line_total_pence: cardQuantity * 650 }));
+  }
+  if (lanyardQuantity > 0) {
+    items.push(normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Additional or Replacement Lanyard & Holder', quantity: lanyardQuantity, unit_price_pence: 650, line_total_pence: lanyardQuantity * 650 }));
+  }
+  if (languageName) items.push(...buildAdditionalLanguageItems(languageCode, languageName));
+  return items;
+}
+
 async function recordLanguageTranslationConsent(orderId, consentAt) {
   if (!consentAt) return;
   const response = await fetch(
@@ -288,7 +306,7 @@ export default async (request) => {
     const userId = session?.metadata?.lymphaware_user_id;
     const membershipId = session?.metadata?.membership_id || null;
     const paymentType = String(session?.metadata?.payment_type || '').trim();
-    if (!userId || !['initial_membership', 'additional_language', 'replacement_items'].includes(paymentType)) {
+    if (!userId || !['initial_membership', 'additional_language', 'replacement_items', 'additional_items'].includes(paymentType)) {
       return new Response('Invalid payment metadata', { status: 400 });
     }
 
@@ -303,6 +321,10 @@ export default async (request) => {
     const languageCode = String(session.metadata?.language_code || '').trim().toUpperCase();
     const replacementCard = String(session.metadata?.replacement_card || '') === '1';
     const replacementLanyard = String(session.metadata?.replacement_lanyard || '') === '1';
+    const metadataCardQuantity = Number(session.metadata?.card_quantity || 0);
+    const metadataLanyardQuantity = Number(session.metadata?.lanyard_quantity || 0);
+    const cardQuantity = Number.isInteger(metadataCardQuantity) && metadataCardQuantity >= 0 ? metadataCardQuantity : (replacementCard ? 1 : 0);
+    const lanyardQuantity = Number.isInteger(metadataLanyardQuantity) && metadataLanyardQuantity >= 0 ? metadataLanyardQuantity : (replacementLanyard ? 1 : 0);
     const translationConsent = String(session.metadata?.translation_consent || '') === '1';
 
     if (paymentType === 'initial_membership') {
@@ -329,7 +351,9 @@ export default async (request) => {
       ? buildInitialItems(packageType, languageCode, languageName)
       : paymentType === 'additional_language'
         ? buildAdditionalLanguageItems(languageCode, languageName)
-        : buildReplacementItems(replacementCard, replacementLanyard);
+        : paymentType === 'additional_items'
+          ? buildAdditionalPurchaseItems(cardQuantity, lanyardQuantity, languageCode, languageName)
+          : buildReplacementItems(replacementCard, replacementLanyard);
 
     const expectedSubtotal = items.reduce((sum, item) => sum + item.line_total_pence, 0);
     const shipping = session.collected_information?.shipping_details || session.shipping_details || null;
@@ -337,7 +361,7 @@ export default async (request) => {
     const deliveryName = shipping?.name || session.customer_details?.name || null;
     const orderType = paymentType === 'initial_membership'
       ? 'INITIAL_MEMBERSHIP'
-      : paymentType === 'additional_language'
+      : paymentType === 'additional_language' || (paymentType === 'additional_items' && languageName && !cardQuantity && !lanyardQuantity)
         ? 'LANGUAGE_PACKAGE'
         : 'REPLACEMENT';
 
@@ -391,11 +415,11 @@ export default async (request) => {
       return new Response('Order item creation failed', { status: 500 });
     }
 
-    if (translationConsent && (paymentType === 'initial_membership' || paymentType === 'additional_language')) {
+    if (translationConsent && (paymentType === 'initial_membership' || paymentType === 'additional_language' || paymentType === 'additional_items')) {
       await recordLanguageTranslationConsent(order.id, paidAt.toISOString());
     }
 
-    if (paymentType === 'replacement_items' && replacementCard) {
+    if ((paymentType === 'replacement_items' && replacementCard) || (paymentType === 'additional_items' && cardQuantity > 0)) {
       await reopenPrimaryCardForReplacement(userId);
     }
 
