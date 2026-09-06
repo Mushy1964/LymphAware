@@ -1360,6 +1360,13 @@ async function exportAllEasyBadge() {
     adminMessage.textContent =
       'Card marked as printed.';
 
+    const completedOrders = Array.isArray(result.completed_orders) ? result.completed_orders : [];
+    if (completedOrders.length) {
+      const completedOrder = completedOrders[0];
+      window.location.href = `/admin/completed-orders/#order-${encodeURIComponent(completedOrder.id)}`;
+      return;
+    }
+
     if (orderIds.length) {
       const ordersResponse = await fetch('/.netlify/functions/admin-orders-list', {
         headers: { Authorization: `Bearer ${accessToken}` }
