@@ -881,14 +881,14 @@
     const completedLanguageSummary = languagePackages.length
       ? languagePackages
           .filter(item => item.setup_complete === true)
-          .map(item => `${escapeHtml(item.language_name || 'Language')} × ${Number(item.quantity || 0)}`)
+          .map(item => `${escapeHtml(formatLanguageName(item.language_name))} × ${Number(item.quantity || 0)}`)
           .join(', ')
       : '';
 
     const pendingLanguageSummary = languagePackages.length
       ? languagePackages
           .filter(item => item.setup_complete !== true)
-          .map(item => `${escapeHtml(item.language_name || 'Language')} × ${Number(item.quantity || 0)}`)
+          .map(item => `${escapeHtml(formatLanguageName(item.language_name))} × ${Number(item.quantity || 0)}`)
           .join(', ')
       : '';
 
@@ -956,9 +956,9 @@
           <span>Lanyard &amp; holders: <strong>${lanyardHolders}</strong></span>
         </div>
         ${profile.record_type === 'LANGUAGE'
-          ? `<div class="production-language-note">Additional-language card ready: ${escapeHtml(profile.language_name || 'Language')} (${escapeHtml(profile.language_code || '')}).</div>`
+          ? ''
           : completedLanguageSummary
-            ? `<div class="production-language-note">Additional language card ready: ${completedLanguageSummary} — see the separate language card job.</div>`
+            ? `<div class="production-language-note">Related language card: ${completedLanguageSummary} — shown as a separate production job.</div>`
             : pendingLanguageSummary
               ? `<div class="production-language-note">Additional language package: ${pendingLanguageSummary} — language card/profile setup still required.</div>`
               : ''}
@@ -1414,6 +1414,13 @@ async function exportAllEasyBadge() {
     button.textContent =
       originalText;
   }
+}
+
+function formatLanguageName(value) {
+  const name = String(value || 'Language').trim();
+  return name
+    ? name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
+    : 'Language';
 }
 
 function escapeHtml(value) {
