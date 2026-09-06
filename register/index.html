@@ -242,7 +242,7 @@
     const PACKAGE_DETAILS = {
       STANDARD: { name: '5-Year Membership – £29.99', summary: '1 English QR profile, 1 English ID card and 1 lanyard & holder.' },
       PLUS: { name: '5-Year Plus – £39.99', summary: '1 English QR profile, 2 English ID cards and 2 lanyards & holders.' },
-      MULTILINGUAL: { name: '5-Year Multilingual – £49.99', summary: 'English and one additional-language QR profile, English and translated-language ID cards, with translation prepared by LymphAware.' }
+      MULTILINGUAL: { name: '5-Year Multilingual – £49.99', summary: 'English and one additional-language QR profile, English and translated-language ID cards, with the translation prepared by LymphAware.' }
     };
     const requestedPackage = String(new URLSearchParams(location.search).get('package') || 'STANDARD').toUpperCase();
     const selectedPackage = PACKAGE_DETAILS[requestedPackage] ? requestedPackage : 'STANDARD';
