@@ -105,6 +105,36 @@
       justify-content: center;
     }
 
+    .home-signed-in-membership-panel {
+      padding: 26px 28px;
+      border: 1px solid #c8ddd0;
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: 0 12px 28px rgba(31, 47, 66, 0.07);
+      text-align: left;
+    }
+
+    .home-signed-in-membership-panel[hidden] {
+      display: none !important;
+    }
+
+    .home-signed-in-membership-panel h3 {
+      margin: 0 0 10px;
+      color: #17283d;
+      font-size: 1.35rem;
+    }
+
+    .home-signed-in-membership-panel p {
+      margin: 0 0 18px;
+      color: #566575;
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    .home-signed-in-membership-panel .button {
+      justify-content: center;
+    }
+
     .home-membership-eyebrow,
     .home-language-eyebrow {
       margin: 0 0 10px;
@@ -389,7 +419,7 @@
         </p>
 
         <div class="home-hero-actions">
-          <a href="#membership" class="button button-primary">Choose your membership</a>
+          <a href="#membership" id="hero-membership-link" class="button button-primary">Choose your membership</a>
           <a href="#sample-card" class="button button-secondary">View sample card</a>
         </div>
 
@@ -755,14 +785,14 @@
       <div class="home-membership-copy">
         <p class="home-membership-eyebrow">LymphAware membership</p>
         <h2 id="membership-title">Choose the LymphAware package that suits you.</h2>
-        <p class="home-membership-lead">
+        <p id="membership-lead" class="home-membership-lead">
           Each option gives you five years of LymphAware membership, access to your secure Patient Portal
           and a patient-controlled QR profile. Choose the package that best matches how you expect to use
           LymphAware, then create your account and continue to secure payment.
         </p>
       </div>
 
-      <div class="home-membership-packages">
+      <div id="membership-packages" class="home-membership-packages">
         <article class="home-membership-price-card home-membership-package-standard">
           <p class="home-membership-package-badge">5-Year Membership</p>
           <p class="home-membership-package-summary">The essential LymphAware package.</p>
@@ -808,6 +838,15 @@
           </ul>
           <a href="/register/?package=MULTILINGUAL" class="button button-primary">Choose Multilingual</a>
         </article>
+      </div>
+
+      <div id="signed-in-membership-panel" class="home-signed-in-membership-panel" hidden>
+        <h3>Your membership and additional purchases</h3>
+        <p>
+          Continue to your Patient Portal to manage your membership or purchase additional
+          ID cards, lanyards and approved language packages.
+        </p>
+        <a href="/portal/#accessories-panel" class="button button-primary">Go to Patient Portal</a>
       </div>
 
       <div class="home-membership-actions">
@@ -1065,9 +1104,39 @@
   const mobileAccountLink = document.getElementById('mobile-account-link');
   const desktopSignOutButton = document.getElementById('desktop-sign-out-button');
   const mobileSignOutButton = document.getElementById('mobile-sign-out-button');
+  const heroMembershipLink = document.getElementById('hero-membership-link');
+  const membershipTitle = document.getElementById('membership-title');
+  const membershipLead = document.getElementById('membership-lead');
+  const membershipPackages = document.getElementById('membership-packages');
+  const signedInMembershipPanel = document.getElementById('signed-in-membership-panel');
+
+  const membershipTitleDefault = membershipTitle.textContent;
+  const membershipLeadDefault = membershipLead.textContent;
+
+  function updateHomepageMembership(session) {
+    const isSignedIn = Boolean(session?.user);
+
+    if (isSignedIn) {
+      heroMembershipLink.href = '/portal/';
+      heroMembershipLink.textContent = 'Patient Portal';
+      membershipTitle.textContent = 'Manage your LymphAware account.';
+      membershipLead.textContent = 'You are already signed in, so another five-year membership cannot be selected from this page.';
+      membershipPackages.hidden = true;
+      signedInMembershipPanel.hidden = false;
+      return;
+    }
+
+    heroMembershipLink.href = '#membership';
+    heroMembershipLink.textContent = 'Choose your membership';
+    membershipTitle.textContent = membershipTitleDefault;
+    membershipLead.textContent = membershipLeadDefault;
+    membershipPackages.hidden = false;
+    signedInMembershipPanel.hidden = true;
+  }
 
   function updateAccountLinks(session) {
     const isSignedIn = Boolean(session?.user);
+    updateHomepageMembership(session);
 
     if (isSignedIn) {
       desktopAccountLink.href = '/portal/';
