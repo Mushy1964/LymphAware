@@ -674,12 +674,12 @@
 
 
 .home-page .how-step {
-  position: relative;
   display: grid;
-  grid-template-columns: 58px 1fr;
+  grid-template-columns: 58px minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
   column-gap: 18px;
-  row-gap: 2px;
-  align-items: center;
+  row-gap: 14px;
+  align-items: start;
 
   min-height: 170px;
   padding: 24px 24px 22px;
@@ -691,9 +691,10 @@
 
 
 .home-page .how-step-number {
-  position: absolute;
-  top: 16px;
-  left: 16px;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+  justify-self: center;
 
   width: 28px;
   height: 28px;
@@ -737,19 +738,38 @@
 }
 
 
+.home-page .how-step-copy {
+  display: contents;
+}
+
 .home-page .how-step-copy h3 {
-  margin: 0 0 7px;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  margin: 0;
   color: #17283d;
   font-size: 1.08rem;
   line-height: 1.25;
+  text-align: left;
 }
 
 
 .home-page .how-step-copy p {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: start;
   margin: 0;
   color: #5b6873;
   font-size: 0.92rem;
   line-height: 1.48;
+  text-align: left;
+}
+
+.home-page .how-step-icon {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: start;
+  justify-self: center;
 }
 
 
@@ -812,10 +832,6 @@
   }
 
   .home-page .how-step-number {
-    top: 12px;
-    left: 12px;
-    width: 25px;
-    height: 25px;
     font-size: 0.8rem;
   }
 
