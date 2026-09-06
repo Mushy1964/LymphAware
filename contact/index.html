@@ -8,6 +8,137 @@
 
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/secondary-header.css">
+
+  <style>
+    .contact-form-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 36px;
+      align-items: start;
+    }
+
+    .contact-form-card {
+      padding: 34px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: #ffffff;
+      box-shadow: var(--content-shadow);
+    }
+
+    .contact-form-card .eyebrow {
+      margin-bottom: 8px;
+    }
+
+    .contact-form-card h2 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 3vw, 2.8rem);
+      line-height: 1.15;
+      letter-spacing: -1px;
+    }
+
+    .contact-form-intro {
+      margin: 0 0 26px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    .contact-field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .contact-field {
+      margin-bottom: 20px;
+    }
+
+    .contact-field label {
+      display: block;
+      margin-bottom: 7px;
+      color: #17283d;
+      font-weight: 700;
+    }
+
+    .contact-field input,
+    .contact-field select,
+    .contact-field textarea {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #c8d3da;
+      border-radius: 10px;
+      background: #ffffff;
+      color: #17283d;
+      font: inherit;
+    }
+
+    .contact-field textarea {
+      min-height: 170px;
+      resize: vertical;
+    }
+
+    .contact-field input:focus,
+    .contact-field select:focus,
+    .contact-field textarea:focus {
+      outline: 3px solid rgba(40, 120, 184, 0.18);
+      border-color: var(--blue);
+    }
+
+    .contact-privacy-note {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .contact-form-card .button {
+      min-width: 190px;
+      justify-content: center;
+    }
+
+    .contact-form-status {
+      margin: 18px 0 0;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .contact-form-status.is-success {
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: var(--green-light);
+      color: var(--green-dark);
+    }
+
+    .contact-form-status.is-error {
+      color: #9b2c2c;
+    }
+
+    .contact-honeypot {
+      position: absolute;
+      left: -9999px;
+    }
+
+    @media (max-width: 820px) {
+      .contact-form-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .contact-form-card {
+        padding: 28px 22px;
+      }
+
+      .contact-field-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .contact-form-card .button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -55,45 +186,107 @@
 
 
     <section class="content-section">
-      <div class="container split-section">
+      <div class="container contact-form-layout">
 
-        <div class="split-copy">
-
-          <h2>Contact LymphAware</h2>
-
-          <p>
-            LymphAware is a patient-led project and we aim to keep contact
-            straightforward and easy to understand.
+        <div class="contact-form-card">
+          <p class="eyebrow">Send a message</p>
+          <h2>How can we help?</h2>
+          <p class="contact-form-intro">
+            Complete the form below and your enquiry will be sent securely to
+            LymphAware. We will reply to the email address you provide.
           </p>
 
+          <form
+            id="contact-form"
+            name="lymphaware-contact"
+            method="POST"
+            data-netlify="true"
+            netlify-honeypot="bot-field"
+          >
+            <input type="hidden" name="form-name" value="lymphaware-contact">
+            <input type="hidden" name="subject" value="New LymphAware website enquiry">
+
+            <p class="contact-honeypot" aria-hidden="true">
+              <label>
+                Do not complete this field:
+                <input name="bot-field" tabindex="-1" autocomplete="off">
+              </label>
+            </p>
+
+            <div class="contact-field-row">
+              <div class="contact-field">
+                <label for="contact-name">Your name</label>
+                <input
+                  type="text"
+                  id="contact-name"
+                  name="name"
+                  autocomplete="name"
+                  required
+                >
+              </div>
+
+              <div class="contact-field">
+                <label for="contact-email">Email address</label>
+                <input
+                  type="email"
+                  id="contact-email"
+                  name="email"
+                  autocomplete="email"
+                  required
+                >
+              </div>
+            </div>
+
+            <div class="contact-field">
+              <label for="contact-type">What is your enquiry about?</label>
+              <select id="contact-type" name="enquiry-type" required>
+                <option value="">Please select</option>
+                <option>General enquiry</option>
+                <option>Membership or account</option>
+                <option>ID card or order</option>
+                <option>QR profile</option>
+                <option>Professional or organisation enquiry</option>
+                <option>Something else</option>
+              </select>
+            </div>
+
+            <div class="contact-field">
+              <label for="contact-message">Your question or message</label>
+              <textarea id="contact-message" name="message" required></textarea>
+            </div>
+
+            <p class="contact-privacy-note">
+              Please do not include unnecessary medical or sensitive personal
+              information. By sending this form, you agree that LymphAware may
+              use these details to respond to your enquiry. See our
+              <a href="/privacy/">Privacy Notice</a>.
+            </p>
+
+            <button id="contact-submit" type="submit" class="button button-primary">
+              Send enquiry
+            </button>
+
+            <p
+              id="contact-form-status"
+              class="contact-form-status"
+              role="status"
+              aria-live="polite"
+            ></p>
+          </form>
+        </div>
+
+        <aside class="highlight-box">
+          <h3>Before you send</h3>
           <p>
-            For general enquiries or practical support, email
+            For general enquiries, you can also email
             <a href="mailto:admin@lymphaware.com"><strong>admin@lymphaware.com</strong></a>.
           </p>
-
           <p>
-            Please avoid sending more personal or health information than is
-            necessary for us to understand and respond to your enquiry.
+            LymphAware cannot provide medical advice or emergency assistance.
+            Please contact an appropriate healthcare professional or emergency
+            service if urgent help is needed.
           </p>
-
-        </div>
-
-
-        <div class="highlight-box">
-
-          <h3>Why we keep contact simple</h3>
-
-          <p>
-            Collecting unnecessary personal information would not be consistent
-            with LymphAware's privacy-by-design approach.
-          </p>
-
-          <p>
-            Contact arrangements can be expanded where there is a clear
-            operational need, while keeping the process straightforward for members.
-          </p>
-
-        </div>
+        </aside>
 
       </div>
     </section>
@@ -266,6 +459,46 @@
 
     </div>
   </footer>
+
+
+  <script>
+    const contactForm = document.getElementById('contact-form');
+    const contactSubmit = document.getElementById('contact-submit');
+    const contactStatus = document.getElementById('contact-form-status');
+
+    contactForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      contactSubmit.disabled = true;
+      contactSubmit.textContent = 'Sending...';
+      contactStatus.textContent = '';
+      contactStatus.className = 'contact-form-status';
+
+      try {
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(new FormData(contactForm)).toString()
+        });
+
+        if (!response.ok) {
+          throw new Error('Form submission failed');
+        }
+
+        contactForm.reset();
+        contactStatus.textContent =
+          'Thank you. Your enquiry has been sent to LymphAware.';
+        contactStatus.classList.add('is-success');
+      } catch (error) {
+        contactStatus.innerHTML =
+          'Your enquiry could not be sent. Please email ' +
+          '<a href="mailto:admin@lymphaware.com">admin@lymphaware.com</a>.';
+        contactStatus.classList.add('is-error');
+      } finally {
+        contactSubmit.disabled = false;
+        contactSubmit.textContent = 'Send enquiry';
+      }
+    });
+  </script>
 
 </body>
 </html>
