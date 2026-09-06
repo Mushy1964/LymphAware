@@ -1123,6 +1123,7 @@
 
   function updateHomepageMembership(session) {
     const isSignedIn = Boolean(session?.user);
+    heroMembershipLink.classList.toggle('is-signed-in', isSignedIn);
 
     if (isSignedIn) {
       heroMembershipLink.href = '/portal/';
