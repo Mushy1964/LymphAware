@@ -243,6 +243,10 @@ body:has(.secondary-header) .button {
     font-weight: 700;
   }
 
+  .secondary-header.profile-site-header .header-actions > .back-to-website-button::before {
+    content: "Return to portal";
+  }
+
   .secondary-header .header-actions > .back-to-website-button:hover,
   .secondary-header .header-actions > .back-to-website-button:focus-visible {
     background: transparent !important;
