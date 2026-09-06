@@ -45,6 +45,22 @@ function normaliseItem(item) {
   };
 }
 
+function parseCardSelectionsMetadata(value, fallbackQuantity = 0) {
+  try {
+    const parsed = JSON.parse(String(value || '[]'));
+    if (!Array.isArray(parsed)) throw new Error('Invalid card selections');
+    const selections = parsed.map(item => ({
+      languageCode: String(item?.[0] || '').trim().toUpperCase(),
+      languageName: String(item?.[1] || '').trim(),
+      quantity: Number(item?.[2] || 0)
+    })).filter(item => item.languageCode && item.languageName && Number.isInteger(item.quantity) && item.quantity > 0);
+    if (selections.length) return selections;
+  } catch {
+    // Older checkout sessions used one unlabelled card quantity, which represented English cards.
+  }
+  return fallbackQuantity > 0 ? [{ languageCode: 'EN', languageName: 'English', quantity: fallbackQuantity }] : [];
+}
+
 async function patchOrder(orderId, values) {
   const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/orders?id=eq.${orderId}`, {
     method: 'PATCH',
@@ -238,10 +254,18 @@ function buildReplacementItems(cardSelected, lanyardSelected) {
   return items;
 }
 
-function buildAdditionalPurchaseItems(cardQuantity, lanyardQuantity, languageCode, languageName) {
+function buildAdditionalPurchaseItems(cardSelections, lanyardQuantity, languageCode, languageName) {
   const items = [];
-  if (cardQuantity > 0) {
-    items.push(normaliseItem({ item_type: 'EXTRA_CARD', description: 'Additional or Replacement LymphAware ID Card', quantity: cardQuantity, unit_price_pence: 650, line_total_pence: cardQuantity * 650 }));
+  for (const selection of cardSelections) {
+    items.push(normaliseItem({
+      item_type: 'EXTRA_CARD',
+      description: 'Additional or Replacement LymphAware ID Card',
+      quantity: selection.quantity,
+      unit_price_pence: 650,
+      line_total_pence: selection.quantity * 650,
+      language_code: selection.languageCode,
+      language_name: selection.languageName
+    }));
   }
   if (lanyardQuantity > 0) {
     items.push(normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Additional or Replacement Lanyard & Holder', quantity: lanyardQuantity, unit_price_pence: 650, line_total_pence: lanyardQuantity * 650 }));
@@ -291,6 +315,27 @@ async function reopenPrimaryCardForReplacement(userId) {
   if (!updateResponse.ok) console.error('Unable to reopen replacement card job:', await updateResponse.text());
 }
 
+async function reopenLanguageCardsForReplacement(userId, cardSelections) {
+  const now = new Date().toISOString();
+  for (const selection of cardSelections.filter(item => item.languageCode !== 'EN')) {
+    const updateResponse = await fetch(
+      `${process.env.SUPABASE_URL}/rest/v1/language_profiles?user_id=eq.${encodeURIComponent(userId)}&language_code=eq.${encodeURIComponent(selection.languageCode)}&qr_profile_active=eq.true`,
+      {
+        method: 'PATCH',
+        headers: supabaseHeaders('return=minimal'),
+        body: JSON.stringify({
+          card_production_status: 'READY',
+          card_ready_at: now,
+          card_prepared_at: null,
+          card_printed_at: null,
+          updated_at: now
+        })
+      }
+    );
+    if (!updateResponse.ok) console.error(`Unable to reopen ${selection.languageName} replacement card job:`, await updateResponse.text());
+  }
+}
+
 export default async (request) => {
   if (request.method !== 'POST') return new Response('Method not allowed', { status: 405 });
 
@@ -327,6 +372,7 @@ export default async (request) => {
     const metadataCardQuantity = Number(session.metadata?.card_quantity || 0);
     const metadataLanyardQuantity = Number(session.metadata?.lanyard_quantity || 0);
     const cardQuantity = Number.isInteger(metadataCardQuantity) && metadataCardQuantity >= 0 ? metadataCardQuantity : (replacementCard ? 1 : 0);
+    const cardSelections = parseCardSelectionsMetadata(session.metadata?.card_selections, cardQuantity);
     const lanyardQuantity = Number.isInteger(metadataLanyardQuantity) && metadataLanyardQuantity >= 0 ? metadataLanyardQuantity : (replacementLanyard ? 1 : 0);
     const translationConsent = String(session.metadata?.translation_consent || '') === '1';
 
@@ -355,7 +401,7 @@ export default async (request) => {
       : paymentType === 'additional_language'
         ? buildAdditionalLanguageItems(languageCode, languageName)
         : paymentType === 'additional_items'
-          ? buildAdditionalPurchaseItems(cardQuantity, lanyardQuantity, languageCode, languageName)
+          ? buildAdditionalPurchaseItems(cardSelections, lanyardQuantity, languageCode, languageName)
           : buildReplacementItems(replacementCard, replacementLanyard);
 
     const expectedSubtotal = items.reduce((sum, item) => sum + item.line_total_pence, 0);
@@ -422,8 +468,11 @@ export default async (request) => {
       await recordLanguageTranslationConsent(order.id, paidAt.toISOString());
     }
 
-    if ((paymentType === 'replacement_items' && replacementCard) || (paymentType === 'additional_items' && cardQuantity > 0)) {
+    if ((paymentType === 'replacement_items' && replacementCard) || (paymentType === 'additional_items' && cardSelections.some(item => item.languageCode === 'EN'))) {
       await reopenPrimaryCardForReplacement(userId);
+    }
+    if (paymentType === 'additional_items') {
+      await reopenLanguageCardsForReplacement(userId, cardSelections);
     }
 
     if (order.notification_status !== 'SENT') await sendOrderNotification(order, session, items);
