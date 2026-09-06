@@ -138,6 +138,7 @@ export default async (request) => {
     let languageName = '';
     let replacementCard = false;
     let replacementLanyard = false;
+    let translationConsent = false;
 
     if (paymentType === 'initial_membership') {
       if (membership.membership_status !== 'PENDING' || membership.payment_status !== 'PENDING') {
@@ -153,6 +154,8 @@ export default async (request) => {
         languageCode = normaliseLanguageCode(body?.languageCode);
         languageName = APPROVED_LANGUAGES[languageCode] || '';
         if (!languageName) return json({ error: 'Please select an additional language that is currently available.' }, 400);
+        translationConsent = body?.translationConsent === true;
+        if (!translationConsent) return json({ error: 'Please confirm that LymphAware may process your English profile to prepare the translated version.' }, 400);
       }
 
       checkoutName = packageDefinition.name;
@@ -168,6 +171,8 @@ export default async (request) => {
       languageCode = normaliseLanguageCode(body?.languageCode);
       languageName = APPROVED_LANGUAGES[languageCode] || '';
       if (!languageName) return json({ error: 'Please select an additional language that is currently available.' }, 400);
+      translationConsent = body?.translationConsent === true;
+      if (!translationConsent) return json({ error: 'Please confirm that LymphAware may process your English profile to prepare the translated version.' }, 400);
       if (await alreadyPurchasedLanguage(user.id, languageCode, languageName)) {
         return json({ error: `Your account already has a ${languageName} language package.` }, 400);
       }
@@ -212,6 +217,7 @@ export default async (request) => {
     stripeForm.append('metadata[package_type]', packageType);
     stripeForm.append('metadata[language_code]', languageCode);
     stripeForm.append('metadata[language_name]', languageName);
+    stripeForm.append('metadata[translation_consent]', translationConsent ? '1' : '0');
     stripeForm.append('metadata[replacement_card]', replacementCard ? '1' : '0');
     stripeForm.append('metadata[replacement_lanyard]', replacementLanyard ? '1' : '0');
     stripeForm.append('metadata[delivery_country_selected]', deliveryCountry);
