@@ -171,6 +171,12 @@
   justify-content: center;
 }
 
+@media (min-width: 901px) {
+  .home-page #hero-membership-link.is-signed-in {
+    display: none !important;
+  }
+}
+
 .home-page .home-hero-reassurance {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
