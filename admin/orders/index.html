@@ -336,7 +336,7 @@
               ? 'Display name and photograph are present. Use Card Production when the profile reaches the existing READY stage.'
               : 'Do not print yet. The member still needs to provide both a display name and photograph.'}
           </div>
-          ${order.ready_to_complete ? `<div class="order-complete-action"><div><strong>Ready to complete</strong><p>All required cards are marked as printed. Print the welcome letter and check that everything is packed before completing the order.</p></div><div class="order-complete-buttons"><a class="button button-secondary" href="/admin/welcome-letter/?order=${encodeURIComponent(order.id)}" target="_blank" rel="noopener">Print Welcome Letter</a><button type="button" class="button button-primary complete-order" data-order-id="${escapeHtml(order.id)}">Move to Completed Orders</button></div></div>` : ''}
+          ${order.ready_to_complete ? `<div class="order-complete-action"><div><strong>Ready to complete</strong><p>${order.order_type === 'INITIAL_MEMBERSHIP' ? 'All required cards are marked as printed. Print the welcome letter and check that everything is packed before completing the order.' : 'All required items are ready. Check that everything is packed before completing this additional order.'}</p></div><div class="order-complete-buttons">${order.order_type === 'INITIAL_MEMBERSHIP' ? `<a class="button button-secondary" href="/admin/welcome-letter/?order=${encodeURIComponent(order.id)}" target="_blank" rel="noopener">Print Welcome Letter</a>` : ''}<button type="button" class="button button-primary complete-order" data-order-id="${escapeHtml(order.id)}">Move to Completed Orders</button></div></div>` : ''}
         `;
 
         orderList.appendChild(card);
