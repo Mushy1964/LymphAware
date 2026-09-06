@@ -74,6 +74,10 @@
       display: none !important;
     }
 
+    .home-membership-packages.is-reference-only .home-membership-price-card > .button {
+      display: none !important;
+    }
+
     .home-membership-packages .home-membership-price-card {
       display: flex;
       flex-direction: column;
@@ -1128,8 +1132,9 @@
       heroMembershipLink.href = '/portal/';
       heroMembershipLink.textContent = 'Patient Portal';
       membershipTitle.textContent = 'Manage your LymphAware account.';
-      membershipLead.textContent = 'You are already signed in, so another five-year membership cannot be selected from this page.';
-      membershipPackages.hidden = true;
+      membershipLead.textContent = 'The membership packages are shown below for reference. As you are already signed in, another five-year membership cannot be selected from this page.';
+      membershipPackages.hidden = false;
+      membershipPackages.classList.add('is-reference-only');
       signedInMembershipPanel.hidden = false;
       return;
     }
@@ -1139,6 +1144,7 @@
     membershipTitle.textContent = membershipTitleDefault;
     membershipLead.textContent = membershipLeadDefault;
     membershipPackages.hidden = false;
+    membershipPackages.classList.remove('is-reference-only');
     signedInMembershipPanel.hidden = true;
   }
 
