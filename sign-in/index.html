@@ -57,6 +57,15 @@
       border-color: var(--blue);
     }
 
+    .forgot-password-row {
+      margin: -8px 0 18px;
+      text-align: right;
+    }
+    .forgot-password-row a {
+      color: var(--blue);
+      font-weight: 700;
+    }
+
     .portal-button { width: 100%; margin-top: 4px; }
     #login-message { margin: 16px 0 0; line-height: 1.5; }
 
@@ -118,6 +127,10 @@
           <label for="password">Password</label>
           <input type="password" id="password" name="password" autocomplete="current-password" required>
         </div>
+
+        <p class="forgot-password-row">
+          <a href="/forgot-password/">Forgotten password?</a>
+        </p>
 
         <button type="submit" class="button button-primary portal-button">Sign In</button>
         <p id="login-message" role="status" aria-live="polite"></p>
