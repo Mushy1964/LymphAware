@@ -205,7 +205,23 @@ body:has(.secondary-header) .button {
     flex: 1 1 auto;
   }
 
+  .secondary-header .header-inner {
+    flex-wrap: wrap;
+    padding-bottom: 12px;
+  }
+
   .secondary-header .header-actions {
-    display: none !important;
+    display: flex !important;
+    width: 100%;
+    min-width: 100%;
+    flex: 0 0 100%;
+    margin-left: 0;
+  }
+
+  .secondary-header .header-actions > .back-to-website-button {
+    display: inline-flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
   }
 }
