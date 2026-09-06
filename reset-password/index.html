@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choose New Password | LymphAware</title>
+
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/secondary-header.css">
+  <link rel="stylesheet" href="/css/card-system.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    .portal-page {
+      min-height: calc(100vh - 84px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 70px 20px;
+      background: linear-gradient(135deg, rgba(76,155,87,.06), rgba(40,120,184,.05));
+    }
+
+    .portal-card {
+      width: 100%;
+      max-width: 520px;
+      padding: 38px;
+      border-radius: 22px;
+      background: #fff;
+    }
+
+    .portal-card h1 {
+      margin: 0 0 12px;
+      font-size: 2.3rem;
+      line-height: 1.15;
+    }
+
+    .portal-intro {
+      margin: 0 0 28px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.55;
+    }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 7px; font-weight: 700; }
+    .form-group input {
+      width: 100%;
+      min-height: 48px;
+      padding: 11px 13px;
+      border: 1px solid #bfcbd2;
+      border-radius: 9px;
+      font: inherit;
+      background: #fff;
+    }
+    .form-group input:focus {
+      outline: 3px solid rgba(40,120,184,.18);
+      border-color: var(--blue);
+    }
+
+    .password-help {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.45;
+    }
+
+    .portal-button { width: 100%; margin-top: 4px; }
+    #password-message { margin: 16px 0 0; line-height: 1.5; }
+
+    .portal-links {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .portal-links a { color: var(--blue); font-weight: 700; }
+
+    @media (max-width: 680px) {
+      .portal-page { padding: 40px 14px; }
+      .portal-card { padding: 26px 20px; }
+      .portal-card h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header secondary-header">
+    <div class="container header-inner">
+      <a href="/" class="header-brand" aria-label="Back to LymphAware website">
+        <img class="header-logo" src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg" alt="LymphAware – Helping People Living with Lymphoedema Be Understood">
+      </a>
+      <div class="header-actions">
+        <a href="/" class="button button-secondary back-to-website-button">Back to Website</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="portal-page">
+    <section class="portal-card" aria-labelledby="new-password-heading">
+      <p class="eyebrow">Patient Portal</p>
+      <h1 id="new-password-heading">Choose a new password</h1>
+      <p class="portal-intro">
+        Create a new password for your LymphAware account.
+      </p>
+
+      <form id="new-password-form">
+        <div class="form-group">
+          <label for="password">New password</label>
+          <input type="password" id="password" name="password" autocomplete="new-password" minlength="8" required>
+          <p class="password-help">Use at least 8 characters.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm-password">Confirm new password</label>
+          <input type="password" id="confirm-password" name="confirm-password" autocomplete="new-password" minlength="8" required>
+        </div>
+
+        <button type="submit" class="button button-primary portal-button" disabled>Update Password</button>
+        <p id="password-message" role="status" aria-live="polite">Checking your secure reset link...</p>
+      </form>
+
+      <div class="portal-links">
+        <a href="/sign-in/">Back to Sign In</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://thbhsktcenhrnxzkbjus.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+    const form = document.getElementById('new-password-form');
+    const message = document.getElementById('password-message');
+    const submitButton = form.querySelector('button[type="submit"]');
+    let recoveryReady = false;
+
+    function enablePasswordForm() {
+      recoveryReady = true;
+      submitButton.disabled = false;
+      message.textContent = '';
+    }
+
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
+        enablePasswordForm();
+      }
+    });
+
+    async function checkRecoverySession() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+
+      if (session) {
+        enablePasswordForm();
+        return;
+      }
+
+      window.setTimeout(() => {
+        if (!recoveryReady) {
+          message.textContent = 'This password-reset link is invalid or has expired. Please request a new one.';
+        }
+      }, 1800);
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      if (!recoveryReady) {
+        message.textContent = 'Please open the latest password-reset link sent to your email address.';
+        return;
+      }
+
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+
+      if (password.length < 8) {
+        message.textContent = 'Please choose a password containing at least 8 characters.';
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        message.textContent = 'The passwords do not match. Please try again.';
+        return;
+      }
+
+      submitButton.disabled = true;
+      message.textContent = 'Updating your password...';
+
+      const { error } = await supabaseClient.auth.updateUser({ password });
+
+      if (error) {
+        console.error('Unable to update password:', error);
+        message.textContent = 'Your password could not be updated. Please request a new reset link and try again.';
+        submitButton.disabled = false;
+        return;
+      }
+
+      await supabaseClient.auth.signOut();
+      form.reset();
+      message.textContent = 'Your password has been updated. You can now sign in using your new password.';
+    });
+
+    checkRecoverySession();
+  </script>
+</body>
+</html>
