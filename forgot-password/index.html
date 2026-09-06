@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forgotten Password | LymphAware</title>
+
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/secondary-header.css">
+  <link rel="stylesheet" href="/css/card-system.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    .portal-page {
+      min-height: calc(100vh - 84px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 70px 20px;
+      background: linear-gradient(135deg, rgba(76,155,87,.06), rgba(40,120,184,.05));
+    }
+
+    .portal-card {
+      width: 100%;
+      max-width: 520px;
+      padding: 38px;
+      border-radius: 22px;
+      background: #fff;
+    }
+
+    .portal-card h1 {
+      margin: 0 0 12px;
+      font-size: 2.3rem;
+      line-height: 1.15;
+    }
+
+    .portal-intro {
+      margin: 0 0 28px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.55;
+    }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 7px; font-weight: 700; }
+    .form-group input {
+      width: 100%;
+      min-height: 48px;
+      padding: 11px 13px;
+      border: 1px solid #bfcbd2;
+      border-radius: 9px;
+      font: inherit;
+      background: #fff;
+    }
+    .form-group input:focus {
+      outline: 3px solid rgba(40,120,184,.18);
+      border-color: var(--blue);
+    }
+
+    .portal-button { width: 100%; margin-top: 4px; }
+    #reset-message { margin: 16px 0 0; line-height: 1.5; }
+
+    .portal-links {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .portal-links a { color: var(--blue); font-weight: 700; }
+
+    @media (max-width: 680px) {
+      .portal-page { padding: 40px 14px; }
+      .portal-card { padding: 26px 20px; }
+      .portal-card h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header secondary-header">
+    <div class="container header-inner">
+      <a href="/" class="header-brand" aria-label="Back to LymphAware website">
+        <img class="header-logo" src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg" alt="LymphAware – Helping People Living with Lymphoedema Be Understood">
+      </a>
+      <div class="header-actions">
+        <a href="/" class="button button-secondary back-to-website-button">Back to Website</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="portal-page">
+    <section class="portal-card" aria-labelledby="forgotten-heading">
+      <p class="eyebrow">Patient Portal</p>
+      <h1 id="forgotten-heading">Reset your password</h1>
+      <p class="portal-intro">
+        Enter your email address and we’ll send password-reset instructions if it is linked to a LymphAware account.
+      </p>
+
+      <form id="reset-request-form">
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" autocomplete="email" required>
+        </div>
+
+        <button type="submit" class="button button-primary portal-button">Send Reset Instructions</button>
+        <p id="reset-message" role="status" aria-live="polite"></p>
+      </form>
+
+      <div class="portal-links">
+        <a href="/sign-in/">Back to Sign In</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://thbhsktcenhrnxzkbjus.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+    const form = document.getElementById('reset-request-form');
+    const message = document.getElementById('reset-message');
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      submitButton.disabled = true;
+      message.textContent = 'Sending reset instructions...';
+
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://lymphaware.com/reset-password/'
+      });
+
+      if (error) {
+        console.error('Unable to request a password reset:', error);
+        message.textContent = 'We could not send reset instructions at the moment. Please wait a little and try again.';
+        submitButton.disabled = false;
+        return;
+      }
+
+      form.reset();
+      message.textContent = 'If this email address is linked to a LymphAware account, password-reset instructions have been sent. Please check your inbox and junk folder.';
+      submitButton.disabled = false;
+    });
+  </script>
+</body>
+</html>
