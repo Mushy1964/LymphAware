@@ -62,15 +62,15 @@ async function completeReadyOrders(updatedRecord, recordType) {
     const [itemsResponse, profileResponse, languagesResponse] = await Promise.all([
       fetch(`${base}/rest/v1/order_items?order_id=eq.${encodeURIComponent(order.id)}&select=id,item_type,language_name`, { headers }),
       fetch(`${base}/rest/v1/profiles?user_id=eq.${encodeURIComponent(order.user_id)}&select=card_production_status&limit=1`, { headers }),
-      fetch(`${base}/rest/v1/language_profiles?order_id=eq.${encodeURIComponent(order.id)}&select=order_item_id,language_name,card_production_status`, { headers })
+      fetch(`${base}/rest/v1/language_profiles?user_id=eq.${encodeURIComponent(order.user_id)}&select=order_item_id,language_code,language_name,card_production_status`, { headers })
     ]);
     if (!itemsResponse.ok || !profileResponse.ok || !languagesResponse.ok) throw new Error('Unable to check all required card records.');
 
     const items = await itemsResponse.json();
     const primaryProfile = (await profileResponse.json())?.[0] || null;
     const languageProfiles = await languagesResponse.json();
-    const needsPrimaryCard = items.some(item => ['MEMBERSHIP', 'EXTRA_CARD'].includes(item.item_type));
-    const languageItems = items.filter(item => item.item_type === 'LANGUAGE_PACKAGE');
+    const needsPrimaryCard = items.some(item => item.item_type === 'MEMBERSHIP' || (item.item_type === 'EXTRA_CARD' && (!item.language_name || String(item.language_name).toLowerCase() === 'english')));
+    const languageItems = items.filter(item => item.item_type === 'LANGUAGE_PACKAGE' || (item.item_type === 'EXTRA_CARD' && item.language_name && String(item.language_name).toLowerCase() !== 'english'));
     const primaryPrinted = !needsPrimaryCard || primaryProfile?.card_production_status === 'PRINTED';
     const languagesPrinted = languageItems.every(item => languageProfiles.some(profile => {
       const linkedItem = profile.order_item_id && profile.order_item_id === item.id;
