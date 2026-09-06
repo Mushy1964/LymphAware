@@ -214,7 +214,10 @@ body:has(.secondary-header) .button {
     width: 100vw;
     min-width: 100vw;
     flex: 0 0 100vw;
-    margin-left: calc(50% - 50vw);
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-left: 0;
     justify-content: flex-start;
     background: #eef6fb;
     border-top: 1px solid #dce8f0;
