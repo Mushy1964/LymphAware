@@ -210,6 +210,11 @@ body:has(.secondary-header) .button {
     padding-bottom: 14px;
   }
 
+  .secondary-header.profile-site-header .header-inner {
+    gap: 0 !important;
+    row-gap: 0 !important;
+  }
+
   .secondary-header .header-actions {
     display: flex !important;
     width: 100vw;
