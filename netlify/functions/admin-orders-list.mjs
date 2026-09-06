@@ -76,7 +76,7 @@ export default async (request) => {
         { headers: serviceHeaders() }
       ),
       fetch(
-        `${process.env.SUPABASE_URL}/rest/v1/language_profiles?select=order_id,order_item_id,language_name,setup_status,card_production_status,card_printed_at&order_id=in.(${orderIds})`,
+        `${process.env.SUPABASE_URL}/rest/v1/language_profiles?select=id,user_id,order_id,order_item_id,language_code,language_name,setup_status,card_production_status,card_printed_at&user_id=in.(${userIds})`,
         { headers: serviceHeaders() }
       )
     ]);
@@ -92,22 +92,26 @@ export default async (request) => {
     }
 
     const profileByUser = new Map(profiles.map(profile => [profile.user_id, profile]));
-    const languageProfilesByOrder = new Map();
+    const languageProfilesByUser = new Map();
     for (const profile of languageProfiles) {
-      if (!languageProfilesByOrder.has(profile.order_id)) languageProfilesByOrder.set(profile.order_id, []);
-      languageProfilesByOrder.get(profile.order_id).push(profile);
+      if (!languageProfilesByUser.has(profile.user_id)) languageProfilesByUser.set(profile.user_id, []);
+      languageProfilesByUser.get(profile.user_id).push(profile);
     }
 
     const result = orders.map(order => {
       const profile = profileByUser.get(order.user_id) || null;
       const orderItems = itemsByOrder.get(order.id) || [];
-      const orderLanguageProfiles = languageProfilesByOrder.get(order.id) || [];
+      const requestedLanguageNames = new Set(orderItems
+        .filter(item => item.language_name && (item.item_type === 'LANGUAGE_PACKAGE' || item.item_type === 'EXTRA_CARD'))
+        .map(item => String(item.language_name).toLowerCase()));
+      const orderLanguageProfiles = (languageProfilesByUser.get(order.user_id) || [])
+        .filter(languageProfile => requestedLanguageNames.has(String(languageProfile.language_name || '').toLowerCase()));
       const profileReady = Boolean(
         profile?.display_name?.trim() &&
         profile?.photo_path?.trim()
       );
-      const needsPrimaryCard = orderItems.some(item => ['MEMBERSHIP', 'EXTRA_CARD'].includes(item.item_type));
-      const languageItems = orderItems.filter(item => item.item_type === 'LANGUAGE_PACKAGE');
+      const needsPrimaryCard = orderItems.some(item => item.item_type === 'MEMBERSHIP' || (item.item_type === 'EXTRA_CARD' && (!item.language_name || String(item.language_name).toLowerCase() === 'english')));
+      const languageItems = orderItems.filter(item => item.item_type === 'LANGUAGE_PACKAGE' || (item.item_type === 'EXTRA_CARD' && item.language_name && String(item.language_name).toLowerCase() !== 'english'));
       const primaryCardPrinted = !needsPrimaryCard || profile?.card_production_status === 'PRINTED';
       const languageCardsPrinted = languageItems.every(item => orderLanguageProfiles.some(languageProfile => {
         const linkedItem = languageProfile.order_item_id && languageProfile.order_item_id === item.id;
