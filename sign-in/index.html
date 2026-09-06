@@ -105,7 +105,7 @@
       <p class="eyebrow">Patient Portal</p>
       <h1 id="portal-heading">Sign in to LymphAware</h1>
       <p class="portal-intro">
-        Sign in to your LymphAware account. If your five-year membership has not yet been activated, you can continue to the secure membership step from your Patient Portal.
+        Sign in to your LymphAware account. If you have just confirmed your email, your selected membership will be ready for you to continue to secure payment.
       </p>
 
       <form id="login-form">
@@ -125,12 +125,12 @@
 
       <div class="portal-links">
         <span>New to LymphAware?</span>
-        <a href="/register/">Create your free account</a>
+        <a href="/#membership">Choose a membership package</a>
       </div>
 
       <div class="portal-status">
-        <strong>Free account registration</strong>
-        Creating your account is free. A £29.99 five-year LymphAware membership is required before your patient profile and portal features are unlocked.
+        <strong>Membership-led registration</strong>
+        Choose a package first, then create and confirm your account before payment. Your profile and portal features unlock when payment is confirmed.
       </div>
     </section>
   </main>
@@ -140,6 +140,8 @@
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    const requestedPackage = String(new URLSearchParams(location.search).get('package') || '').toUpperCase();
+    const selectedPackage = ['STANDARD', 'PLUS', 'MULTILINGUAL'].includes(requestedPackage) ? requestedPackage : '';
     const loginForm = document.getElementById('login-form');
     const loginMessage = document.getElementById('login-message');
 
@@ -163,7 +165,7 @@
       if (signedInEmail === 'admin@lymphaware.com') {
         window.location.href = '/admin/orders/';
       } else {
-        window.location.href = '/';
+        window.location.href = selectedPackage ? '/portal/?package=' + encodeURIComponent(selectedPackage) : '/portal/';
       }
     });
   </script>
