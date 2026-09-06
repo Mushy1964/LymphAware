@@ -685,6 +685,10 @@ footer {
   z-index: 200;
   width: calc(100vw - 32px);
   max-width: 420px;
+  max-height: calc(100vh - 110px);
+  max-height: calc(100dvh - 110px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 12px;
   border: 1px solid var(--border);
   border-radius: 14px;
