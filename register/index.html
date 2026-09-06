@@ -125,8 +125,20 @@
       line-height: 1.55;
     }
 
-    .register-success .button {
+    .register-success-actions {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
       margin-top: 8px;
+    }
+
+    .register-success .button {
+      margin-top: 0;
+    }
+
+    .register-reset-link {
+      color: var(--blue);
+      font-weight: 700;
     }
 
     .portal-links {
@@ -215,15 +227,18 @@
       </form>
 
       <div id="register-success" class="register-success" role="status" aria-live="polite" hidden>
-        <div class="register-success-icon" aria-hidden="true">✓</div>
-        <h2>Account created successfully</h2>
+        <div class="register-success-icon" aria-hidden="true">✉</div>
+        <h2>Check your email</h2>
         <p>
-          We’ve sent you a confirmation email. Open that email and select the confirmation link to verify your LymphAware account.
+          If this is a new LymphAware account, we’ve sent you a confirmation email. Open that email and select the confirmation link to verify your account.
         </p>
         <p>
-          Once confirmed, sign in and you will continue with your selected package. Payment is completed before your Patient Portal and profile are activated.
+          If you have used this email address before, a second account will not be created. Sign in with your existing password or request a password reset.
         </p>
-        <a id="confirmation-sign-in-link" href="/sign-in/" class="button button-secondary">Go to Sign In</a>
+        <div class="register-success-actions">
+          <a id="confirmation-sign-in-link" href="/sign-in/" class="button button-secondary">Go to Sign In</a>
+          <a href="/forgot-password/" class="register-reset-link">Forgotten password?</a>
+        </div>
       </div>
 
       <div class="portal-links" id="existing-account-links">
@@ -339,9 +354,9 @@
       membershipNote.hidden = true;
       existingAccountLinks.hidden = true;
       registerSuccess.hidden = false;
-      registerEyebrow.textContent = 'Account created';
-      registerHeading.textContent = 'Check your email';
-      registerIntro.textContent = 'Your LymphAware account has been created successfully.';
+      registerEyebrow.textContent = 'Next step';
+      registerHeading.textContent = 'Check your email or sign in';
+      registerIntro.textContent = 'For your security, this page does not confirm whether an email address is already registered.';
     });
   </script>
 </body>
