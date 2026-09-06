@@ -134,10 +134,10 @@
     function fulfilmentDetails(order) {
       const items = order.items || [];
       const hasMembership = items.some(item => item.item_type === 'MEMBERSHIP');
-      const englishCards = (hasMembership ? 1 : 0) + items.filter(item => item.item_type === 'EXTRA_CARD').reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+      const englishCards = (hasMembership ? 1 : 0) + items.filter(item => item.item_type === 'EXTRA_CARD' && (!item.language_name || String(item.language_name).toLowerCase() === 'english')).reduce((sum, item) => sum + Number(item.quantity || 0), 0);
       const lanyards = (hasMembership ? 1 : 0) + items.filter(item => item.item_type === 'LANYARD_HOLDER').reduce((sum, item) => sum + Number(item.quantity || 0), 0);
       const languageCards = [];
-      for (const item of items.filter(item => item.item_type === 'LANGUAGE_PACKAGE')) {
+      for (const item of items.filter(item => item.item_type === 'LANGUAGE_PACKAGE' || (item.item_type === 'EXTRA_CARD' && item.language_name && String(item.language_name).toLowerCase() !== 'english'))) {
         const name = item.language_name || 'Additional-language';
         const existing = languageCards.find(entry => entry.name.toLowerCase() === name.toLowerCase());
         if (existing) existing.quantity += Number(item.quantity || 0);
