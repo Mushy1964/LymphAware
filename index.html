@@ -1123,7 +1123,6 @@
 
   function updateHomepageMembership(session) {
     const isSignedIn = Boolean(session?.user);
-    heroMembershipLink.classList.toggle('is-signed-in', isSignedIn);
 
     if (isSignedIn) {
       heroMembershipLink.href = '/portal/';
@@ -1151,6 +1150,7 @@
     if (isSignedIn) {
       desktopAccountLink.href = '/portal/';
       desktopAccountLink.textContent = 'Patient Portal';
+      desktopAccountLink.hidden = true;
       desktopSignOutButton.hidden = false;
 
       mobileAccountLink.href = '/portal/';
@@ -1159,6 +1159,7 @@
     } else {
       desktopAccountLink.href = '/sign-in/';
       desktopAccountLink.textContent = 'Sign In';
+      desktopAccountLink.hidden = false;
       desktopSignOutButton.hidden = true;
 
       mobileAccountLink.href = '/sign-in/';
