@@ -125,12 +125,12 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
       `Complete your profile:\nhttps://lymphaware.com/profile/`;
     if (languageName) {
       nextSteps +=
-        `\n\nYour package includes a ${languageName} profile and card. You do not need to translate anything yourself. LymphAware will automatically prepare the ${languageName} version from the information in your main English profile. Empty English sections will also remain empty in the translated profile.`;
+        `\n\nYour package includes a ${languageName} profile and card. You do not need to translate anything yourself. LymphAware will prepare the ${languageName} version for you from the information in your main English profile. Empty English sections will also remain empty in the translated profile.`;
     }
   } else if (paymentType === 'additional_language') {
     subject = `Your ${languageName || 'additional-language'} LymphAware package is confirmed`;
     nextSteps =
-      `You do not need to translate your profile yourself. LymphAware will automatically prepare the ${languageName || 'selected-language'} version from the information in your main English profile and check it before publication.\n\n` +
+      `You do not need to translate your profile yourself. LymphAware will prepare the ${languageName || 'selected-language'} version for you from the information in your main English profile and check it before publication.\n\n` +
       `Please make sure your main English profile is accurate and complete. Any English sections left empty will also be empty in the translated profile.\n\n` +
       `Review your main profile:\nhttps://lymphaware.com/profile/`;
   }
