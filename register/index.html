@@ -173,14 +173,14 @@
   <main class="portal-page">
     <section class="portal-card" aria-labelledby="register-heading">
       <p class="eyebrow" id="register-eyebrow">Join LymphAware</p>
-      <h1 id="register-heading">Create your free account</h1>
+      <h1 id="register-heading">Create your LymphAware account</h1>
       <p class="portal-intro" id="register-intro">
-        Start by creating your LymphAware account. There is no charge to register.
+        Create and confirm your secure account before paying for the membership package you selected.
       </p>
 
       <div class="account-note" id="membership-note">
-        <strong>Choose your membership after signing in.</strong><br>
-        After confirming your email, you can sign in, compare the three five-year LymphAware membership packages and choose the one that best suits you.
+        <strong id="selected-package-name">Your selected membership</strong><br>
+        <span id="selected-package-summary">Your package selection will be carried through to secure payment after you confirm your email and sign in.</span>
       </div>
 
       <form id="register-form">
@@ -210,7 +210,7 @@
           </label>
         </div>
 
-        <button type="submit" class="button button-primary portal-button">Create My Free Account</button>
+        <button type="submit" class="button button-primary portal-button">Create Account and Continue</button>
         <p id="register-message" role="status" aria-live="polite"></p>
       </form>
 
@@ -221,14 +221,14 @@
           We’ve sent you a confirmation email. Open that email and select the confirmation link to verify your LymphAware account.
         </p>
         <p>
-          Once confirmed, sign in to compare the three five-year membership packages and choose the one that best suits you. Your Patient Portal and profile will become available once your chosen membership is active.
+          Once confirmed, sign in and you will continue with your selected package. Payment is completed before your Patient Portal and profile are activated.
         </p>
-        <a href="/sign-in/" class="button button-secondary">Go to Sign In</a>
+        <a id="confirmation-sign-in-link" href="/sign-in/" class="button button-secondary">Go to Sign In</a>
       </div>
 
       <div class="portal-links" id="existing-account-links">
         <span>Already have a LymphAware account?</span>
-        <a href="/sign-in/">Sign in</a>
+        <a id="existing-sign-in-link" href="/sign-in/">Sign in</a>
       </div>
 
     </section>
@@ -239,6 +239,15 @@
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
+    const PACKAGE_DETAILS = {
+      STANDARD: { name: '5-Year Membership – £29.99', summary: '1 English QR profile, 1 English ID card and 1 lanyard & holder.' },
+      PLUS: { name: '5-Year Plus – £39.99', summary: '1 English QR profile, 2 English ID cards and 2 lanyards & holders.' },
+      MULTILINGUAL: { name: '5-Year Multilingual – £49.99', summary: 'English and one additional-language QR profile, English and translated-language ID cards, with translation prepared by LymphAware.' }
+    };
+    const requestedPackage = String(new URLSearchParams(location.search).get('package') || 'STANDARD').toUpperCase();
+    const selectedPackage = PACKAGE_DETAILS[requestedPackage] ? requestedPackage : 'STANDARD';
+    const signInUrl = '/sign-in/?package=' + encodeURIComponent(selectedPackage);
+
     const registerForm = document.getElementById('register-form');
     const registerMessage = document.getElementById('register-message');
     const submitButton = registerForm.querySelector('button[type="submit"]');
@@ -248,6 +257,10 @@
     const registerEyebrow = document.getElementById('register-eyebrow');
     const registerHeading = document.getElementById('register-heading');
     const registerIntro = document.getElementById('register-intro');
+    document.getElementById('selected-package-name').textContent = PACKAGE_DETAILS[selectedPackage].name;
+    document.getElementById('selected-package-summary').textContent = PACKAGE_DETAILS[selectedPackage].summary + ' After confirming your email, sign in to continue directly to payment.';
+    document.getElementById('confirmation-sign-in-link').href = signInUrl;
+    document.getElementById('existing-sign-in-link').href = signInUrl;
     let registrationMode = 'CLOSED';
 
     async function loadRegistrationMode() {
@@ -303,7 +316,8 @@
         email,
         password,
         options: {
-          emailRedirectTo: 'https://lymphaware.com/sign-in/'
+          emailRedirectTo: 'https://lymphaware.com/sign-in/?package=' + encodeURIComponent(selectedPackage),
+          data: { selected_package: selectedPackage }
         }
       });
 
@@ -316,7 +330,7 @@
 
       if (data.session) {
         registerMessage.textContent = 'Your account has been created. Redirecting...';
-        window.location.href = '/portal/';
+        window.location.href = '/portal/?package=' + encodeURIComponent(selectedPackage);
         return;
       }
 
@@ -327,7 +341,7 @@
       registerSuccess.hidden = false;
       registerEyebrow.textContent = 'Account created';
       registerHeading.textContent = 'Check your email';
-      registerIntro.textContent = 'Your free LymphAware account has been created successfully.';
+      registerIntro.textContent = 'Your LymphAware account has been created successfully.';
     });
   </script>
 </body>
