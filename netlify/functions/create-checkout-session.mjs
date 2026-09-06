@@ -48,12 +48,16 @@ function shippingRateIdForBand(band) {
   if (band === 'EUROPE') return String(process.env.STRIPE_SHIPPING_RATE_EUROPE || '').trim();
   return String(process.env.STRIPE_SHIPPING_RATE_REST_OF_WORLD || '').trim();
 }
-function appendInlinePrice(stripeForm, name, amountPence, description = '') {
-  stripeForm.append('line_items[0][price_data][currency]', 'gbp');
-  stripeForm.append('line_items[0][price_data][unit_amount]', String(amountPence));
-  stripeForm.append('line_items[0][price_data][product_data][name]', name);
-  if (description) stripeForm.append('line_items[0][price_data][product_data][description]', description);
-  stripeForm.append('line_items[0][quantity]', '1');
+function appendInlinePrice(stripeForm, index, name, amountPence, description = '', quantity = 1) {
+  stripeForm.append(`line_items[${index}][price_data][currency]`, 'gbp');
+  stripeForm.append(`line_items[${index}][price_data][unit_amount]`, String(amountPence));
+  stripeForm.append(`line_items[${index}][price_data][product_data][name]`, name);
+  if (description) stripeForm.append(`line_items[${index}][price_data][product_data][description]`, description);
+  stripeForm.append(`line_items[${index}][quantity]`, String(quantity));
+}
+function parseQuantity(value) {
+  const quantity = Number(value);
+  return Number.isInteger(quantity) && quantity >= 0 && quantity <= 10 ? quantity : null;
 }
 
 async function getMembership(userId) {
@@ -138,7 +142,10 @@ export default async (request) => {
     let languageName = '';
     let replacementCard = false;
     let replacementLanyard = false;
+    let cardQuantity = 0;
+    let lanyardQuantity = 0;
     let translationConsent = false;
+    const checkoutItems = [];
 
     if (paymentType === 'initial_membership') {
       if (membership.membership_status !== 'PENDING' || membership.payment_status !== 'PENDING') {
@@ -165,6 +172,40 @@ export default async (request) => {
           ? 'Five-year membership with 2 English ID cards and 2 lanyards & holders.'
           : 'Five-year membership with 1 English ID card and 1 lanyard & holder.';
       amountPence = packageDefinition.amountPence;
+    } else if (paymentType === 'additional_items') {
+      if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware membership is required.' }, 403);
+
+      cardQuantity = parseQuantity(body?.cardQuantity);
+      lanyardQuantity = parseQuantity(body?.lanyardQuantity);
+      if (cardQuantity === null || lanyardQuantity === null) {
+        return json({ error: 'Card and lanyard quantities must be whole numbers between 0 and 10.' }, 400);
+      }
+
+      languageCode = normaliseLanguageCode(body?.languageCode);
+      if (languageCode) {
+        languageName = APPROVED_LANGUAGES[languageCode] || '';
+        if (!languageName) return json({ error: 'Please select an additional language that is currently available.' }, 400);
+        translationConsent = body?.translationConsent === true;
+        if (!translationConsent) return json({ error: 'Please confirm that LymphAware may process your English profile to prepare the translated version.' }, 400);
+        if (await alreadyPurchasedLanguage(user.id, languageCode, languageName)) {
+          return json({ error: `Your account already has a ${languageName} language package.` }, 400);
+        }
+      }
+
+      if (!cardQuantity && !lanyardQuantity && !languageName) {
+        return json({ error: 'Please add at least one item to your order.' }, 400);
+      }
+
+      if (cardQuantity) checkoutItems.push({ name: 'LymphAware ID Card', amountPence: 650, description: 'Additional or replacement card for an existing membership.', quantity: cardQuantity });
+      if (lanyardQuantity) checkoutItems.push({ name: 'LymphAware Lanyard & Holder', amountPence: 650, description: 'Additional or replacement lanyard and holder.', quantity: lanyardQuantity });
+      if (languageName) checkoutItems.push({ name: `LymphAware Additional Language Package – ${languageName}`, amountPence: 1999, description: `One ${languageName} QR profile, one ${languageName} ID card and one lanyard & holder.`, quantity: 1 });
+
+      amountPence = checkoutItems.reduce((sum, item) => sum + (item.amountPence * item.quantity), 0);
+      checkoutName = 'LymphAware Additional Items';
+      checkoutDescription = 'Additional items for an existing LymphAware membership.';
+      packageType = 'ADDITIONAL_ITEMS';
+      replacementCard = cardQuantity > 0;
+      replacementLanyard = lanyardQuantity > 0;
     } else if (paymentType === 'additional_language') {
       if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware membership is required.' }, 403);
 
@@ -204,7 +245,11 @@ export default async (request) => {
 
     const stripeForm = new URLSearchParams();
     stripeForm.append('mode', 'payment');
-    appendInlinePrice(stripeForm, checkoutName, amountPence, checkoutDescription);
+    if (checkoutItems.length) {
+      checkoutItems.forEach((item, index) => appendInlinePrice(stripeForm, index, item.name, item.amountPence, item.description, item.quantity));
+    } else {
+      appendInlinePrice(stripeForm, 0, checkoutName, amountPence, checkoutDescription);
+    }
     stripeForm.append('allow_promotion_codes', 'true');
     stripeForm.append('billing_address_collection', 'required');
     stripeForm.append('shipping_address_collection[allowed_countries][0]', deliveryCountry);
@@ -220,15 +265,19 @@ export default async (request) => {
     stripeForm.append('metadata[translation_consent]', translationConsent ? '1' : '0');
     stripeForm.append('metadata[replacement_card]', replacementCard ? '1' : '0');
     stripeForm.append('metadata[replacement_lanyard]', replacementLanyard ? '1' : '0');
+    stripeForm.append('metadata[card_quantity]', String(cardQuantity));
+    stripeForm.append('metadata[lanyard_quantity]', String(lanyardQuantity));
     stripeForm.append('metadata[delivery_country_selected]', deliveryCountry);
     stripeForm.append('metadata[shipping_band]', band);
     stripeForm.append('metadata[shipping_rate_configured]', shippingRateId ? '1' : '0');
 
     const successType = paymentType === 'additional_language'
       ? 'language'
-      : paymentType === 'replacement_items'
-        ? 'replacement'
-        : 'membership';
+      : paymentType === 'additional_items'
+        ? (languageName ? 'additional-language' : 'additional-items')
+        : paymentType === 'replacement_items'
+          ? 'replacement'
+          : 'membership';
     stripeForm.append('success_url', `https://lymphaware.com/portal/?payment=success&type=${successType}`);
     stripeForm.append('cancel_url', 'https://lymphaware.com/portal/?payment=cancelled');
     if (user.email) stripeForm.append('customer_email', user.email);
