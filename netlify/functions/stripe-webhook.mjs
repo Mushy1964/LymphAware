@@ -229,6 +229,19 @@ function buildReplacementItems(cardSelected, lanyardSelected) {
   return items;
 }
 
+async function recordLanguageTranslationConsent(orderId, consentAt) {
+  if (!consentAt) return;
+  const response = await fetch(
+    `${process.env.SUPABASE_URL}/rest/v1/language_profiles?order_id=eq.${encodeURIComponent(orderId)}`,
+    {
+      method: 'PATCH',
+      headers: supabaseHeaders('return=minimal'),
+      body: JSON.stringify({ translation_consent_at: consentAt, updated_at: consentAt })
+    }
+  );
+  if (!response.ok) console.error('Unable to record language translation consent:', await response.text());
+}
+
 async function reopenPrimaryCardForReplacement(userId) {
   const profileResponse = await fetch(
     `${process.env.SUPABASE_URL}/rest/v1/profiles?user_id=eq.${encodeURIComponent(userId)}&select=id,display_name,photo_path,qr_token,qr_profile_active&limit=1`,
@@ -290,6 +303,7 @@ export default async (request) => {
     const languageCode = String(session.metadata?.language_code || '').trim().toUpperCase();
     const replacementCard = String(session.metadata?.replacement_card || '') === '1';
     const replacementLanyard = String(session.metadata?.replacement_lanyard || '') === '1';
+    const translationConsent = String(session.metadata?.translation_consent || '') === '1';
 
     if (paymentType === 'initial_membership') {
       const membershipEnd = new Date(paidAt);
@@ -348,6 +362,7 @@ export default async (request) => {
       total_pence: session.amount_total ?? expectedSubtotal,
       currency: session.currency || 'gbp',
       paid_at: paidAt.toISOString(),
+      translation_consent_at: translationConsent ? paidAt.toISOString() : null,
       updated_at: paidAt.toISOString()
     };
 
@@ -374,6 +389,10 @@ export default async (request) => {
     if (!itemResult.ok) {
       console.error('Unable to create LymphAware order items:', itemResult.error);
       return new Response('Order item creation failed', { status: 500 });
+    }
+
+    if (translationConsent && (paymentType === 'initial_membership' || paymentType === 'additional_language')) {
+      await recordLanguageTranslationConsent(order.id, paidAt.toISOString());
     }
 
     if (paymentType === 'replacement_items' && replacementCard) {
