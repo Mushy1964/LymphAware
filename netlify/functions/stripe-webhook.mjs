@@ -104,6 +104,63 @@ async function sendOrderNotification(order, session, items) {
   }
 }
 
+async function sendCustomerConfirmation(order, session, items, paymentType, languageName) {
+  const apiKey = String(process.env.RESEND_API_KEY || '').trim();
+  const customerEmail = String(session.customer_details?.email || session.customer_email || '').trim();
+  if (!apiKey || !customerEmail) return { ok: false, error: 'Customer email notification is not configured.' };
+
+  const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware <notifications@lymphaware.com>').trim();
+  const orderRef = `ORD-${String(order.order_number).padStart(6, '0')}`;
+  const itemLines = items.map((item) => `• ${item.quantity} × ${item.description}${item.language_name ? ` – ${item.language_name}` : ''}`).join('\n');
+  let subject = `Your LymphAware order is confirmed – ${orderRef}`;
+  let nextSteps =
+    `Your order has been received. We will use the current name and photograph in your LymphAware profile for any ID card included in this order.\n\n` +
+    `You can review your profile and delivery progress from your Patient Portal:\nhttps://lymphaware.com/portal/`;
+
+  if (paymentType === 'initial_membership') {
+    subject = `Welcome to LymphAware – complete your card details`;
+    nextSteps =
+      `Your five-year LymphAware membership is now active.\n\n` +
+      `Before your ID card can be printed, please add your display name and a clear, recent photograph in your Patient Portal. Once those two details are present, your card can enter production. Please then complete the remaining profile sections so the QR profile contains the information you would like others to see.\n\n` +
+      `Complete your profile:\nhttps://lymphaware.com/profile/`;
+    if (languageName) {
+      nextSteps +=
+        `\n\nYour package includes a ${languageName} profile and card. You do not need to translate anything yourself. LymphAware will automatically prepare the ${languageName} version from the information in your main English profile. Empty English sections will also remain empty in the translated profile.`;
+    }
+  } else if (paymentType === 'additional_language') {
+    subject = `Your ${languageName || 'additional-language'} LymphAware package is confirmed`;
+    nextSteps =
+      `You do not need to translate your profile yourself. LymphAware will automatically prepare the ${languageName || 'selected-language'} version from the information in your main English profile and check it before publication.\n\n` +
+      `Please make sure your main English profile is accurate and complete. Any English sections left empty will also be empty in the translated profile.\n\n` +
+      `Review your main profile:\nhttps://lymphaware.com/profile/`;
+  }
+
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'Idempotency-Key': `lymphaware-customer-${session.id}`
+      },
+      body: JSON.stringify({
+        from,
+        to: [customerEmail],
+        reply_to: ['admin@lymphaware.com'],
+        subject,
+        text:
+          `Thank you for your LymphAware purchase.\n\nOrder: ${orderRef}\n\nItems:\n${itemLines || 'Your selected LymphAware package'}\n\n` +
+          `${nextSteps}\n\nIf you need help, contact admin@lymphaware.com.\n\nThe LymphAware Team`
+      })
+    });
+    if (!response.ok) return { ok: false, error: await response.text() };
+    const result = await response.json();
+    return { ok: true, id: result?.id || null };
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : String(error) };
+  }
+}
+
 async function getExistingOrder(sessionId) {
   const response = await fetch(
     `${process.env.SUPABASE_URL}/rest/v1/orders?stripe_checkout_session_id=eq.${encodeURIComponent(sessionId)}&select=*&limit=1`,
@@ -324,6 +381,8 @@ export default async (request) => {
     }
 
     if (order.notification_status !== 'SENT') await sendOrderNotification(order, session, items);
+    const customerNotification = await sendCustomerConfirmation(order, session, items, paymentType, languageName);
+    if (!customerNotification.ok) console.error('Unable to send customer order confirmation:', customerNotification.error);
 
     return new Response(JSON.stringify({ received: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
   } catch (error) {
