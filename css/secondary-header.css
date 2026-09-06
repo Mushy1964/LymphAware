@@ -199,7 +199,7 @@ body:has(.secondary-header) .button {
     width: calc(100% - 28px);
     flex-wrap: wrap;
     column-gap: 0;
-    row-gap: 14px;
+    row-gap: 0;
     padding-bottom: 0;
   }
 
@@ -207,6 +207,7 @@ body:has(.secondary-header) .button {
     width: 100%;
     max-width: none;
     flex: 1 1 auto;
+    padding-bottom: 14px;
   }
 
   .secondary-header .header-actions {
