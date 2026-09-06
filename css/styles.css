@@ -326,6 +326,13 @@ svg {
   text-align: center;
 }
 
+/* Public information pages follow the site's left-aligned heading system. */
+main:not(.admin-page):not(.portal-page) .section-heading {
+  margin-left: 0;
+  margin-right: 0;
+  text-align: left;
+}
+
 .section-heading h2 {
   margin: 0 0 14px;
   font-size: clamp(2rem, 3vw, 2.8rem);
