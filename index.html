@@ -70,6 +70,10 @@
       align-items: stretch;
     }
 
+    .home-membership-packages[hidden] {
+      display: none !important;
+    }
+
     .home-membership-packages .home-membership-price-card {
       display: flex;
       flex-direction: column;
@@ -1109,6 +1113,10 @@
   const membershipLead = document.getElementById('membership-lead');
   const membershipPackages = document.getElementById('membership-packages');
   const signedInMembershipPanel = document.getElementById('signed-in-membership-panel');
+  const newMembershipLinks = Array.from(
+    document.querySelectorAll('.home-membership-packages a[href^="/register/"]')
+  );
+  let currentAccountSession = null;
 
   const membershipTitleDefault = membershipTitle.textContent;
   const membershipLeadDefault = membershipLead.textContent;
@@ -1135,6 +1143,7 @@
   }
 
   function updateAccountLinks(session) {
+    currentAccountSession = session || null;
     const isSignedIn = Boolean(session?.user);
     updateHomepageMembership(session);
 
@@ -1177,6 +1186,14 @@
 
   desktopSignOutButton.addEventListener('click', signOutFromHomepage);
   mobileSignOutButton.addEventListener('click', signOutFromHomepage);
+
+  newMembershipLinks.forEach((link) => {
+    link.addEventListener('click', (event) => {
+      if (!currentAccountSession?.user) return;
+      event.preventDefault();
+      window.location.href = '/portal/#accessories-panel';
+    });
+  });
 
   async function checkAccountSession() {
     const { data: { session } } = await supabaseClient.auth.getSession();
