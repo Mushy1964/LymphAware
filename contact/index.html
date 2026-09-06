@@ -474,15 +474,29 @@
       contactStatus.className = 'contact-form-status';
 
       try {
-        const response = await fetch('/', {
+        const formData = new FormData(contactForm);
+        const response = await fetch('/api/contact-enquiry', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(new FormData(contactForm)).toString()
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: formData.get('name'),
+            email: formData.get('email'),
+            enquiryType: formData.get('enquiry-type'),
+            message: formData.get('message'),
+            botField: formData.get('bot-field')
+          })
         });
 
         if (!response.ok) {
-          throw new Error('Form submission failed');
+          throw new Error('Email delivery failed');
         }
+
+        // Keep a Netlify Forms copy as a backup without relying on paid alerts.
+        await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(formData).toString()
+        }).catch(() => null);
 
         contactForm.reset();
         contactStatus.textContent =
