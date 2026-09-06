@@ -43,10 +43,15 @@ function shippingBand(country) {
   if (EUROPE_COUNTRIES.has(country)) return 'EUROPE';
   return 'REST_OF_WORLD';
 }
-function shippingRateIdForBand(band) {
-  if (band === 'UK') return String(process.env.STRIPE_SHIPPING_RATE_UK || '').trim();
-  if (band === 'EUROPE') return String(process.env.STRIPE_SHIPPING_RATE_EUROPE || '').trim();
-  return String(process.env.STRIPE_SHIPPING_RATE_REST_OF_WORLD || '').trim();
+function shippingPriceForBand(band) {
+  if (band === 'UK') return 299;
+  if (band === 'EUROPE') return 499;
+  return 999;
+}
+function shippingLabelForBand(band) {
+  if (band === 'UK') return 'UK postage & packing';
+  if (band === 'EUROPE') return 'Europe postage & packing';
+  return 'Rest of World postage & packing';
 }
 function appendInlinePrice(stripeForm, index, name, amountPence, description = '', quantity = 1) {
   stripeForm.append(`line_items[${index}][price_data][currency]`, 'gbp');
@@ -132,7 +137,7 @@ export default async (request) => {
     const deliveryCountry = normaliseCountry(body?.deliveryCountry);
     if (!CHECKOUT_COUNTRIES.has(deliveryCountry)) return json({ error: 'Please select a supported delivery country.' }, 400);
     const band = shippingBand(deliveryCountry);
-    const shippingRateId = shippingRateIdForBand(band);
+    const shippingPence = shippingPriceForBand(band);
 
     let checkoutName = '';
     let checkoutDescription = '';
@@ -253,7 +258,10 @@ export default async (request) => {
     stripeForm.append('allow_promotion_codes', 'true');
     stripeForm.append('billing_address_collection', 'required');
     stripeForm.append('shipping_address_collection[allowed_countries][0]', deliveryCountry);
-    if (shippingRateId) stripeForm.append('shipping_options[0][shipping_rate]', shippingRateId);
+    stripeForm.append('shipping_options[0][shipping_rate_data][type]', 'fixed_amount');
+    stripeForm.append('shipping_options[0][shipping_rate_data][fixed_amount][amount]', String(shippingPence));
+    stripeForm.append('shipping_options[0][shipping_rate_data][fixed_amount][currency]', 'gbp');
+    stripeForm.append('shipping_options[0][shipping_rate_data][display_name]', shippingLabelForBand(band));
 
     stripeForm.append('client_reference_id', user.id);
     stripeForm.append('metadata[lymphaware_user_id]', user.id);
@@ -269,7 +277,8 @@ export default async (request) => {
     stripeForm.append('metadata[lanyard_quantity]', String(lanyardQuantity));
     stripeForm.append('metadata[delivery_country_selected]', deliveryCountry);
     stripeForm.append('metadata[shipping_band]', band);
-    stripeForm.append('metadata[shipping_rate_configured]', shippingRateId ? '1' : '0');
+    stripeForm.append('metadata[shipping_pence]', String(shippingPence));
+    stripeForm.append('metadata[shipping_rate_configured]', '1');
 
     const successType = paymentType === 'additional_language'
       ? 'language'
