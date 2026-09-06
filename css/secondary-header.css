@@ -207,7 +207,8 @@ body:has(.secondary-header) .button {
 
   .secondary-header .header-inner {
     flex-wrap: wrap;
-    padding-bottom: 12px;
+    gap: 0;
+    padding-bottom: 6px;
   }
 
   .secondary-header .header-actions {
@@ -216,12 +217,33 @@ body:has(.secondary-header) .button {
     min-width: 100%;
     flex: 0 0 100%;
     margin-left: 0;
+    justify-content: center;
   }
 
   .secondary-header .header-actions > .back-to-website-button {
     display: inline-flex !important;
-    width: 100% !important;
+    width: auto !important;
     min-width: 0 !important;
     max-width: none !important;
+    min-height: 44px !important;
+    padding: 0 12px !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #1768b0 !important;
+    font-size: 0 !important;
+  }
+
+  .secondary-header .header-actions > .back-to-website-button::before {
+    content: "← Back to main website";
+    font-size: 1rem;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  .secondary-header .header-actions > .back-to-website-button:hover,
+  .secondary-header .header-actions > .back-to-website-button:focus-visible {
+    background: transparent !important;
+    text-decoration: underline;
   }
 }
