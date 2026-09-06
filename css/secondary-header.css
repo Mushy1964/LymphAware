@@ -191,3 +191,21 @@ body:has(.secondary-header) .button {
     line-height: 1.6 !important;
   }
 }
+
+
+/* On phones the logo itself is the Home link, so it can use the full header width. */
+@media (max-width: 680px) {
+  .secondary-header .header-inner {
+    width: calc(100% - 28px);
+  }
+
+  .secondary-header .header-brand {
+    width: 100%;
+    max-width: none;
+    flex: 1 1 auto;
+  }
+
+  .secondary-header .header-actions {
+    display: none !important;
+  }
+}
