@@ -65,6 +65,43 @@ function parseQuantity(value) {
   return Number.isInteger(quantity) && quantity >= 0 && quantity <= 10 ? quantity : null;
 }
 
+async function getOwnedCardLanguages(userId) {
+  const languages = new Map([['EN', 'English']]);
+  const response = await fetch(
+    `${process.env.SUPABASE_URL}/rest/v1/language_profiles?user_id=eq.${encodeURIComponent(userId)}&qr_profile_active=eq.true&select=language_code,language_name`,
+    { headers: serviceHeaders() }
+  );
+  if (!response.ok) return null;
+  for (const profile of await response.json()) {
+    const code = normaliseLanguageCode(profile.language_code);
+    const name = String(profile.language_name || '').trim();
+    if (code && name) languages.set(code, name);
+  }
+  return languages;
+}
+
+function parseCardSelections(value, ownedLanguages, legacyQuantity = 0) {
+  const source = Array.isArray(value)
+    ? value
+    : legacyQuantity > 0
+      ? [{ languageCode: 'EN', quantity: legacyQuantity }]
+      : [];
+  const quantities = new Map();
+  for (const item of source) {
+    const code = normaliseLanguageCode(item?.languageCode);
+    const quantity = parseQuantity(item?.quantity);
+    if (!code || quantity === null || !ownedLanguages.has(code)) return null;
+    if (quantity > 0) quantities.set(code, (quantities.get(code) || 0) + quantity);
+  }
+  const total = [...quantities.values()].reduce((sum, quantity) => sum + quantity, 0);
+  if (total > 10) return null;
+  return [...quantities.entries()].map(([languageCode, quantity]) => ({
+    languageCode,
+    languageName: ownedLanguages.get(languageCode),
+    quantity
+  }));
+}
+
 async function getMembership(userId) {
   const response = await fetch(
     `${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${encodeURIComponent(userId)}&select=id,membership_status,payment_status,initial_fee_pence,membership_end&limit=1`,
@@ -148,6 +185,7 @@ export default async (request) => {
     let replacementCard = false;
     let replacementLanyard = false;
     let cardQuantity = 0;
+    let cardSelections = [];
     let lanyardQuantity = 0;
     let translationConsent = false;
     const checkoutItems = [];
@@ -180,11 +218,15 @@ export default async (request) => {
     } else if (paymentType === 'additional_items') {
       if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware membership is required.' }, 403);
 
-      cardQuantity = parseQuantity(body?.cardQuantity);
+      const legacyCardQuantity = parseQuantity(body?.cardQuantity);
       lanyardQuantity = parseQuantity(body?.lanyardQuantity);
-      if (cardQuantity === null || lanyardQuantity === null) {
-        return json({ error: 'Card and lanyard quantities must be whole numbers between 0 and 10.' }, 400);
+      const ownedCardLanguages = await getOwnedCardLanguages(user.id);
+      if (!ownedCardLanguages) return json({ error: 'Unable to verify your available card languages.' }, 500);
+      cardSelections = parseCardSelections(body?.cardSelections, ownedCardLanguages, legacyCardQuantity || 0);
+      if (cardSelections === null || lanyardQuantity === null) {
+        return json({ error: 'Card and lanyard quantities must be whole numbers, use only your available profile languages, and total no more than 10 cards.' }, 400);
       }
+      cardQuantity = cardSelections.reduce((sum, item) => sum + item.quantity, 0);
 
       languageCode = normaliseLanguageCode(body?.languageCode);
       if (languageCode) {
@@ -201,7 +243,14 @@ export default async (request) => {
         return json({ error: 'Please add at least one item to your order.' }, 400);
       }
 
-      if (cardQuantity) checkoutItems.push({ name: 'LymphAware ID Card', amountPence: 650, description: 'Additional or replacement card for an existing membership.', quantity: cardQuantity });
+      for (const selection of cardSelections) {
+        checkoutItems.push({
+          name: `${selection.languageName} LymphAware ID Card`,
+          amountPence: 650,
+          description: `Additional or replacement card for the existing ${selection.languageName} profile.`,
+          quantity: selection.quantity
+        });
+      }
       if (lanyardQuantity) checkoutItems.push({ name: 'LymphAware Lanyard & Holder', amountPence: 650, description: 'Additional or replacement lanyard and holder.', quantity: lanyardQuantity });
       if (languageName) checkoutItems.push({ name: `LymphAware Additional Language Package – ${languageName}`, amountPence: 1999, description: `One ${languageName} QR profile, one ${languageName} ID card and one lanyard & holder.`, quantity: 1 });
 
@@ -274,6 +323,7 @@ export default async (request) => {
     stripeForm.append('metadata[replacement_card]', replacementCard ? '1' : '0');
     stripeForm.append('metadata[replacement_lanyard]', replacementLanyard ? '1' : '0');
     stripeForm.append('metadata[card_quantity]', String(cardQuantity));
+    stripeForm.append('metadata[card_selections]', JSON.stringify(cardSelections.map(item => [item.languageCode, item.languageName, item.quantity])));
     stripeForm.append('metadata[lanyard_quantity]', String(lanyardQuantity));
     stripeForm.append('metadata[delivery_country_selected]', deliveryCountry);
     stripeForm.append('metadata[shipping_band]', band);
