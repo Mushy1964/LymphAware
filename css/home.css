@@ -164,17 +164,12 @@
 }
 
 .home-page .home-hero-actions .button {
+  width: 240px;
+  min-width: 240px;
   min-height: 48px;
   padding: 0 24px;
   border-radius: 10px;
-    min-width: 224px;
   justify-content: center;
-}
-
-@media (min-width: 901px) {
-  .home-page #hero-membership-link.is-signed-in {
-    display: none !important;
-  }
 }
 
 .home-page .home-hero-reassurance {
@@ -2119,6 +2114,7 @@
   cursor: pointer;
 }
 
+.home-page .home-account-button[hidden],
 .home-page .home-sign-out-button[hidden],
 .home-page .mobile-sign-out-button[hidden] {
   display: none !important;
