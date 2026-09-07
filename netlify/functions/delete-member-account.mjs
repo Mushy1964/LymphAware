@@ -22,14 +22,16 @@ function serviceHeaders(prefer = '') {
 
 function tokenIssuedRecently(token) {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    const raw = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const padded = raw + '='.repeat((4 - raw.length % 4) % 4);
+    const payload = JSON.parse(atob(padded));
     return Number.isFinite(payload.iat) && (Date.now() / 1000 - payload.iat) <= 600;
   } catch {
     return false;
   }
 }
 
-async function request(path, options = {}) {
+async function supabaseRequest(path, options = {}) {
   const response = await fetch(`${env('SUPABASE_URL')}${path}`, options);
   if (!response.ok && response.status !== 404) {
     throw new Error(`Account deletion step failed (${response.status}).`);
@@ -119,31 +121,31 @@ export default async (request) => {
 
     if (profile?.photo_path) {
       const encodedPath = String(profile.photo_path).split('/').map(encodeURIComponent).join('/');
-      await request(`/storage/v1/object/patient-photos/${encodedPath}`, {
+      await supabaseRequest(`/storage/v1/object/patient-photos/${encodedPath}`, {
         method: 'DELETE',
         headers: serviceHeaders()
       });
     }
 
     if (profile?.id) {
-      await request(`/rest/v1/profile_assistance?profile_id=eq.${encodeURIComponent(profile.id)}`, {
+      await supabaseRequest(`/rest/v1/profile_assistance?profile_id=eq.${encodeURIComponent(profile.id)}`, {
         method: 'DELETE',
         headers: serviceHeaders('return=minimal')
       });
     }
-    await request(`/rest/v1/language_profiles?user_id=eq.${encodeURIComponent(user.id)}`, {
+    await supabaseRequest(`/rest/v1/language_profiles?user_id=eq.${encodeURIComponent(user.id)}`, {
       method: 'DELETE',
       headers: serviceHeaders('return=minimal')
     });
-    await request(`/rest/v1/profiles?user_id=eq.${encodeURIComponent(user.id)}`, {
+    await supabaseRequest(`/rest/v1/profiles?user_id=eq.${encodeURIComponent(user.id)}`, {
       method: 'DELETE',
       headers: serviceHeaders('return=minimal')
     });
-    await request(`/rest/v1/memberships?user_id=eq.${encodeURIComponent(user.id)}`, {
+    await supabaseRequest(`/rest/v1/memberships?user_id=eq.${encodeURIComponent(user.id)}`, {
       method: 'DELETE',
       headers: serviceHeaders('return=minimal')
     });
-    await request(`/rest/v1/orders?user_id=eq.${encodeURIComponent(user.id)}`, {
+    await supabaseRequest(`/rest/v1/orders?user_id=eq.${encodeURIComponent(user.id)}`, {
       method: 'PATCH',
       headers: serviceHeaders('return=minimal'),
       body: JSON.stringify({
