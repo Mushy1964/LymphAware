@@ -225,7 +225,9 @@ export default async (request) => {
       };
     });
 
-    const languageJobs = (languageProfiles || [])\n      .filter(languageProfile => ['READY', 'PREPARED'].includes(languageProfile.card_production_status))\n      .map(languageProfile => {
+    const languageJobs = (languageProfiles || [])
+      .filter(languageProfile => ['READY', 'PREPARED'].includes(languageProfile.card_production_status))
+      .map(languageProfile => {
       const source = sourceById.get(languageProfile.source_profile_id) || {};
       const order = languageProfile.order_id ? ordersById.get(languageProfile.order_id) : null;
       const orderItems = languageProfile.order_id ? (itemsByOrder.get(languageProfile.order_id) || []) : [];
