@@ -72,6 +72,70 @@ function cardCopyForLanguage(languageCode) {
   return null;
 }
 
+async function primaryCardQuantity(userId, headers) {
+  const ordersResponse = await fetch(
+    `${process.env.SUPABASE_URL}/rest/v1/orders` +
+    `?select=id` +
+    `&user_id=eq.${encodeURIComponent(userId)}` +
+    `&payment_status=eq.PAID` +
+    `&order_status=in.(PAID_AWAITING_PROFILE,READY_TO_PRINT)`,
+    { headers }
+  );
+
+  if (!ordersResponse.ok) {
+    throw new Error('Unable to retrieve ready card orders.');
+  }
+
+  const orders = await ordersResponse.json();
+  const orderIds = orders.map(order => order.id).filter(Boolean);
+  if (!orderIds.length) return 1;
+
+  const encodedOrders = orderIds.map(id => encodeURIComponent(id)).join(',');
+  const itemsResponse = await fetch(
+    `${process.env.SUPABASE_URL}/rest/v1/order_items` +
+    `?select=item_type,quantity,language_name` +
+    `&order_id=in.(${encodedOrders})`,
+    { headers }
+  );
+
+  if (!itemsResponse.ok) {
+    throw new Error('Unable to retrieve ready card quantities.');
+  }
+
+  const items = await itemsResponse.json();
+  const quantity = items.reduce((sum, item) => {
+    const itemLanguage = String(item.language_name || '').trim().toLowerCase();
+    const isEnglishCard =
+      item.item_type === 'EXTRA_CARD' &&
+      (!itemLanguage || itemLanguage === 'english');
+
+    return item.item_type === 'MEMBERSHIP' || isEnglishCard
+      ? sum + Math.max(0, Number(item.quantity || 0))
+      : sum;
+  }, 0);
+
+  return Math.max(1, quantity);
+}
+
+async function languageCardQuantity(orderItemId, headers) {
+  if (!orderItemId) return 1;
+
+  const itemResponse = await fetch(
+    `${process.env.SUPABASE_URL}/rest/v1/order_items` +
+    `?id=eq.${encodeURIComponent(orderItemId)}` +
+    `&select=quantity` +
+    `&limit=1`,
+    { headers }
+  );
+
+  if (!itemResponse.ok) {
+    throw new Error('Unable to retrieve the language card quantity.');
+  }
+
+  const items = await itemResponse.json();
+  return Math.max(1, Number(items?.[0]?.quantity || 1));
+}
+
 export default async (request) => {
   if (request.method !== 'POST') {
     return json({ error: 'Method not allowed' }, 405);
@@ -98,7 +162,7 @@ export default async (request) => {
       const languageResponse = await fetch(
         `${process.env.SUPABASE_URL}/rest/v1/language_profiles` +
         `?id=eq.${encodeURIComponent(recordId)}` +
-        `&select=id,user_id,order_id,source_profile_id,language_code,language_name,qr_token,setup_status,qr_profile_active,card_production_status` +
+        `&select=id,user_id,order_id,order_item_id,source_profile_id,language_code,language_name,qr_token,setup_status,qr_profile_active,card_production_status` +
         `&limit=1`,
         { headers }
       );
@@ -141,7 +205,8 @@ export default async (request) => {
         qr_token: languageProfile.qr_token,
         photo_path: source.photo_path,
         language_code: languageProfile.language_code,
-        language_name: languageProfile.language_name
+        language_name: languageProfile.language_name,
+        quantity: await languageCardQuantity(languageProfile.order_item_id, headers)
       };
     } else {
       const primaryResponse = await fetch(
@@ -162,7 +227,8 @@ export default async (request) => {
       job = profile ? {
         ...profile,
         language_code: 'EN',
-        language_name: 'English'
+        language_name: 'English',
+        quantity: await primaryCardQuantity(profile.user_id, headers)
       } : null;
     }
 
@@ -178,28 +244,31 @@ export default async (request) => {
     const qrProfileUrl = `https://lymphaware.com/p/${job.qr_token}`;
     const imageUrl = `https://lymphaware.com/ebp/${job.qr_token}`;
 
-    const csv = [
-      [
-        'LymphAware ID',
-        'Display Name',
-        'QR Profile URL',
-        'ImageURL',
-        'Patient Label',
-        'QR Instruction',
-        'Language Code',
-        'Card Language'
-      ].join(','),
-      [
-        csvValue(job.lymphaware_id),
-        csvValue(job.display_name),
-        csvValue(qrProfileUrl),
-        csvValue(imageUrl),
-        csvValue(cardCopy.patient_label),
-        csvValue(cardCopy.qr_instruction),
-        csvValue(job.language_code),
-        csvValue(job.language_name)
-      ].join(',')
-    ].join('\r\n');
+    const rows = [[
+      'LymphAware ID',
+      'Display Name',
+      'QR Profile URL',
+      'ImageURL',
+      'Patient Label',
+      'QR Instruction',
+      'Language Code',
+      'Card Language'
+    ].join(',')];
+
+    const cardRow = [
+      csvValue(job.lymphaware_id),
+      csvValue(job.display_name),
+      csvValue(qrProfileUrl),
+      csvValue(imageUrl),
+      csvValue(cardCopy.patient_label),
+      csvValue(cardCopy.qr_instruction),
+      csvValue(job.language_code),
+      csvValue(job.language_name)
+    ].join(',');
+
+    const copies = Math.max(1, Number(job.quantity || 1));
+    for (let copy = 0; copy < copies; copy += 1) rows.push(cardRow);
+    const csv = rows.join('\r\n');
 
     const now = new Date().toISOString();
     const preparedResponse = await fetch(
@@ -228,7 +297,8 @@ export default async (request) => {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
         'Content-Disposition': 'attachment; filename="LymphAware_EasyBadge.csv"',
-        'Cache-Control': 'no-store'
+        'Cache-Control': 'no-store',
+        'X-LymphAware-Card-Count': String(Math.max(1, Number(job.quantity || 1)))
       }
     });
   } catch (error) {
