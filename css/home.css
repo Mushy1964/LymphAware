@@ -273,8 +273,16 @@
 
 .home-page .home-hero-product {
   position: relative;
-  min-height: 455px;
+  min-height: 620px;
   margin-top: 18px;
+}
+
+.home-page .hero-product-mockup {
+  display: block;
+  width: 112%;
+  max-width: none;
+  height: auto;
+  margin: -12px -7% 0 -5%;
 }
 
 
@@ -483,7 +491,13 @@
   .home-page .home-hero-product {
     width: 100%;
     max-width: 700px;
-    min-height: 460px;
+    min-height: 0;
+    margin: 0 auto;
+  }
+
+  .home-page .hero-product-mockup {
+    width: 100%;
+    max-width: 700px;
     margin: 0 auto;
   }
 
@@ -579,8 +593,14 @@
     position: relative;
     width: 100%;
     max-width: 430px;
-    min-height: 350px;
+    min-height: 0;
     margin: 4px auto 0;
+  }
+
+  .home-page .hero-product-mockup {
+    width: 100%;
+    max-width: 430px;
+    margin: 0 auto;
   }
 
   .home-page .hero-phone {
