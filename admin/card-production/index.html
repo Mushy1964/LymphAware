@@ -290,7 +290,8 @@
         width: 100%;
       }
     }
-    .admin-dashboard,.admin-notice,#printed-history-section{display:none!important}\n  </style>
+    .admin-dashboard,.admin-notice,#printed-history-section{display:none!important}
+  </style>
 </head>
 
 <body>
@@ -504,7 +505,11 @@
       );
 
 
-    const selectedOrderId =\n      new URLSearchParams(window.location.search).get('order');\n\n    const adminLoading =\n      document.getElementById('admin-loading');
+    const selectedOrderId =
+      new URLSearchParams(window.location.search).get('order');
+
+    const adminLoading =
+      document.getElementById('admin-loading');
 
     const cardList =
       document.getElementById('card-list');
@@ -615,7 +620,12 @@
         }
 
 
-        const profiles = result?.profiles || [];\n        renderProfiles(\n          selectedOrderId\n            ? profiles.filter(profile => Array.isArray(profile.fulfilment?.order_ids) && profile.fulfilment.order_ids.includes(selectedOrderId))\n            : profiles\n        );
+        const profiles = result?.profiles || [];
+        renderProfiles(
+          selectedOrderId
+            ? profiles.filter(profile => Array.isArray(profile.fulfilment?.order_ids) && profile.fulfilment.order_ids.includes(selectedOrderId))
+            : profiles
+        );
 
 
       } catch (error) {
@@ -845,7 +855,9 @@
 
 
     const statusLabel =
-      status === 'PREPARED'\n        ? 'Printing in progress'\n        : 'Ready for printing';
+      status === 'PREPARED'
+        ? 'Printing in progress'
+        : 'Ready for printing';
 
 
     const fulfilment = profile.fulfilment || {};
