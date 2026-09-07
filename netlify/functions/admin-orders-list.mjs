@@ -177,7 +177,7 @@ export default async (request) => {
       ) || order.order_status === 'IN_PRODUCTION';
       const readyToPack = order.payment_status === 'PAID' &&
         !isClosed &&
-        (order.order_status === 'READY_TO_PACK' || allCardsPrinted);
+        (order.order_status === 'PRINTED' || allCardsPrinted);
       let workflowStage = 'WAITING';
       let workflowReason = 'Waiting for the information needed to prepare this order.';
       if (order.order_status === 'COMPLETED') {

@@ -52,7 +52,7 @@ async function markOrdersReadyToPack(updatedRecord, recordType) {
     ? `id=eq.${encodeURIComponent(updatedRecord.order_id)}`
     : `user_id=eq.${encodeURIComponent(updatedRecord.user_id)}`;
   const ordersResponse = await fetch(
-    `${base}/rest/v1/orders?${orderFilter}&payment_status=eq.PAID&order_status=in.(PAID_AWAITING_PROFILE,READY_TO_PRINT,IN_PRODUCTION,READY_TO_PACK)&select=id,user_id,order_number`,
+    `${base}/rest/v1/orders?${orderFilter}&payment_status=eq.PAID&order_status=in.(PAID_AWAITING_PROFILE,READY_TO_PRINT,IN_PRODUCTION,PRINTED)&select=id,user_id,order_number`,
     { headers }
   );
   if (!ordersResponse.ok) throw new Error(`Unable to check linked orders: ${await ordersResponse.text()}`);
@@ -83,7 +83,7 @@ async function markOrdersReadyToPack(updatedRecord, recordType) {
     const completionResponse = await fetch(`${base}/rest/v1/orders?id=eq.${encodeURIComponent(order.id)}`, {
       method: 'PATCH',
       headers: serviceHeaders('return=representation'),
-      body: JSON.stringify({ order_status: 'READY_TO_PACK', printed_at: now, updated_at: now })
+      body: JSON.stringify({ order_status: 'PRINTED', printed_at: now, updated_at: now })
     });
     if (!completionResponse.ok) throw new Error(`Unable to mark linked order ready to pack: ${await completionResponse.text()}`);
     const completed = await completionResponse.json();

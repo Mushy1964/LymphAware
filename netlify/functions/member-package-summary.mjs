@@ -171,7 +171,7 @@ export default async (request) => {
       PAID_AWAITING_PROFILE: 'Waiting for your display name and photograph',
       READY_TO_PRINT: 'Ready for card production',
       IN_PRODUCTION: 'Cards in production',
-      READY_TO_PACK: 'Printed and being packed',
+      PRINTED: 'Printed and being packed',
       COMPLETED: 'Completed and dispatched',
       CANCELLED: 'Cancelled',
       REFUNDED: 'Refunded'
