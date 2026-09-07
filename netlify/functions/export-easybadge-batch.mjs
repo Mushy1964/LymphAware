@@ -93,8 +93,8 @@ export default async (request) => {
       ),
       fetch(
         `${process.env.SUPABASE_URL}/rest/v1/language_profiles` +
-        `?select=id,user_id,order_id,source_profile_id,language_code,language_name,qr_token,card_ready_at` +
-        `&setup_status=eq.APPROVED` + +
+        `?select=id,user_id,order_id,order_item_id,source_profile_id,language_code,language_name,qr_token,card_ready_at` +
+        `&setup_status=eq.APPROVED` +
         `&card_production_status=eq.READY` +
         `&order=card_ready_at.asc`,
         { headers }
@@ -109,6 +109,70 @@ export default async (request) => {
 
     const primaryProfiles = await primaryResponse.json();
     const languageProfiles = await languageResponse.json();
+
+    const allUserIds = [...new Set([
+      ...(primaryProfiles || []).map(row => row.user_id),
+      ...(languageProfiles || []).map(row => row.user_id)
+    ].filter(Boolean))];
+
+    const primaryCopiesByUser = new Map();
+    const itemById = new Map();
+
+    if (allUserIds.length) {
+      const encodedUsers = allUserIds.map(id => encodeURIComponent(id)).join(',');
+      const ordersResponse = await fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/orders` +
+        `?select=id,user_id` +
+        `&user_id=in.(${encodedUsers})` +
+        `&payment_status=eq.PAID` +
+        `&order_status=in.(PAID_AWAITING_PROFILE,READY_TO_PRINT)`,
+        { headers }
+      );
+
+      if (!ordersResponse.ok) {
+        console.error('Unable to retrieve ready EasyBadge orders:', await ordersResponse.text());
+        return json({ error: 'Unable to retrieve cards awaiting production.' }, 500);
+      }
+
+      const readyOrders = await ordersResponse.json();
+      const orderById = new Map(readyOrders.map(order => [order.id, order]));
+      const orderIds = readyOrders.map(order => order.id).filter(Boolean);
+
+      if (orderIds.length) {
+        const encodedOrders = orderIds.map(id => encodeURIComponent(id)).join(',');
+        const itemsResponse = await fetch(
+          `${process.env.SUPABASE_URL}/rest/v1/order_items` +
+          `?select=id,order_id,item_type,quantity,language_name` +
+          `&order_id=in.(${encodedOrders})`,
+          { headers }
+        );
+
+        if (!itemsResponse.ok) {
+          console.error('Unable to retrieve ready EasyBadge order items:', await itemsResponse.text());
+          return json({ error: 'Unable to retrieve cards awaiting production.' }, 500);
+        }
+
+        const orderItems = await itemsResponse.json();
+        for (const item of orderItems) {
+          itemById.set(item.id, item);
+          const order = orderById.get(item.order_id);
+          if (!order) continue;
+
+          const itemLanguage = String(item.language_name || '').trim().toLowerCase();
+          const isEnglishCard =
+            item.item_type === 'EXTRA_CARD' &&
+            (!itemLanguage || itemLanguage === 'english');
+
+          if (item.item_type === 'MEMBERSHIP' || isEnglishCard) {
+            const quantity = Math.max(0, Number(item.quantity || 0));
+            primaryCopiesByUser.set(
+              order.user_id,
+              Number(primaryCopiesByUser.get(order.user_id) || 0) + quantity
+            );
+          }
+        }
+      }
+    }
 
     const sourceIds = [...new Set((languageProfiles || []).map(row => row.source_profile_id).filter(Boolean))];
     const sourceById = new Map();
@@ -147,7 +211,8 @@ export default async (request) => {
           language_name: 'English',
           patient_label: cardCopy?.patient_label || null,
           qr_instruction: cardCopy?.qr_instruction || null,
-          card_ready_at: profile.card_ready_at
+          card_ready_at: profile.card_ready_at,
+          quantity: Math.max(0, Number(primaryCopiesByUser.get(profile.user_id) || 0))
         };
       }),
       ...(languageProfiles || []).map(languageProfile => {
@@ -166,10 +231,11 @@ export default async (request) => {
           language_name: languageProfile.language_name,
           patient_label: cardCopy?.patient_label || null,
           qr_instruction: cardCopy?.qr_instruction || null,
-          card_ready_at: languageProfile.card_ready_at
+          card_ready_at: languageProfile.card_ready_at,
+          quantity: Math.max(1, Number(itemById.get(languageProfile.order_item_id)?.quantity || 1))
         };
       })
-    ].sort((a, b) => {
+    ].filter(job => job.record_type === 'LANGUAGE' || job.quantity > 0).sort((a, b) => {
       const aTime = a.card_ready_at ? new Date(a.card_ready_at).getTime() : Number.MAX_SAFE_INTEGER;
       const bTime = b.card_ready_at ? new Date(b.card_ready_at).getTime() : Number.MAX_SAFE_INTEGER;
       return aTime - bTime;
@@ -208,16 +274,20 @@ export default async (request) => {
     jobs.forEach(job => {
       const qrProfileUrl = `https://lymphaware.com/p/${job.qr_token}`;
       const imageUrl = `https://lymphaware.com/ebp/${job.qr_token}`;
-      rows.push([
-        csvValue(job.lymphaware_id),
-        csvValue(job.display_name),
-        csvValue(qrProfileUrl),
-        csvValue(imageUrl),
-        csvValue(job.patient_label),
-        csvValue(job.qr_instruction),
-        csvValue(job.language_code),
-        csvValue(job.language_name)
-      ].join(','));
+      const copies = Math.max(1, Number(job.quantity || 1));
+
+      for (let copy = 0; copy < copies; copy += 1) {
+        rows.push([
+          csvValue(job.lymphaware_id),
+          csvValue(job.display_name),
+          csvValue(qrProfileUrl),
+          csvValue(imageUrl),
+          csvValue(job.patient_label),
+          csvValue(job.qr_instruction),
+          csvValue(job.language_code),
+          csvValue(job.language_name)
+        ].join(','));
+      }
     });
 
     const primaryIds = jobs.filter(job => job.record_type === 'PRIMARY').map(job => job.record_id);
@@ -260,7 +330,7 @@ export default async (request) => {
         'Content-Type': 'text/csv; charset=utf-8',
         'Content-Disposition': 'attachment; filename="LymphAware_EasyBadge.csv"',
         'Cache-Control': 'no-store',
-        'X-LymphAware-Card-Count': String(jobs.length)
+        'X-LymphAware-Card-Count': String(jobs.reduce((sum, job) => sum + Math.max(1, Number(job.quantity || 1)), 0))
       }
     });
   } catch (error) {
