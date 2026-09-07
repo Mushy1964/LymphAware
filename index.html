@@ -854,7 +854,7 @@
           Continue to your Patient Portal to manage your membership or purchase additional
           ID cards, lanyards and approved language packages.
         </p>
-        <a href="/portal/#accessories-panel" class="button button-primary">Go to Patient Portal</a>
+        <a href="/portal/" class="button button-primary">Go to Patient Portal</a>
       </div>
 
       <div class="home-membership-actions">
@@ -1202,7 +1202,7 @@
       const session = currentAccountSession || (await supabaseClient.auth.getSession()).data.session;
 
       if (session?.user) {
-        window.location.href = '/portal/#accessories-panel';
+        window.location.href = '/portal/';
         return;
       }
 
