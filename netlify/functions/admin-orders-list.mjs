@@ -66,7 +66,7 @@ export default async (request) => {
     const orderIds = orders.map(order => order.id).join(',');
     const userIds = [...new Set(orders.map(order => order.user_id))].join(',');
 
-    const [itemsResponse, profilesResponse, languageProfilesResponse] = await Promise.all([
+    const [itemsResponse, profilesResponse, languageProfilesResponse, membershipsResponse] = await Promise.all([
       fetch(
         `${process.env.SUPABASE_URL}/rest/v1/order_items?select=*&order_id=in.(${orderIds})&order=created_at.asc`,
         { headers: serviceHeaders() }
@@ -78,12 +78,17 @@ export default async (request) => {
       fetch(
         `${process.env.SUPABASE_URL}/rest/v1/language_profiles?select=id,user_id,order_id,order_item_id,language_code,language_name,setup_status,card_production_status,card_printed_at&user_id=in.(${userIds})`,
         { headers: serviceHeaders() }
+      ),
+      fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/memberships?select=user_id,membership_status,membership_start,membership_end&user_id=in.(${userIds})`,
+        { headers: serviceHeaders() }
       )
     ]);
 
     const items = itemsResponse.ok ? await itemsResponse.json() : [];
     const profiles = profilesResponse.ok ? await profilesResponse.json() : [];
     const languageProfiles = languageProfilesResponse.ok ? await languageProfilesResponse.json() : [];
+    const memberships = membershipsResponse.ok ? await membershipsResponse.json() : [];
 
     const itemsByOrder = new Map();
     for (const item of items) {
@@ -92,6 +97,7 @@ export default async (request) => {
     }
 
     const profileByUser = new Map(profiles.map(profile => [profile.user_id, profile]));
+    const membershipByUser = new Map(memberships.map(membership => [membership.user_id, membership]));
     const languageProfilesByUser = new Map();
     for (const profile of languageProfiles) {
       if (!languageProfilesByUser.has(profile.user_id)) languageProfilesByUser.set(profile.user_id, []);
@@ -207,6 +213,7 @@ export default async (request) => {
         ...order,
         items: orderItems,
         profile,
+        membership: membershipByUser.get(order.user_id) || null,
         profile_ready: profileReady,
         language_profiles: productionJobs
           .filter(job => job.record_type === 'LANGUAGE')
