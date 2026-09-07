@@ -1360,10 +1360,10 @@ async function exportAllEasyBadge() {
     adminMessage.textContent =
       'Card marked as printed.';
 
-    const completedOrders = Array.isArray(result.completed_orders) ? result.completed_orders : [];
-    if (completedOrders.length) {
-      const completedOrder = completedOrders[0];
-      window.location.href = `/admin/completed-orders/#order-${encodeURIComponent(completedOrder.id)}`;
+    const readyToPackOrders = Array.isArray(result.ready_to_pack_orders) ? result.ready_to_pack_orders : [];
+    if (readyToPackOrders.length) {
+      const readyOrder = readyToPackOrders[0];
+      window.location.href = `/admin/orders/?order=${encodeURIComponent(readyOrder.id)}#order-${encodeURIComponent(readyOrder.id)}`;
       return;
     }
 

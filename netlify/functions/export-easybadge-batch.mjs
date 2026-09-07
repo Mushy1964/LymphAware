@@ -1,3 +1,5 @@
+import { markLinkedOrdersInProduction } from './_shared/order-notifications.mjs';
+
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -84,16 +86,15 @@ export default async (request) => {
     const [primaryResponse, languageResponse] = await Promise.all([
       fetch(
         `${process.env.SUPABASE_URL}/rest/v1/profiles` +
-        `?select=id,lymphaware_id,display_name,qr_token,photo_path,card_ready_at` +
+        `?select=id,user_id,lymphaware_id,display_name,qr_token,photo_path,card_ready_at` +
         `&card_production_status=eq.READY` +
         `&order=card_ready_at.asc`,
         { headers }
       ),
       fetch(
         `${process.env.SUPABASE_URL}/rest/v1/language_profiles` +
-        `?select=id,source_profile_id,language_code,language_name,qr_token,card_ready_at` +
-        `&setup_status=eq.APPROVED` +
-        `&qr_profile_active=eq.true` +
+        `?select=id,user_id,order_id,source_profile_id,language_code,language_name,qr_token,card_ready_at` +
+        `&setup_status=eq.APPROVED` + +
         `&card_production_status=eq.READY` +
         `&order=card_ready_at.asc`,
         { headers }
@@ -136,6 +137,8 @@ export default async (request) => {
         return {
           record_type: 'PRIMARY',
           record_id: profile.id,
+          user_id: profile.user_id,
+          order_id: null,
           lymphaware_id: profile.lymphaware_id,
           display_name: profile.display_name,
           qr_token: profile.qr_token,
@@ -153,6 +156,8 @@ export default async (request) => {
         return {
           record_type: 'LANGUAGE',
           record_id: languageProfile.id,
+          user_id: languageProfile.user_id,
+          order_id: languageProfile.order_id,
           lymphaware_id: source.lymphaware_id,
           display_name: source.display_name,
           qr_token: languageProfile.qr_token,
@@ -236,6 +241,15 @@ export default async (request) => {
     if (!prepareResponse.ok) {
       console.error('Unable to prepare EasyBadge batch transactionally:', await prepareResponse.text());
       return json({ error: 'The EasyBadge batch could not be prepared. No card statuses were changed.' }, 500);
+    }
+
+    const linkedOrders = new Set();
+    for (const job of jobs) {
+      const key = `${job.user_id || ''}:${job.order_id || ''}`;
+      if (linkedOrders.has(key)) continue;
+      linkedOrders.add(key);
+      try { await markLinkedOrdersInProduction(job.user_id, job.order_id || ''); }
+      catch (notificationError) { console.error('Production notification error:', notificationError); }
     }
 
     const csv = rows.join('\r\n');

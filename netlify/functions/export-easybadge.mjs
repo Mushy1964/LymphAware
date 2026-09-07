@@ -1,3 +1,5 @@
+import { markLinkedOrdersInProduction } from './_shared/order-notifications.mjs';
+
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -96,7 +98,7 @@ export default async (request) => {
       const languageResponse = await fetch(
         `${process.env.SUPABASE_URL}/rest/v1/language_profiles` +
         `?id=eq.${encodeURIComponent(recordId)}` +
-        `&select=id,source_profile_id,language_code,language_name,qr_token,setup_status,qr_profile_active,card_production_status` +
+        `&select=id,user_id,order_id,source_profile_id,language_code,language_name,qr_token,setup_status,qr_profile_active,card_production_status` +
         `&limit=1`,
         { headers }
       );
@@ -110,14 +112,14 @@ export default async (request) => {
       const languageProfile = languageRows?.[0];
       if (!languageProfile) return json({ error: 'The language card record could not be found.' }, 404);
 
-      if (languageProfile.setup_status !== 'APPROVED' || languageProfile.qr_profile_active !== true) {
-        return json({ error: 'The language profile must be approved and active before card production.' }, 400);
+      if (languageProfile.setup_status !== 'APPROVED') {
+        return json({ error: 'The language profile must be ready before card production.' }, 400);
       }
 
       const sourceResponse = await fetch(
         `${process.env.SUPABASE_URL}/rest/v1/profiles` +
         `?id=eq.${encodeURIComponent(languageProfile.source_profile_id)}` +
-        `&select=lymphaware_id,display_name,photo_path` +
+        `&select=user_id,lymphaware_id,display_name,photo_path` +
         `&limit=1`,
         { headers }
       );
@@ -132,6 +134,8 @@ export default async (request) => {
 
       job = {
         id: languageProfile.id,
+        user_id: languageProfile.user_id || source.user_id,
+        order_id: languageProfile.order_id,
         lymphaware_id: source.lymphaware_id,
         display_name: source.display_name,
         qr_token: languageProfile.qr_token,
@@ -143,7 +147,7 @@ export default async (request) => {
       const primaryResponse = await fetch(
         `${process.env.SUPABASE_URL}/rest/v1/profiles` +
         `?id=eq.${encodeURIComponent(recordId)}` +
-        `&select=id,lymphaware_id,display_name,qr_token,photo_path` +
+        `&select=id,user_id,lymphaware_id,display_name,qr_token,photo_path` +
         `&limit=1`,
         { headers }
       );
@@ -215,6 +219,9 @@ export default async (request) => {
       console.error('Unable to mark card as prepared:', await preparedResponse.text());
       return json({ error: 'The EasyBadge file was created, but the card-production status could not be updated.' }, 500);
     }
+
+    try { await markLinkedOrdersInProduction(job.user_id, job.order_id || ''); }
+    catch (notificationError) { console.error('Production notification error:', notificationError); }
 
     return new Response(csv, {
       status: 200,

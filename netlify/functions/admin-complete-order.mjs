@@ -1,3 +1,5 @@
+import { notifyOrderCompleted } from './_shared/order-notifications.mjs';
+
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -75,7 +77,10 @@ export default async (request) => {
       body: JSON.stringify({ order_status: 'COMPLETED', completed_at: now, updated_at: now })
     });
     if (!updateResponse.ok) return json({ error: 'The order could not be completed.' }, 500);
-    return json({ success: true, completed_at: now });
+    let customer_notification = null;
+    try { customer_notification = await notifyOrderCompleted(orderId); }
+    catch (notificationError) { console.error('Completion notification error:', notificationError); }
+    return json({ success: true, completed_at: now, customer_notification });
   } catch (error) {
     console.error('Complete order error:', error);
     return json({ error: 'The order could not be completed.' }, 500);
