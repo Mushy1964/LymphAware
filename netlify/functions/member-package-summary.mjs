@@ -63,6 +63,63 @@ function packageFromItems(items) {
   };
 }
 
+function languageLabel(item) {
+  const value = String(item?.language_name || item?.language_code || 'English').trim();
+  return value ? value.charAt(0).toUpperCase() + value.slice(1).toLowerCase() : 'English';
+}
+
+function displayItemsForOrder(items) {
+  const membership = items.find(item => item.item_type === 'MEMBERSHIP');
+  const displayItems = [];
+  const cardQuantities = new Map();
+  let lanyardQuantity = membership ? 1 : 0;
+
+  if (membership) {
+    displayItems.push({ quantity: 1, label: packageFromItems(items).name });
+    cardQuantities.set('English', 1);
+  }
+
+  for (const item of items) {
+    const quantity = Math.max(0, Number(item.quantity || 0));
+    if (!quantity || item.item_type === 'MEMBERSHIP') continue;
+
+    if (item.item_type === 'EXTRA_CARD') {
+      const language = languageLabel(item);
+      cardQuantities.set(language, (cardQuantities.get(language) || 0) + quantity);
+      continue;
+    }
+
+    if (item.item_type === 'LANGUAGE_PACKAGE') {
+      const language = languageLabel(item);
+      if (!membership) displayItems.push({ quantity: 1, label: `${language} language package` });
+      cardQuantities.set(language, (cardQuantities.get(language) || 0) + quantity);
+      continue;
+    }
+
+    if (item.item_type === 'LANYARD_HOLDER') {
+      lanyardQuantity += quantity;
+      continue;
+    }
+
+    displayItems.push({
+      quantity,
+      label: String(item.description || item.item_type || 'Order item').trim()
+    });
+  }
+
+  for (const [language, quantity] of cardQuantities) {
+    displayItems.push({ quantity, label: `${language} ID card${quantity === 1 ? '' : 's'}` });
+  }
+  if (lanyardQuantity) {
+    displayItems.push({
+      quantity: lanyardQuantity,
+      label: `lanyard${lanyardQuantity === 1 ? '' : 's'} & holder${lanyardQuantity === 1 ? '' : 's'}`
+    });
+  }
+
+  return displayItems;
+}
+
 export default async (request) => {
   if (request.method !== 'GET') return json({ error: 'Method not allowed' }, 405);
 
@@ -71,7 +128,7 @@ export default async (request) => {
     if (!user) return json({ error: 'Authentication required.' }, 401);
 
     const ordersResponse = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/orders?user_id=eq.${encodeURIComponent(user.id)}&payment_status=eq.PAID&select=id,order_number,order_type,order_status,paid_at,completed_at&order=paid_at.asc`,
+      `${process.env.SUPABASE_URL}/rest/v1/orders?user_id=eq.${encodeURIComponent(user.id)}&payment_status=eq.PAID&select=id,order_number,order_type,order_status,payment_status,total_pence,currency,paid_at,completed_at,created_at&order=paid_at.asc`,
       { headers: serviceHeaders() }
     );
     if (!ordersResponse.ok) {
@@ -124,7 +181,11 @@ export default async (request) => {
       reference: `ORD-${String(order.order_number || 0).padStart(6, '0')}`,
       status: order.order_status,
       status_label: orderStatusLabels[order.order_status] || 'Order received',
-      completed_at: order.completed_at || null
+      order_date: order.paid_at || order.created_at || null,
+      completed_at: order.completed_at || null,
+      total_pence: Number(order.total_pence || 0),
+      currency: String(order.currency || 'gbp').toUpperCase(),
+      items: displayItemsForOrder(itemsByOrder.get(order.id) || [])
     }));
 
     return json({ package: packageInfo, additional_languages: extraLanguages, orders: orderSummaries });
