@@ -119,7 +119,7 @@ export default async (request) => {
         return (linkedItem || sameLanguage) && languageProfile.card_production_status === 'PRINTED';
       }));
       const isClosed = ['COMPLETED', 'CANCELLED', 'REFUNDED'].includes(order.order_status);
-      const readyToComplete = order.payment_status === 'PAID' && !isClosed && primaryCardPrinted && languageCardsPrinted;
+      const readyToPack = order.payment_status === 'PAID' && !isClosed && (order.order_status === 'READY_TO_PACK' || (primaryCardPrinted && languageCardsPrinted));
 
       return {
         ...order,
@@ -127,13 +127,14 @@ export default async (request) => {
         profile,
         profile_ready: profileReady,
         language_profiles: orderLanguageProfiles,
-        ready_to_complete: readyToComplete,
+        ready_to_complete: readyToPack,
+        ready_to_pack: readyToPack,
         completion_stage: isClosed
           ? 'COMPLETED'
           : !profileReady && needsPrimaryCard
             ? 'WAITING_FOR_CUSTOMER'
-            : readyToComplete
-              ? 'READY_TO_COMPLETE'
+            : readyToPack
+              ? 'READY_TO_PACK'
               : 'IN_PROGRESS'
       };
     });
