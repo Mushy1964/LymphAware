@@ -35,6 +35,46 @@ export default async (request) => {
     const body = await request.json().catch(() => ({}));
     if (typeof body.visible !== 'boolean') return json({ error: 'A visibility choice is required.' }, 400);
 
+    const currentProfileResponse = await fetch(
+      `${supabaseUrl}/rest/v1/profiles?user_id=eq.${encodeURIComponent(user.id)}&select=user_id,display_name,photo_path,qr_profile_active`,
+      {
+        headers: {
+          apikey: publishableKey,
+          Authorization: `Bearer ${accessToken}`,
+          Accept: 'application/json'
+        }
+      }
+    );
+
+    if (!currentProfileResponse.ok) {
+      const detail = await currentProfileResponse.text().catch(() => '');
+      console.error('Profile visibility readiness check failed:', currentProfileResponse.status, detail);
+      return json({ error: 'Your profile details could not be checked. Please try again.' }, 500);
+    }
+
+    const currentProfiles = await currentProfileResponse.json().catch(() => []);
+    const currentProfile = currentProfiles.find((profile) => profile?.user_id === user.id);
+    if (!currentProfile) {
+      return json({ error: 'Your profile could not be found. Please sign in again.' }, 409);
+    }
+
+    if (body.visible) {
+      const missing = [];
+      if (!String(currentProfile.display_name || '').trim()) missing.push('display name');
+      if (!String(currentProfile.photo_path || '').trim()) missing.push('photograph');
+
+      if (missing.length) {
+        const missingDetails = missing.length === 2
+          ? 'your display name and photograph'
+          : `your ${missing[0]}`;
+        return json({
+          error: `Your QR profiles cannot be shown yet. Add ${missingDetails} using Edit my profile, then try again.`,
+          code: 'PROFILE_INCOMPLETE',
+          missing
+        }, 422);
+      }
+    }
+
     const profileResponse = await fetch(
       `${supabaseUrl}/rest/v1/profiles?user_id=eq.${encodeURIComponent(user.id)}&select=user_id,qr_profile_active`,
       {
