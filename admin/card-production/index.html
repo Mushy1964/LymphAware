@@ -290,7 +290,7 @@
         width: 100%;
       }
     }
-  </style>
+    .admin-dashboard,.admin-notice,#printed-history-section{display:none!important}\n  </style>
 </head>
 
 <body>
@@ -329,20 +329,14 @@
         Private Administration Area
       </p>
 
-      <h1>
-        LymphAware Administration
-      </h1>
+      <h1>Card production</h1>
 
-      <p>
-        Manage LymphAware card orders and production from one place.
-        New cards awaiting action will appear automatically below.
-      </p>
+      <p>Download each ready card for EasyBadge, print and check it, then mark it as printed.</p>
 
     </div>
 
     <div class="admin-nav" style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 28px;">
-      <a href="/admin/" class="button button-secondary">Orders to Process</a>
-      <a href="/admin/completed-orders/" class="button button-secondary">Completed Orders</a>
+      <a href="/admin/" class="button button-secondary">Back to order management</a>
     </div>
 
 
@@ -510,8 +504,7 @@
       );
 
 
-    const adminLoading =
-      document.getElementById('admin-loading');
+    const selectedOrderId =\n      new URLSearchParams(window.location.search).get('order');\n\n    const adminLoading =\n      document.getElementById('admin-loading');
 
     const cardList =
       document.getElementById('card-list');
@@ -622,9 +615,7 @@
         }
 
 
-        renderProfiles(
-          result?.profiles || []
-        );
+        const profiles = result?.profiles || [];\n        renderProfiles(\n          selectedOrderId\n            ? profiles.filter(profile => Array.isArray(profile.fulfilment?.order_ids) && profile.fulfilment.order_ids.includes(selectedOrderId))\n            : profiles\n        );
 
 
       } catch (error) {
@@ -808,7 +799,7 @@
       profiles.length;
     
     
-    if (readyProfiles.length > 0) {
+    if (readyProfiles.length > 0 && !selectedOrderId) {
     
       productionSummary.hidden = false;
     
@@ -854,9 +845,7 @@
 
 
     const statusLabel =
-      status === 'PREPARED'
-        ? 'Prepared for EasyBadge'
-        : 'Ready for Card';
+      status === 'PREPARED'\n        ? 'Printing in progress'\n        : 'Ready for printing';
 
 
     const fulfilment = profile.fulfilment || {};
