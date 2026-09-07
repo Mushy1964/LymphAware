@@ -1202,7 +1202,7 @@
       const session = currentAccountSession || (await supabaseClient.auth.getSession()).data.session;
 
       if (session?.user) {
-        window.location.href = '/portal/#accessories-panel';
+        window.location.href = '/portal/';
         return;
       }
 
