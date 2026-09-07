@@ -9,17 +9,6 @@ function env(name) {
   return String(Netlify.env.get(name) || '').trim();
 }
 
-function serviceHeaders(prefer = '') {
-  const secret = env('SUPABASE_SECRET_KEY');
-  return {
-    apikey: secret,
-    Authorization: `Bearer ${secret}`,
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-    ...(prefer ? { Prefer: prefer } : {})
-  };
-}
-
 export default async (request) => {
   if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
 
@@ -27,9 +16,15 @@ export default async (request) => {
     const authHeader = request.headers.get('authorization') || '';
     if (!authHeader.startsWith('Bearer ')) return json({ error: 'Authentication required.' }, 401);
     const accessToken = authHeader.slice(7).trim();
-    const userResponse = await fetch(`${env('SUPABASE_URL')}/auth/v1/user`, {
+    const supabaseUrl = env('SUPABASE_URL');
+    const publishableKey = env('SUPABASE_PUBLISHABLE_KEY');
+    if (!supabaseUrl || !publishableKey) {
+      return json({ error: 'The service is not configured.' }, 500);
+    }
+
+    const userResponse = await fetch(`${supabaseUrl}/auth/v1/user`, {
       headers: {
-        apikey: env('SUPABASE_PUBLISHABLE_KEY'),
+        apikey: publishableKey,
         Authorization: `Bearer ${accessToken}`
       }
     });
@@ -39,28 +34,35 @@ export default async (request) => {
 
     const body = await request.json().catch(() => ({}));
     if (typeof body.visible !== 'boolean') return json({ error: 'A visibility choice is required.' }, 400);
-    const now = new Date().toISOString();
-    const headers = serviceHeaders('return=minimal');
 
     const profileResponse = await fetch(
-      `${env('SUPABASE_URL')}/rest/v1/profiles?user_id=eq.${encodeURIComponent(user.id)}`,
+      `${supabaseUrl}/rest/v1/profiles?user_id=eq.${encodeURIComponent(user.id)}&select=user_id,qr_profile_active`,
       {
         method: 'PATCH',
-        headers,
-        body: JSON.stringify({ qr_profile_active: body.visible, updated_at: now })
+        headers: {
+          apikey: publishableKey,
+          Authorization: `Bearer ${accessToken}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation'
+        },
+        body: JSON.stringify({
+          qr_profile_active: body.visible,
+          updated_at: new Date().toISOString()
+        })
       }
     );
-    if (!profileResponse.ok) throw new Error('The English profile visibility could not be changed.');
 
-    const languageResponse = await fetch(
-      `${env('SUPABASE_URL')}/rest/v1/language_profiles?user_id=eq.${encodeURIComponent(user.id)}&setup_status=eq.APPROVED`,
-      {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify({ qr_profile_active: body.visible, updated_at: now })
-      }
-    );
-    if (!languageResponse.ok) throw new Error('The additional-language profile visibility could not be changed.');
+    if (!profileResponse.ok) {
+      const detail = await profileResponse.text().catch(() => '');
+      console.error('Profile visibility database update failed:', profileResponse.status, detail);
+      throw new Error('Profile visibility database update failed.');
+    }
+
+    const updatedProfiles = await profileResponse.json().catch(() => []);
+    if (!updatedProfiles.some((profile) => profile?.user_id === user.id)) {
+      return json({ error: 'Your profile could not be found or updated. Please sign in again.' }, 409);
+    }
 
     return json({ success: true, visible: body.visible });
   } catch (error) {
