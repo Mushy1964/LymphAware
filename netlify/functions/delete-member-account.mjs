@@ -101,11 +101,13 @@ export default async (request) => {
     const base = env('SUPABASE_URL');
     const headers = serviceHeaders();
     const openOrdersResponse = await fetch(
-      `${base}/rest/v1/orders?user_id=eq.${encodeURIComponent(user.id)}&payment_status=eq.PAID&order_status=not.in.(COMPLETED,CANCELLED,REFUNDED)&select=order_number&limit=1`,
+      `${base}/rest/v1/orders?user_id=eq.${encodeURIComponent(user.id)}&payment_status=eq.PAID&select=order_number,order_status&order=created_at.desc`,
       { headers }
     );
     if (!openOrdersResponse.ok) throw new Error('Unable to check outstanding orders.');
-    const openOrder = (await openOrdersResponse.json())?.[0];
+    const paidOrders = await openOrdersResponse.json();
+    const finishedStatuses = new Set(['COMPLETED', 'CANCELLED', 'REFUNDED']);
+    const openOrder = (paidOrders || []).find((order) => !finishedStatuses.has(String(order.order_status || '').toUpperCase()));
     if (openOrder) {
       return json({
         error: `Your account cannot be deleted while order ORD-${String(openOrder.order_number || 0).padStart(6, '0')} is still being processed. Please contact admin@lymphaware.com if you need help.`
