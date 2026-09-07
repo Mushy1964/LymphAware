@@ -71,7 +71,7 @@ export default async (request) => {
     if (!user) return json({ error: 'Authentication required.' }, 401);
 
     const ordersResponse = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/orders?user_id=eq.${encodeURIComponent(user.id)}&payment_status=eq.PAID&select=id,order_type,paid_at&order=paid_at.asc`,
+      `${process.env.SUPABASE_URL}/rest/v1/orders?user_id=eq.${encodeURIComponent(user.id)}&payment_status=eq.PAID&select=id,order_number,order_type,order_status,paid_at,completed_at&order=paid_at.asc`,
       { headers: serviceHeaders() }
     );
     if (!ordersResponse.ok) {
@@ -80,7 +80,7 @@ export default async (request) => {
     }
 
     const orders = await ordersResponse.json();
-    if (!orders?.length) return json({ package: null, additional_languages: [] });
+    if (!orders?.length) return json({ package: null, additional_languages: [], orders: [] });
 
     const orderIds = orders.map(order => order.id).filter(Boolean);
     const encodedIds = orderIds.map(id => encodeURIComponent(id)).join(',');
@@ -110,7 +110,24 @@ export default async (request) => {
       if (languageName && !extraLanguages.includes(languageName)) extraLanguages.push(languageName);
     }
 
-    return json({ package: packageInfo, additional_languages: extraLanguages });
+    const orderStatusLabels = {
+      PAID_AWAITING_PROFILE: 'Waiting for your display name and photograph',
+      READY_TO_PRINT: 'Ready for card production',
+      IN_PRODUCTION: 'Cards in production',
+      READY_TO_PACK: 'Printed and being packed',
+      COMPLETED: 'Completed and dispatched',
+      CANCELLED: 'Cancelled',
+      REFUNDED: 'Refunded'
+    };
+    const orderSummaries = orders.slice().reverse().map(order => ({
+      id: order.id,
+      reference: `ORD-${String(order.order_number || 0).padStart(6, '0')}`,
+      status: order.order_status,
+      status_label: orderStatusLabels[order.order_status] || 'Order received',
+      completed_at: order.completed_at || null
+    }));
+
+    return json({ package: packageInfo, additional_languages: extraLanguages, orders: orderSummaries });
   } catch (error) {
     console.error('Member package summary error:', error);
     return json({ error: 'Package information could not be loaded.' }, 500);
