@@ -72,7 +72,7 @@ export default async (request) => {
         { headers: serviceHeaders() }
       ),
       fetch(
-        `${process.env.SUPABASE_URL}/rest/v1/profiles?select=user_id,display_name,lymphaware_id,photo_path,card_production_status,card_ready_at,card_printed_at&user_id=in.(${userIds})`,
+        `${process.env.SUPABASE_URL}/rest/v1/profiles?select=id,user_id,display_name,lymphaware_id,photo_path,card_production_status,card_ready_at,card_prepared_at,card_printed_at&user_id=in.(${userIds})`,
         { headers: serviceHeaders() }
       ),
       fetch(
