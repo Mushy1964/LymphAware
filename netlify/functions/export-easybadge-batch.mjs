@@ -82,6 +82,12 @@ export default async (request) => {
 
   try {
     const headers = serviceHeaders();
+    const body = await request.json().catch(() => ({}));
+    const requestedOrderIds = new Set(
+      (Array.isArray(body?.order_ids) ? body.order_ids : [])
+        .map(value => String(value || '').trim())
+        .filter(Boolean)
+    );
 
     const [primaryResponse, languageResponse] = await Promise.all([
       fetch(
@@ -116,16 +122,22 @@ export default async (request) => {
     ].filter(Boolean))];
 
     const primaryCopiesByUser = new Map();
+    const orderIdsByUser = new Map();
     const itemById = new Map();
 
     if (allUserIds.length) {
       const encodedUsers = allUserIds.map(id => encodeURIComponent(id)).join(',');
+      const requestedOrderFilter = requestedOrderIds.size
+        ? `&id=in.(${[...requestedOrderIds].map(id => encodeURIComponent(id)).join(',')})`
+        : '';
+
       const ordersResponse = await fetch(
         `${process.env.SUPABASE_URL}/rest/v1/orders` +
         `?select=id,user_id` +
         `&user_id=in.(${encodedUsers})` +
         `&payment_status=eq.PAID` +
-        `&order_status=in.(PAID_AWAITING_PROFILE,READY_TO_PRINT)`,
+        `&order_status=in.(PAID_AWAITING_PROFILE,READY_TO_PRINT)` +
+        requestedOrderFilter,
         { headers }
       );
 
@@ -136,6 +148,10 @@ export default async (request) => {
 
       const readyOrders = await ordersResponse.json();
       const orderById = new Map(readyOrders.map(order => [order.id, order]));
+      for (const order of readyOrders) {
+        if (!orderIdsByUser.has(order.user_id)) orderIdsByUser.set(order.user_id, []);
+        orderIdsByUser.get(order.user_id).push(order.id);
+      }
       const orderIds = readyOrders.map(order => order.id).filter(Boolean);
 
       if (orderIds.length) {
@@ -203,6 +219,7 @@ export default async (request) => {
           record_id: profile.id,
           user_id: profile.user_id,
           order_id: null,
+          order_ids: orderIdsByUser.get(profile.user_id) || [],
           lymphaware_id: profile.lymphaware_id,
           display_name: profile.display_name,
           qr_token: profile.qr_token,
@@ -215,7 +232,9 @@ export default async (request) => {
           quantity: Math.max(0, Number(primaryCopiesByUser.get(profile.user_id) || 0))
         };
       }),
-      ...(languageProfiles || []).map(languageProfile => {
+      ...(languageProfiles || [])
+        .filter(languageProfile => !requestedOrderIds.size || requestedOrderIds.has(String(languageProfile.order_id || '')))
+        .map(languageProfile => {
         const source = sourceById.get(languageProfile.source_profile_id) || {};
         const cardCopy = cardCopyForLanguage(languageProfile.language_code);
         return {
@@ -315,11 +334,17 @@ export default async (request) => {
 
     const linkedOrders = new Set();
     for (const job of jobs) {
-      const key = `${job.user_id || ''}:${job.order_id || ''}`;
-      if (linkedOrders.has(key)) continue;
-      linkedOrders.add(key);
-      try { await markLinkedOrdersInProduction(job.user_id, job.order_id || ''); }
-      catch (notificationError) { console.error('Production notification error:', notificationError); }
+      const jobOrderIds = Array.isArray(job.order_ids) && job.order_ids.length
+        ? job.order_ids
+        : [job.order_id || ''];
+
+      for (const orderId of jobOrderIds) {
+        const key = `${job.user_id || ''}:${orderId}`;
+        if (linkedOrders.has(key)) continue;
+        linkedOrders.add(key);
+        try { await markLinkedOrdersInProduction(job.user_id, orderId); }
+        catch (notificationError) { console.error('Production notification error:', notificationError); }
+      }
     }
 
     const csv = rows.join('\r\n');
