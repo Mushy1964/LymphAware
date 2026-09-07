@@ -254,6 +254,76 @@
   font-size: 0.95rem;
 }
 
+.selected-order-summary {
+  margin: 0 0 24px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 7px 22px rgba(31,41,51,.045);
+}
+
+.selected-order-summary[hidden] { display: none; }
+
+.selected-order-summary h2 {
+  margin: 4px 0 8px;
+  font-size: 1.45rem;
+}
+
+.selected-order-summary > p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.order-card-breakdown {
+  display: grid;
+  gap: 10px;
+  margin-top: 17px;
+}
+
+.order-card-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 14px;
+  border-radius: 11px;
+  background: #f4f8fa;
+}
+
+.order-card-line strong { color: var(--text); }
+
+.order-card-state {
+  flex: 0 0 auto;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #fff7e8;
+  color: #725514;
+  font-size: .9rem;
+  font-weight: 800;
+}
+
+.order-card-state.printed {
+  background: #eef7f0;
+  color: #176b32;
+}
+
+.order-card-state.ready {
+  background: #edf5fa;
+  color: #175f91;
+}
+
+.selected-order-next {
+  margin-top: 16px !important;
+  padding: 13px 14px;
+  border-left: 4px solid #2878b8;
+  border-radius: 8px;
+  background: #f4f9fc;
+  color: #253c4f !important;
+  font-weight: 700;
+}
+
 @media (max-width: 680px) {
 
   .history-item {
@@ -288,6 +358,12 @@
 
       .production-actions .button {
         width: 100%;
+      }
+
+      .order-card-line {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
       }
     }
     .admin-dashboard,.admin-notice,#printed-history-section{display:none!important}
@@ -332,7 +408,7 @@
 
       <h1>Card production</h1>
 
-      <p>Download each ready card for EasyBadge, print and check it, then mark it as printed.</p>
+      <p id="production-intro">Download each ready card for EasyBadge, print and check it, then mark it as printed.</p>
 
     </div>
 
@@ -341,6 +417,8 @@
     </div>
 
 
+
+    <section id="selected-order-summary" class="selected-order-summary" hidden aria-live="polite"></section>
 
     <div class="admin-dashboard">
 
@@ -508,6 +586,12 @@
     const selectedOrderId =
       new URLSearchParams(window.location.search).get('order');
 
+    const selectedOrderSummary =
+      document.getElementById('selected-order-summary');
+
+    const productionIntro =
+      document.getElementById('production-intro');
+
     const adminLoading =
       document.getElementById('admin-loading');
 
@@ -568,6 +652,92 @@
     }
 
 
+    function orderReference(number) {
+      return number
+        ? `ORD-${String(number).padStart(6, '0')}`
+        : 'Order';
+    }
+
+    function productionState(status) {
+      const value = String(status || '').toUpperCase();
+      if (value === 'PRINTED') return { label: 'Printed', className: 'printed' };
+      if (value === 'PREPARED') return { label: 'Printing in progress', className: '' };
+      if (value === 'READY') return { label: 'Ready for printing', className: 'ready' };
+      return { label: 'Waiting', className: 'ready' };
+    }
+
+    function jobDescription(job) {
+      const quantity = Math.max(1, Number(job.quantity || 1));
+      return `${quantity} × ${escapeHtml(job.language_name || 'ID')} card${quantity === 1 ? '' : 's'}`;
+    }
+
+    function renderSelectedOrderSummary(order) {
+      if (!selectedOrderSummary || !order) return;
+
+      const jobs = Array.isArray(order.production_jobs)
+        ? order.production_jobs
+        : [];
+      const lanyards = Math.max(0, Number(order.lanyard_quantity || 0));
+      const totalCards = jobs.reduce(
+        (sum, job) => sum + Math.max(1, Number(job.quantity || 1)),
+        0
+      );
+      const printedJobs = jobs.filter(job => String(job.status || '').toUpperCase() === 'PRINTED');
+      const remainingJobs = jobs.filter(job => String(job.status || '').toUpperCase() !== 'PRINTED');
+
+      const lines = jobs.map(job => {
+        const state = productionState(job.status);
+        return `
+          <div class="order-card-line">
+            <strong>${jobDescription(job)}</strong>
+            <span class="order-card-state ${state.className}">${state.label}</span>
+          </div>
+        `;
+      });
+
+      if (lanyards > 0) {
+        lines.push(`
+          <div class="order-card-line">
+            <strong>${lanyards} × lanyard &amp; holder${lanyards === 1 ? '' : 's'}</strong>
+            <span class="order-card-state ready">Pack after printing</span>
+          </div>
+        `);
+      }
+
+      const printedText = printedJobs.length
+        ? `${printedJobs.map(jobDescription).join(' and ')} ${printedJobs.length === 1 ? 'has' : 'have'} already been marked as printed.`
+        : '';
+      const remainingText = remainingJobs.length
+        ? `${remainingJobs.map(jobDescription).join(' and ')} still ${remainingJobs.length === 1 ? 'needs' : 'need'} to be printed, checked and marked as printed.`
+        : 'All cards have been marked as printed.';
+
+      selectedOrderSummary.innerHTML = `
+        <span class="production-id">${escapeHtml(orderReference(order.order_number))} · Complete order</span>
+        <h2>${totalCards} card${totalCards === 1 ? '' : 's'} required</h2>
+        <p>This summary remains visible until every card in the order has been printed.</p>
+        <div class="order-card-breakdown">${lines.join('')}</div>
+        <p class="selected-order-next">${printedText} ${remainingText}</p>
+      `;
+      selectedOrderSummary.hidden = false;
+      productionIntro.textContent = 'Review the complete order below, then finish and confirm the remaining card printing.';
+    }
+
+    async function loadSelectedOrder(accessToken) {
+      if (!selectedOrderId) return;
+
+      try {
+        const response = await fetch('/.netlify/functions/admin-orders-list', {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result?.error || 'Order summary could not be loaded.');
+        const order = (result.orders || []).find(item => item.id === selectedOrderId);
+        if (order) renderSelectedOrderSummary(order);
+      } catch (error) {
+        console.error('Unable to load selected order summary:', error);
+      }
+    }
+
     async function loadCardProduction() {
 
       const accessToken =
@@ -621,6 +791,7 @@
 
 
         const profiles = result?.profiles || [];
+        await loadSelectedOrder(accessToken);
         renderProfiles(
           selectedOrderId
             ? profiles.filter(profile => Array.isArray(profile.fulfilment?.order_ids) && profile.fulfilment.order_ids.includes(selectedOrderId))
@@ -959,7 +1130,7 @@
         ${profile.record_type === 'LANGUAGE'
           ? ''
           : completedLanguageSummary
-            ? `<div class="production-language-note">Related language card: ${completedLanguageSummary} — shown as a separate production job.</div>`
+            ? `<div class="production-language-note">Related language card: ${completedLanguageSummary}.</div>`
             : pendingLanguageSummary
               ? `<div class="production-language-note">Additional language package: ${pendingLanguageSummary} — language card/profile setup still required.</div>`
               : ''}
