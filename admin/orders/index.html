@@ -251,7 +251,7 @@
         });
         const result = await response.json();
         if (!response.ok) throw new Error(result?.error || 'The order could not be completed.');
-        window.location.href = '/admin/completed-orders/';
+        window.location.href = '/admin/?stage=COMPLETED';
       } catch (error) {
         console.error('Unable to complete order:', error);
         alert(error.message || 'The order could not be completed.');
@@ -271,7 +271,7 @@
       if (!orders.length) {
         loading.style.display = 'none';
         orderList.hidden = false;
-        orderList.innerHTML = selectedOrderId ? '<div class="empty">This order is no longer awaiting processing. <a href="/admin/completed-orders/">Check Completed Orders</a> or return to <a href="/admin/">Orders to Process</a>.</div>' : '<div class="empty">No LymphAware orders are currently awaiting processing.</div>';
+        orderList.innerHTML = selectedOrderId ? '<div class="empty">This order is no longer awaiting processing. <a href="/admin/?stage=COMPLETED">View it in the Completed tab</a> or return to <a href="/admin/">Order management</a>.</div>' : '<div class="empty">No LymphAware orders are currently awaiting processing.</div>';
         return;
       }
 
