@@ -1,3 +1,5 @@
+import { notifyOrderCompleted } from './_shared/order-notifications.mjs';
+
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -46,6 +48,7 @@ export default async (request) => {
     const order = (await orderResponse.json())?.[0];
     if (!order) return json({ error: 'Order not found.' }, 404);
     if (order.order_status === 'COMPLETED') return json({ success: true, already_completed: true });
+    if (order.order_status !== 'READY_TO_PACK') return json({ error: 'This order must be ready to pack before it can be completed.' }, 400);
     if (order.payment_status !== 'PAID' || ['CANCELLED', 'REFUNDED'].includes(order.order_status)) return json({ error: 'This order cannot be completed.' }, 400);
 
     const [itemsResponse, profileResponse, languagesResponse] = await Promise.all([
@@ -75,7 +78,10 @@ export default async (request) => {
       body: JSON.stringify({ order_status: 'COMPLETED', completed_at: now, updated_at: now })
     });
     if (!updateResponse.ok) return json({ error: 'The order could not be completed.' }, 500);
-    return json({ success: true, completed_at: now });
+    let customer_notification = null;
+    try { customer_notification = await notifyOrderCompleted(orderId); }
+    catch (notificationError) { console.error('Completion notification error:', notificationError); }
+    return json({ success: true, completed_at: now, customer_notification });
   } catch (error) {
     console.error('Complete order error:', error);
     return json({ error: 'The order could not be completed.' }, 500);
