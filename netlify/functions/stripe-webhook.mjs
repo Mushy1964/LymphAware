@@ -150,12 +150,12 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
     subject = `Your LymphAware additional order is confirmed – ${orderRef}`;
     if (languageName) {
       nextSteps +=
-        `\n\nYour order includes a ${languageName} language package. You do not need to translate your profile yourself. LymphAware will prepare the ${languageName} version from your main English profile and check it before publication. Any English sections left empty will also be empty in the translated profile.`;
+        `\n\nYour order includes a ${languageName} language package. You do not need to translate your profile yourself. LymphAware will prepare the ${languageName} version from your main English profile and automatically keep it updated when your English profile changes. Any English sections left empty will also be empty in the translated profile.`;
     }
   } else if (paymentType === 'additional_language') {
     subject = `Your ${languageName || 'additional-language'} LymphAware package is confirmed`;
     nextSteps =
-      `You do not need to translate your profile yourself. LymphAware will prepare the ${languageName || 'selected-language'} version for you from the information in your main English profile and check it before publication.\n\n` +
+      `You do not need to translate your profile yourself. LymphAware will prepare the ${languageName || 'selected-language'} version for you from the information in your main English profile and automatically keep it updated when your English profile changes.\n\n` +
       `Please make sure your main English profile is accurate and complete. Any English sections left empty will also be empty in the translated profile.\n\n` +
       `Review your main profile:\nhttps://lymphaware.com/profile/`;
   }
@@ -476,8 +476,13 @@ export default async (request) => {
     }
 
     if (order.notification_status !== 'SENT') await sendOrderNotification(order, session, items);
-    const customerNotification = await sendCustomerConfirmation(order, session, items, paymentType, languageName);
-    if (!customerNotification.ok) console.error('Unable to send customer order confirmation:', customerNotification.error);
+    if (order.customer_confirmation_status !== 'SENT') {
+      const customerNotification = await sendCustomerConfirmation(order, session, items, paymentType, languageName);
+      await patchOrder(order.id, customerNotification.ok
+        ? { customer_confirmation_status: 'SENT', customer_confirmation_error: null, customer_confirmation_sent_at: new Date().toISOString() }
+        : { customer_confirmation_status: 'FAILED', customer_confirmation_error: customerNotification.error, customer_confirmation_sent_at: null });
+      if (!customerNotification.ok) console.error('Unable to send customer order confirmation:', customerNotification.error);
+    }
 
     return new Response(JSON.stringify({ received: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
   } catch (error) {
