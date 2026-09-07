@@ -14,7 +14,7 @@
     .admin-heading h1 { margin: 6px 0 10px; font-size: 2.4rem; line-height: 1.15; }
     .admin-heading p { margin: 0; max-width: 780px; color: var(--muted); line-height: 1.55; }
     .admin-nav { display: flex; gap: 12px; flex-wrap: wrap; margin: 22px 0 28px; }
-    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 26px; }
+    .stats { display: none; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 26px; }
     .stat { padding: 20px; border: 1px solid #cbd8df; border-radius: 16px; background: #fff; box-shadow: var(--content-shadow); }
     .stat strong { display: block; margin-bottom: 5px; font-size: 2rem; color: var(--blue-dark); }
     .stat span { color: var(--muted); font-weight: 700; }
@@ -77,12 +77,11 @@
       <div class="admin-heading">
         <p class="eyebrow">Private Administration Area</p>
         <h1 id="order-heading">Order Details</h1>
-        <p>These are the full details for orders still being processed. Completed orders are kept separately in Completed Orders.</p>
+        <p>Review the order information needed for printing, packing and dispatch.</p>
       </div>
 
       <div class="admin-nav">
-        <a href="/admin/" class="button button-primary">Orders to Process</a>
-        <a href="/admin/completed-orders/" class="button button-secondary">Completed Orders</a>
+        <a href="/admin/" class="button button-secondary">Back to order management</a>
       </div>
 
       <div class="stats">
@@ -126,10 +125,14 @@
     }
 
     function statusLabel(order) {
-      if (order.ready_to_pack) return ['Ready to pack', 'status-ready'];
-      if (order.order_status === 'IN_PRODUCTION') return ['In production', 'status-ready'];
-      if (order.profile_ready) return ['Ready for production', 'status-ready'];
-      return ['Awaiting profile', 'status-waiting'];
+      const labels = {
+        WAITING: ['Waiting', 'status-waiting'],
+        READY_TO_PRINT: ['Ready for printing', 'status-ready'],
+        PRINTING: ['Printing in progress', 'status-ready'],
+        READY_TO_DISPATCH: ['Ready to dispatch', 'status-ready'],
+        COMPLETED: ['Completed', 'status-complete']
+      };
+      return labels[order.workflow_stage] || ['Order received', 'status-waiting'];
     }
 
     function fulfilmentDetails(order) {
@@ -331,11 +334,12 @@
             </div>
           </div>
 
-          <div class="profile-ready ${order.profile_ready ? 'ready' : 'waiting'}">
-            <strong>${order.profile_ready ? 'Profile ready for card preparation' : 'Awaiting minimum profile information'}</strong><br>
-            ${order.profile_ready
-              ? 'Display name and photograph are present. This order can now move through card production.'
-              : 'Waiting for the member to add both a display name and photograph. No production action is needed yet.'}
+          <div class="profile-ready ${order.workflow_stage === 'WAITING' ? 'waiting' : 'ready'}">
+            <strong>${escapeHtml(label)}</strong><br>
+            ${escapeHtml(order.workflow_reason || 'Review this order.')}
+            ${['READY_TO_PRINT','PRINTING'].includes(order.workflow_stage)
+              ? `<div style="margin-top:12px"><a class="button button-primary" href="/admin/card-production/?order=${encodeURIComponent(order.id)}">${order.workflow_stage === 'PRINTING' ? 'Continue printing' : 'Download EasyBadge file'}</a></div>`
+              : ''}
           </div>
           ${order.ready_to_complete ? `<div class="order-complete-action"><div><strong>Ready to pack</strong><p>${order.order_type === 'INITIAL_MEMBERSHIP' ? 'All required cards are printed. Print the welcome letter, pack the complete order, then mark it completed and dispatched.' : 'All required items are ready. Pack the complete order, then mark it completed and dispatched.'}</p></div><div class="order-complete-buttons">${order.order_type === 'INITIAL_MEMBERSHIP' ? `<a class="button button-secondary" href="/admin/welcome-letter/?order=${encodeURIComponent(order.id)}" target="_blank" rel="noopener">Print Welcome Letter</a>` : ''}<button type="button" class="button button-primary complete-order" data-order-id="${escapeHtml(order.id)}">Mark completed and dispatched</button></div></div>` : ''}
         `;
