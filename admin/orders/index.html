@@ -126,8 +126,9 @@
     }
 
     function statusLabel(order) {
-      if (order.ready_to_complete) return ['Ready to complete', 'status-ready'];
-      if (order.profile_ready) return ['Profile ready', 'status-ready'];
+      if (order.ready_to_pack) return ['Ready to pack', 'status-ready'];
+      if (order.order_status === 'IN_PRODUCTION') return ['In production', 'status-ready'];
+      if (order.profile_ready) return ['Ready for production', 'status-ready'];
       return ['Awaiting profile', 'status-waiting'];
     }
 
@@ -229,7 +230,7 @@
     }
 
     async function completeOrder(button) {
-      if (!window.confirm('Confirm that this order has been checked, packed and is complete.')) return;
+      if (!window.confirm('Confirm that this order has been checked, packed and dispatched.')) return;
       const orderId = button.dataset.orderId;
       button.disabled = true;
       button.textContent = 'Completing...';
@@ -252,7 +253,7 @@
         console.error('Unable to complete order:', error);
         alert(error.message || 'The order could not be completed.');
         button.disabled = false;
-        button.textContent = 'Move to Completed Orders';
+        button.textContent = 'Mark completed and dispatched';
       }
     }
 
@@ -333,10 +334,10 @@
           <div class="profile-ready ${order.profile_ready ? 'ready' : 'waiting'}">
             <strong>${order.profile_ready ? 'Profile ready for card preparation' : 'Awaiting minimum profile information'}</strong><br>
             ${order.profile_ready
-              ? 'Display name and photograph are present. Use Card Production when the profile reaches the existing READY stage.'
-              : 'Do not print yet. The member still needs to provide both a display name and photograph.'}
+              ? 'Display name and photograph are present. This order can now move through card production.'
+              : 'Waiting for the member to add both a display name and photograph. No production action is needed yet.'}
           </div>
-          ${order.ready_to_complete ? `<div class="order-complete-action"><div><strong>Ready to complete</strong><p>${order.order_type === 'INITIAL_MEMBERSHIP' ? 'All required cards are marked as printed. Print the welcome letter and check that everything is packed before completing the order.' : 'All required items are ready. Check that everything is packed before completing this additional order.'}</p></div><div class="order-complete-buttons">${order.order_type === 'INITIAL_MEMBERSHIP' ? `<a class="button button-secondary" href="/admin/welcome-letter/?order=${encodeURIComponent(order.id)}" target="_blank" rel="noopener">Print Welcome Letter</a>` : ''}<button type="button" class="button button-primary complete-order" data-order-id="${escapeHtml(order.id)}">Move to Completed Orders</button></div></div>` : ''}
+          ${order.ready_to_complete ? `<div class="order-complete-action"><div><strong>Ready to pack</strong><p>${order.order_type === 'INITIAL_MEMBERSHIP' ? 'All required cards are printed. Print the welcome letter, pack the complete order, then mark it completed and dispatched.' : 'All required items are ready. Pack the complete order, then mark it completed and dispatched.'}</p></div><div class="order-complete-buttons">${order.order_type === 'INITIAL_MEMBERSHIP' ? `<a class="button button-secondary" href="/admin/welcome-letter/?order=${encodeURIComponent(order.id)}" target="_blank" rel="noopener">Print Welcome Letter</a>` : ''}<button type="button" class="button button-primary complete-order" data-order-id="${escapeHtml(order.id)}">Mark completed and dispatched</button></div></div>` : ''}
         `;
 
         orderList.appendChild(card);
