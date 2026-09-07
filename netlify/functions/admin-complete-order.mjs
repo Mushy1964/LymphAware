@@ -48,7 +48,6 @@ export default async (request) => {
     const order = (await orderResponse.json())?.[0];
     if (!order) return json({ error: 'Order not found.' }, 404);
     if (order.order_status === 'COMPLETED') return json({ success: true, already_completed: true });
-    if (order.order_status !== 'READY_TO_PACK') return json({ error: 'This order must be ready to pack before it can be completed.' }, 400);
     if (order.payment_status !== 'PAID' || ['CANCELLED', 'REFUNDED'].includes(order.order_status)) return json({ error: 'This order cannot be completed.' }, 400);
 
     const [itemsResponse, profileResponse, languagesResponse] = await Promise.all([
