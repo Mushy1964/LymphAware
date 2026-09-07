@@ -124,7 +124,18 @@
       return `ORD-${String(number || 0).padStart(6, '0')}`;
     }
 
-    function statusLabel(order) {\n      const labels = {\n        WAITING: ['Waiting', 'status-waiting'],\n        READY_TO_PRINT: ['Ready for printing', 'status-ready'],\n        PRINTING: ['Printing in progress', 'status-ready'],\n        READY_TO_DISPATCH: ['Ready to dispatch', 'status-ready'],\n        COMPLETED: ['Completed', 'status-complete']\n      };\n      return labels[order.workflow_stage] || ['Order received', 'status-waiting'];\n    }\n\n    function fulfilmentDetails(order) {
+    function statusLabel(order) {
+      const labels = {
+        WAITING: ['Waiting', 'status-waiting'],
+        READY_TO_PRINT: ['Ready for printing', 'status-ready'],
+        PRINTING: ['Printing in progress', 'status-ready'],
+        READY_TO_DISPATCH: ['Ready to dispatch', 'status-ready'],
+        COMPLETED: ['Completed', 'status-complete']
+      };
+      return labels[order.workflow_stage] || ['Order received', 'status-waiting'];
+    }
+
+    function fulfilmentDetails(order) {
       const items = order.items || [];
       const hasMembership = items.some(item => item.item_type === 'MEMBERSHIP');
       const englishCards = (hasMembership ? 1 : 0) + items.filter(item => item.item_type === 'EXTRA_CARD' && (!item.language_name || String(item.language_name).toLowerCase() === 'english')).reduce((sum, item) => sum + Number(item.quantity || 0), 0);
