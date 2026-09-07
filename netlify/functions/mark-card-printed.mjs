@@ -45,19 +45,19 @@ function serviceHeaders(prefer = '') {
   };
 }
 
-async function completeReadyOrders(updatedRecord, recordType) {
+async function markOrdersReadyToPack(updatedRecord, recordType) {
   const base = Netlify.env.get('SUPABASE_URL');
   const headers = serviceHeaders();
   const orderFilter = recordType === 'LANGUAGE' && updatedRecord.order_id
     ? `id=eq.${encodeURIComponent(updatedRecord.order_id)}`
     : `user_id=eq.${encodeURIComponent(updatedRecord.user_id)}`;
   const ordersResponse = await fetch(
-    `${base}/rest/v1/orders?${orderFilter}&payment_status=eq.PAID&order_status=in.(PAID_AWAITING_PROFILE,READY_TO_PRINT,IN_PRODUCTION,PRINTED)&select=id,user_id,order_number`,
+    `${base}/rest/v1/orders?${orderFilter}&payment_status=eq.PAID&order_status=in.(PAID_AWAITING_PROFILE,READY_TO_PRINT,IN_PRODUCTION,READY_TO_PACK)&select=id,user_id,order_number`,
     { headers }
   );
   if (!ordersResponse.ok) throw new Error(`Unable to check linked orders: ${await ordersResponse.text()}`);
 
-  const completedOrders = [];
+  const readyToPackOrders = [];
   for (const order of await ordersResponse.json()) {
     const [itemsResponse, profileResponse, languagesResponse] = await Promise.all([
       fetch(`${base}/rest/v1/order_items?order_id=eq.${encodeURIComponent(order.id)}&select=id,item_type,language_name`, { headers }),
@@ -83,13 +83,13 @@ async function completeReadyOrders(updatedRecord, recordType) {
     const completionResponse = await fetch(`${base}/rest/v1/orders?id=eq.${encodeURIComponent(order.id)}`, {
       method: 'PATCH',
       headers: serviceHeaders('return=representation'),
-      body: JSON.stringify({ order_status: 'COMPLETED', completed_at: now, updated_at: now })
+      body: JSON.stringify({ order_status: 'READY_TO_PACK', printed_at: now, updated_at: now })
     });
-    if (!completionResponse.ok) throw new Error(`Unable to complete linked order: ${await completionResponse.text()}`);
+    if (!completionResponse.ok) throw new Error(`Unable to mark linked order ready to pack: ${await completionResponse.text()}`);
     const completed = await completionResponse.json();
-    if (completed.length === 1) completedOrders.push({ id: order.id, order_number: order.order_number, completed_at: now });
+    if (completed.length === 1) readyToPackOrders.push({ id: order.id, order_number: order.order_number, ready_to_pack_at: now });
   }
-  return completedOrders;
+  return readyToPackOrders;
 }
 
 export default async (request) => {
@@ -141,8 +141,8 @@ export default async (request) => {
       return json({ error: 'The card record was not updated. Please try again.' }, 409);
     }
 
-    const completedOrders = await completeReadyOrders(updatedRecords[0], recordType);
-    return json({ success: true, profile_id: profileId, record_type: recordType, card_printed_at: now, completed_orders: completedOrders });
+    const readyToPackOrders = await markOrdersReadyToPack(updatedRecords[0], recordType);
+    return json({ success: true, profile_id: profileId, record_type: recordType, card_printed_at: now, ready_to_pack_orders: readyToPackOrders });
   } catch (error) {
     console.error('Mark card printed error:', error);
     return json({ error: 'The card could not be marked as printed.' }, 500);
