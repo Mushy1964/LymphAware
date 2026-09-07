@@ -1,3 +1,5 @@
+import { sendLanguageReadyEmail } from './_shared/order-notifications.mjs';
+
 const TRANSLATABLE_FIELDS = [
   'lymphoedema_type',
   'lymphoedema_location',
@@ -138,7 +140,6 @@ export default async (request) => {
   if (!Array.isArray(languageProfiles) || !languageProfiles.length) return;
 
   const source = cleanSource(sourceProfile);
-  if (!hasText(source)) return;
 
   for (const languageProfile of languageProfiles) {
     const languageName = LANGUAGE_NAMES[languageProfile.language_code];
@@ -149,18 +150,26 @@ export default async (request) => {
     if (lastTranslatedAt && sourceUpdatedAt <= lastTranslatedAt) continue;
 
     try {
-      const translatedContent = await translate(source, languageName);
+      const wasFirstTranslation = !languageProfile.translation_generated_at;
+      const translatedContent = hasText(source) ? await translate(source, languageName) : cleanSource({});
       const now = new Date().toISOString();
       await patchLanguageProfile(languageProfile.id, {
         translated_content: translatedContent,
-        setup_status: 'IN_REVIEW',
-        qr_profile_active: false,
+        setup_status: 'APPROVED',
+        qr_profile_active: sourceProfile.qr_profile_active === true,
         translation_provider: 'Netlify AI Gateway',
         translation_model: 'gpt-4o-mini',
         translation_generated_at: now,
         translation_source_updated_at: sourceProfile.updated_at || now,
-        translation_error: null
+        translation_error: null,
+        ...(wasFirstTranslation && !languageProfile.card_production_status && sourceProfile.display_name?.trim() && sourceProfile.photo_path?.trim() && sourceProfile.qr_token
+          ? { card_production_status: 'READY', card_ready_at: now }
+          : {})
       });
+      if (wasFirstTranslation) {
+        try { await sendLanguageReadyEmail({ languageProfileId: languageProfile.id, customerEmail: user.email, languageName }); }
+        catch { /* notification failure is audited without blocking profile availability */ }
+      }
     } catch (error) {
       try {
         await patchLanguageProfile(languageProfile.id, {
