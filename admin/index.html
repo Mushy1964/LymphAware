@@ -27,6 +27,8 @@
     .stage-tab[aria-selected="true"] .stage-count{background:#fff;color:var(--blue-dark)}
     .stage-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px}
     .stage-heading h2{margin:0;font-size:1.5rem}
+    .batch-message{margin:-2px 0 16px;padding:12px 14px;border-radius:9px;background:#f1f7fb;color:#24445c;font-weight:700}
+    .batch-message[hidden]{display:none}
     .order-list{display:grid;gap:15px}
     .order-card{padding:22px;border:1px solid var(--border);border-radius:17px;background:#fff;box-shadow:0 7px 22px rgba(31,41,51,.045)}
     .order-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
@@ -60,6 +62,7 @@
       .membership-summary{grid-template-columns:1fr}.stage-tabs{margin-left:-3px;margin-right:-3px}
       .order-card{padding:18px 16px}.order-card-head{flex-direction:column;gap:12px}.stage-badge{align-self:flex-start}
       .details-grid{grid-template-columns:1fr}.order-actions{display:grid}.order-actions .button{width:100%;text-align:center}
+      .stage-heading{align-items:stretch;flex-direction:column}.stage-heading .button{width:100%;text-align:center}
     }
   </style>
 </head>
@@ -85,7 +88,8 @@
       <button type="button" class="stage-tab" role="tab" data-stage="READY_TO_DISPATCH" aria-selected="false">Ready to dispatch <span class="stage-count" id="count-dispatch">0</span></button>
       <button type="button" class="stage-tab" role="tab" data-stage="COMPLETED" aria-selected="false">Completed <span class="stage-count" id="count-completed">0</span></button>
     </div>
-    <div class="stage-heading"><h2 id="stage-title">Orders</h2></div>
+    <div class="stage-heading"><h2 id="stage-title">Orders</h2><button type="button" id="download-ready-batch" class="button button-primary" hidden>Download all ready cards</button></div>
+    <p id="batch-message" class="batch-message" role="status" aria-live="polite" hidden></p>
     <div id="admin-loading">Loading orders…</div>
     <div id="admin-error" hidden></div>
     <div id="order-list" class="order-list" role="tabpanel" aria-live="polite" hidden></div>
@@ -100,6 +104,8 @@
     const errorBox=document.getElementById('admin-error');
     const orderList=document.getElementById('order-list');
     const stageTitle=document.getElementById('stage-title');
+    const downloadReadyBatch=document.getElementById('download-ready-batch');
+    const batchMessage=document.getElementById('batch-message');
     const tabs=[...document.querySelectorAll('.stage-tab')];
     const membershipToggle=document.getElementById('membership-toggle');
     const membershipPanel=document.getElementById('membership-panel');
@@ -120,11 +126,41 @@
     function stageOrders(stage){return orders.filter(order=>order.workflow_stage===stage)}
     function updateCounts(){document.getElementById('count-waiting').textContent=stageOrders('WAITING').length;document.getElementById('count-ready').textContent=stageOrders('READY_TO_PRINT').length;document.getElementById('count-printing').textContent=stageOrders('PRINTING').length;document.getElementById('count-dispatch').textContent=stageOrders('READY_TO_DISPATCH').length;document.getElementById('count-completed').textContent=stageOrders('COMPLETED').length}
     function selectInitialStage(){const preferred=['READY_TO_PRINT','PRINTING','READY_TO_DISPATCH','WAITING','COMPLETED'];activeStage=preferred.find(stage=>stageOrders(stage).length)||'WAITING'}
-    function renderStage(){tabs.forEach(tab=>{const selected=tab.dataset.stage===activeStage;tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1});stageTitle.textContent=stageLabels[activeStage]||'Orders';const visible=stageOrders(activeStage);orderList.innerHTML=visible.length?visible.map(renderOrder).join(''):`<div class="empty">There are no orders at the ${esc((stageLabels[activeStage]||'selected').toLowerCase())} stage.</div>`;orderList.hidden=false}
+    function renderStage(){tabs.forEach(tab=>{const selected=tab.dataset.stage===activeStage;tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1});stageTitle.textContent=stageLabels[activeStage]||'Orders';const visible=stageOrders(activeStage);const readyCardCount=activeStage==='READY_TO_PRINT'?visible.reduce((sum,order)=>sum+(order.production_jobs||[]).reduce((jobSum,job)=>jobSum+Math.max(1,Number(job.quantity||1)),0),0):0;downloadReadyBatch.hidden=readyCardCount===0;downloadReadyBatch.textContent=readyCardCount===1?'Download ready card for EasyBadge':`Download all ${readyCardCount} ready cards for EasyBadge`;orderList.innerHTML=visible.length?visible.map(renderOrder).join(''):`<div class="empty">There are no orders at the ${esc((stageLabels[activeStage]||'selected').toLowerCase())} stage.</div>`;orderList.hidden=false}
     function chooseStage(stage,focus=true){activeStage=stage;renderStage();if(focus)tabs.find(tab=>tab.dataset.stage===stage)?.focus()}
     async function loadMembershipSummary(){if(membershipLoaded)return;const accessToken=await token();if(!accessToken)return;const result=await request('/.netlify/functions/admin-dashboard-summary',accessToken);const summary=result?.summary||{};document.getElementById('active-members-count').textContent=Number(summary.active_members||0);document.getElementById('paid-members-count').textContent=Number(summary.paid_members||0);document.getElementById('pilot-sponsored-count').textContent=Number(summary.pilot_sponsored_members||0);document.getElementById('visible-profiles-count').textContent=Number(summary.visible_profiles||0);document.getElementById('incomplete-profiles-count').textContent=Number(summary.profiles_needing_details||0);document.getElementById('approved-languages-count').textContent=Number(summary.approved_language_profiles||0);membershipLoaded=true}
     async function load(preserveStage=false){const accessToken=await token();if(!accessToken)return;try{const result=await request('/.netlify/functions/admin-orders-list',accessToken);orders=(result.orders||[]).filter(order=>!['CLOSED'].includes(order.workflow_stage));updateCounts();if(!preserveStage||!stageOrders(activeStage).length)selectInitialStage();loading.style.display='none';errorBox.hidden=true;renderStage()}catch(error){console.error(error);loading.style.display='none';errorBox.hidden=false;errorBox.innerHTML='Orders could not be loaded.<br><button type="button" id="orders-retry" class="button button-secondary">Try again</button>';document.getElementById('orders-retry').addEventListener('click',()=>{errorBox.hidden=true;loading.style.display='block';load(true)})}}
     tabs.forEach((tab,index)=>{tab.addEventListener('click',()=>chooseStage(tab.dataset.stage,false));tab.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();let next=index;if(event.key==='ArrowLeft')next=(index-1+tabs.length)%tabs.length;if(event.key==='ArrowRight')next=(index+1)%tabs.length;if(event.key==='Home')next=0;if(event.key==='End')next=tabs.length-1;chooseStage(tabs[next].dataset.stage)})});
+    downloadReadyBatch.addEventListener('click',async()=>{
+      const accessToken=await token();if(!accessToken)return;
+      const originalText=downloadReadyBatch.textContent;
+      downloadReadyBatch.disabled=true;
+      downloadReadyBatch.textContent='Preparing EasyBadge file…';
+      batchMessage.hidden=false;
+      batchMessage.textContent='Preparing all ready cards…';
+      try{
+        const response=await fetch('/.netlify/functions/export-easybadge-batch',{method:'POST',headers:{Authorization:`Bearer ${accessToken}`}});
+        if(!response.ok){let message='The EasyBadge file could not be prepared.';try{const result=await response.json();if(result?.error)message=result.error}catch{}throw new Error(message)}
+        const cardCount=Number(response.headers.get('X-LymphAware-Card-Count')||0);
+        const fileBlob=await response.blob();
+        const downloadUrl=URL.createObjectURL(fileBlob);
+        const link=document.createElement('a');
+        link.href=downloadUrl;
+        link.download='LymphAware_EasyBadge.csv';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(downloadUrl);
+        batchMessage.textContent=`${cardCount||'All'} ready card${cardCount===1?'':'s'} downloaded. The orders have moved to Printing in progress.`;
+        await load(true);
+      }catch(error){
+        console.error(error);
+        batchMessage.textContent=error.message||'The EasyBadge file could not be prepared.';
+      }finally{
+        downloadReadyBatch.disabled=false;
+        if(!downloadReadyBatch.hidden)downloadReadyBatch.textContent=originalText;
+      }
+    });
     membershipToggle.addEventListener('click',async()=>{const opening=membershipPanel.hidden;membershipPanel.hidden=!opening;membershipToggle.setAttribute('aria-expanded',String(opening));membershipToggle.textContent=opening?'Hide membership overview':'View membership overview';if(opening&&!membershipLoaded){try{await loadMembershipSummary()}catch(error){console.error(error);membershipPanel.innerHTML='<p>Membership information could not be loaded. Please try again.</p>'}}});
     document.getElementById('admin-sign-out').addEventListener('click',async()=>{await supabaseClient.auth.signOut();location.href='/sign-in/'});
     document.addEventListener('visibilitychange',()=>{if(!document.hidden)load(true)});
