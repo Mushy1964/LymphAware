@@ -285,6 +285,16 @@
   margin: -12px -7% 0 -5%;
 }
 
+.home-page .hero-product-slices {
+  line-height: 0;
+}
+
+.home-page .hero-product-slices img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 
 /* CARD */
 
