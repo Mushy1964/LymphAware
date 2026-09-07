@@ -72,7 +72,7 @@ export default async (request) => {
         `?select=id,user_id,source_profile_id,order_id,order_item_id,language_code,language_name,qr_token,qr_profile_active,setup_status,card_production_status,card_ready_at,card_prepared_at` +
         `&setup_status=eq.APPROVED` +
         `&qr_profile_active=eq.true` +
-        `&card_production_status=in.(READY,PREPARED)` +
+        `&card_production_status=in.(READY,PREPARED,PRINTED)` +
         `&order=card_ready_at.asc`,
         { headers }
       )
@@ -225,7 +225,7 @@ export default async (request) => {
       };
     });
 
-    const languageJobs = (languageProfiles || []).map(languageProfile => {
+    const languageJobs = (languageProfiles || [])\n      .filter(languageProfile => ['READY', 'PREPARED'].includes(languageProfile.card_production_status))\n      .map(languageProfile => {
       const source = sourceById.get(languageProfile.source_profile_id) || {};
       const order = languageProfile.order_id ? ordersById.get(languageProfile.order_id) : null;
       const orderItems = languageProfile.order_id ? (itemsByOrder.get(languageProfile.order_id) || []) : [];
