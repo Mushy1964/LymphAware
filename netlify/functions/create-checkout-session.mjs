@@ -1,5 +1,7 @@
 const APPROVED_LANGUAGES = {
-  FR: 'French'
+  FR: 'French',
+  ES: 'Spanish',
+  DE: 'German'
 };
 
 const PACKAGE_DEFINITIONS = {
@@ -299,18 +301,31 @@ export default async (request) => {
 
     const stripeForm = new URLSearchParams();
     stripeForm.append('mode', 'payment');
+
+    let nextLineItemIndex = 0;
     if (checkoutItems.length) {
       checkoutItems.forEach((item, index) => appendInlinePrice(stripeForm, index, item.name, item.amountPence, item.description, item.quantity));
+      nextLineItemIndex = checkoutItems.length;
     } else {
       appendInlinePrice(stripeForm, 0, checkoutName, amountPence, checkoutDescription);
+      nextLineItemIndex = 1;
     }
+
+    // Postage is a normal Checkout line item so percentage promotion codes can reduce the complete
+    // order, including P&P. Stripe still collects the delivery address even when a 100% trial code
+    // makes the final amount £0 and no payment method is required.
+    appendInlinePrice(
+      stripeForm,
+      nextLineItemIndex,
+      shippingLabelForBand(band),
+      shippingPence,
+      'Postage & packing for this LymphAware order.',
+      1
+    );
+
     stripeForm.append('allow_promotion_codes', 'true');
     stripeForm.append('billing_address_collection', 'required');
     stripeForm.append('shipping_address_collection[allowed_countries][0]', deliveryCountry);
-    stripeForm.append('shipping_options[0][shipping_rate_data][type]', 'fixed_amount');
-    stripeForm.append('shipping_options[0][shipping_rate_data][fixed_amount][amount]', String(shippingPence));
-    stripeForm.append('shipping_options[0][shipping_rate_data][fixed_amount][currency]', 'gbp');
-    stripeForm.append('shipping_options[0][shipping_rate_data][display_name]', shippingLabelForBand(band));
 
     stripeForm.append('client_reference_id', user.id);
     stripeForm.append('metadata[lymphaware_user_id]', user.id);
@@ -328,7 +343,7 @@ export default async (request) => {
     stripeForm.append('metadata[delivery_country_selected]', deliveryCountry);
     stripeForm.append('metadata[shipping_band]', band);
     stripeForm.append('metadata[shipping_pence]', String(shippingPence));
-    stripeForm.append('metadata[shipping_rate_configured]', '1');
+    stripeForm.append('metadata[shipping_charge_method]', 'LINE_ITEM');
 
     const successType = paymentType === 'additional_language'
       ? 'language'
@@ -343,7 +358,10 @@ export default async (request) => {
 
     const stripeResponse = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
-      headers: { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`, 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {
+        Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
       body: stripeForm.toString()
     });
     const checkoutSession = await stripeResponse.json();
