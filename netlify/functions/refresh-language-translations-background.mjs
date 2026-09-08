@@ -11,7 +11,9 @@ const TRANSLATABLE_FIELDS = [
 ];
 
 const LANGUAGE_NAMES = {
-  FR: 'French'
+  FR: 'French',
+  ES: 'Spanish',
+  DE: 'German'
 };
 
 function env(name) {
@@ -132,7 +134,7 @@ export default async (request) => {
   if (!sourceProfile?.id) return;
 
   const languagesResponse = await fetch(
-    `${supabaseUrl}/rest/v1/language_profiles?user_id=eq.${encodeURIComponent(user.id)}&translation_consent_at=not.is.null&select=id,language_code,translation_source_updated_at`,
+    `${supabaseUrl}/rest/v1/language_profiles?user_id=eq.${encodeURIComponent(user.id)}&translation_consent_at=not.is.null&select=id,language_code,translation_source_updated_at,translation_generated_at,card_production_status`,
     { headers: serviceHeaders() }
   );
   if (!languagesResponse.ok) return;
@@ -142,7 +144,8 @@ export default async (request) => {
   const source = cleanSource(sourceProfile);
 
   for (const languageProfile of languageProfiles) {
-    const languageName = LANGUAGE_NAMES[languageProfile.language_code];
+    const code = String(languageProfile.language_code || '').trim().toUpperCase();
+    const languageName = LANGUAGE_NAMES[code];
     if (!languageName) continue;
 
     const sourceUpdatedAt = new Date(sourceProfile.updated_at || 0).getTime();
