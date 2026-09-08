@@ -25,13 +25,21 @@ jobs:
 
           homepage = Path('index.html')
           text = homepage.read_text(encoding='utf-8')
-          old = '''Postage &amp; packing is currently £2.99 for the United Kingdom, £4.99 for Europe and £9.99 for the Rest of World.
-          These temporary rates are applied once per order and can be updated when final delivery costs are confirmed. You will be reminded before your five-year membership is due to expire, so you can choose whether to renew.'''
-          new = '''Postage &amp; packing is £2.99 for the United Kingdom, £4.99 for Europe and £9.99 for the Rest of World.
-          Postage &amp; packing is applied once per order. You will be reminded before your five-year membership is due to expire, so you can choose whether to renew.'''
-          if text.count(old) != 1:
-              raise SystemExit(f'Expected one homepage postage block, found {text.count(old)}')
-          homepage.write_text(text.replace(old, new), encoding='utf-8')
+          replacements = [
+              (
+                  'Postage &amp; packing is currently £2.99 for the United Kingdom, £4.99 for Europe and £9.99 for the Rest of World.',
+                  'Postage &amp; packing is £2.99 for the United Kingdom, £4.99 for Europe and £9.99 for the Rest of World.'
+              ),
+              (
+                  'These temporary rates are applied once per order and can be updated when final delivery costs are confirmed. You will be reminded before your five-year membership is due to expire, so you can choose whether to renew.',
+                  'Postage &amp; packing is applied once per order. You will be reminded before your five-year membership is due to expire, so you can choose whether to renew.'
+              )
+          ]
+          for old, new in replacements:
+              if text.count(old) != 1:
+                  raise SystemExit(f'Expected one homepage pricing sentence, found {text.count(old)} for: {old}')
+              text = text.replace(old, new)
+          homepage.write_text(text, encoding='utf-8')
 
           portal = Path('portal/index.html')
           text = portal.read_text(encoding='utf-8')
