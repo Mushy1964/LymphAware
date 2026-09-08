@@ -1,0 +1,63 @@
+name: One-time trial pricing consistency update
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-time-finalise-trial-pricing.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply agreed pricing wording and P&P email fix
+        shell: python
+        run: |
+          from pathlib import Path
+
+          homepage = Path('index.html')
+          text = homepage.read_text(encoding='utf-8')
+          old = '''Postage &amp; packing is currently £2.99 for the United Kingdom, £4.99 for Europe and £9.99 for the Rest of World.
+          These temporary rates are applied once per order and can be updated when final delivery costs are confirmed. You will be reminded before your five-year membership is due to expire, so you can choose whether to renew.'''
+          new = '''Postage &amp; packing is £2.99 for the United Kingdom, £4.99 for Europe and £9.99 for the Rest of World.
+          Postage &amp; packing is applied once per order. You will be reminded before your five-year membership is due to expire, so you can choose whether to renew.'''
+          if text.count(old) != 1:
+              raise SystemExit(f'Expected one homepage postage block, found {text.count(old)}')
+          homepage.write_text(text.replace(old, new), encoding='utf-8')
+
+          portal = Path('portal/index.html')
+          text = portal.read_text(encoding='utf-8')
+          old = 'Temporary postage rates: UK £2.99, Europe £4.99 and Rest of World £9.99. The full delivery address is confirmed securely during payment.'
+          new = 'Postage &amp; packing: UK £2.99, Europe £4.99 and Rest of World £9.99. The full delivery address is confirmed securely during checkout.'
+          if text.count(old) != 1:
+              raise SystemExit(f'Expected one portal postage sentence, found {text.count(old)}')
+          portal.write_text(text.replace(old, new), encoding='utf-8')
+
+          webhook = Path('netlify/functions/stripe-webhook.mjs')
+          text = webhook.read_text(encoding='utf-8')
+          old = "  const postagePaid = `£${((session.total_details?.amount_shipping || 0) / 100).toFixed(2)}`;"
+          new = "  const postageChargePence = Number(session.metadata?.shipping_pence || session.total_details?.amount_shipping || 0);\n  const postagePaid = `£${(postageChargePence / 100).toFixed(2)}`;"
+          if text.count(old) != 2:
+              raise SystemExit(f'Expected two webhook postage calculations, found {text.count(old)}')
+          text = text.replace(old, new)
+          label = 'Postage & packing: ${postagePaid}'
+          replacement = 'Postage & packing (before any promotion discount): ${postagePaid}'
+          if text.count(label) != 2:
+              raise SystemExit(f'Expected two webhook postage labels, found {text.count(label)}')
+          webhook.write_text(text.replace(label, replacement), encoding='utf-8')
+
+      - name: Commit update
+        run: |
+          git config user.name "LymphAware Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html portal/index.html netlify/functions/stripe-webhook.mjs
+          git commit -m "Finalise agreed pricing and postage reporting"
+          git push
