@@ -69,6 +69,20 @@ function cardCopyForLanguage(languageCode) {
     };
   }
 
+  if (code === 'ES') {
+    return {
+      patient_label: 'PACIENTE CON LINFEDEMA',
+      qr_instruction: 'ESCANEE EL CÓDIGO QR para ver mi perfil'
+    };
+  }
+
+  if (code === 'DE') {
+    return {
+      patient_label: 'PATIENT MIT LYMPHÖDEM',
+      qr_instruction: 'QR-CODE SCANNEN, um mein Profil anzusehen'
+    };
+  }
+
   return null;
 }
 
