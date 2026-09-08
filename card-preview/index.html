@@ -15,19 +15,19 @@
     .card-preview-toolbar{margin-bottom:18px;padding:15px 17px;border:1px solid #cfe0e8;border-radius:14px;background:#fff;color:#31566f;line-height:1.5;box-shadow:0 8px 24px rgba(31,47,66,.06)}
     .card-preview-toolbar strong{color:#172536}
     .card-stage{padding:32px;border:1px solid #d8e3e8;border-radius:22px;background:rgba(255,255,255,.86);box-shadow:0 16px 42px rgba(31,47,66,.11)}
-    .member-card{position:relative;width:100%;aspect-ratio:85.6/54;overflow:hidden;border:2px solid #d2dbe0;border-radius:24px;background:#fff;box-shadow:0 18px 42px rgba(31,47,66,.18);font-family:Arial,sans-serif;color:#071d3e}
-    .member-card-logo{position:absolute;left:5.5%;top:7%;width:70%;height:auto}
-    .member-card-photo{position:absolute;left:5.2%;top:34%;width:25%;height:49%;border-radius:7%;object-fit:cover;background:#eef2f4}
-    .member-card-main{position:absolute;left:34%;top:35%;width:39%;height:48%;display:flex;flex-direction:column;align-items:flex-start}
-    .member-card-condition{margin:0;color:#0b9848;font-size:clamp(1.15rem,3vw,2.18rem);font-weight:900;line-height:.95;letter-spacing:-.02em;text-transform:uppercase}
-    .member-card-name{margin:9% 0 0;color:#080808;font-size:clamp(1rem,2.4vw,1.75rem);font-weight:800;line-height:1.1}
-    .member-card-id{margin:auto 0 0;color:#173c4b;font-size:clamp(.72rem,1.75vw,1.22rem);font-weight:700;line-height:1.15;white-space:nowrap}
-    .member-card-id strong{margin-left:3%;color:#090909;font-size:1.08em}
-    .member-card-qr-wrap{position:absolute;right:5.5%;top:38%;width:20%;display:flex;flex-direction:column;align-items:center}
-    .member-card-qr{width:100%;aspect-ratio:1;padding:5%;background:#fff}
+    .member-card{container-type:inline-size;position:relative;width:100%;aspect-ratio:85.6/54;overflow:hidden;border:1px solid #e3e8eb;border-radius:3.35cqw;background:#fff;box-shadow:0 18px 42px rgba(31,47,66,.18);font-family:Arial,sans-serif;color:#071d3e}
+    .member-card-logo{position:absolute;left:5.1%;top:7.4%;width:89.8%;height:auto}
+    .member-card-photo{position:absolute;left:4.75%;top:33.45%;width:26.25%;height:51.6%;border-radius:4%;object-fit:cover;background:#eef2f4}
+    .member-card-main{position:absolute;left:34.25%;top:39.2%;width:42.5%;height:45.9%}
+    .member-card-condition{margin:0;color:#079645;font-size:4.6cqw;font-weight:900;line-height:.98;letter-spacing:-.025em;text-transform:uppercase}
+    .member-card-name{position:absolute;top:55%;left:0;margin:0;color:#050505;font-size:3.75cqw;font-weight:800;line-height:1.05;white-space:nowrap}
+    .member-card-id{position:absolute;left:0;bottom:0;margin:0;color:#315d63;font-size:2.65cqw;font-weight:700;line-height:1.1;white-space:nowrap}
+    .member-card-id strong{margin-left:3%;color:#050505;font-size:1.08em}
+    .member-card-qr-wrap{position:absolute;right:4.85%;top:33%;width:17.35%;display:flex;flex-direction:column;align-items:center}
+    .member-card-qr{width:100%;aspect-ratio:1;padding:1.5%;background:#fff}
     .member-card-qr canvas,.member-card-qr img{width:100%!important;height:100%!important}
-    .member-card-qr-copy{margin:3% -8% 0;color:#0068cf;font-size:clamp(.55rem,1.25vw,.9rem);font-weight:900;line-height:1.05;text-align:center;text-transform:uppercase}
-    .member-card-bars{position:absolute;left:2.2%;right:2.2%;bottom:2.6%;height:4.7%;overflow:hidden;border-radius:0 0 13px 13px;background:linear-gradient(90deg,#0871dc 0 49%,#08a44b 49% 76%,#0871dc 76% 100%)}
+    .member-card-qr-copy{margin:4% -12% 0;color:#075cb6;font-size:1.95cqw;font-weight:900;line-height:1.02;text-align:center}
+    .member-card-bars{position:absolute;left:3.2%;right:3.2%;bottom:3.45%;height:5.6%;overflow:hidden;border-radius:0 0 2.3cqw 2.3cqw;background:linear-gradient(90deg,#075fc4 0 50%,#078b3d 50% 100%)}
     .card-preview-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
     .card-preview-actions .button{font-size:17px;font-weight:700}
     .card-preview-loading,.card-preview-error{padding:46px 20px;border:1px solid #dfe7e9;border-radius:18px;background:#fff;color:#566575;text-align:center}
@@ -36,8 +36,6 @@
     @media(max-width:680px){
       .card-preview-page{padding:10px 8px 26px}
       .card-stage{padding:10px;border-radius:16px}
-      .member-card{border-radius:14px}
-      .member-card-logo{width:72%}
       .member-card-qr{padding:3px}
       .card-preview-actions{flex-direction:column}
       .card-preview-actions .button{width:100%}
@@ -67,7 +65,7 @@
             </div>
             <div class="member-card-qr-wrap">
               <div id="card-qr" class="member-card-qr" aria-label="QR code linking to my LymphAware profile"></div>
-              <p class="member-card-qr-copy">Scan QR code<br>to view my profile</p>
+              <p class="member-card-qr-copy">SCAN QR CODE<br>to view my profile</p>
             </div>
             <div class="member-card-bars" aria-hidden="true"></div>
           </div>
