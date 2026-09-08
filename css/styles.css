@@ -830,7 +830,7 @@ footer {
 /* Scanner and preview profile logo: one centred size. */
 .public-brand-logo {
   width: 100% !important;
-  max-width: 430px !important;
+  max-width: 100% !important;
   height: auto !important;
   margin-left: auto !important;
   margin-right: auto !important;
@@ -877,6 +877,6 @@ footer {
   }
 
   .public-brand-logo {
-    max-width: 360px !important;
+    max-width: 100% !important;
   }
 }
