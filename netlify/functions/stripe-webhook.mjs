@@ -88,7 +88,8 @@ async function sendOrderNotification(order, session, items) {
   const customerName = session.customer_details?.name || session.customer_email || 'Customer';
   const customerEmail = session.customer_details?.email || session.customer_email || '';
   const totalPaid = `£${((session.amount_total || 0) / 100).toFixed(2)}`;
-  const postagePaid = `£${((session.total_details?.amount_shipping || 0) / 100).toFixed(2)}`;
+  const postageChargePence = Number(session.metadata?.shipping_pence || session.total_details?.amount_shipping || 0);
+  const postagePaid = `£${(postageChargePence / 100).toFixed(2)}`;
 
   try {
     const response = await fetch('https://api.resend.com/emails', {
@@ -101,7 +102,7 @@ async function sendOrderNotification(order, session, items) {
         subject: `New LymphAware order – ${orderRef}`,
         text:
           `A new LymphAware order has been paid and requires attention.\n\n` +
-          `Order: ${orderRef}\nCustomer: ${customerName}\nEmail: ${customerEmail}\nPostage & packing: ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
+          `Order: ${orderRef}\nCustomer: ${customerName}\nEmail: ${customerEmail}\nPostage & packing (before any promotion discount): ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
           `Items:\n${itemLines || 'No item detail recorded'}\n\n` +
           `Open LymphAware Administration to manage fulfilment:\nhttps://lymphaware.com/admin/orders/`
       })
@@ -129,7 +130,8 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
   const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware <notifications@lymphaware.com>').trim();
   const orderRef = `ORD-${String(order.order_number).padStart(6, '0')}`;
   const itemLines = items.map((item) => `• ${item.quantity} × ${item.description}${item.language_name ? ` – ${item.language_name}` : ''}`).join('\n');
-  const postagePaid = `£${((session.total_details?.amount_shipping || 0) / 100).toFixed(2)}`;
+  const postageChargePence = Number(session.metadata?.shipping_pence || session.total_details?.amount_shipping || 0);
+  const postagePaid = `£${(postageChargePence / 100).toFixed(2)}`;
   const totalPaid = `£${((session.amount_total || 0) / 100).toFixed(2)}`;
   let subject = `Your LymphAware order is confirmed – ${orderRef}`;
   let nextSteps =
@@ -174,7 +176,7 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
         reply_to: ['admin@lymphaware.com'],
         subject,
         text:
-          `Thank you for your LymphAware purchase.\n\nOrder: ${orderRef}\n\nItems:\n${itemLines || 'Your selected LymphAware package'}\n\nPostage & packing: ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
+          `Thank you for your LymphAware purchase.\n\nOrder: ${orderRef}\n\nItems:\n${itemLines || 'Your selected LymphAware package'}\n\nPostage & packing (before any promotion discount): ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
           `${nextSteps}\n\nIf you need help, contact admin@lymphaware.com.\n\nThe LymphAware Team`
       })
     });
