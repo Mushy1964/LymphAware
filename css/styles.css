@@ -918,3 +918,44 @@ body:has(main.admin-page) .site-header .header-inner::before {
     display: inline-flex !important;
   }
 }
+
+/* =========================================================
+   CURRENT VISUAL REFINEMENTS
+   Welcome letter spacing/punctuation and full-width profile branding.
+   ========================================================= */
+
+.letter-logo {
+  margin-bottom: 18px !important;
+}
+
+.letter-motto span::after {
+  content: ".";
+}
+
+main.page .brand {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+main.page .brand img {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.home-page .hero-phone-screen::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 9%;
+  pointer-events: none;
+  background:
+    #f5f8f7
+    url("/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg")
+    center center / 94% auto
+    no-repeat;
+}
