@@ -880,3 +880,41 @@ footer {
     max-width: 100% !important;
   }
 }
+
+/* =========================================================
+   ADMIN AREA ISOLATION
+   Admin pages are deliberately self-contained. The LymphAware mark remains
+   visible as branding, but it is not a link to the public website.
+   ========================================================= */
+
+body:has(main.admin-page) .header-brand {
+  display: none !important;
+}
+
+body:has(main.admin-page) .site-header .header-inner::before {
+  content: "";
+  display: block;
+  flex: 0 1 390px;
+  width: 390px;
+  max-width: calc(100% - 170px);
+  height: 72px;
+  background: url("/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg") left center / contain no-repeat;
+}
+
+@media (max-width: 680px) {
+  body:has(main.admin-page) .site-header .header-inner::before {
+    flex-basis: 300px;
+    width: 300px;
+    max-width: calc(100vw - 140px);
+    height: 58px;
+  }
+
+  body:has(main.admin-page) .header-actions {
+    display: flex !important;
+  }
+
+  body:has(main.admin-page) .header-actions .button,
+  body:has(main.admin-page) .header-actions .button-secondary {
+    display: inline-flex !important;
+  }
+}
