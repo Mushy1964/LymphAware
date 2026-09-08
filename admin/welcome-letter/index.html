@@ -26,6 +26,7 @@
     let printResetTimer;
     function setPrintStatus(message,type='info'){printStatus.textContent=message;printStatus.className=`print-status ${type==='info'?'':type}`.trim();printStatus.hidden=false}
     function resetPrintButton(){printButton.disabled=false;printButton.textContent='Print Welcome Letter'}
+    backLink.addEventListener('click',event=>{event.preventDefault();const destination=backLink.href;window.close();setTimeout(()=>{location.href=destination},180)});
     window.addEventListener('beforeprint',()=>setPrintStatus('Print options are opening. Choose your connected printer and check that it is ready.','info'));
     window.addEventListener('afterprint',()=>{clearTimeout(printResetTimer);resetPrintButton();setPrintStatus('The print window has closed. Check that the welcome letter printed correctly before marking the order as completed.','info')});
     printButton.addEventListener('click',()=>{
