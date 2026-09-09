@@ -125,13 +125,30 @@ export default async (request) => {
   const user = await userResponse.json();
   if (!user?.id) return;
 
+  const sourceFields = [
+    'id', 'updated_at', 'display_name', 'photo_path', 'qr_token',
+    'qr_profile_active', 'is_demo', ...TRANSLATABLE_FIELDS
+  ].join(',');
   const sourceResponse = await fetch(
-    `${supabaseUrl}/rest/v1/profiles?user_id=eq.${encodeURIComponent(user.id)}&select=id,updated_at,${TRANSLATABLE_FIELDS.join(',')}&limit=1`,
+    `${supabaseUrl}/rest/v1/profiles?user_id=eq.${encodeURIComponent(user.id)}&select=${sourceFields}&limit=1`,
     { headers: serviceHeaders() }
   );
   if (!sourceResponse.ok) return;
   const sourceProfile = (await sourceResponse.json())?.[0];
   if (!sourceProfile?.id) return;
+
+  // Health information must not be sent to the automated translation chain
+  // unless the member has an active general health-data consent record.
+  if (sourceProfile.is_demo !== true) {
+    const consentResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/has_active_profile_health_consent`, {
+      method: 'POST',
+      headers: serviceHeaders(),
+      body: JSON.stringify({ p_profile_id: sourceProfile.id })
+    });
+    if (!consentResponse.ok) return;
+    const healthConsentActive = await consentResponse.json().catch(() => false);
+    if (healthConsentActive !== true) return;
+  }
 
   const languagesResponse = await fetch(
     `${supabaseUrl}/rest/v1/language_profiles?user_id=eq.${encodeURIComponent(user.id)}&translation_consent_at=not.is.null&select=id,language_code,translation_source_updated_at,translation_generated_at,card_production_status`,
