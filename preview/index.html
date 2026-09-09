@@ -14,16 +14,19 @@
     .preview-toolbar{margin-bottom:12px;padding:14px 16px;border:1px solid #cfe0e8;border-radius:14px;background:#eef6fb;color:#31566f;line-height:1.45}
     .preview-toolbar strong{color:#172536}
     .preview-frame-wrap{width:min(100%,520px);margin:0 auto}
-    .preview-frame{display:block;width:100%;height:900px;border:0;background:#f5f8f7}
-    .preview-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:min(100%,520px);margin:16px auto 0}
-    .preview-actions .button{display:flex;align-items:center;justify-content:center;min-height:52px;padding:10px 12px;font-size:16px;font-weight:700;text-align:center;line-height:1.2}
+    .preview-frame{display:block;width:100%;height:760px;border:0;background:#f5f8f7}
+    .preview-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:min(100%,430px);margin:10px auto 0}
+    .preview-actions .button{display:flex;align-items:center;justify-content:center;min-height:48px;padding:9px 12px;font-size:15.5px;font-weight:700;text-align:center;line-height:1.2}
     .preview-loading,.preview-error{padding:40px 20px;text-align:center;border:1px solid #dfe7e9;border-radius:18px;background:#fff;color:#566575}
     .preview-error{display:none}
     @media(max-width:600px){
       .preview-page{padding:8px 8px 24px}
       .preview-toolbar{font-size:.9rem;padding:12px 13px}
-      .preview-frame{height:820px}
-      .preview-actions{grid-template-columns:1fr}
+      .preview-frame{height:700px}
+      .preview-actions{width:min(100%,390px)}
+    }
+    @media(max-width:430px){
+      .preview-actions{grid-template-columns:1fr;width:min(100%,280px)}
       .preview-actions .button{width:100%}
     }
   </style>
@@ -49,7 +52,6 @@
       </div>
 
       <div class="preview-actions">
-        <a href="/profile/" class="button button-primary">Edit my profile</a>
         <a id="matching-card-link" href="/card-preview/" class="button button-secondary">Preview English ID card</a>
         <a href="/portal/" class="button button-secondary">Back to Portal</a>
       </div>
@@ -147,13 +149,24 @@
         try{
           const doc=frame.contentDocument;
           if(doc){
+            const page=doc.querySelector('.page');
+            const shell=doc.querySelector('.shell');
+            if(page)page.style.minHeight='0';
             const updateHeight=()=>{
-              const h=Math.max(doc.documentElement.scrollHeight,doc.body?.scrollHeight||0,700);
-              frame.style.height=`${Math.min(Math.max(h,700),1800)}px`;
+              if(!page||!shell)return;
+              const styles=frame.contentWindow.getComputedStyle(page);
+              const paddingTop=parseFloat(styles.paddingTop)||0;
+              const paddingBottom=parseFloat(styles.paddingBottom)||0;
+              const h=Math.ceil(shell.getBoundingClientRect().height+paddingTop+paddingBottom);
+              frame.style.height=`${Math.max(h,300)}px`;
             };
             updateHeight();
-            setTimeout(updateHeight,250);
-            setTimeout(updateHeight,800);
+            setTimeout(updateHeight,150);
+            setTimeout(updateHeight,500);
+            if(typeof ResizeObserver==='function'){
+              const observer=new ResizeObserver(updateHeight);
+              observer.observe(shell);
+            }
           }
         }catch{}
       },{once:true});
