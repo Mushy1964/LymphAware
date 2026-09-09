@@ -28,7 +28,104 @@
     .replacement-purchase .delivery-choice{max-width:100%;box-sizing:border-box}
     .replacement-purchase select{max-width:100%;box-sizing:border-box}
     @media(max-width:900px){body{overflow-x:hidden}.portal-page{overflow-x:hidden}.replacement-option{gap:10px;padding:14px 12px}.replacement-option span{font-size:.98rem;line-height:1.25}.replacement-option strong{width:58px;font-size:.96rem}.portal-accessories{overflow:hidden}.replacement-purchase{padding:12px}.replacement-total{font-size:.98rem}}
-  </style>
+  
+
+    /* LYMPHAWARE QR VISIBILITY EMPHASIS */
+    .profile-visibility-control{
+      margin-top:22px;
+      padding:22px 24px;
+      border:2px solid #aabac4;
+      border-radius:16px;
+      background:#f7fafb;
+      box-shadow:0 7px 18px rgba(31,47,66,.06);
+      transition:border-color .2s ease,background .2s ease,box-shadow .2s ease;
+    }
+    .profile-visibility-control:has(#portal-profile-visible:checked){
+      border-color:#16853f;
+      background:#f1f8f3;
+      box-shadow:0 7px 20px rgba(22,133,63,.10);
+    }
+    .profile-visibility-copy{flex:1 1 auto;min-width:0}
+    .profile-visibility-copy strong{
+      font-size:1.2rem;
+      line-height:1.3;
+      color:#17283d;
+    }
+    .profile-visibility-copy p{
+      margin-top:7px;
+      color:#4e5f6e;
+      font-size:1rem;
+      line-height:1.5;
+    }
+    .portal-switch{
+      width:100px;
+      height:46px;
+      cursor:pointer;
+    }
+    .portal-switch input:disabled + .portal-switch-track{opacity:.62;cursor:wait}
+    .portal-switch-track{
+      position:relative;
+      border:2px solid #6f818c;
+      background:#6f818c;
+      box-shadow:none;
+    }
+    .portal-switch-track::before{
+      content:"OFF";
+      position:absolute;
+      top:50%;
+      right:13px;
+      transform:translateY(-50%);
+      color:#fff;
+      font-size:.78rem;
+      line-height:1;
+      font-weight:800;
+      letter-spacing:.04em;
+    }
+    .portal-switch-track:after{
+      top:4px;
+      left:4px;
+      width:34px;
+      height:34px;
+      box-shadow:0 2px 7px rgba(0,0,0,.24);
+    }
+    .portal-switch input:checked + .portal-switch-track{
+      border-color:#16853f;
+      background:#16853f;
+    }
+    .portal-switch input:checked + .portal-switch-track::before{
+      content:"ON";
+      left:15px;
+      right:auto;
+    }
+    .portal-switch input:checked + .portal-switch-track:after{
+      transform:translateX(54px);
+    }
+    .portal-switch input:focus-visible + .portal-switch-track{
+      outline:4px solid rgba(22,133,63,.20);
+      outline-offset:3px;
+    }
+    .profile-visibility-warning{
+      margin-top:12px!important;
+      padding:13px 15px;
+      border-left:4px solid #1768b0;
+      border-radius:0 10px 10px 0;
+      background:#f4f9fc;
+      color:#344456!important;
+      font-size:.95rem!important;
+      line-height:1.55!important;
+    }
+    .profile-visibility-consent-note{
+      display:block;
+      margin-top:5px;
+      color:#566575;
+    }
+    @media(max-width:680px){
+      .profile-visibility-control{padding:20px 18px;gap:14px}
+      .portal-switch{width:92px;height:44px}
+      .portal-switch-track:after{width:32px;height:32px}
+      .portal-switch input:checked + .portal-switch-track:after{transform:translateX(48px)}
+    }
+</style>
 </head>
 <body>
 <header class="site-header secondary-header"><div class="container header-inner"><a href="/" class="header-brand" aria-label="Back to LymphAware website"><img class="header-logo" src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg" alt="LymphAware – Helping People Living with Lymphoedema Be Understood"></a><div class="header-actions"><a href="/" class="button button-secondary back-to-website-button">Back to Website</a></div></div></header>
@@ -63,10 +160,16 @@
           <h2>Profiles &amp; account</h2>
           <p>Manage what people can see, preview each version of your QR profile and update your account.</p>
           <div class="profile-visibility-control">
-            <div class="profile-visibility-copy"><strong id="portal-visibility-title">QR profile shown</strong><p id="portal-visibility-copy">People scanning your LymphAware card can view your English and additional-language profiles.</p></div>
-            <label class="portal-switch" aria-label="Show my QR profiles"><input id="portal-profile-visible" type="checkbox"><span class="portal-switch-track"></span></label>
+            <div class="profile-visibility-copy">
+              <strong id="portal-visibility-title">Make my QR profile available</strong>
+              <p id="portal-visibility-copy">People who scan your LymphAware card cannot currently view your QR profile.</p>
+            </div>
+            <label class="portal-switch" title="Turn QR profile visibility on or off">
+              <input id="portal-profile-visible" type="checkbox" role="switch" aria-label="Make my QR profile available" aria-describedby="portal-visibility-copy profile-visibility-warning">
+              <span class="portal-switch-track" aria-hidden="true"></span>
+            </label>
           </div>
-          <p class="field-note"><strong>Before switching your profile on:</strong> anyone with the QR link can view the information you have chosen to display. Preview your profile first and only make it available when you are comfortable sharing that information.</p>
+          <p id="profile-visibility-warning" class="field-note profile-visibility-warning"><strong>Before turning this on:</strong> anyone with your QR link can view the information you have chosen to share. Please preview your profile first.<span class="profile-visibility-consent-note">Your health-data consent is recorded separately in My Profile and must already be active before the QR profile can be made available.</span></p>
           <p id="profile-visibility-message" role="status" aria-live="polite"></p>
           <div id="preview-language-control" class="preview-language-control" hidden>
             <label for="preview-language-select">Preview language</label>
@@ -144,9 +247,9 @@ let previewLanguageProfiles=[];
 
 function setAccessoriesOpen(open){const shouldOpen=Boolean(open&&accessoriesAvailable);accessoriesPanel.hidden=!shouldOpen;accessoriesToggle.setAttribute('aria-expanded',String(shouldOpen));accessoriesToggle.textContent=shouldOpen?'Hide additional items':'Buy additional items'}
 function toggleAccessories(){const opening=accessoriesPanel.hidden;setAccessoriesOpen(opening);if(opening)window.requestAnimationFrame(()=>accessoriesPanel.scrollIntoView({behavior:'smooth',block:'start'}))}
-function setPortalVisibilityCopy(visible){profileVisibleSwitch.checked=visible;visibilityTitle.textContent=visible?'QR profiles shown':'QR profiles hidden';visibilityCopy.textContent=visible?'People scanning your LymphAware card can view your English and additional-language profiles.':'People scanning your cards will see that your profiles are currently unavailable.'}
+function setPortalVisibilityCopy(visible){profileVisibleSwitch.checked=visible;visibilityTitle.textContent='Make my QR profile available';visibilityCopy.textContent=visible?'People who scan your LymphAware card can view the information you have chosen to share.':'People who scan your LymphAware card cannot currently view your QR profile.'}
 async function loadProfileControls(userId){const {data,error}=await supabaseClient.from('profiles').select('qr_profile_active').eq('user_id',userId).maybeSingle();if(error){console.error(error);visibilityMessage.textContent='Profile visibility could not be loaded.';return}setPortalVisibilityCopy(data?.qr_profile_active===true)}
-async function updateProfileVisibility(){const previous=!profileVisibleSwitch.checked,next=profileVisibleSwitch.checked;profileVisibleSwitch.disabled=true;visibilityMessage.className='';visibilityMessage.textContent='Updating profile visibility...';try{const token=await getSessionToken();if(!token)throw new Error('Please sign in again.');const response=await fetch('/.netlify/functions/update-profile-visibility',{method:'POST',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({visible:next})});const result=await response.json();if(!response.ok)throw new Error(result?.error||'Profile visibility could not be changed.');setPortalVisibilityCopy(next);visibilityMessage.className='';visibilityMessage.textContent=next?'Your English and additional-language QR profiles are now shown.':'Your English and additional-language QR profiles are now hidden.';await loadLanguageProfiles(currentUserId)}catch(error){setPortalVisibilityCopy(previous);visibilityMessage.className='error';visibilityMessage.textContent=error.message||'Profile visibility could not be changed.'}finally{profileVisibleSwitch.disabled=false}}
+async function updateProfileVisibility(){const previous=!profileVisibleSwitch.checked,next=profileVisibleSwitch.checked;profileVisibleSwitch.disabled=true;visibilityMessage.className='';visibilityMessage.textContent='Updating profile visibility...';try{const token=await getSessionToken();if(!token)throw new Error('Please sign in again.');const response=await fetch('/.netlify/functions/update-profile-visibility',{method:'POST',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({visible:next})});const result=await response.json();if(!response.ok)throw new Error(result?.error||'Profile visibility could not be changed.');setPortalVisibilityCopy(next);visibilityMessage.className='';visibilityMessage.textContent=next?'Your QR profile is now available to anyone with the QR link.':'Your QR profile is no longer available to people who scan your card.';await loadLanguageProfiles(currentUserId)}catch(error){setPortalVisibilityCopy(previous);visibilityMessage.className='error';visibilityMessage.textContent=error.message||'Profile visibility could not be changed.'}finally{profileVisibleSwitch.disabled=false}}
 function openDeleteDialog(){deleteEmail.value='';deletePassword.value='';deleteConfirmation.value='';deleteStatus.textContent='';deleteStatus.className='deletion-status';deleteDialog.hidden=false;document.body.style.overflow='hidden';setTimeout(()=>deleteEmail.focus(),0)}
 function closeDeleteDialog(){if(deleteSubmit.disabled)return;deleteDialog.hidden=true;document.body.style.overflow='';deleteOpen.focus()}
 async function deleteAccount(){deleteStatus.className='deletion-status error';if(deleteEmail.value.trim().toLowerCase()!==currentUserEmail.toLowerCase()){deleteStatus.textContent='Enter the email address used for this account.';deleteEmail.focus();return}if(!deletePassword.value){deleteStatus.textContent='Enter your current password.';deletePassword.focus();return}if(deleteConfirmation.value!=='DELETE'){deleteStatus.textContent='Type DELETE exactly as shown.';deleteConfirmation.focus();return}deleteSubmit.disabled=true;deleteCancel.disabled=true;deleteStatus.className='deletion-status';deleteStatus.textContent='Verifying your password and deleting the account...';try{const {error:signInError}=await supabaseClient.auth.signInWithPassword({email:currentUserEmail,password:deletePassword.value});if(signInError)throw new Error('The password was not correct. Your account has not been deleted.');const token=await getSessionToken();if(!token)throw new Error('Your account could not be verified.');const response=await fetch('/.netlify/functions/delete-member-account',{method:'POST',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({email:deleteEmail.value.trim(),confirmation:deleteConfirmation.value})});const result=await response.json();if(!response.ok)throw new Error(result?.error||'Your account could not be deleted.');await supabaseClient.auth.signOut();location.href='/account-deleted/'}catch(error){deleteStatus.className='deletion-status error';deleteStatus.textContent=error.message||'Your account could not be deleted.';deleteSubmit.disabled=false;deleteCancel.disabled=false}}
