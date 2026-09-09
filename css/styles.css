@@ -959,3 +959,19 @@ main.page .brand img {
     center center / 94% auto
     no-repeat;
 }
+
+/* LYMPHAWARE DESKTOP HEADER ACTION SIZE */
+/* Keep the top-right customer/admin header action consistent between pages. */
+@media (min-width: 901px) {
+  .site-header .header-actions > .button {
+    width: 180px !important;
+    min-width: 180px !important;
+    max-width: 180px !important;
+    min-height: 56px !important;
+    padding: 0 18px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 10px !important;
+    white-space: nowrap !important;
+  }
+}
