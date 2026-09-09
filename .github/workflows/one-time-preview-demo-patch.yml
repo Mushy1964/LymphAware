@@ -1,0 +1,30 @@
+name: One-time preview button and demo return patch
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-time-preview-demo-patch.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply preview and demo changes
+        run: python scripts/one_time_preview_demo_patch.py
+
+      - name: Commit changes
+        run: |
+          git config user.name "LymphAware Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add preview/index.html card-preview/index.html p-v3/index.html
+          git commit -m "Align preview buttons and add demo return link"
+          git push
