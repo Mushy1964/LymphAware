@@ -269,6 +269,18 @@
 /* Hide the How It Works hero button on larger screens */
 
 
+/* Desktop/tablet hero spacing refinement */
+@media (min-width: 681px) {
+  .home-page .home-hero-copy {
+    margin-bottom: 40px;
+  }
+
+  .home-page .home-hero-reassurance {
+    margin-top: 34px;
+  }
+}
+
+
 /* PRODUCT VISUAL */
 
 .home-page .home-hero-product {
