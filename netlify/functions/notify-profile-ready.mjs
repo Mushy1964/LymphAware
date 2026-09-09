@@ -71,7 +71,7 @@ export default async (request) => {
     );
     if (!orderResponse.ok) throw new Error(`Unable to load membership order: ${await orderResponse.text()}`);
     const orders = await orderResponse.json();
-    const order = orders.find(row => !['COMPLETED', 'CANCELLED', 'REFUNDED'].includes(String(row.order_status || '').toUpperCase())) || orders[0];
+    const order = orders.find(row => !['COMPLETED', 'CANCELLED', 'REFUNDED'].includes(String(row.order_status || '').toUpperCase()));
     if (!order) return json({ ok: true, ready: true, notification: 'not-applicable' });
 
     if (String(order.profile_ready_notification_status || '').toUpperCase() === 'SENT') {
