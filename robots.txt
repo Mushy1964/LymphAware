@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin/
+Disallow: /portal/
+Disallow: /profile/
+Disallow: /profile-v2/
+Disallow: /preview/
+Disallow: /card-preview/
+Disallow: /sign-in/
+Disallow: /forgot-password/
+Disallow: /reset-password/
+Disallow: /account-deleted/
+Disallow: /p/
+Disallow: /p-v2/
+Disallow: /p-v3/
+Disallow: /ebp/
+
+Sitemap: https://lymphaware.com/sitemap.xml
