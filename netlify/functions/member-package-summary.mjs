@@ -43,8 +43,8 @@ function packageFromItems(items) {
       name: '5-Year Multilingual',
       language_name: languageName || null,
       included_summary: languageName
-        ? `English + ${languageName} QR profiles · 2 English ID cards · 2 ${languageName} ID cards · 2 lanyards & holders`
-        : '2 QR profiles · 2 English ID cards · 2 translated-language ID cards · 2 lanyards & holders'
+        ? `English + ${languageName} QR profiles · 2 English ID cards · 2 ${languageName} ID cards · 2 Lanyards & holders`
+        : '2 QR profiles · 2 English ID cards · 2 translated-language ID cards · 2 Lanyards & holders'
     };
   }
   if (description.includes('Plus')) {
@@ -52,14 +52,14 @@ function packageFromItems(items) {
       code: 'PLUS',
       name: '5-Year Plus',
       language_name: null,
-      included_summary: '1 English QR profile · 2 English ID cards · 2 lanyards & holders'
+      included_summary: '1 English QR profile · 2 English ID cards · 2 Lanyards & holders'
     };
   }
   return {
     code: 'STANDARD',
     name: '5-Year Membership',
     language_name: null,
-    included_summary: '1 English QR profile · 1 English ID card · 1 lanyard & holder'
+    included_summary: '1 English QR profile · 1 English ID card · 1 Lanyard & holder'
   };
 }
 
@@ -113,7 +113,7 @@ function displayItemsForOrder(items) {
   if (lanyardQuantity) {
     displayItems.push({
       quantity: lanyardQuantity,
-      label: `lanyard${lanyardQuantity === 1 ? '' : 's'} & holder${lanyardQuantity === 1 ? '' : 's'}`
+      label: `Lanyard${lanyardQuantity === 1 ? '' : 's'} & holder${lanyardQuantity === 1 ? '' : 's'}`
     });
   }
 
