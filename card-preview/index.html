@@ -28,8 +28,8 @@
     .member-card-qr canvas,.member-card-qr img{width:100%!important;height:100%!important}
     .member-card-qr-copy{margin:4% -12% 0;color:#075cb6;font-size:1.95cqw;font-weight:900;line-height:1.02;text-align:center}
     .member-card-bars{position:absolute;left:3.2%;right:3.2%;bottom:3.45%;height:5.6%;overflow:hidden;border-radius:0 0 2.3cqw 2.3cqw;background:linear-gradient(90deg,#075fc4 0 50%,#078b3d 50% 100%)}
-    .card-preview-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
-    .card-preview-actions .button{font-size:17px;font-weight:700}
+    .card-preview-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px}
+    .card-preview-actions .button{display:flex;align-items:center;justify-content:center;min-height:52px;padding:10px 12px;font-size:16px;font-weight:700;text-align:center;line-height:1.2}
     .card-preview-loading,.card-preview-error{padding:46px 20px;border:1px solid #dfe7e9;border-radius:18px;background:#fff;color:#566575;text-align:center}
     .card-preview-error{display:none}
     .card-scan-note{margin:18px 0 0;color:#536273;font-size:.95rem;line-height:1.5;text-align:center}
@@ -37,7 +37,7 @@
       .card-preview-page{padding:10px 8px 26px}
       .card-stage{padding:10px;border-radius:16px}
       .member-card-qr{padding:3px}
-      .card-preview-actions{flex-direction:column}
+      .card-preview-actions{grid-template-columns:1fr}
       .card-preview-actions .button{width:100%}
       .card-preview-toolbar{font-size:.92rem}
     }
@@ -124,7 +124,7 @@
         if(languageProfile.setup_status!=='APPROVED'||!languageProfile.qr_token){showError(`Your ${copy.name} card preview will be available when the automatic translation has finished.`);return}
         cardToken=languageProfile.qr_token;
         cardVisible=languageProfile.qr_profile_active===true;
-        matchingProfileHref=`/p/${encodeURIComponent(languageProfile.qr_token)}`;
+        matchingProfileHref=`/preview/?language=${encodeURIComponent(language)}`;
       }
 
       const missing=[];
