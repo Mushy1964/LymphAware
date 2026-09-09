@@ -1,0 +1,30 @@
+name: One-time finish preview navigation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-time-finish-preview-navigation.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply preview navigation changes
+        run: python .github/scripts/finish_preview_navigation.py
+
+      - name: Commit preview navigation changes
+        run: |
+          git config user.name "LymphAware Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add portal/index.html card-preview/index.html
+          git commit -m "Align profile and card preview navigation"
+          git push
