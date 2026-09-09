@@ -1,0 +1,28 @@
+name: One-time emphasise QR visibility control
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-time-emphasise-qr-visibility.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Apply QR visibility emphasis
+        run: python scripts/one_time_emphasise_qr_visibility.py
+      - name: Commit changes
+        run: |
+          git config user.name "Mushy1964"
+          git config user.email "graham.rooms@gmail.com"
+          git add portal/index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Make QR visibility control clearer and more prominent"
+          git push
