@@ -402,6 +402,87 @@
     }
 
 
+    .public-resources-section {
+      margin-top: 14px;
+      padding: 18px;
+      border: 1px solid #cfe0e8;
+      border-radius: 14px;
+      background: #f7fbfd;
+    }
+
+    .public-resources-section h2 {
+      margin: 0 0 5px;
+      color: #172536;
+      font-size: 1.08rem;
+    }
+
+    .public-resources-intro,
+    .public-resources-note {
+      margin: 0;
+      color: #566575;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    .public-resources-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .public-resource-link {
+      display: block;
+      padding: 14px 15px;
+      border: 1px solid #d8e2e5;
+      border-radius: 11px;
+      background: #ffffff;
+      color: #172536;
+      text-decoration: none;
+    }
+
+    .public-resource-link:hover,
+    .public-resource-link:focus {
+      border-color: #2878b8;
+      box-shadow: 0 0 0 3px rgba(40, 120, 184, 0.12);
+    }
+
+    .public-resource-organisation {
+      display: block;
+      margin-bottom: 3px;
+      color: #16853f;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.025em;
+      text-transform: uppercase;
+    }
+
+    .public-resource-title {
+      display: block;
+      font-size: 0.96rem;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .public-resource-description {
+      display: block;
+      margin-top: 4px;
+      color: #566575;
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+
+    .public-resource-action {
+      display: block;
+      margin-top: 7px;
+      color: #176bab;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .public-resources-note {
+      margin-top: 12px;
+    }
+
     /* =====================================================
        INFORMATION PANEL
        ===================================================== */
@@ -1043,6 +1124,13 @@
 
 </section>
 
+<section id="resources-section" class="public-resources-section" hidden>
+  <h2>Useful information and resources</h2>
+  <p class="public-resources-intro">These independent external resources were selected by the member from links made available by LymphAware.</p>
+  <div id="public-resources" class="public-resources-list"></div>
+  <p class="public-resources-note">External resources are provided for general information and are not a substitute for medical advice or emergency care.</p>
+</section>
+
         <div class="public-footer">
 
           <div class="public-footer-heading">
@@ -1612,6 +1700,57 @@
             'additional-section'
           ).hidden =
             false;
+
+        }
+
+
+        if (
+          Array.isArray(profile.resources) &&
+          profile.resources.length
+        ) {
+
+          const resourcesList = document.getElementById(
+            'public-resources'
+          );
+
+          for (const resource of profile.resources) {
+
+            const link = document.createElement('a');
+            link.className = 'public-resource-link';
+            link.href = resource.url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+
+            const organisation = document.createElement('span');
+            organisation.className = 'public-resource-organisation';
+            organisation.textContent = resource.organisation;
+
+            const title = document.createElement('span');
+            title.className = 'public-resource-title';
+            title.textContent = resource.title;
+
+            const description = document.createElement('span');
+            description.className = 'public-resource-description';
+            description.textContent = resource.description;
+
+            const action = document.createElement('span');
+            action.className = 'public-resource-action';
+            action.textContent = 'Visit resource →';
+
+            link.append(
+              organisation,
+              title,
+              description,
+              action
+            );
+
+            resourcesList.appendChild(link);
+
+          }
+
+          document.getElementById(
+            'resources-section'
+          ).hidden = false;
 
         }
 
