@@ -1120,15 +1120,15 @@
 
     <p id="public-additional"></p>
 
-  </div>
-
-</section>
-
 <section id="resources-section" class="public-resources-section" hidden>
   <h2>Useful information and resources</h2>
   <p class="public-resources-intro">These independent external resources were selected by the member from links made available by LymphAware.</p>
   <div id="public-resources" class="public-resources-list"></div>
   <p class="public-resources-note">External resources are provided for general information and are not a substitute for medical advice or emergency care.</p>
+</section>
+
+  </div>
+
 </section>
 
         <div class="public-footer">
@@ -1751,6 +1751,15 @@
           document.getElementById(
             'resources-section'
           ).hidden = false;
+
+          // Keep resources inside the existing collapsed section: no seventh
+          // card or extra initial height above the important pink notice.
+          document.getElementById('additional-section').hidden = false;
+          document.querySelector('#additional-section .public-section-label > span').textContent =
+            'Extra information and useful links.';
+          if (!hasText(profile.additional_statement)) {
+            document.getElementById('public-additional').hidden = true;
+          }
 
         }
 
