@@ -1,0 +1,37 @@
+name: Restore homepage hero
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/restore-homepage-hero.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Restore working hero image slices
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          t = p.read_text(encoding='utf-8')
+          old = '<img src="/assets/demo/LymphAware_Hero_Transparent_v1.webp" alt="" aria-hidden="true">'
+          new = '''<img src="/assets/demo/LymphAware_Hero_Final_Top.png" alt="" aria-hidden="true">\n          <img src="/assets/demo/LymphAware_Hero_Final_Middle.png" alt="" aria-hidden="true">\n          <img src="/assets/demo/LymphAware_Hero_Final_Bottom.png" alt="" aria-hidden="true">'''
+          if old not in t:
+              raise SystemExit('Expected temporary hero reference not found')
+          p.write_text(t.replace(old, new, 1), encoding='utf-8')
+          PY
+      - name: Commit restoration
+        run: |
+          git config user.name "Mushy1964"
+          git config user.email "graham.rooms@gmail.com"
+          git add index.html
+          git commit -m "Restore working homepage hero image"
+          git push
