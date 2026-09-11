@@ -347,52 +347,46 @@
       align-items: center;
       width: min(100%, 560px);
       margin: 42px auto 0;
-      padding: 16px 22px;
+      min-height: 122px;
+      padding: 18px 18px 18px 24px;
       border: 1px solid #cfe0ea;
       border-left: 5px solid #16853f;
       border-radius: 18px;
-      background: rgba(255, 255, 255, 0.82);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, #f3f9fc 64%, #eef7f0 100%);
       box-shadow: 0 12px 28px rgba(16, 41, 75, 0.07);
+      overflow: hidden;
       text-align: left;
     }
 
-    .home-hero-privacy-icon {
-      display: grid;
-      flex: 0 0 58px;
-      width: 58px;
-      height: 58px;
-      place-items: center;
-      margin-right: 18px;
-      border-radius: 16px;
-      background: #eef6fb;
-    }
-
-    .home-hero-privacy-icon img {
-      display: block;
-      width: 38px;
-      height: 38px;
-    }
-
     .home-hero-privacy-copy {
+      flex: 1 1 auto;
       min-width: 0;
     }
 
     .home-hero-privacy-eyebrow {
-      margin: 0 0 3px;
-      color: #1768b0;
-      font-size: 0.82rem;
+      margin: 0 0 7px;
+      color: #10294b;
+      font-size: clamp(1.45rem, 2vw, 1.8rem);
       font-weight: 800;
-      letter-spacing: 0.06em;
-      line-height: 1.2;
-      text-transform: uppercase;
+      letter-spacing: -0.025em;
+      line-height: 1.05;
     }
 
     .home-hero-privacy-message {
       margin: 0;
-      color: #10294b;
-      font-size: clamp(1.05rem, 1.35vw, 1.22rem);
-      font-weight: 800;
-      line-height: 1.3;
+      color: #40566f;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .home-hero-privacy-graphic {
+      display: block;
+      flex: 0 0 142px;
+      width: 142px;
+      height: 104px;
+      margin-left: 20px;
+      object-fit: contain;
     }
 
     @media (max-width: 900px) {
@@ -635,13 +629,11 @@
         </template>
 
         <div class="home-hero-privacy">
-          <div class="home-hero-privacy-icon" aria-hidden="true">
-            <img src="/assets/icons/Privacy_Blue.svg" alt="">
-          </div>
           <div class="home-hero-privacy-copy">
             <p class="home-hero-privacy-eyebrow">Privacy by design</p>
             <p class="home-hero-privacy-message">You decide what is shared — and when.</p>
           </div>
+          <img class="home-hero-privacy-graphic" src="/assets/brand/LymphAware_Privacy_Lock_Shield.png" alt="" aria-hidden="true">
         </div>
       </div>
 
