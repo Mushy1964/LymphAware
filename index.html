@@ -345,16 +345,10 @@
     .home-hero-privacy {
       display: flex;
       align-items: center;
-      width: min(100%, 560px);
-      margin: 42px auto 0;
-      min-height: 122px;
-      padding: 18px 18px 18px 24px;
-      border: 1px solid #cfe0ea;
-      border-left: 5px solid #16853f;
-      border-radius: 18px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, #f3f9fc 64%, #eef7f0 100%);
-      box-shadow: 0 12px 28px rgba(16, 41, 75, 0.07);
-      overflow: hidden;
+      width: min(100%, 470px);
+      min-height: 72px;
+      margin: auto auto 0;
+      padding: 0 6px;
       text-align: left;
     }
 
@@ -364,29 +358,40 @@
     }
 
     .home-hero-privacy-eyebrow {
-      margin: 0 0 7px;
+      margin: 0 0 5px;
       color: #10294b;
-      font-size: clamp(1.45rem, 2vw, 1.8rem);
+      font-size: clamp(1.2rem, 1.55vw, 1.4rem);
       font-weight: 800;
-      letter-spacing: -0.025em;
-      line-height: 1.05;
+      letter-spacing: -0.015em;
+      line-height: 1.1;
     }
 
     .home-hero-privacy-message {
       margin: 0;
       color: #40566f;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       line-height: 1.35;
     }
 
     .home-hero-privacy-graphic {
       display: block;
-      flex: 0 0 142px;
-      width: 142px;
-      height: 104px;
-      margin-left: 20px;
+      flex: 0 0 92px;
+      width: 92px;
+      height: 72px;
+      margin-left: 18px;
       object-fit: contain;
+    }
+
+    @media (min-width: 681px) {
+      .home-hero-grid {
+        align-items: stretch;
+      }
+
+      .home-hero-product {
+        display: flex;
+        flex-direction: column;
+      }
     }
 
     @media (max-width: 900px) {
