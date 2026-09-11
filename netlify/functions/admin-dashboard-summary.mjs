@@ -65,7 +65,7 @@ export default async (request) => {
 
     const [memberships, profiles, languageProfiles] = await Promise.all([
       fetchAll('/rest/v1/memberships?select=user_id,membership_status,payment_status'),
-      fetchAll('/rest/v1/profiles?select=user_id,display_name,photo_path,qr_profile_active'),
+      fetchAll('/rest/v1/profiles?select=user_id,display_name,photo_path,qr_profile_active,is_archived'),
       fetchAll('/rest/v1/language_profiles?select=user_id,setup_status')
     ]);
 
@@ -76,7 +76,12 @@ export default async (request) => {
       }
     }
 
-    const activeUserIds = new Set(entitledByUser.keys());
+    const archivedUserIds = new Set(
+      profiles.filter(profile => profile.is_archived === true).map(profile => profile.user_id)
+    );
+    const activeUserIds = new Set(
+      [...entitledByUser.keys()].filter(userId => !archivedUserIds.has(userId))
+    );
     const profilesByUser = new Map(profiles.map(profile => [profile.user_id, profile]));
     let visibleProfiles = 0;
     let profilesNeedingDetails = 0;

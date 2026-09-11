@@ -36,7 +36,7 @@ export default async (request) => {
     if (typeof body.visible !== 'boolean') return json({ error: 'A visibility choice is required.' }, 400);
 
     const currentProfileResponse = await fetch(
-      `${supabaseUrl}/rest/v1/profiles?user_id=eq.${encodeURIComponent(user.id)}&select=id,user_id,display_name,photo_path,qr_profile_active,is_demo`,
+      `${supabaseUrl}/rest/v1/profiles?user_id=eq.${encodeURIComponent(user.id)}&select=id,user_id,display_name,photo_path,qr_profile_active,is_demo,is_archived`,
       {
         headers: {
           apikey: publishableKey,
@@ -59,6 +59,13 @@ export default async (request) => {
     }
 
     if (body.visible) {
+      if (currentProfile.is_archived === true) {
+        return json({
+          error: 'This test record has been archived and its QR profile cannot be made available.',
+          code: 'PROFILE_ARCHIVED'
+        }, 423);
+      }
+
       if (currentProfile.is_demo !== true) {
         const consentResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/has_active_profile_health_consent`, {
           method: 'POST',

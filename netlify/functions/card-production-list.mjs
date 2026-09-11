@@ -64,6 +64,7 @@ export default async (request) => {
         `${Netlify.env.get('SUPABASE_URL')}/rest/v1/profiles` +
         `?select=id,user_id,lymphaware_id,display_name,photo_path,qr_token,qr_profile_active,card_production_status,card_ready_at,card_prepared_at` +
         `&card_production_status=in.(READY,PREPARED)` +
+        `&is_archived=eq.false` +
         `&order=card_ready_at.asc`,
         { headers }
       ),

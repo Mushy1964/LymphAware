@@ -56,11 +56,14 @@ export default async (request) => {
     if (!user?.id) return json({ error: 'Sign-in required.' }, 401);
 
     const profileResponse = await fetch(
-      `${env('SUPABASE_URL')}/rest/v1/profiles?user_id=eq.${encodeURIComponent(user.id)}&select=id,display_name,lymphaware_id,photo_path&limit=1`,
+      `${env('SUPABASE_URL')}/rest/v1/profiles?user_id=eq.${encodeURIComponent(user.id)}&select=id,display_name,lymphaware_id,photo_path,is_archived&limit=1`,
       { headers: serviceHeaders() }
     );
     if (!profileResponse.ok) throw new Error(`Unable to load profile: ${await profileResponse.text()}`);
     const profile = (await profileResponse.json())?.[0];
+    if (profile?.is_archived === true) {
+      return json({ ok: true, ready: false, notification: 'archived' });
+    }
     if (!profile?.display_name?.trim() || !profile?.photo_path?.trim()) {
       return json({ ok: true, ready: false, reason: 'Required card details are not complete.' });
     }

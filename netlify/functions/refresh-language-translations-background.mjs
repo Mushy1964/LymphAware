@@ -127,7 +127,7 @@ export default async (request) => {
 
   const sourceFields = [
     'id', 'updated_at', 'display_name', 'photo_path', 'qr_token',
-    'qr_profile_active', 'is_demo', ...TRANSLATABLE_FIELDS
+    'qr_profile_active', 'is_demo', 'is_archived', ...TRANSLATABLE_FIELDS
   ].join(',');
   const sourceResponse = await fetch(
     `${supabaseUrl}/rest/v1/profiles?user_id=eq.${encodeURIComponent(user.id)}&select=${sourceFields}&limit=1`,
@@ -135,7 +135,7 @@ export default async (request) => {
   );
   if (!sourceResponse.ok) return;
   const sourceProfile = (await sourceResponse.json())?.[0];
-  if (!sourceProfile?.id) return;
+  if (!sourceProfile?.id || sourceProfile.is_archived === true) return;
 
   // Health information must not be sent to the automated translation chain
   // unless the member has an active general health-data consent record.

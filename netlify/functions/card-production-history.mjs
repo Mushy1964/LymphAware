@@ -59,6 +59,7 @@ export default async (request) => {
         `${process.env.SUPABASE_URL}/rest/v1/profiles` +
         `?select=id,lymphaware_id,display_name,card_printed_at` +
         `&card_production_status=eq.PRINTED` +
+        `&is_archived=eq.false` +
         `&order=card_printed_at.desc` +
         `&limit=20`,
         { headers }
