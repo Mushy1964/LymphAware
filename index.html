@@ -344,11 +344,16 @@
 
     .home-hero-privacy {
       display: flex;
+      grid-column: 2;
+      grid-row: 1;
       align-items: center;
+      align-self: end;
+      justify-self: center;
       width: min(100%, 470px);
       min-height: 72px;
-      margin: auto auto 0;
+      margin: 0;
       padding: 0 6px;
+      z-index: 2;
       text-align: left;
     }
 
@@ -381,17 +386,6 @@
       height: 72px;
       margin-left: 18px;
       object-fit: contain;
-    }
-
-    @media (min-width: 681px) {
-      .home-hero-grid {
-        align-items: stretch;
-      }
-
-      .home-hero-product {
-        display: flex;
-        flex-direction: column;
-      }
     }
 
     @media (max-width: 900px) {
@@ -632,14 +626,14 @@
             </div>
           </div>
         </template>
+      </div>
 
-        <div class="home-hero-privacy">
-          <div class="home-hero-privacy-copy">
-            <p class="home-hero-privacy-eyebrow">Privacy by design</p>
-            <p class="home-hero-privacy-message">You decide what is shared — and when.</p>
-          </div>
-          <img class="home-hero-privacy-graphic" src="/assets/brand/LymphAware_Privacy_Lock_Shield.png" alt="" aria-hidden="true">
+      <div class="home-hero-privacy">
+        <div class="home-hero-privacy-copy">
+          <p class="home-hero-privacy-eyebrow">Privacy by design</p>
+          <p class="home-hero-privacy-message">You decide what is shared — and when.</p>
         </div>
+        <img class="home-hero-privacy-graphic" src="/assets/brand/LymphAware_Privacy_Lock_Shield.png" alt="" aria-hidden="true">
       </div>
 
     </div>
