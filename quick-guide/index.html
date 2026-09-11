@@ -38,14 +38,12 @@
       <h1>Your Quick Guide</h1>
       <p>A simple guide to setting up your profile and using your LymphAware card.</p>
       <div class="quick-guide-actions">
-        <a class="button quick-guide-button" href="/assets/guides/LymphAware_Quick_Guide.png" target="_blank" rel="noopener" aria-label="Enlarge guide (opens in a new tab)">Enlarge guide</a>
         <a class="button button-secondary" href="/assets/guides/LymphAware_Quick_Guide.png" download="LymphAware_Quick_Guide.png">Download guide (PNG)</a>
-        <button class="button button-secondary" id="print-guide" type="button" hidden>Print guide</button>
       </div>
       <a class="quick-guide-text-link" href="#guide-text">Read the guide as text</a>
     </div>
     <figure class="quick-guide-figure">
-      <img class="quick-guide-image" id="guide-image" src="/assets/guides/LymphAware_Quick_Guide.png" width="1054" height="1492" alt="LymphAware Quick Guide: five steps to setting up and using your card. The full text follows below.">
+      <img class="quick-guide-image" src="/assets/guides/LymphAware_Quick_Guide.png" width="1054" height="1492" alt="LymphAware Quick Guide: five steps to setting up and using your card. The full text follows below.">
     </figure>
     <section class="quick-guide-text" id="guide-text" aria-labelledby="guide-text-title">
       <h2 id="guide-text-title">Your Quick Guide — text version</h2>
@@ -117,22 +115,5 @@
   </footer>
 
 
-<script>
-  const printButton = document.getElementById('print-guide');
-  const guideImage = document.getElementById('guide-image');
-  printButton.hidden = false;
-  printButton.addEventListener('click', async () => {
-    printButton.disabled = true;
-    try {
-      await guideImage.decode();
-      window.print();
-    } catch {
-      alert('The guide image could not load. Please refresh the page and try again.');
-    } finally {
-      printButton.disabled = false;
-    }
-  });
-</script>
 </body>
 </html>
-
