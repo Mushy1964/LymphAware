@@ -342,35 +342,57 @@
       color: #355b77 !important;
     }
 
-    .home-hero-finisher {
-      width: min(100%, 680px);
-      margin: 38px auto 0;
-      text-align: center;
+    .home-hero-privacy {
+      display: flex;
+      align-items: center;
+      width: min(100%, 560px);
+      margin: 42px auto 0;
+      padding: 16px 22px;
+      border: 1px solid #cfe0ea;
+      border-left: 5px solid #16853f;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: 0 12px 28px rgba(16, 41, 75, 0.07);
+      text-align: left;
     }
 
-    .home-hero-finisher-copy {
+    .home-hero-privacy-icon {
+      display: grid;
+      flex: 0 0 58px;
+      width: 58px;
+      height: 58px;
+      place-items: center;
+      margin-right: 18px;
+      border-radius: 16px;
+      background: #eef6fb;
+    }
+
+    .home-hero-privacy-icon img {
+      display: block;
+      width: 38px;
+      height: 38px;
+    }
+
+    .home-hero-privacy-copy {
+      min-width: 0;
+    }
+
+    .home-hero-privacy-eyebrow {
+      margin: 0 0 3px;
+      color: #1768b0;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .home-hero-privacy-message {
       margin: 0;
       color: #10294b;
-      font-size: clamp(1.1rem, 1.55vw, 1.45rem);
+      font-size: clamp(1.05rem, 1.35vw, 1.22rem);
       font-weight: 800;
-      line-height: 1.2;
-      letter-spacing: -0.02em;
-      white-space: nowrap;
-    }
-
-    .home-hero-finisher-blue {
-      color: #1768b0;
-    }
-
-    .home-hero-finisher-green {
-      color: #16853f;
-    }
-
-    .home-hero-finisher-swoosh {
-      display: block;
-      width: 100%;
-      height: auto;
-      margin: 8px auto 0;
+      line-height: 1.3;
     }
 
     @media (max-width: 900px) {
@@ -385,7 +407,7 @@
     }
 
     @media (max-width: 680px) {
-      .home-hero-finisher {
+      .home-hero-privacy {
         display: none;
       }
 
@@ -612,13 +634,14 @@
           </div>
         </template>
 
-        <div class="home-hero-finisher">
-          <p class="home-hero-finisher-copy">
-            <span>One card.</span>
-            <span class="home-hero-finisher-blue">One scan.</span>
-            <span class="home-hero-finisher-green">Better understanding.</span>
-          </p>
-          <img class="home-hero-finisher-swoosh" src="/assets/brand/LymphAware_Hero_Ribbons.svg" alt="" aria-hidden="true">
+        <div class="home-hero-privacy">
+          <div class="home-hero-privacy-icon" aria-hidden="true">
+            <img src="/assets/icons/Privacy_Blue.svg" alt="">
+          </div>
+          <div class="home-hero-privacy-copy">
+            <p class="home-hero-privacy-eyebrow">Privacy by design</p>
+            <p class="home-hero-privacy-message">You decide what is shared — and when.</p>
+          </div>
         </div>
       </div>
 
