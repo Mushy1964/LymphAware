@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Quick Guide | LymphAware</title>
+  <meta name="description" content="A simple guide to setting up your profile and using your LymphAware card. View, download or print the guide, or read the text version.">
+  <link rel="canonical" href="https://lymphaware.com/quick-guide/">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/secondary-header.css">
+  <link rel="stylesheet" href="/css/quick-guide.css">
+</head>
+<body class="quick-guide-page">
+  <header class="site-header secondary-header">
+    <div class="container header-inner">
+
+      <a href="/" class="header-brand" aria-label="Back to LymphAware website">
+        <img
+          class="header-logo"
+          src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg"
+          alt="LymphAware – Helping People Living with Lymphoedema Be Understood"
+        >
+      </a>
+
+      <div class="header-actions">
+        <a href="/" class="button button-secondary back-to-website-button">
+          Back to Website
+        </a>
+      </div>
+    </div>
+  </header>
+
+
+
+<main class="quick-guide-main">
+  <div class="container">
+    <div class="quick-guide-intro">
+      <h1>Your Quick Guide</h1>
+      <p>A simple guide to setting up your profile and using your LymphAware card.</p>
+      <div class="quick-guide-actions">
+        <a class="button quick-guide-button" href="/assets/guides/LymphAware_Quick_Guide.png" target="_blank" rel="noopener" aria-label="Enlarge guide (opens in a new tab)">Enlarge guide</a>
+        <a class="button button-secondary" href="/assets/guides/LymphAware_Quick_Guide.png" download="LymphAware_Quick_Guide.png">Download guide (PNG)</a>
+        <button class="button button-secondary" id="print-guide" type="button" hidden>Print guide</button>
+      </div>
+      <a class="quick-guide-text-link" href="#guide-text">Read the guide as text</a>
+    </div>
+    <figure class="quick-guide-figure">
+      <img class="quick-guide-image" id="guide-image" src="/assets/guides/LymphAware_Quick_Guide.png" width="1054" height="1492" alt="LymphAware Quick Guide: five steps to setting up and using your card. The full text follows below.">
+    </figure>
+    <section class="quick-guide-text" id="guide-text" aria-labelledby="guide-text-title">
+      <h2 id="guide-text-title">Your Quick Guide — text version</h2>
+      <p>Your ID card links to the information you choose to share — helping others understand your lymphoedema and support needs.</p>
+      <p>You stay in control. You can update your information, preview what others will see and switch your QR profile on or off at any time.</p>
+      <ol>
+        <li><h3>Sign in to your Patient Portal</h3>
+          <p>Go to <a href="/">lymphaware.com</a> and choose <a href="/sign-in/">Sign In</a>. Use the email address and password you created. If you forget your password, use the forgotten-password link on the sign-in page.</p></li>
+        <li><h3>Complete and keep your profile up to date</h3>
+          <p>Add your photograph and the information you want to share about your lymphoedema, compression, treatment considerations, assistance needs, emergency contact and any additional information. You do not have to fill every section.</p></li>
+        <li><h3>Preview what another person will see</h3>
+          <p>Use the Preview option in your Patient Portal before relying on the card. Check your name, photograph, LymphAware ID and each profile section. If anything changes later, update your profile.</p></li>
+        <li><h3>Use your card and QR profile</h3>
+          <p>Carry or wear your LymphAware card when it may be useful. Another person can scan the QR code with a normal phone camera — they do not need the LymphAware app or an account. If you switch your QR profile off, it will not be publicly available.</p></li>
+        <li><h3>If you have an additional-language profile</h3>
+          <p>Keep your main English profile accurate. LymphAware prepares the selected-language version automatically and can update it when your English information changes. If a translation does not look right, please tell us.</p></li>
+      </ol>
+      <h3>Your privacy</h3>
+      <ul>
+        <li>Use a strong, unique password and never share it with anyone.</li>
+        <li>Only include information you are comfortable making available through your QR profile.</li>
+        <li>If your emergency contact details change, update them promptly.</li>
+      </ul>
+      <h3>Need help?</h3>
+      <p>Email: <a href="mailto:admin@lymphaware.com">admin@lymphaware.com</a><br>Website: <a href="/">lymphaware.com</a></p>
+      <p>LymphAware is a communication and identification aid. It does not provide medical diagnosis or replace professional medical advice or emergency care.</p>
+    </section>
+  </div>
+</main>
+  <footer>
+    <div class="container">
+
+      <div class="footer-grid">
+
+       <div class="footer-brand">
+
+        <img
+          class="footer-logo"
+          src="/assets/brand/LymphAware_APPROVED_No_Tagline_Centred_v1.svg"
+          alt="LymphAware"
+        >
+      
+        <p>
+          Helping People Living with Lymphoedema Be Understood.
+        </p>
+      
+      </div>
+
+       <div class="footer-links">
+          <a href="/about/">About</a>
+          <a href="/understanding-lymphoedema/">Understanding Lymphoedema</a>
+          <a href="/for-professionals/">For Professionals</a>
+          <a href="/help/">Help</a>
+          <a href="/privacy/">Privacy</a>
+          <a href="/cookies/">Cookies</a>
+          <a href="/terms/">Terms</a>
+          <a href="/accessibility/">Accessibility</a>
+          <a href="/contact/">Contact</a>
+        </div>
+
+      </div>
+
+      <div class="footer-note">
+        LymphAware is a communication and identification aid. It does not
+        provide medical diagnosis or replace professional medical advice.
+      </div>
+
+    </div>
+  </footer>
+
+
+<script>
+  const printButton = document.getElementById('print-guide');
+  const guideImage = document.getElementById('guide-image');
+  printButton.hidden = false;
+  printButton.addEventListener('click', async () => {
+    printButton.disabled = true;
+    try {
+      await guideImage.decode();
+      window.print();
+    } catch {
+      alert('The guide image could not load. Please refresh the page and try again.');
+    } finally {
+      printButton.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
+
