@@ -103,7 +103,7 @@
           return;
         }
 
-        token=profile.public_code||profile.qr_token||'';
+        token=profile.qr_token||profile.public_code||'';
         profileActive=profile.qr_profile_active===true;
       }else{
         const {data:languageProfile,error:languageError}=await supabaseClient
