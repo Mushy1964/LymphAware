@@ -1,4 +1,4 @@
-.quick-guide-band { padding: 28px 0; background: #fff; }
+.quick-guide-band { padding: 28px 0; background: transparent; }
 .quick-guide-card { display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; align-items: center; gap: 26px; padding: 22px 28px; border: 1px solid #dce8e1; border-radius: 18px; background: linear-gradient(110deg, #f5faf6, #f4f9fc); box-shadow: var(--content-shadow); }
 .quick-guide-thumbnail { width: 76px; height: auto; border-radius: 4px; box-shadow: 0 3px 12px #10294b1a; }
 .quick-guide-copy h2 { margin: 0 0 6px; color: #10294b; font-size: 1.65rem; line-height: 1.2; }
