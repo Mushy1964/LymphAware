@@ -344,28 +344,27 @@
 
     .home-hero-privacy {
       display: flex;
-      grid-column: 2;
-      grid-row: 1;
       align-items: center;
       align-self: end;
       justify-self: center;
-      width: min(100%, 470px);
-      min-height: 72px;
+      justify-content: center;
+      width: min(100%, 430px);
+      min-height: 74px;
       margin: 0;
-      padding: 0 6px;
+      padding: 0;
       z-index: 2;
       text-align: left;
     }
 
     .home-hero-privacy-copy {
-      flex: 1 1 auto;
+      flex: 0 1 auto;
       min-width: 0;
     }
 
     .home-hero-privacy-eyebrow {
       margin: 0 0 5px;
       color: #10294b;
-      font-size: clamp(1.2rem, 1.55vw, 1.4rem);
+      font-size: clamp(1.08rem, 1.35vw, 1.22rem);
       font-weight: 800;
       letter-spacing: -0.015em;
       line-height: 1.1;
@@ -374,24 +373,38 @@
     .home-hero-privacy-message {
       margin: 0;
       color: #40566f;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 700;
       line-height: 1.35;
     }
 
     .home-hero-privacy-graphic {
       display: block;
-      flex: 0 0 92px;
-      width: 92px;
-      height: 72px;
-      margin-left: 18px;
+      flex: 0 0 70px;
+      width: 70px;
+      height: 74px;
+      margin-left: 10px;
       object-fit: contain;
     }
 
-    @media (min-width: 681px) {
+    @media (min-width: 981px) {
       .home-hero-product {
         grid-column: 2;
         grid-row: 1;
+        min-height: 540px;
+      }
+
+      .home-hero-privacy {
+        grid-column: 2;
+        grid-row: 1;
+      }
+    }
+
+    @media (min-width: 681px) and (max-width: 980px) {
+      .home-hero-privacy {
+        grid-column: 1;
+        grid-row: auto;
+        margin-top: -16px;
       }
     }
 
@@ -640,7 +653,7 @@
           <p class="home-hero-privacy-eyebrow">Privacy by design</p>
           <p class="home-hero-privacy-message">You decide what is shared — and when.</p>
         </div>
-        <img class="home-hero-privacy-graphic" src="/assets/brand/LymphAware_Privacy_Lock_Shield.png" alt="" aria-hidden="true">
+        <img class="home-hero-privacy-graphic" src="/assets/brand/LymphAware_Privacy_Shield_Lock.png" alt="" aria-hidden="true">
       </div>
 
     </div>
