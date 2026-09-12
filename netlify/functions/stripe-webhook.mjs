@@ -78,8 +78,33 @@ function invoiceSubscriptionId(invoice) {
   return typeof value === 'string' ? value : value?.id || null;
 }
 
+async function sendRenewalReminder(invoice) {
+  const apiKey = String(process.env.RESEND_API_KEY || '').trim();
+  const customerEmail = String(invoice?.customer_email || '').trim();
+  if (!apiKey || !customerEmail) return;
+  const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware <notifications@lymphaware.com>').trim();
+  const amount = `£${(Number(invoice.amount_due || 0) / 100).toFixed(2)}`;
+  const renewalDate = invoice.next_payment_attempt ? new Date(invoice.next_payment_attempt * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) : 'the date shown in your Patient Portal';
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from,
+      to: [customerEmail],
+      reply_to: ['admin@lymphaware.com'],
+      subject: 'Your LymphAware membership will renew soon',
+      text: `Your LymphAware digital membership is due to renew for ${amount} on ${renewalDate}.\n\nThis renewal continues your digital membership only. It does not include new cards, lanyards or postage.\n\nIf you do not want it to renew, cancel automatic renewal before the renewal date in your Patient Portal:\nhttps://lymphaware.com/portal/`
+    })
+  });
+  if (!response.ok) console.error('Unable to send renewal reminder:', await response.text());
+}
+
 async function handleRecurringEvent(event) {
   const object = event.data?.object || {};
+  if (event.type === 'invoice.upcoming') {
+    await sendRenewalReminder(object);
+    return true;
+  }
   if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.deleted') {
     const active = event.type !== 'customer.subscription.deleted' && !object.cancel_at_period_end && !['canceled', 'unpaid', 'incomplete_expired'].includes(object.status);
     await patchMembershipBySubscription(object.id, {
