@@ -266,7 +266,8 @@
       color: #344456;
       font-weight: 700;
     }
-    .home-membership-renewal-price{margin:10px 0 18px;color:#405368;font-size:.92rem;line-height:1.45}.home-membership-renewal-price strong{color:#17283d}
+    .home-membership-renewal-price{margin:10px 0 18px;color:#405368;font-size:.92rem;line-height:1.45}.home-membership-renewal-price strong{display:block;margin-bottom:3px;color:#17283d}.home-membership-renewal-values{display:block;white-space:nowrap;font-size:clamp(.72rem,.86vw,.86rem);font-weight:700;letter-spacing:-.01em}
+    .home-membership-recommended{position:absolute;top:14px;right:14px;z-index:2;padding:7px 11px;border:2px solid #1768b0;border-radius:999px;background:#1768b0;color:#fff;font-size:.78rem;font-weight:900;letter-spacing:.04em;text-transform:uppercase;transform:rotate(2deg);box-shadow:0 4px 10px rgba(23,104,176,.2)}
 
     .home-membership-best-value {
       color: #16853f;
@@ -452,6 +453,16 @@
       .home-language-grid {
         grid-template-columns: 1fr;
         gap: 32px;
+      }
+    }
+
+    @media (min-width: 901px) and (max-width: 1100px) {
+      .home-membership-recommended {
+        position: static;
+        align-self: flex-end;
+        margin: -10px 0 8px;
+        padding: 5px 8px;
+        font-size: .68rem;
       }
     }
 
@@ -1017,7 +1028,7 @@
             <li><span>2 years</span><span>£24.99</span></li>
             <li><span>3 years</span><span>£29.99 <span class="home-membership-best-value">Best value</span></span></li>
           </ul>
-          <p class="home-membership-renewal-price"><strong>Optional automatic renewal:</strong> 1 year £14.99 · 2 years £18.99 · 3 years £22.99</p>
+          <p class="home-membership-renewal-price"><strong>Optional automatic renewal:</strong><span class="home-membership-renewal-values">1 year £14.99 · 2 years £18.99 · 3 years £22.99</span></p>
           <ul class="home-membership-benefits">
             <li>1 English QR profile</li>
             <li>1 English LymphAware ID card</li>
@@ -1029,6 +1040,7 @@
         </article>
 
         <article class="home-membership-price-card home-membership-package-plus">
+          <span class="home-membership-recommended">Recommended</span>
           <p class="home-membership-package-badge">LymphAware Plus</p>
           <p class="home-membership-package-summary">Extra flexibility for everyday use.</p>
           <p class="home-membership-price"><span class="home-membership-price-from">From</span>£29.99</p>
@@ -1038,7 +1050,7 @@
             <li><span>2 years</span><span>£34.99</span></li>
             <li><span>3 years</span><span>£39.99 <span class="home-membership-best-value">Best value</span></span></li>
           </ul>
-          <p class="home-membership-renewal-price"><strong>Optional automatic renewal:</strong> 1 year £22.99 · 2 years £26.99 · 3 years £29.99</p>
+          <p class="home-membership-renewal-price"><strong>Optional automatic renewal:</strong><span class="home-membership-renewal-values">1 year £22.99 · 2 years £26.99 · 3 years £29.99</span></p>
           <ul class="home-membership-benefits">
             <li>1 English QR profile</li>
             <li>2 English LymphAware ID cards</li>
@@ -1052,14 +1064,14 @@
         <article class="home-membership-price-card home-membership-package-multilingual">
           <p class="home-membership-package-badge">LymphAware Multilingual</p>
           <p class="home-membership-package-summary">For people who use LymphAware in more than one language setting.</p>
-          <p class="home-membership-price"><span class="home-membership-price-from">From</span>£44.99</p>
+          <p class="home-membership-price"><span class="home-membership-price-from">From</span>£39.99</p>
           <p class="home-membership-term">Choose your membership length</p>
           <ul class="home-membership-term-options" aria-label="LymphAware Multilingual prices">
-            <li><span>1 year</span><span>£44.99</span></li>
-            <li><span>2 years</span><span>£49.99</span></li>
-            <li><span>3 years</span><span>£54.99 <span class="home-membership-best-value">Best value</span></span></li>
+            <li><span>1 year</span><span>£39.99</span></li>
+            <li><span>2 years</span><span>£44.99</span></li>
+            <li><span>3 years</span><span>£49.99 <span class="home-membership-best-value">Best value</span></span></li>
           </ul>
-          <p class="home-membership-renewal-price"><strong>Optional automatic renewal:</strong> 1 year £33.99 · 2 years £37.99 · 3 years £41.99</p>
+          <p class="home-membership-renewal-price"><strong>Optional automatic renewal:</strong><span class="home-membership-renewal-values">1 year £29.99 · 2 years £33.99 · 3 years £37.99</span></p>
           <ul class="home-membership-benefits">
             <li>1 English QR profile</li>
             <li>1 additional-language QR profile</li>
