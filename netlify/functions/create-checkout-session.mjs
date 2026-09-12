@@ -5,9 +5,9 @@ const APPROVED_LANGUAGES = {
 };
 
 const PACKAGE_DEFINITIONS = {
-  STANDARD: { name: 'LymphAware 5-Year Membership', amountPence: 2999, requiresLanguage: false },
-  PLUS: { name: 'LymphAware 5-Year Plus', amountPence: 3999, requiresLanguage: false },
-  MULTILINGUAL: { name: 'LymphAware 5-Year Multilingual', amountPence: 4999, requiresLanguage: true }
+  STANDARD: { name: 'LymphAware Membership', prices: { 1: 1999, 3: 2499, 5: 2999 }, requiresLanguage: false },
+  PLUS: { name: 'LymphAware Plus', prices: { 1: 2999, 3: 3499, 5: 3999 }, requiresLanguage: false },
+  MULTILINGUAL: { name: 'LymphAware Multilingual', prices: { 1: 4499, 3: 4999, 5: 5499 }, requiresLanguage: true }
 };
 
 const EUROPE_COUNTRIES = new Set([
@@ -182,6 +182,7 @@ export default async (request) => {
     let checkoutDescription = '';
     let amountPence = 0;
     let packageType = '';
+    let membershipTermYears = 0;
     let languageCode = '';
     let languageName = '';
     let replacementCard = false;
@@ -196,11 +197,11 @@ export default async (request) => {
       if (membership.membership_status !== 'PENDING' || membership.payment_status !== 'PENDING') {
         return json({ error: 'No membership payment is currently due.' }, 403);
       }
-      if (Number(membership.initial_fee_pence) !== 2999) return json({ error: 'Membership fee could not be verified.' }, 400);
-
       packageType = String(body?.packageType || 'STANDARD').trim().toUpperCase();
       const packageDefinition = PACKAGE_DEFINITIONS[packageType];
       if (!packageDefinition) return json({ error: 'Please select a valid LymphAware membership package.' }, 400);
+      membershipTermYears = Number(body?.membershipTermYears || 5);
+      if (![1, 3, 5].includes(membershipTermYears)) return json({ error: 'Please select a valid membership length.' }, 400);
 
       if (packageDefinition.requiresLanguage) {
         languageCode = normaliseLanguageCode(body?.languageCode);
@@ -210,13 +211,13 @@ export default async (request) => {
         if (!translationConsent) return json({ error: 'Please confirm that LymphAware may process your English profile to prepare the translated version.' }, 400);
       }
 
-      checkoutName = packageDefinition.name;
+      checkoutName = `${packageDefinition.name} – ${membershipTermYears}-Year`;
       checkoutDescription = packageType === 'MULTILINGUAL'
-        ? `Five-year membership with English and ${languageName} profiles, 2 English cards, 2 ${languageName} cards and 2 lanyards & holders.`
+        ? `${membershipTermYears}-year membership with English and ${languageName} profiles, 2 English cards, 2 ${languageName} cards and 2 lanyards & holders.`
         : packageType === 'PLUS'
-          ? 'Five-year membership with 2 English ID cards and 2 lanyards & holders.'
-          : 'Five-year membership with 1 English ID card and 1 lanyard & holder.';
-      amountPence = packageDefinition.amountPence;
+          ? `${membershipTermYears}-year membership with 2 English ID cards and 2 lanyards & holders.`
+          : `${membershipTermYears}-year membership with 1 English ID card and 1 lanyard & holder.`;
+      amountPence = packageDefinition.prices[membershipTermYears];
     } else if (paymentType === 'additional_items') {
       if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware membership is required.' }, 403);
 
@@ -332,6 +333,8 @@ export default async (request) => {
     stripeForm.append('metadata[membership_id]', membership.id);
     stripeForm.append('metadata[payment_type]', paymentType);
     stripeForm.append('metadata[package_type]', packageType);
+    stripeForm.append('metadata[membership_term_years]', String(membershipTermYears));
+    stripeForm.append('metadata[package_price_pence]', String(amountPence));
     stripeForm.append('metadata[language_code]', languageCode);
     stripeForm.append('metadata[language_name]', languageName);
     stripeForm.append('metadata[translation_consent]', translationConsent ? '1' : '0');
