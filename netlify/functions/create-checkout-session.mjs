@@ -5,9 +5,9 @@ const APPROVED_LANGUAGES = {
 };
 
 const PACKAGE_DEFINITIONS = {
-  STANDARD: { name: 'LymphAware Membership', prices: { 1: 1999, 3: 2499, 5: 2999 }, requiresLanguage: false },
-  PLUS: { name: 'LymphAware Plus', prices: { 1: 2999, 3: 3499, 5: 3999 }, requiresLanguage: false },
-  MULTILINGUAL: { name: 'LymphAware Multilingual', prices: { 1: 4499, 3: 4999, 5: 5499 }, requiresLanguage: true }
+  STANDARD: { name: 'LymphAware Membership', prices: { 1: 1999, 2: 2499, 3: 2999 }, requiresLanguage: false },
+  PLUS: { name: 'LymphAware Plus', prices: { 1: 2999, 2: 3499, 3: 3999 }, requiresLanguage: false },
+  MULTILINGUAL: { name: 'LymphAware Multilingual', prices: { 1: 4499, 2: 4999, 3: 5499 }, requiresLanguage: true }
 };
 
 const EUROPE_COUNTRIES = new Set([
@@ -200,8 +200,8 @@ export default async (request) => {
       packageType = String(body?.packageType || 'STANDARD').trim().toUpperCase();
       const packageDefinition = PACKAGE_DEFINITIONS[packageType];
       if (!packageDefinition) return json({ error: 'Please select a valid LymphAware membership package.' }, 400);
-      membershipTermYears = Number(body?.membershipTermYears || 5);
-      if (![1, 3, 5].includes(membershipTermYears)) return json({ error: 'Please select a valid membership length.' }, 400);
+      membershipTermYears = Number(body?.membershipTermYears || 3);
+      if (![1, 2, 3].includes(membershipTermYears)) return json({ error: 'Please select a valid membership length.' }, 400);
 
       if (packageDefinition.requiresLanguage) {
         languageCode = normaliseLanguageCode(body?.languageCode);
