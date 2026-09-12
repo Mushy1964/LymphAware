@@ -6,6 +6,16 @@ const INITIAL_PACKAGE_PRICES = {
   MULTILINGUAL: { 1: 4499, 2: 4999, 3: 5499, 5: 5499 }
 };
 
+const RENEWAL_PRICES = {
+  STANDARD: { 1: 1499, 2: 1899, 3: 2299 },
+  PLUS: { 1: 2299, 2: 2699, 3: 2999 },
+  MULTILINGUAL: { 1: 3399, 2: 3799, 3: 4199 }
+};
+
+const RENEWAL_STRIPE_PRICES = {
+  MULTILINGUAL: { 1: 'price_1UEoS3PMYhQKb2OT0ZKqHK4H', 2: 'price_1UEoSIPMYhQKb2OTQDyz18Ie', 3: 'price_1UEoSJPMYhQKb2OTze0EwlaO' }
+};
+
 function verifyStripeSignature(payload, signatureHeader, secret) {
   if (!signatureHeader || !secret) return false;
   const parts = signatureHeader.split(',');
@@ -37,6 +47,88 @@ function supabaseHeaders(prefer = '') {
   };
   if (prefer) headers.Prefer = prefer;
   return headers;
+}
+
+async function stripeRequest(path, method = 'GET', values = null) {
+  const response = await fetch(`https://api.stripe.com/v1/${path}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+      ...(values ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {})
+    },
+    body: values ? new URLSearchParams(values).toString() : undefined
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result?.error?.message || 'Stripe request failed');
+  return result;
+}
+
+async function patchMembershipBySubscription(subscriptionId, values) {
+  if (!subscriptionId) return;
+  const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/memberships?stripe_subscription_id=eq.${encodeURIComponent(subscriptionId)}`, {
+    method: 'PATCH',
+    headers: supabaseHeaders('return=minimal'),
+    body: JSON.stringify({ ...values, updated_at: new Date().toISOString() })
+  });
+  if (!response.ok) throw new Error(`Membership renewal update failed: ${await response.text()}`);
+}
+
+function invoiceSubscriptionId(invoice) {
+  const value = invoice?.subscription || invoice?.parent?.subscription_details?.subscription;
+  return typeof value === 'string' ? value : value?.id || null;
+}
+
+async function handleRecurringEvent(event) {
+  const object = event.data?.object || {};
+  if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.deleted') {
+    const active = event.type !== 'customer.subscription.deleted' && !object.cancel_at_period_end && !['canceled', 'unpaid', 'incomplete_expired'].includes(object.status);
+    await patchMembershipBySubscription(object.id, {
+      auto_renew_enabled: active,
+      stripe_subscription_status: object.status || (active ? 'active' : 'canceled'),
+      next_renewal_at: object.current_period_end ? new Date(object.current_period_end * 1000).toISOString() : null
+    });
+    return true;
+  }
+  if (event.type === 'invoice.payment_failed') {
+    await patchMembershipBySubscription(invoiceSubscriptionId(object), { stripe_subscription_status: 'past_due' });
+    return true;
+  }
+  if (event.type === 'invoice.paid') {
+    const subscriptionId = invoiceSubscriptionId(object);
+    if (!subscriptionId || !['subscription_cycle', 'subscription_update'].includes(object.billing_reason)) return true;
+    const periodEnd = object.lines?.data?.map(line => line.period?.end).filter(Boolean).sort((a, b) => b - a)[0];
+    await patchMembershipBySubscription(subscriptionId, {
+      membership_status: 'ACTIVE',
+      payment_status: 'PAID',
+      stripe_subscription_status: 'active',
+      paid_at: new Date((object.status_transitions?.paid_at || event.created) * 1000).toISOString(),
+      ...(periodEnd ? { membership_end: new Date(periodEnd * 1000).toISOString(), next_renewal_at: new Date(periodEnd * 1000).toISOString() } : {})
+    });
+    return true;
+  }
+  return false;
+}
+
+async function moveRenewalToMultilingual(userId) {
+  const response = await fetch(
+    `${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${encodeURIComponent(userId)}&auto_renew_enabled=eq.true&select=id,membership_term_years,stripe_subscription_item_id&limit=1`,
+    { headers: supabaseHeaders() }
+  );
+  if (!response.ok) throw new Error(`Unable to read membership renewal: ${await response.text()}`);
+  const membership = (await response.json())?.[0];
+  const term = Number(membership?.membership_term_years);
+  const price = RENEWAL_STRIPE_PRICES.MULTILINGUAL[term];
+  if (!membership?.stripe_subscription_item_id || !price) return;
+  await stripeRequest(`subscription_items/${encodeURIComponent(membership.stripe_subscription_item_id)}`, 'POST', {
+    price,
+    proration_behavior: 'none'
+  });
+  const update = await fetch(`${process.env.SUPABASE_URL}/rest/v1/memberships?id=eq.${encodeURIComponent(membership.id)}`, {
+    method: 'PATCH',
+    headers: supabaseHeaders('return=minimal'),
+    body: JSON.stringify({ package_type: 'MULTILINGUAL', renewal_price_pence: RENEWAL_PRICES.MULTILINGUAL[term], updated_at: new Date().toISOString() })
+  });
+  if (!update.ok) throw new Error(`Unable to update multilingual renewal: ${await update.text()}`);
 }
 
 function normaliseItem(item) {
@@ -164,6 +256,10 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
     if (languageName) {
       nextSteps +=
         `\n\nYour package includes a ${languageName} profile and card. Keep your main English profile accurate and LymphAware will automatically prepare the ${languageName} version from it and keep it updated when your English information changes. You do not need to translate anything yourself. Empty English sections will also remain empty in the translated profile.`;
+    }
+    if (String(session.metadata?.auto_renew || '') === '1') {
+      const renewalPence = Number(session.metadata?.renewal_price_pence || 0);
+      nextSteps += `\n\nAUTOMATIC RENEWAL\n\nYou chose automatic renewal. At the end of this ${membershipTermYears}-year term, your digital membership will renew for £${(renewalPence / 100).toFixed(2)} for another ${membershipTermYears} year${membershipTermYears === 1 ? '' : 's'}. No new cards, lanyards or postage are included. You can cancel automatic renewal from your Patient Portal before the renewal date.`;
     }
   } else if (paymentType === 'additional_items') {
     subject = `Your LymphAware additional order is confirmed – ${orderRef}`;
@@ -366,6 +462,9 @@ export default async (request) => {
     if (!verifyStripeSignature(payload, stripeSignature, webhookSecret)) return new Response('Invalid signature', { status: 400 });
 
     const event = JSON.parse(payload);
+    if (await handleRecurringEvent(event)) {
+      return new Response(JSON.stringify({ received: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
     if (event.type !== 'checkout.session.completed') {
       return new Response(JSON.stringify({ received: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     }
@@ -400,10 +499,14 @@ export default async (request) => {
     const cardSelections = parseCardSelectionsMetadata(session.metadata?.card_selections, cardQuantity);
     const lanyardQuantity = Number.isInteger(metadataLanyardQuantity) && metadataLanyardQuantity >= 0 ? metadataLanyardQuantity : (replacementLanyard ? 1 : 0);
     const translationConsent = String(session.metadata?.translation_consent || '') === '1';
+    const autoRenew = String(session.metadata?.auto_renew || '') === '1' && typeof session.subscription === 'string';
+    const renewalPricePence = autoRenew ? Number(session.metadata?.renewal_price_pence || RENEWAL_PRICES[packageType]?.[membershipTermYears] || 0) : null;
 
     if (paymentType === 'initial_membership') {
       const membershipEnd = new Date(paidAt);
       membershipEnd.setUTCFullYear(membershipEnd.getUTCFullYear() + membershipTermYears);
+      let subscription = null;
+      if (autoRenew) subscription = await stripeRequest(`subscriptions/${encodeURIComponent(session.subscription)}`);
       const membershipResponse = await fetch(
         `${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${encodeURIComponent(userId)}`,
         {
@@ -411,7 +514,15 @@ export default async (request) => {
           headers: supabaseHeaders('return=minimal'),
           body: JSON.stringify({
             membership_status: 'ACTIVE', payment_status: 'PAID', payment_provider: 'STRIPE', payment_reference: session.id,
-            paid_at: paidAt.toISOString(), membership_start: paidAt.toISOString(), membership_end: membershipEnd.toISOString(), initial_fee_pence: packagePricePence, updated_at: paidAt.toISOString()
+            paid_at: paidAt.toISOString(), membership_start: paidAt.toISOString(), membership_end: membershipEnd.toISOString(), initial_fee_pence: packagePricePence,
+            package_type: packageType, membership_term_years: membershipTermYears, auto_renew_enabled: autoRenew,
+            renewal_price_pence: renewalPricePence,
+            stripe_customer_id: typeof session.customer === 'string' ? session.customer : null,
+            stripe_subscription_id: autoRenew ? session.subscription : null,
+            stripe_subscription_item_id: subscription?.items?.data?.[0]?.id || null,
+            stripe_subscription_status: subscription?.status || null,
+            next_renewal_at: subscription?.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : (autoRenew ? membershipEnd.toISOString() : null),
+            updated_at: paidAt.toISOString()
           })
         }
       );
@@ -491,6 +602,7 @@ export default async (request) => {
 
     if (translationConsent && (paymentType === 'initial_membership' || paymentType === 'additional_language' || paymentType === 'additional_items')) {
       await recordLanguageTranslationConsent(order.id, paidAt.toISOString());
+      if (paymentType === 'additional_language' || paymentType === 'additional_items') await moveRenewalToMultilingual(userId);
     }
 
     if ((paymentType === 'replacement_items' && replacementCard) || (paymentType === 'additional_items' && cardSelections.some(item => item.languageCode === 'EN'))) {
