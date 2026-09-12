@@ -10,6 +10,21 @@ const PACKAGE_DEFINITIONS = {
   MULTILINGUAL: { name: 'LymphAware Multilingual', prices: { 1: 4499, 2: 4999, 3: 5499 }, requiresLanguage: true }
 };
 
+const RENEWAL_DEFINITIONS = {
+  STANDARD: {
+    prices: { 1: 1499, 2: 1899, 3: 2299 },
+    stripePrices: { 1: 'price_1UEoS1PMYhQKb2OTJ1muyO9G', 2: 'price_1UEoSFPMYhQKb2OTUjWipeEt', 3: 'price_1UEoSGPMYhQKb2OTTiL95BYd' }
+  },
+  PLUS: {
+    prices: { 1: 2299, 2: 2699, 3: 2999 },
+    stripePrices: { 1: 'price_1UEoS2PMYhQKb2OT04lGzolV', 2: 'price_1UEoSGPMYhQKb2OTUgrnaFEu', 3: 'price_1UEoSHPMYhQKb2OTOOSq3K1Z' }
+  },
+  MULTILINGUAL: {
+    prices: { 1: 3399, 2: 3799, 3: 4199 },
+    stripePrices: { 1: 'price_1UEoS3PMYhQKb2OT0ZKqHK4H', 2: 'price_1UEoSIPMYhQKb2OTQDyz18Ie', 3: 'price_1UEoSJPMYhQKb2OTze0EwlaO' }
+  }
+};
+
 const EUROPE_COUNTRIES = new Set([
   'AL','AD','AT','BE','BA','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IS','IE','IT',
   'XK','LV','LI','LT','LU','MT','MD','MC','ME','NL','MK','NO','PL','PT','RO','SM','RS','SK','SI',
@@ -191,6 +206,9 @@ export default async (request) => {
     let cardSelections = [];
     let lanyardQuantity = 0;
     let translationConsent = false;
+    let autoRenew = false;
+    let renewalPricePence = 0;
+    let renewalStripePrice = '';
     const checkoutItems = [];
 
     if (paymentType === 'initial_membership') {
@@ -218,6 +236,9 @@ export default async (request) => {
           ? `${membershipTermYears}-year membership with 2 English ID cards and 2 lanyards & holders.`
           : `${membershipTermYears}-year membership with 1 English ID card and 1 lanyard & holder.`;
       amountPence = packageDefinition.prices[membershipTermYears];
+      autoRenew = body?.autoRenew === true;
+      renewalPricePence = RENEWAL_DEFINITIONS[packageType].prices[membershipTermYears];
+      renewalStripePrice = RENEWAL_DEFINITIONS[packageType].stripePrices[membershipTermYears];
     } else if (paymentType === 'additional_items') {
       if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware membership is required.' }, 403);
 
@@ -301,12 +322,26 @@ export default async (request) => {
     }
 
     const stripeForm = new URLSearchParams();
-    stripeForm.append('mode', 'payment');
+    stripeForm.append('mode', autoRenew ? 'subscription' : 'payment');
 
     let nextLineItemIndex = 0;
     if (checkoutItems.length) {
       checkoutItems.forEach((item, index) => appendInlinePrice(stripeForm, index, item.name, item.amountPence, item.description, item.quantity));
       nextLineItemIndex = checkoutItems.length;
+    } else if (autoRenew) {
+      stripeForm.append('line_items[0][price]', renewalStripePrice);
+      stripeForm.append('line_items[0][quantity]', '1');
+      const joiningAndFulfilmentPence = amountPence - renewalPricePence;
+      if (joiningAndFulfilmentPence > 0) {
+        appendInlinePrice(
+          stripeForm,
+          1,
+          `${checkoutName} – joining and card fulfilment`,
+          joiningAndFulfilmentPence,
+          'One-time joining, card and lanyard fulfilment charge.'
+        );
+      }
+      nextLineItemIndex = joiningAndFulfilmentPence > 0 ? 2 : 1;
     } else {
       appendInlinePrice(stripeForm, 0, checkoutName, amountPence, checkoutDescription);
       nextLineItemIndex = 1;
@@ -325,6 +360,7 @@ export default async (request) => {
     );
 
     stripeForm.append('allow_promotion_codes', 'true');
+    if (autoRenew) stripeForm.append('payment_method_collection', 'always');
     stripeForm.append('billing_address_collection', 'required');
     stripeForm.append('shipping_address_collection[allowed_countries][0]', deliveryCountry);
 
@@ -335,6 +371,8 @@ export default async (request) => {
     stripeForm.append('metadata[package_type]', packageType);
     stripeForm.append('metadata[membership_term_years]', String(membershipTermYears));
     stripeForm.append('metadata[package_price_pence]', String(amountPence));
+    stripeForm.append('metadata[auto_renew]', autoRenew ? '1' : '0');
+    stripeForm.append('metadata[renewal_price_pence]', String(renewalPricePence));
     stripeForm.append('metadata[language_code]', languageCode);
     stripeForm.append('metadata[language_name]', languageName);
     stripeForm.append('metadata[translation_consent]', translationConsent ? '1' : '0');
@@ -347,6 +385,13 @@ export default async (request) => {
     stripeForm.append('metadata[shipping_band]', band);
     stripeForm.append('metadata[shipping_pence]', String(shippingPence));
     stripeForm.append('metadata[shipping_charge_method]', 'LINE_ITEM');
+    if (autoRenew) {
+      stripeForm.append('subscription_data[metadata][lymphaware_user_id]', user.id);
+      stripeForm.append('subscription_data[metadata][membership_id]', membership.id);
+      stripeForm.append('subscription_data[metadata][package_type]', packageType);
+      stripeForm.append('subscription_data[metadata][membership_term_years]', String(membershipTermYears));
+      stripeForm.append('subscription_data[metadata][renewal_price_pence]', String(renewalPricePence));
+    }
 
     const successType = paymentType === 'additional_language'
       ? 'language'
