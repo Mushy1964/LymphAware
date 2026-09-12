@@ -269,49 +269,13 @@
     .home-membership-renewal-price{margin:10px 0 18px;color:#405368;font-size:.92rem;line-height:1.45}.home-membership-renewal-price strong{display:block;margin-bottom:3px;color:#17283d}.home-membership-renewal-values{display:block;white-space:nowrap;font-size:clamp(.72rem,.86vw,.86rem);font-weight:700;letter-spacing:-.01em}
     .home-membership-recommended {
       position: absolute;
-      top: -38px;
-      right: 20px;
-      z-index: 3;
-      display: flex;
-      width: 94px;
-      height: 94px;
-      align-items: center;
-      justify-content: center;
-      border: 3px solid #17283d;
+      top: 18px;
+      right: 18px;
+      width: 92px;
+      height: 92px;
       border-radius: 50%;
-      background: radial-gradient(circle at 34% 28%, #ffe889 0%, #f4cb43 62%, #dcae1e 100%);
-      box-shadow: 0 0 0 4px #f4cb43, 0 10px 22px rgba(23, 40, 61, .22);
-      color: #17283d;
-      font-size: .7rem;
-      font-weight: 900;
-      line-height: 1.05;
-      letter-spacing: .045em;
-      text-align: center;
-      text-transform: uppercase;
-      transform: rotate(4deg);
-    }
-
-    .home-membership-recommended::before {
-      content: "★";
-      position: absolute;
-      top: 8px;
-      color: #17283d;
-      font-size: .78rem;
-    }
-
-    .home-membership-recommended::after {
-      content: "";
-      position: absolute;
-      inset: 7px;
-      border: 2px solid #17283d;
-      border-radius: 50%;
-    }
-
-    .home-membership-recommended-text {
-      position: relative;
-      z-index: 1;
-      max-width: 66px;
-      padding-top: 12px;
+      object-fit: contain;
+      box-shadow: 0 7px 18px rgba(23, 40, 61, .16);
     }
 
     .home-membership-best-value {
@@ -495,10 +459,6 @@
         grid-template-columns: 1fr;
       }
 
-      .home-membership-package-plus {
-        margin-top: 24px;
-      }
-
       .home-language-grid {
         grid-template-columns: 1fr;
         gap: 32px;
@@ -507,16 +467,10 @@
 
     @media (min-width: 901px) and (max-width: 1100px) {
       .home-membership-recommended {
-        top: -32px;
+        top: 14px;
         right: 12px;
-        width: 82px;
-        height: 82px;
-        font-size: .61rem;
-      }
-
-      .home-membership-recommended::before {
-        top: 7px;
-        font-size: .64rem;
+        width: 70px;
+        height: 70px;
       }
     }
 
@@ -550,7 +504,7 @@
     .home-membership-packages .home-membership-price-card { position: relative; overflow: hidden; border-width: 1px; border-top-width: 6px; transition: transform .16s ease, box-shadow .16s ease; }
     .home-membership-packages .home-membership-price-card:hover { transform: translateY(-2px); box-shadow: 0 18px 38px rgba(31, 47, 66, 0.11); }
     .home-membership-package-standard { border-color: #72aa7f; background: linear-gradient(180deg, #f7fbf8 0%, #ffffff 34%); }
-    .home-membership-package-plus { z-index: 2; overflow: visible !important; border-color: #6f9fc5; background: linear-gradient(180deg, #f6fafe 0%, #ffffff 34%); }
+    .home-membership-package-plus { border-color: #6f9fc5; background: linear-gradient(180deg, #f6fafe 0%, #ffffff 34%); }
     .home-membership-package-multilingual { border-color: #4f9290; background: linear-gradient(180deg, #f5fbfa 0%, #ffffff 34%); box-shadow: 0 16px 36px rgba(31, 91, 96, 0.09); }
     .home-membership-packages .home-membership-package-badge { display: inline-flex; align-items: center; align-self: flex-start; min-height: 34px; margin: 0 0 12px; padding: 6px 12px; border-radius: 999px; font-size: 1rem; font-weight: 800; line-height: 1.25; letter-spacing: 0; text-transform: none; }
     .home-membership-package-standard .home-membership-package-badge { background: #e9f5ec; color: #16853f; }
@@ -1094,7 +1048,7 @@
         </article>
 
         <article class="home-membership-price-card home-membership-package-plus">
-          <span class="home-membership-recommended"><span class="home-membership-recommended-text">Most<br>popular</span></span>
+          <img class="home-membership-recommended" src="/assets/brand/LymphAware_Recommended_Badge.png" alt="Recommended">
           <p class="home-membership-package-badge">LymphAware Plus</p>
           <p class="home-membership-package-summary">Extra flexibility for everyday use.</p>
           <p class="home-membership-price"><span class="home-membership-price-from">From</span>£29.99</p>
