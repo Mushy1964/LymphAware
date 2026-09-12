@@ -1,9 +1,9 @@
 import crypto from 'node:crypto';
 
 const INITIAL_PACKAGE_PRICES = {
-  STANDARD: { 1: 1999, 3: 2499, 5: 2999 },
-  PLUS: { 1: 2999, 3: 3499, 5: 3999 },
-  MULTILINGUAL: { 1: 4499, 3: 4999, 5: 5499 }
+  STANDARD: { 1: 1999, 2: 2499, 3: 2999, 5: 2999 },
+  PLUS: { 1: 2999, 2: 3499, 3: 3999, 5: 3999 },
+  MULTILINGUAL: { 1: 4499, 2: 4999, 3: 5499, 5: 5499 }
 };
 
 function verifyStripeSignature(payload, signatureHeader, secret) {
@@ -139,7 +139,7 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
   const postageChargePence = Number(session.metadata?.shipping_pence || session.total_details?.amount_shipping || 0);
   const postagePaid = `£${(postageChargePence / 100).toFixed(2)}`;
   const totalPaid = `£${((session.amount_total || 0) / 100).toFixed(2)}`;
-  const membershipTermYears = [1, 3, 5].includes(Number(session.metadata?.membership_term_years))
+  const membershipTermYears = [1, 2, 3, 5].includes(Number(session.metadata?.membership_term_years))
     ? Number(session.metadata.membership_term_years)
     : 5;
   let subject = `Your LymphAware order is confirmed – ${orderRef}`;
@@ -385,7 +385,7 @@ export default async (request) => {
 
     const paidAt = new Date();
     const packageType = String(session.metadata?.package_type || 'STANDARD').trim().toUpperCase();
-    const membershipTermYears = [1, 3, 5].includes(Number(session.metadata?.membership_term_years))
+    const membershipTermYears = [1, 2, 3, 5].includes(Number(session.metadata?.membership_term_years))
       ? Number(session.metadata.membership_term_years)
       : 5;
     const packagePricePence = INITIAL_PACKAGE_PRICES[packageType]?.[membershipTermYears];
