@@ -102,10 +102,6 @@
       display: none !important;
     }
 
-    .home-membership-packages.is-reference-only .home-membership-price-card > .button {
-      display: none !important;
-    }
-
     .home-membership-packages .home-membership-price-card {
       display: flex;
       flex-direction: column;
@@ -139,6 +135,7 @@
     .home-membership-actions .button {
       min-width: 230px;
       justify-content: center;
+      align-self: flex-start;
     }
 
     .home-signed-in-membership-panel {
@@ -613,7 +610,7 @@
         </p>
 
         <div class="home-hero-actions">
-          <a href="#membership" id="hero-membership-link" class="button button-primary">Choose your membership</a>
+          <a href="/register/" id="hero-membership-link" class="button button-primary">Join LymphAware</a>
           <a href="#sample-card" class="button button-secondary">View sample card</a>
         </div>
 
@@ -1018,10 +1015,9 @@
         <p class="home-membership-eyebrow">LymphAware membership</p>
         <h2 id="membership-title">LymphAware membership from £19.99.</h2>
         <p id="membership-lead" class="home-membership-lead">
-          Choose one, two or three years of membership, with three years offering the best overall value.
-          Every option includes access to your secure Patient Portal and a patient-controlled QR profile.
-          Choose the package that best matches how you expect to use LymphAware, then create your account
-          and continue to secure payment.
+          Compare the packages and prices below. Choose one, two or three years of membership in the
+          joining journey. Every option includes access to your secure Patient Portal and a
+          patient-controlled QR profile.
         </p>
       </div>
 
@@ -1044,7 +1040,6 @@
             <li>Secure Patient Portal access</li>
             <li>Update your information during membership</li>
           </ul>
-          <a href="/register/?package=STANDARD" class="button button-primary">Choose Membership</a>
         </article>
 
         <article class="home-membership-price-card home-membership-package-plus">
@@ -1066,7 +1061,6 @@
             <li>Secure Patient Portal access</li>
             <li>Update your information during membership</li>
           </ul>
-          <a href="/register/?package=PLUS" class="button button-primary">Choose Plus</a>
         </article>
 
         <article class="home-membership-price-card home-membership-package-multilingual">
@@ -1088,7 +1082,6 @@
             <li>2 lanyards &amp; holders in total</li>
             <li>Translation prepared by LymphAware</li>
           </ul>
-          <a href="/register/?package=MULTILINGUAL" class="button button-primary">Choose Multilingual</a>
         </article>
       </div>
 
@@ -1102,6 +1095,7 @@
       </div>
 
       <div class="home-membership-actions">
+        <a id="membership-join-link" href="/register/" class="button button-primary">Join LymphAware</a>
         <p class="home-membership-renewal">
           Postage &amp; packing is £2.99 for the United Kingdom, £4.99 for Europe and £9.99 for the Rest of World.
           Postage &amp; packing is applied once per order. At checkout you can optionally choose automatic renewal at the lower price shown for your package and term. Renewal continues digital membership only and does not include new cards, lanyards or postage. Automatic renewal is never selected without your agreement.
@@ -1336,10 +1330,8 @@
   const membershipTitle = document.getElementById('membership-title');
   const membershipLead = document.getElementById('membership-lead');
   const membershipPackages = document.getElementById('membership-packages');
+  const membershipJoinLink = document.getElementById('membership-join-link');
   const signedInMembershipPanel = document.getElementById('signed-in-membership-panel');
-  const newMembershipLinks = Array.from(
-    document.querySelectorAll('.home-membership-packages a[href^="/register/"]')
-  );
   let currentAccountSession = null;
 
   const membershipTitleDefault = membershipTitle.textContent;
@@ -1355,16 +1347,18 @@
       membershipLead.textContent = 'The membership packages and available terms are shown below for reference. As you are already signed in, another membership cannot be selected from this page.';
       membershipPackages.hidden = false;
       membershipPackages.classList.add('is-reference-only');
+      membershipJoinLink.hidden = true;
       signedInMembershipPanel.hidden = false;
       return;
     }
 
-    heroMembershipLink.href = '#membership';
-    heroMembershipLink.textContent = 'Choose your membership';
+    heroMembershipLink.href = '/register/';
+    heroMembershipLink.textContent = 'Join LymphAware';
     membershipTitle.textContent = membershipTitleDefault;
     membershipLead.textContent = membershipLeadDefault;
     membershipPackages.hidden = false;
     membershipPackages.classList.remove('is-reference-only');
+    membershipJoinLink.hidden = false;
     signedInMembershipPanel.hidden = true;
   }
 
@@ -1414,21 +1408,6 @@
 
   desktopSignOutButton.addEventListener('click', signOutFromHomepage);
   mobileSignOutButton.addEventListener('click', signOutFromHomepage);
-
-  newMembershipLinks.forEach((link) => {
-    link.addEventListener('click', async (event) => {
-      event.preventDefault();
-
-      const session = currentAccountSession || (await supabaseClient.auth.getSession()).data.session;
-
-      if (session?.user) {
-        window.location.href = '/portal/';
-        return;
-      }
-
-      window.location.href = link.href;
-    });
-  });
 
   async function checkAccountSession() {
     const { data: { session } } = await supabaseClient.auth.getSession();
