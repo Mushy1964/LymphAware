@@ -36,7 +36,7 @@ function packageFromItems(items) {
   const language = items.find(item => item.item_type === 'LANGUAGE_PACKAGE');
   const description = String(membership?.description || '');
   const languageName = String(language?.language_name || '').trim();
-  const termYears = Number(description.match(/\b(1|3|5)-Year\b/i)?.[1] || 5);
+  const termYears = Number(description.match(/\b(1|2|3|5)-Year\b/i)?.[1] || 5);
 
   if (description.includes('Multilingual')) {
     return {
