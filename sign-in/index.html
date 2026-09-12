@@ -137,8 +137,10 @@
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-    const requestedPackage = String(new URLSearchParams(location.search).get('package') || '').toUpperCase();
+    const signInParams = new URLSearchParams(location.search);
+    const requestedPackage = String(signInParams.get('package') || '').toUpperCase();
     const selectedPackage = ['STANDARD', 'PLUS', 'MULTILINGUAL'].includes(requestedPackage) ? requestedPackage : '';
+    const requestedTerm = [1, 3, 5].includes(Number(signInParams.get('term'))) ? Number(signInParams.get('term')) : 5;
     const loginForm = document.getElementById('login-form');
     const loginMessage = document.getElementById('login-message');
 
@@ -162,7 +164,7 @@
       if (signedInEmail === 'admin@lymphaware.com') {
         window.location.href = '/admin/orders/';
       } else {
-        window.location.href = selectedPackage ? '/portal/?package=' + encodeURIComponent(selectedPackage) : '/';
+        window.location.href = selectedPackage ? '/portal/?package=' + encodeURIComponent(selectedPackage) + '&term=' + encodeURIComponent(requestedTerm) : '/';
       }
     });
   </script>
