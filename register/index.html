@@ -255,14 +255,14 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
     const PACKAGE_DETAILS = {
-      STANDARD: { name: 'LymphAware Membership – from £19.99', summary: 'Choose 1, 3 or 5 years. Includes 1 English QR profile, 1 English ID card and 1 lanyard & holder.' },
-      PLUS: { name: 'LymphAware Plus – from £29.99', summary: 'Choose 1, 3 or 5 years. Includes 1 English QR profile, 2 English ID cards and 2 lanyards & holders.' },
-      MULTILINGUAL: { name: 'LymphAware Multilingual – from £44.99', summary: 'Choose 1, 3 or 5 years. Includes English and one additional-language QR profile, English and translated-language ID cards, with the translation prepared by LymphAware.' }
+      STANDARD: { name: 'LymphAware Membership – from £19.99', summary: 'Choose 1, 2 or 3 years. Includes 1 English QR profile, 1 English ID card and 1 lanyard & holder.' },
+      PLUS: { name: 'LymphAware Plus – from £29.99', summary: 'Choose 1, 2 or 3 years. Includes 1 English QR profile, 2 English ID cards and 2 lanyards & holders.' },
+      MULTILINGUAL: { name: 'LymphAware Multilingual – from £44.99', summary: 'Choose 1, 2 or 3 years. Includes English and one additional-language QR profile, English and translated-language ID cards, with the translation prepared by LymphAware.' }
     };
     const registrationParams = new URLSearchParams(location.search);
     const requestedPackage = String(registrationParams.get('package') || 'STANDARD').toUpperCase();
     const selectedPackage = PACKAGE_DETAILS[requestedPackage] ? requestedPackage : 'STANDARD';
-    const requestedTerm = [1, 3, 5].includes(Number(registrationParams.get('term'))) ? Number(registrationParams.get('term')) : 5;
+    const requestedTerm = [1, 2, 3].includes(Number(registrationParams.get('term'))) ? Number(registrationParams.get('term')) : 3;
     const signInUrl = '/sign-in/?package=' + encodeURIComponent(selectedPackage) + '&term=' + encodeURIComponent(requestedTerm);
 
     const registerForm = document.getElementById('register-form');
