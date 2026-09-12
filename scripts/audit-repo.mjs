@@ -91,11 +91,15 @@ function checkProjectConsistency() {
   const portalPath = path.join(root, 'portal/index.html');
   const translationPath = path.join(root, 'netlify/functions/refresh-language-translations-background.mjs');
   const publicProfilePath = path.join(root, 'p-v3/index.html');
+  const homePath = path.join(root, 'index.html');
+  const webhookPath = path.join(root, 'netlify/functions/stripe-webhook.mjs');
 
   const checkout = fs.readFileSync(checkoutPath, 'utf8');
   const portal = fs.readFileSync(portalPath, 'utf8');
   const translation = fs.readFileSync(translationPath, 'utf8');
   const publicProfile = fs.readFileSync(publicProfilePath, 'utf8');
+  const home = fs.readFileSync(homePath, 'utf8');
+  const webhook = fs.readFileSync(webhookPath, 'utf8');
 
   for (const [code, name] of [['FR', 'French'], ['ES', 'Spanish'], ['DE', 'German']]) {
     if (!checkout.includes(`${code}: '${name}'`)) errors.push(`Checkout language configuration is missing ${name} (${code}).`);
@@ -111,6 +115,21 @@ function checkProjectConsistency() {
     errors.push('Portal postage rates do not match £2.99 UK / £4.99 Europe / £9.99 Rest of World.');
   }
   if (!checkout.includes('amountPence: 650')) errors.push('Checkout additional card/lanyard price is not £6.50.');
+
+  const membershipPrices = {
+    STANDARD: { 1: 1999, 3: 2499, 5: 2999 },
+    PLUS: { 1: 2999, 3: 3499, 5: 3999 },
+    MULTILINGUAL: { 1: 4499, 3: 4999, 5: 5499 }
+  };
+  for (const [packageCode, terms] of Object.entries(membershipPrices)) {
+    for (const [years, pence] of Object.entries(terms)) {
+      const pounds = `£${(pence / 100).toFixed(2)}`;
+      if (!checkout.includes(`${years}: ${pence}`)) errors.push(`Checkout is missing ${packageCode} ${years}-year price ${pounds}.`);
+      if (!portal.includes(`${years}:${pence}`)) errors.push(`Portal is missing ${packageCode} ${years}-year price ${pounds}.`);
+      if (!webhook.includes(`${years}: ${pence}`)) errors.push(`Webhook is missing ${packageCode} ${years}-year price ${pounds}.`);
+      if (!home.includes(pounds)) errors.push(`Homepage is missing membership price ${pounds}.`);
+    }
+  }
 
   const customerFacingFiles = walk(root).filter(file => {
     const name = relative(file);
