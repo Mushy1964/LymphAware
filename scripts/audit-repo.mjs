@@ -119,7 +119,7 @@ function checkProjectConsistency() {
   const membershipPrices = {
     STANDARD: { 1: 1999, 2: 2499, 3: 2999 },
     PLUS: { 1: 2999, 2: 3499, 3: 3999 },
-    MULTILINGUAL: { 1: 4499, 2: 4999, 3: 5499 }
+    MULTILINGUAL: { 1: 3999, 2: 4499, 3: 4999 }
   };
   for (const [packageCode, terms] of Object.entries(membershipPrices)) {
     for (const [years, pence] of Object.entries(terms)) {
@@ -128,6 +128,20 @@ function checkProjectConsistency() {
       if (!portal.includes(`${years}:${pence}`)) errors.push(`Portal is missing ${packageCode} ${years}-year price ${pounds}.`);
       if (!webhook.includes(`${years}: ${pence}`)) errors.push(`Webhook is missing ${packageCode} ${years}-year price ${pounds}.`);
       if (!home.includes(pounds)) errors.push(`Homepage is missing membership price ${pounds}.`);
+    }
+  }
+  const renewalPrices = {
+    STANDARD: { 1: 1499, 2: 1899, 3: 2299 },
+    PLUS: { 1: 2299, 2: 2699, 3: 2999 },
+    MULTILINGUAL: { 1: 2999, 2: 3399, 3: 3799 }
+  };
+  for (const [packageCode, terms] of Object.entries(renewalPrices)) {
+    for (const [years, pence] of Object.entries(terms)) {
+      const pounds = `£${(pence / 100).toFixed(2)}`;
+      if (!checkout.includes(`${years}: ${pence}`)) errors.push(`Checkout is missing ${packageCode} ${years}-year renewal price ${pounds}.`);
+      if (!portal.includes(`${years}:${pence}`)) errors.push(`Portal is missing ${packageCode} ${years}-year renewal price ${pounds}.`);
+      if (!webhook.includes(`${years}: ${pence}`)) errors.push(`Webhook is missing ${packageCode} ${years}-year renewal price ${pounds}.`);
+      if (!home.includes(pounds)) errors.push(`Homepage is missing renewal price ${pounds}.`);
     }
   }
   if (!home.includes('Choose one, two or three years of membership')) {
