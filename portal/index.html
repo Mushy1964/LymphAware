@@ -177,7 +177,7 @@
           <div class="package-list">
             <label class="package-option"><input type="radio" name="membership-package" value="STANDARD" checked><span><span class="package-option-title">LymphAware Membership</span><span class="package-option-detail">1 English QR profile, 1 English ID card and 1 lanyard &amp; holder.</span></span><span class="package-option-price">From £19.99</span></label>
             <label class="package-option"><input type="radio" name="membership-package" value="PLUS"><span><span class="package-option-title">LymphAware Plus</span><span class="package-option-detail">1 English QR profile, 2 English ID cards and 2 lanyards &amp; holders.</span></span><span class="package-option-price">From £29.99</span></label>
-            <label class="package-option"><input type="radio" name="membership-package" value="MULTILINGUAL"><span><span class="package-option-title">LymphAware Multilingual</span><span class="package-option-detail">English and one additional-language QR profile, 2 English cards, 2 translated-language cards and 2 lanyards &amp; holders.</span></span><span class="package-option-price">From £44.99</span></label>
+            <label class="package-option"><input type="radio" name="membership-package" value="MULTILINGUAL"><span><span class="package-option-title">LymphAware Multilingual</span><span class="package-option-detail">English and one additional-language QR profile, 2 English cards, 2 translated-language cards and 2 lanyards &amp; holders.</span></span><span class="package-option-price">From £39.99</span></label>
           </div>
           <fieldset class="membership-duration-fieldset">
             <legend>Choose your membership length</legend>
@@ -282,8 +282,8 @@
 const SUPABASE_URL='https://thbhsktcenhrnxzkbjus.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-const PACKAGE_PRICES={STANDARD:{1:1999,2:2499,3:2999},PLUS:{1:2999,2:3499,3:3999},MULTILINGUAL:{1:4499,2:4999,3:5499}};
-const RENEWAL_PRICES={STANDARD:{1:1499,2:1899,3:2299},PLUS:{1:2299,2:2699,3:2999},MULTILINGUAL:{1:3399,2:3799,3:4199}};
+const PACKAGE_PRICES={STANDARD:{1:1999,2:2499,3:2999},PLUS:{1:2999,2:3499,3:3999},MULTILINGUAL:{1:3999,2:4499,3:4999}};
+const RENEWAL_PRICES={STANDARD:{1:1499,2:1899,3:2299},PLUS:{1:2299,2:2699,3:2999},MULTILINGUAL:{1:2999,2:3399,3:3799}};
 const SHIPPING_PRICES={UK:299,EUROPE:499,REST_OF_WORLD:999};
 const EUROPE_COUNTRIES=new Set(['AL','AD','AT','BE','BA','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IS','IE','IT','XK','LV','LI','LT','LU','MT','MD','MC','ME','NL','MK','NO','PL','PT','RO','SM','RS','SK','SI','ES','SE','CH','UA','VA']);
 const APPROVED_LANGUAGES={FR:'French',ES:'Spanish',DE:'German'};
