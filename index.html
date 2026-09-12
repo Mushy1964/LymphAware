@@ -231,10 +231,45 @@
       line-height: 1;
     }
 
+    .home-membership-price-from {
+      display: block;
+      margin-bottom: 6px;
+      color: #566575;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
     .home-membership-term {
       margin: 8px 0 22px;
       color: #17283d;
       font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .home-membership-term-options {
+      display: grid;
+      gap: 7px;
+      margin: -8px 0 22px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .home-membership-term-options li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #f4f7f8;
+      color: #344456;
+      font-weight: 700;
+    }
+
+    .home-membership-best-value {
+      color: #16853f;
+      font-size: .82rem;
       font-weight: 800;
     }
 
@@ -947,7 +982,7 @@
           LymphAware card and a QR-linked profile presented in French.
         </p>
         <p class="home-language-note">
-          Choose the 5-Year Multilingual package when joining, or add another language later from your Patient Portal.
+          Choose the Multilingual package when joining, or add another language later from your Patient Portal.
           You complete your main English profile and LymphAware prepares the translation for you. Only approved languages can be selected.
         </p>
       </div>
@@ -961,20 +996,26 @@
 
       <div class="home-membership-copy">
         <p class="home-membership-eyebrow">LymphAware membership</p>
-        <h2 id="membership-title">Choose the LymphAware package that suits you.</h2>
+        <h2 id="membership-title">LymphAware membership from £19.99.</h2>
         <p id="membership-lead" class="home-membership-lead">
-          Each option gives you five years of LymphAware membership, access to your secure Patient Portal
-          and a patient-controlled QR profile. Choose the package that best matches how you expect to use
-          LymphAware, then create your account and continue to secure payment.
+          Choose one, three or five years of membership, with five years offering the best overall value.
+          Every option includes access to your secure Patient Portal and a patient-controlled QR profile.
+          Choose the package that best matches how you expect to use LymphAware, then create your account
+          and continue to secure payment.
         </p>
       </div>
 
       <div id="membership-packages" class="home-membership-packages">
         <article class="home-membership-price-card home-membership-package-standard">
-          <p class="home-membership-package-badge">5-Year Membership</p>
+          <p class="home-membership-package-badge">LymphAware Membership</p>
           <p class="home-membership-package-summary">The essential LymphAware package.</p>
-          <p class="home-membership-price">£29.99</p>
-          <p class="home-membership-term">One payment for five years</p>
+          <p class="home-membership-price"><span class="home-membership-price-from">From</span>£19.99</p>
+          <p class="home-membership-term">Choose your membership length</p>
+          <ul class="home-membership-term-options" aria-label="LymphAware Membership prices">
+            <li><span>1 year</span><span>£19.99</span></li>
+            <li><span>3 years</span><span>£24.99</span></li>
+            <li><span>5 years</span><span>£29.99 <span class="home-membership-best-value">Best value</span></span></li>
+          </ul>
           <ul class="home-membership-benefits">
             <li>1 English QR profile</li>
             <li>1 English LymphAware ID card</li>
@@ -982,14 +1023,19 @@
             <li>Secure Patient Portal access</li>
             <li>Update your information during membership</li>
           </ul>
-          <a href="/register/?package=STANDARD" class="button button-primary">Choose 5-Year Membership</a>
+          <a href="/register/?package=STANDARD&amp;term=5" class="button button-primary">Choose Membership</a>
         </article>
 
         <article class="home-membership-price-card home-membership-package-plus">
-          <p class="home-membership-package-badge">5-Year Plus</p>
+          <p class="home-membership-package-badge">LymphAware Plus</p>
           <p class="home-membership-package-summary">Extra flexibility for everyday use.</p>
-          <p class="home-membership-price">£39.99</p>
-          <p class="home-membership-term">One payment for five years</p>
+          <p class="home-membership-price"><span class="home-membership-price-from">From</span>£29.99</p>
+          <p class="home-membership-term">Choose your membership length</p>
+          <ul class="home-membership-term-options" aria-label="LymphAware Plus prices">
+            <li><span>1 year</span><span>£29.99</span></li>
+            <li><span>3 years</span><span>£34.99</span></li>
+            <li><span>5 years</span><span>£39.99 <span class="home-membership-best-value">Best value</span></span></li>
+          </ul>
           <ul class="home-membership-benefits">
             <li>1 English QR profile</li>
             <li>2 English LymphAware ID cards</li>
@@ -997,14 +1043,19 @@
             <li>Secure Patient Portal access</li>
             <li>Update your information during membership</li>
           </ul>
-          <a href="/register/?package=PLUS" class="button button-primary">Choose 5-Year Plus</a>
+          <a href="/register/?package=PLUS&amp;term=5" class="button button-primary">Choose Plus</a>
         </article>
 
         <article class="home-membership-price-card home-membership-package-multilingual">
-          <p class="home-membership-package-badge">5-Year Multilingual</p>
+          <p class="home-membership-package-badge">LymphAware Multilingual</p>
           <p class="home-membership-package-summary">For people who use LymphAware in more than one language setting.</p>
-          <p class="home-membership-price">£49.99</p>
-          <p class="home-membership-term">One payment for five years</p>
+          <p class="home-membership-price"><span class="home-membership-price-from">From</span>£44.99</p>
+          <p class="home-membership-term">Choose your membership length</p>
+          <ul class="home-membership-term-options" aria-label="LymphAware Multilingual prices">
+            <li><span>1 year</span><span>£44.99</span></li>
+            <li><span>3 years</span><span>£49.99</span></li>
+            <li><span>5 years</span><span>£54.99 <span class="home-membership-best-value">Best value</span></span></li>
+          </ul>
           <ul class="home-membership-benefits">
             <li>1 English QR profile</li>
             <li>1 additional-language QR profile</li>
@@ -1013,7 +1064,7 @@
             <li>2 lanyards &amp; holders in total</li>
             <li>Translation prepared by LymphAware</li>
           </ul>
-          <a href="/register/?package=MULTILINGUAL" class="button button-primary">Choose Multilingual</a>
+          <a href="/register/?package=MULTILINGUAL&amp;term=5" class="button button-primary">Choose Multilingual</a>
         </article>
       </div>
 
@@ -1029,7 +1080,7 @@
       <div class="home-membership-actions">
         <p class="home-membership-renewal">
           Postage &amp; packing is £2.99 for the United Kingdom, £4.99 for Europe and £9.99 for the Rest of World.
-          Postage &amp; packing is applied once per order. You will be reminded before your five-year membership is due to expire, so you can choose whether to renew.
+          Postage &amp; packing is applied once per order. You will be reminded before your selected membership term is due to expire, so you can choose whether to renew. Automatic renewal will never be applied without your agreement.
         </p>
       </div>
 
@@ -1277,7 +1328,7 @@
       heroMembershipLink.href = '/portal/';
       heroMembershipLink.textContent = 'Patient Portal';
       membershipTitle.textContent = 'Manage your LymphAware account.';
-      membershipLead.textContent = 'The membership packages are shown below for reference. As you are already signed in, another five-year membership cannot be selected from this page.';
+      membershipLead.textContent = 'The membership packages and available terms are shown below for reference. As you are already signed in, another membership cannot be selected from this page.';
       membershipPackages.hidden = false;
       membershipPackages.classList.add('is-reference-only');
       signedInMembershipPanel.hidden = false;
