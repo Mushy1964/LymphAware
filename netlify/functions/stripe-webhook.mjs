@@ -1,5 +1,11 @@
 import crypto from 'node:crypto';
 
+const INITIAL_PACKAGE_PRICES = {
+  STANDARD: { 1: 1999, 3: 2499, 5: 2999 },
+  PLUS: { 1: 2999, 3: 3499, 5: 3999 },
+  MULTILINGUAL: { 1: 4499, 3: 4999, 5: 5499 }
+};
+
 function verifyStripeSignature(payload, signatureHeader, secret) {
   if (!signatureHeader || !secret) return false;
   const parts = signatureHeader.split(',');
@@ -133,6 +139,9 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
   const postageChargePence = Number(session.metadata?.shipping_pence || session.total_details?.amount_shipping || 0);
   const postagePaid = `£${(postageChargePence / 100).toFixed(2)}`;
   const totalPaid = `£${((session.amount_total || 0) / 100).toFixed(2)}`;
+  const membershipTermYears = [1, 3, 5].includes(Number(session.metadata?.membership_term_years))
+    ? Number(session.metadata.membership_term_years)
+    : 5;
   let subject = `Your LymphAware order is confirmed – ${orderRef}`;
   let nextSteps =
     `Your order has been received. We will use the current name and photograph in your LymphAware profile for any ID card included in this order.\n\n` +
@@ -141,7 +150,7 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
   if (paymentType === 'initial_membership') {
     subject = `Welcome to LymphAware – your membership is now active`;
     nextSteps =
-      `Your five-year LymphAware membership is now active.\n\n` +
+      `Your ${membershipTermYears}-year LymphAware membership is now active.\n\n` +
       `WHAT YOU NEED TO DO NEXT\n\n` +
       `Before your LymphAware ID card can be produced, please complete these two mandatory details in your Patient Portal:\n\n` +
       `1. Your display name – this is the name that will appear on your LymphAware ID card and QR profile.\n` +
@@ -227,23 +236,24 @@ async function ensureOrderItems(orderId, items) {
   return { ok: true };
 }
 
-function buildInitialItems(packageType, languageCode, languageName) {
+function buildInitialItems(packageType, languageCode, languageName, membershipTermYears, packagePricePence) {
+  const termLabel = `${membershipTermYears}-Year`;
   if (packageType === 'PLUS') {
     return [
-      normaliseItem({ item_type: 'MEMBERSHIP', description: 'LymphAware 5-Year Plus', quantity: 1, unit_price_pence: 3999, line_total_pence: 3999 }),
+      normaliseItem({ item_type: 'MEMBERSHIP', description: `LymphAware ${termLabel} Plus`, quantity: 1, unit_price_pence: packagePricePence, line_total_pence: packagePricePence }),
       normaliseItem({ item_type: 'EXTRA_CARD', description: 'Additional English ID Card – included in Plus package', quantity: 1, unit_price_pence: 0, line_total_pence: 0 }),
       normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Additional Lanyard & Holder – included in Plus package', quantity: 1, unit_price_pence: 0, line_total_pence: 0 })
     ];
   }
   if (packageType === 'MULTILINGUAL') {
     return [
-      normaliseItem({ item_type: 'MEMBERSHIP', description: 'LymphAware 5-Year Multilingual', quantity: 1, unit_price_pence: 4999, line_total_pence: 4999 }),
+      normaliseItem({ item_type: 'MEMBERSHIP', description: `LymphAware ${termLabel} Multilingual`, quantity: 1, unit_price_pence: packagePricePence, line_total_pence: packagePricePence }),
       normaliseItem({ item_type: 'EXTRA_CARD', description: 'Second English ID Card – included in Multilingual package', quantity: 1, unit_price_pence: 0, line_total_pence: 0 }),
       normaliseItem({ item_type: 'LANGUAGE_PACKAGE', description: 'Multilingual translated ID Cards & QR Profile', quantity: 2, unit_price_pence: 0, line_total_pence: 0, language_code: languageCode, language_name: languageName }),
       normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Translated-language Lanyard & Holder – included in Multilingual package', quantity: 1, unit_price_pence: 0, line_total_pence: 0, language_code: languageCode, language_name: languageName })
     ];
   }
-  return [normaliseItem({ item_type: 'MEMBERSHIP', description: 'LymphAware 5-Year Membership', quantity: 1, unit_price_pence: 2999, line_total_pence: 2999 })];
+  return [normaliseItem({ item_type: 'MEMBERSHIP', description: `LymphAware ${termLabel} Membership`, quantity: 1, unit_price_pence: packagePricePence, line_total_pence: packagePricePence })];
 }
 
 function buildAdditionalLanguageItems(languageCode, languageName) {
@@ -375,6 +385,11 @@ export default async (request) => {
 
     const paidAt = new Date();
     const packageType = String(session.metadata?.package_type || 'STANDARD').trim().toUpperCase();
+    const membershipTermYears = [1, 3, 5].includes(Number(session.metadata?.membership_term_years))
+      ? Number(session.metadata.membership_term_years)
+      : 5;
+    const packagePricePence = INITIAL_PACKAGE_PRICES[packageType]?.[membershipTermYears];
+    if (paymentType === 'initial_membership' && !packagePricePence) return new Response('Invalid membership package metadata', { status: 400 });
     const languageName = String(session.metadata?.language_name || '').trim();
     const languageCode = String(session.metadata?.language_code || '').trim().toUpperCase();
     const replacementCard = String(session.metadata?.replacement_card || '') === '1';
@@ -388,7 +403,7 @@ export default async (request) => {
 
     if (paymentType === 'initial_membership') {
       const membershipEnd = new Date(paidAt);
-      membershipEnd.setUTCFullYear(membershipEnd.getUTCFullYear() + 5);
+      membershipEnd.setUTCFullYear(membershipEnd.getUTCFullYear() + membershipTermYears);
       const membershipResponse = await fetch(
         `${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${encodeURIComponent(userId)}`,
         {
@@ -396,7 +411,7 @@ export default async (request) => {
           headers: supabaseHeaders('return=minimal'),
           body: JSON.stringify({
             membership_status: 'ACTIVE', payment_status: 'PAID', payment_provider: 'STRIPE', payment_reference: session.id,
-            paid_at: paidAt.toISOString(), membership_start: paidAt.toISOString(), membership_end: membershipEnd.toISOString(), updated_at: paidAt.toISOString()
+            paid_at: paidAt.toISOString(), membership_start: paidAt.toISOString(), membership_end: membershipEnd.toISOString(), initial_fee_pence: packagePricePence, updated_at: paidAt.toISOString()
           })
         }
       );
@@ -407,7 +422,7 @@ export default async (request) => {
     }
 
     const items = paymentType === 'initial_membership'
-      ? buildInitialItems(packageType, languageCode, languageName)
+      ? buildInitialItems(packageType, languageCode, languageName, membershipTermYears, packagePricePence)
       : paymentType === 'additional_language'
         ? buildAdditionalLanguageItems(languageCode, languageName)
         : paymentType === 'additional_items'
