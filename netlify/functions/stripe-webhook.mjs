@@ -3,17 +3,17 @@ import crypto from 'node:crypto';
 const INITIAL_PACKAGE_PRICES = {
   STANDARD: { 1: 1999, 2: 2499, 3: 2999, 5: 2999 },
   PLUS: { 1: 2999, 2: 3499, 3: 3999, 5: 3999 },
-  MULTILINGUAL: { 1: 4499, 2: 4999, 3: 5499, 5: 5499 }
+  MULTILINGUAL: { 1: 3999, 2: 4499, 3: 4999, 5: 4999 }
 };
 
 const RENEWAL_PRICES = {
   STANDARD: { 1: 1499, 2: 1899, 3: 2299 },
   PLUS: { 1: 2299, 2: 2699, 3: 2999 },
-  MULTILINGUAL: { 1: 3399, 2: 3799, 3: 4199 }
+  MULTILINGUAL: { 1: 2999, 2: 3399, 3: 3799 }
 };
 
 const RENEWAL_STRIPE_PRICES = {
-  MULTILINGUAL: { 1: 'price_1UEoS3PMYhQKb2OT0ZKqHK4H', 2: 'price_1UEoSIPMYhQKb2OTQDyz18Ie', 3: 'price_1UEoSJPMYhQKb2OTze0EwlaO' }
+  MULTILINGUAL: { 1: 'price_1UEsAyPMYhQKb2OT8Ut5gfFS', 2: 'price_1UEsAzPMYhQKb2OTMNX78xlV', 3: 'price_1UEsB0PMYhQKb2OTucRp4zc3' }
 };
 
 function verifyStripeSignature(payload, signatureHeader, secret) {
