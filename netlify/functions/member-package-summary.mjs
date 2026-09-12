@@ -36,11 +36,12 @@ function packageFromItems(items) {
   const language = items.find(item => item.item_type === 'LANGUAGE_PACKAGE');
   const description = String(membership?.description || '');
   const languageName = String(language?.language_name || '').trim();
+  const termYears = Number(description.match(/\b(1|3|5)-Year\b/i)?.[1] || 5);
 
   if (description.includes('Multilingual')) {
     return {
       code: 'MULTILINGUAL',
-      name: '5-Year Multilingual',
+      name: `${termYears}-Year Multilingual`,
       language_name: languageName || null,
       included_summary: languageName
         ? `English + ${languageName} QR profiles · 2 English ID cards · 2 ${languageName} ID cards · 2 Lanyards & holders`
@@ -50,14 +51,14 @@ function packageFromItems(items) {
   if (description.includes('Plus')) {
     return {
       code: 'PLUS',
-      name: '5-Year Plus',
+      name: `${termYears}-Year Plus`,
       language_name: null,
       included_summary: '1 English QR profile · 2 English ID cards · 2 Lanyards & holders'
     };
   }
   return {
     code: 'STANDARD',
-    name: '5-Year Membership',
+    name: `${termYears}-Year Membership`,
     language_name: null,
     included_summary: '1 English QR profile · 1 English ID card · 1 Lanyard & holder'
   };
