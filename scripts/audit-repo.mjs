@@ -117,9 +117,9 @@ function checkProjectConsistency() {
   if (!checkout.includes('amountPence: 650')) errors.push('Checkout additional card/lanyard price is not £6.50.');
 
   const membershipPrices = {
-    STANDARD: { 1: 1999, 3: 2499, 5: 2999 },
-    PLUS: { 1: 2999, 3: 3499, 5: 3999 },
-    MULTILINGUAL: { 1: 4499, 3: 4999, 5: 5499 }
+    STANDARD: { 1: 1999, 2: 2499, 3: 2999 },
+    PLUS: { 1: 2999, 2: 3499, 3: 3999 },
+    MULTILINGUAL: { 1: 4499, 2: 4999, 3: 5499 }
   };
   for (const [packageCode, terms] of Object.entries(membershipPrices)) {
     for (const [years, pence] of Object.entries(terms)) {
@@ -129,6 +129,15 @@ function checkProjectConsistency() {
       if (!webhook.includes(`${years}: ${pence}`)) errors.push(`Webhook is missing ${packageCode} ${years}-year price ${pounds}.`);
       if (!home.includes(pounds)) errors.push(`Homepage is missing membership price ${pounds}.`);
     }
+  }
+  if (!home.includes('Choose one, two or three years of membership')) {
+    errors.push('Homepage membership wording does not offer the agreed one-, two- and three-year terms.');
+  }
+  if (home.includes('five years') || portal.includes('<strong>5 years</strong>')) {
+    errors.push('An obsolete five-year option remains visible in the new-member journey.');
+  }
+  if (!checkout.includes('if (![1, 2, 3].includes(membershipTermYears))')) {
+    errors.push('Checkout does not restrict new memberships to one, two or three years.');
   }
 
   const customerFacingFiles = walk(root).filter(file => {
