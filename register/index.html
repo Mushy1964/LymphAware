@@ -3,363 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create Account | LymphAware</title>
-
+  <title>Join LymphAware | Membership and Secure Payment</title>
+  <meta name="description" content="Choose your LymphAware membership, create your secure account and continue directly to payment.">
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/secondary-header.css">
   <link rel="stylesheet" href="/css/card-system.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
-    .portal-page {
-      min-height: calc(100vh - 84px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 70px 20px;
-      background: linear-gradient(135deg, rgba(76,155,87,.06), rgba(40,120,184,.05));
-    }
-
-    .portal-card {
-      width: 100%;
-      max-width: 560px;
-      padding: 38px;
-      border-radius: 22px;
-      background: #fff;
-    }
-
-    .portal-card h1 {
-      margin: 0 0 12px;
-      font-size: 2.3rem;
-      line-height: 1.15;
-    }
-
-    .portal-intro {
-      margin: 0 0 28px;
-      color: var(--muted);
-      font-size: 1.05rem;
-      line-height: 1.55;
-    }
-
-    .account-note {
-      margin: 0 0 24px;
-      padding: 16px 18px;
-      border: 1px solid #cbd8df;
-      border-radius: 12px;
-      background: #f4f9fc;
-      color: #455566;
-      line-height: 1.5;
-    }
-    .account-note strong { color: #263746; }
-
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; margin-bottom: 7px; font-weight: 700; }
-    .form-group input[type="email"],
-    .form-group input[type="password"] {
-      width: 100%;
-      min-height: 48px;
-      padding: 11px 13px;
-      border: 1px solid #bfcbd2;
-      border-radius: 9px;
-      font: inherit;
-      background: #fff;
-    }
-    .form-group input:focus {
-      outline: 3px solid rgba(40,120,184,.18);
-      border-color: var(--blue);
-    }
-
-    .password-help {
-      margin: 7px 0 0;
-      color: var(--muted);
-      font-size: .9rem;
-      line-height: 1.45;
-    }
-
-    .agreement {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin: 24px 0;
-      line-height: 1.5;
-    }
-    .agreement input { width: 20px; height: 20px; flex: 0 0 20px; margin-top: 2px; }
-    .agreement label { font-weight: 400; }
-    .agreement a { color: var(--blue); font-weight: 700; }
-
-    .portal-button { width: 100%; margin-top: 4px; }
-    #register-message { margin: 16px 0 0; line-height: 1.5; }
-
-    .register-success {
-      padding: 28px 24px;
-      border: 1px solid #b9d8c0;
-      border-radius: 18px;
-      background: #f1f9f3;
-      box-shadow: var(--content-shadow);
-      text-align: center;
-    }
-
-    .register-success-icon {
-      width: 58px;
-      height: 58px;
-      margin: 0 auto 16px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: #ffffff;
-      border: 1px solid #b9d8c0;
-      color: var(--green-dark);
-      font-size: 1.7rem;
-      font-weight: 800;
-    }
-
-    .register-success h2 {
-      margin: 0 0 12px;
-      font-size: 1.65rem;
-      color: var(--text);
-    }
-
-    .register-success p {
-      margin: 0 0 14px;
-      color: #465661;
-      line-height: 1.55;
-    }
-
-    .register-success-actions {
-      display: grid;
-      justify-items: center;
-      gap: 12px;
-      margin-top: 8px;
-    }
-
-    .register-success .button {
-      margin-top: 0;
-    }
-
-    .register-reset-link {
-      color: var(--blue);
-      font-weight: 700;
-    }
-
-    .portal-links {
-      margin-top: 24px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-      text-align: center;
-    }
-    .portal-links span { display: block; margin-bottom: 6px; }
-    .portal-links a { color: var(--blue); font-weight: 700; }
-
-    .portal-status {
-      margin-top: 28px;
-      padding: 18px;
-      border: 1px solid #cbd8df;
-      border-radius: 14px;
-      background: var(--green-light);
-      color: var(--green-dark);
-      font-size: .96rem;
-      line-height: 1.5;
-    }
-    .portal-status strong { display: block; margin-bottom: 4px; }
-
-    @media (max-width: 680px) {
-      .portal-page { padding: 40px 14px; }
-      .portal-card { padding: 26px 20px; }
-      .portal-card h1 { font-size: 2rem; }
-      .register-success { padding: 24px 18px; }
-    }
+    .join-page{min-height:calc(100vh - 84px);padding:54px 20px 78px;background:linear-gradient(135deg,rgba(76,155,87,.06),rgba(40,120,184,.05))}
+    .join-shell{width:100%;max-width:920px;margin:0 auto}
+    .join-progress{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin:0 auto 34px;max-width:820px;padding:0;list-style:none}
+    .join-progress li{position:relative;display:grid;justify-items:center;gap:8px;color:#697887;text-align:center;font-size:.82rem;font-weight:700}
+    .join-progress li:not(:last-child)::after{content:"";position:absolute;top:20px;left:calc(50% + 25px);right:calc(-50% + 25px);height:2px;background:#cbd8df}
+    .join-progress-number{position:relative;z-index:1;width:42px;height:42px;display:grid;place-items:center;border-radius:50%;background:#e2eaf1;color:#526475;font-size:1rem}
+    .join-progress li.is-active,.join-progress li.is-complete{color:#12304f}
+    .join-progress li.is-active .join-progress-number{background:#2878b8;color:#fff}
+    .join-progress li.is-complete .join-progress-number{background:#168b43;color:#fff}
+    .join-card{padding:42px;border-radius:22px;background:#fff;box-shadow:var(--content-shadow)}
+    .join-card h1{margin:0 0 12px;font-size:2.35rem;line-height:1.13}.join-intro{margin:0 0 30px;color:var(--muted);font-size:1.08rem;line-height:1.55}.join-step[hidden]{display:none}
+    .join-step h2{margin:0 0 8px;font-size:1.6rem}.step-intro{margin:0 0 24px;color:#526273;line-height:1.55}
+    .choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.choice-card{position:relative;display:block;cursor:pointer}.choice-card input{position:absolute;opacity:0;pointer-events:none}
+    .choice-card-body{display:block;height:100%;padding:19px;border:2px solid #cfdae1;border-radius:15px;background:#fff;transition:border-color .16s,box-shadow .16s,background .16s}
+    .choice-card input:checked+.choice-card-body{border-color:#2878b8;background:#f4f9fd;box-shadow:0 0 0 3px rgba(40,120,184,.11)}.choice-card input:focus-visible+.choice-card-body{outline:3px solid rgba(40,120,184,.25);outline-offset:2px}
+    .choice-title{display:block;margin-bottom:7px;color:#14273d;font-weight:800;font-size:1.06rem}.choice-detail{display:block;color:#536477;font-size:.92rem;line-height:1.45}.choice-price{display:block;margin-top:12px;color:#16853f;font-weight:800}
+    .term-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}.term-card .choice-card-body{padding:15px;text-align:center}.term-card .choice-title{margin:0;font-size:1.12rem}.term-card .choice-price{margin-top:5px;font-size:1.08rem}.best-value{display:inline-block;margin-top:7px;padding:3px 9px;border-radius:999px;background:#e8f5ec;color:#127638;font-size:.76rem;font-weight:800}
+    .conditional-box{margin-top:22px;padding:19px;border:1px solid #cbd8df;border-radius:14px;background:#f7fafc}.conditional-box label,.form-group label{display:block;margin-bottom:7px;font-weight:750}
+    select,.form-group input{width:100%;min-height:50px;padding:11px 13px;border:1px solid #bfcbd2;border-radius:9px;background:#fff;font:inherit}select:focus,.form-group input:focus{outline:3px solid rgba(40,120,184,.18);border-color:#2878b8}
+    .check-row{display:flex;align-items:flex-start;gap:11px;margin-top:16px;line-height:1.5}.check-row input{width:21px;height:21px;flex:0 0 21px;margin-top:2px}.check-row label{margin:0;font-weight:500}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.form-group{margin:0}.form-group-wide{grid-column:1/-1}.field-help{margin:6px 0 0;color:#657384;font-size:.88rem}
+    .review-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:22px;align-items:start}.review-panel,.renewal-panel,.key-information{padding:22px;border:1px solid #cbd8df;border-radius:15px;background:#f8fbfd}.review-panel h3,.renewal-panel h3,.key-information h3{margin:0 0 15px;font-size:1.2rem}
+    .review-lines{display:grid;gap:11px;margin:0}.review-line{display:flex;justify-content:space-between;gap:18px;padding-bottom:10px;border-bottom:1px solid #dde5ea}.review-line:last-child{padding:3px 0 0;border:0;font-size:1.12rem}.review-line dd,.review-line dt{margin:0}.review-line dd{text-align:right;font-weight:750}
+    .renewal-option{display:flex;align-items:flex-start;gap:12px;cursor:pointer}.renewal-option input{width:23px;height:23px;flex:0 0 23px;margin-top:2px}.renewal-copy strong{display:block;margin-bottom:5px;color:#14273d;font-size:1.04rem}.renewal-copy span,.renewal-copy small{display:block;color:#526273;line-height:1.48}.renewal-copy small{margin-top:8px}.renewal-confirmation{margin-top:15px;padding-top:14px;border-top:1px solid #d5e0e6}
+    .key-information{grid-column:1/-1;background:#f2f8fc;border-color:#b9d1df}.key-information-list{margin:0;padding-left:21px;color:#344b60;line-height:1.55}.key-information-list li+li{margin-top:7px}.key-information a,.agreement a,.check-row a{color:#176fae;font-weight:750}
+    .agreement{display:flex;align-items:flex-start;gap:11px;margin:20px 0 0;line-height:1.5}.agreement input{width:21px;height:21px;flex:0 0 21px;margin-top:2px}
+    .join-actions{display:flex;justify-content:space-between;gap:14px;margin-top:28px;padding-top:22px;border-top:1px solid #dde5ea}.join-actions .button{min-width:180px}.join-actions .button-primary{margin-left:auto}.join-message{margin:17px 0 0;color:#b42318;font-weight:650;line-height:1.45}.secure-note{margin:14px 0 0;text-align:right;color:#607080;font-size:.88rem}.existing-account{margin:24px 0 0;padding-top:20px;border-top:1px solid #dde5ea;text-align:center}.existing-account a{color:#176fae;font-weight:750}
+    @media(max-width:760px){.join-page{padding:32px 13px 56px}.join-card{padding:27px 20px}.join-card h1{font-size:2rem}.join-progress{margin-bottom:26px}.join-progress-label{font-size:.7rem}.join-progress li:not(:last-child)::after{left:calc(50% + 21px);right:calc(-50% + 21px)}.join-progress-number{width:36px;height:36px}.choice-grid,.term-grid,.form-grid,.review-grid{grid-template-columns:1fr}.form-group-wide,.key-information{grid-column:auto}.join-actions{display:grid;grid-template-columns:1fr}.join-actions .button{width:100%;margin:0}.join-actions .button-primary{grid-row:1}.secure-note{text-align:center}}
   </style>
 </head>
 <body>
-  <header class="site-header secondary-header">
-    <div class="container header-inner">
-      <a href="/" class="header-brand" aria-label="Back to LymphAware website">
-        <img class="header-logo" src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg" alt="LymphAware – Helping People Living with Lymphoedema Be Understood">
-      </a>
-      <div class="header-actions">
-        <a href="/" class="button button-secondary back-to-website-button">Back to Website</a>
-      </div>
-    </div>
-  </header>
-
-  <main class="portal-page">
-    <section class="portal-card" aria-labelledby="register-heading">
-      <p class="eyebrow" id="register-eyebrow">Join LymphAware</p>
-      <h1 id="register-heading">Create your LymphAware account</h1>
-      <p class="portal-intro" id="register-intro">
-        Create and confirm your secure account before paying for the membership package you selected.
-      </p>
-
-      <div class="account-note" id="membership-note">
-        <strong id="selected-package-name">Your selected membership</strong><br>
-        <span id="selected-package-summary">Your package selection will be carried through to secure payment after you confirm your email and sign in.</span>
-      </div>
-
-      <form id="register-form">
-        <div class="form-group">
-          <label for="email">Email address</label>
-          <input type="email" id="email" name="email" autocomplete="email" required>
-        </div>
-
-        <div class="form-group">
-          <label for="password">Create a password</label>
-          <input type="password" id="password" name="password" autocomplete="new-password" minlength="8" required>
-          <p class="password-help">Use at least 8 characters.</p>
-        </div>
-
-        <div class="form-group">
-          <label for="confirm-password">Confirm password</label>
-          <input type="password" id="confirm-password" name="confirm-password" autocomplete="new-password" minlength="8" required>
-        </div>
-
-        <div class="agreement">
-          <input type="checkbox" id="terms-agreement" required>
-          <label for="terms-agreement">
-            I have read and agree to the
-            <a href="/terms/" target="_blank" rel="noopener">Terms</a>
-            and
-            <a href="/privacy/" target="_blank" rel="noopener">Privacy Notice</a>.
-          </label>
-        </div>
-
-        <button type="submit" class="button button-primary portal-button">Create Account and Continue</button>
-        <p id="register-message" role="status" aria-live="polite"></p>
-      </form>
-
-      <div id="register-success" class="register-success" role="status" aria-live="polite" hidden>
-        <div class="register-success-icon" aria-hidden="true">✉</div>
-        <h2>Check your email</h2>
-        <p>
-          If this is a new LymphAware account, we’ve sent you a confirmation email. Open that email and select the confirmation link to verify your account.
-        </p>
-        <p>
-          If you have used this email address before, a second account will not be created. Sign in with your existing password or request a password reset.
-        </p>
-        <div class="register-success-actions">
-          <a id="confirmation-sign-in-link" href="/sign-in/" class="button button-secondary">Go to Sign In</a>
-          <a href="/forgot-password/" class="register-reset-link">Forgotten password?</a>
-        </div>
-      </div>
-
-      <div class="portal-links" id="existing-account-links">
-        <span>Already have a LymphAware account?</span>
-        <a id="existing-sign-in-link" href="/sign-in/">Sign in</a>
-      </div>
-
+  <header class="site-header secondary-header"><div class="container header-inner"><a href="/" class="header-brand" aria-label="Back to LymphAware website"><img class="header-logo" src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg" alt="LymphAware – Helping People Living with Lymphoedema Be Understood"></a><div class="header-actions"><a href="/" class="button button-secondary back-to-website-button">Back to Website</a></div></div></header>
+  <main class="join-page"><div class="join-shell">
+    <ol class="join-progress" aria-label="Joining progress"><li class="is-active" data-progress="1"><span class="join-progress-number">1</span><span class="join-progress-label">Membership</span></li><li data-progress="2"><span class="join-progress-number">2</span><span class="join-progress-label">Your details</span></li><li data-progress="3"><span class="join-progress-number">3</span><span class="join-progress-label">Review</span></li><li data-progress="4"><span class="join-progress-number">4</span><span class="join-progress-label">Payment</span></li><li data-progress="5"><span class="join-progress-number">5</span><span class="join-progress-label">Confirmation</span></li></ol>
+    <section class="join-card" aria-labelledby="join-heading"><p class="eyebrow">Join LymphAware</p><h1 id="join-heading">Choose, register and pay in one journey</h1><p class="join-intro">Your membership only becomes active after payment is successfully completed.</p>
+      <form id="join-form" novalidate>
+        <section class="join-step" data-step="1"><h2>Choose your membership</h2><p class="step-intro">First select the package and membership length that suit you. Nothing renews automatically unless you actively choose that option at the review stage.</p>
+          <div class="choice-grid"><label class="choice-card"><input type="radio" name="package" value="STANDARD"><span class="choice-card-body"><span class="choice-title">LymphAware Membership</span><span class="choice-detail">1 English QR profile, 1 English ID card and 1 lanyard &amp; holder.</span><span class="choice-price">From £19.99</span></span></label><label class="choice-card"><input type="radio" name="package" value="PLUS"><span class="choice-card-body"><span class="choice-title">LymphAware Plus</span><span class="choice-detail">1 English QR profile, 2 English ID cards and 2 lanyards &amp; holders.</span><span class="choice-price">From £29.99</span></span></label><label class="choice-card"><input type="radio" name="package" value="MULTILINGUAL"><span class="choice-card-body"><span class="choice-title">LymphAware Multilingual</span><span class="choice-detail">English and one additional-language profile, with English and translated cards.</span><span class="choice-price">From £39.99</span></span></label></div>
+          <div class="term-grid" aria-label="Membership length"><label class="choice-card term-card"><input type="radio" name="term" value="1"><span class="choice-card-body"><span class="choice-title">1 year</span><span class="choice-price" data-term-price="1">—</span></span></label><label class="choice-card term-card"><input type="radio" name="term" value="2"><span class="choice-card-body"><span class="choice-title">2 years</span><span class="choice-price" data-term-price="2">—</span></span></label><label class="choice-card term-card"><input type="radio" name="term" value="3"><span class="choice-card-body"><span class="choice-title">3 years</span><span class="choice-price" data-term-price="3">—</span><span class="best-value">Best value</span></span></label></div>
+          <div id="language-box" class="conditional-box" hidden><label for="language">Choose the additional language</label><select id="language"><option value="">Select a language</option><option value="FR">French</option><option value="ES">Spanish</option><option value="DE">German</option></select><div class="check-row"><input type="checkbox" id="translation-consent"><label for="translation-consent">I explicitly agree that my English profile information, including health information, may be processed to prepare and maintain this translated profile. <a href="/privacy/" target="_blank" rel="noopener">Read the Privacy Notice</a>.</label></div></div>
+          <div class="join-actions"><button type="button" class="button button-primary" data-next>Continue to your details</button></div>
+        </section>
+        <section class="join-step" data-step="2" hidden><h2>Create your secure account</h2><p class="step-intro">Enter your details now. Your account and selected membership will be prepared together, but access remains inactive unless payment succeeds.</p>
+          <div class="form-grid"><div class="form-group form-group-wide"><label for="email">Email address</label><input type="email" id="email" autocomplete="email" required></div><div class="form-group"><label for="password">Create a password</label><input type="password" id="password" autocomplete="new-password" minlength="8" required><p class="field-help">Use at least 8 characters.</p></div><div class="form-group"><label for="confirm-password">Confirm password</label><input type="password" id="confirm-password" autocomplete="new-password" minlength="8" required></div><div class="form-group form-group-wide"><label for="delivery-country">Delivery country</label><select id="delivery-country" required></select><p class="field-help">Your full delivery address will be collected securely during payment.</p></div></div>
+          <div class="join-actions"><button type="button" class="button button-secondary" data-back>Back</button><button type="button" class="button button-primary" data-next>Review your order</button></div>
+        </section>
+        <section class="join-step" data-step="3" hidden><h2>Review before payment</h2><p class="step-intro">Check the full cost and decide whether you want optional automatic renewal.</p>
+          <div class="review-grid"><div class="review-panel"><h3>Your order today</h3><dl class="review-lines"><div class="review-line"><dt id="review-package-name">Membership</dt><dd id="review-package-price">£0.00</dd></div><div class="review-line"><dt>Postage &amp; packing</dt><dd id="review-postage">£0.00</dd></div><div class="review-line"><dt>Total due today</dt><dd id="review-total">£0.00</dd></div></dl></div>
+            <div class="renewal-panel"><h3>Optional automatic renewal</h3><label class="renewal-option"><input type="checkbox" id="auto-renew"><span class="renewal-copy"><strong>Automatically renew this membership</strong><span id="renewal-summary">Select this only if you want automatic renewal.</span><small>Renewal continues your digital membership only. It does not include replacement cards, lanyards, holders or postage.</small></span></label><div id="renewal-confirmation" class="check-row renewal-confirmation" hidden><input type="checkbox" id="auto-renew-acknowledgement"><label for="auto-renew-acknowledgement" id="auto-renew-acknowledgement-label">I understand the renewal amount and frequency.</label></div></div>
+            <div class="key-information"><h3>Key membership information</h3><ul class="key-information-list"><li id="fixed-term-information">Your membership ends after the selected fixed term unless you choose automatic renewal.</li><li>If automatic renewal is selected, we will send reminders 60–45 days and 14–7 days before payment.</li><li>You may cancel automatic renewal at any time from your Patient Portal or by emailing <a href="mailto:admin@lymphaware.com">admin@lymphaware.com</a>.</li><li>You have an initial 14-day cooling-off period. Personalised items already supplied and services already used may affect the refund due, as explained in the <a href="/terms/" target="_blank" rel="noopener">Terms</a>.</li><li>If an automatic renewal lasting 12 months or more occurs, you will have a further 14-day renewal cooling-off period.</li></ul></div></div>
+          <div class="agreement"><input type="checkbox" id="terms-agreement"><label for="terms-agreement">I have read and agree to the <a href="/terms/" target="_blank" rel="noopener">Terms</a> and <a href="/privacy/" target="_blank" rel="noopener">Privacy Notice</a>, and I understand that selecting the payment button creates an obligation to pay the total shown above.</label></div>
+          <div class="join-actions"><button type="button" class="button button-secondary" data-back>Back</button><button type="submit" id="join-submit" class="button button-primary">Create Account and Continue to Secure Payment</button></div><p class="secure-note">Payment and card details are handled securely by Stripe.</p>
+        </section><p id="join-message" class="join-message" role="status" aria-live="polite"></p>
+      </form><p class="existing-account">Already have a LymphAware account? <a href="/sign-in/">Sign in to continue</a>.</p>
     </section>
-  </main>
-
+  </div></main>
   <script>
-    const SUPABASE_URL = 'https://thbhsktcenhrnxzkbjus.supabase.co';
-    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-
-    const PACKAGE_DETAILS = {
-      STANDARD: { name: 'LymphAware Membership – from £19.99', summary: 'Choose 1, 2 or 3 years. Includes 1 English QR profile, 1 English ID card and 1 lanyard & holder.' },
-      PLUS: { name: 'LymphAware Plus – from £29.99', summary: 'Choose 1, 2 or 3 years. Includes 1 English QR profile, 2 English ID cards and 2 lanyards & holders.' },
-      MULTILINGUAL: { name: 'LymphAware Multilingual – from £39.99', summary: 'Choose 1, 2 or 3 years. Includes English and one additional-language QR profile, English and translated-language ID cards, with the translation prepared by LymphAware.' }
-    };
-    const registrationParams = new URLSearchParams(location.search);
-    const requestedPackage = String(registrationParams.get('package') || 'STANDARD').toUpperCase();
-    const selectedPackage = PACKAGE_DETAILS[requestedPackage] ? requestedPackage : 'STANDARD';
-    const requestedTerm = [1, 2, 3].includes(Number(registrationParams.get('term'))) ? Number(registrationParams.get('term')) : 3;
-    const signInUrl = '/sign-in/?package=' + encodeURIComponent(selectedPackage) + '&term=' + encodeURIComponent(requestedTerm);
-
-    const registerForm = document.getElementById('register-form');
-    const registerMessage = document.getElementById('register-message');
-    const submitButton = registerForm.querySelector('button[type="submit"]');
-    const registerSuccess = document.getElementById('register-success');
-    const membershipNote = document.getElementById('membership-note');
-    const existingAccountLinks = document.getElementById('existing-account-links');
-    const registerEyebrow = document.getElementById('register-eyebrow');
-    const registerHeading = document.getElementById('register-heading');
-    const registerIntro = document.getElementById('register-intro');
-    document.getElementById('selected-package-name').textContent = PACKAGE_DETAILS[selectedPackage].name;
-    document.getElementById('selected-package-summary').textContent = PACKAGE_DETAILS[selectedPackage].summary + ' After confirming your email, sign in to continue directly to payment.';
-    document.getElementById('confirmation-sign-in-link').href = signInUrl;
-    document.getElementById('existing-sign-in-link').href = signInUrl;
-    let registrationMode = 'CLOSED';
-
-    async function loadRegistrationMode() {
-      const { data, error } = await supabaseClient
-        .from('system_settings')
-        .select('setting_value')
-        .eq('setting_key', 'registration_mode')
-        .single();
-
-      if (error || !data) {
-        console.error('Unable to load registration mode:', error);
-        registerMessage.textContent = 'Registration is temporarily unavailable. Please try again later.';
-        submitButton.disabled = true;
-        return;
-      }
-
-      registrationMode = String(data.setting_value || '').toUpperCase();
-      submitButton.disabled = registrationMode !== 'OPEN';
-
-      if (registrationMode !== 'OPEN') {
-        registerMessage.textContent = 'New LymphAware account registration is currently closed.';
-      }
-    }
-
-    loadRegistrationMode();
-
-    registerForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-
-      if (registrationMode !== 'OPEN') {
-        registerMessage.textContent = 'New LymphAware account registration is currently closed.';
-        return;
-      }
-
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const confirmPassword = document.getElementById('confirm-password').value;
-
-      if (password !== confirmPassword) {
-        registerMessage.textContent = 'The passwords do not match. Please try again.';
-        return;
-      }
-
-      if (password.length < 8) {
-        registerMessage.textContent = 'Please choose a password containing at least 8 characters.';
-        return;
-      }
-
-      submitButton.disabled = true;
-      registerMessage.textContent = 'Creating your account...';
-
-      const { data, error } = await supabaseClient.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: 'https://lymphaware.com/sign-in/?package=' + encodeURIComponent(selectedPackage) + '&term=' + encodeURIComponent(requestedTerm),
-          data: { selected_package: selectedPackage, selected_membership_term_years: requestedTerm }
-        }
-      });
-
-      if (error) {
-        console.error('Unable to create account:', error);
-        registerMessage.textContent = 'Your account could not be created. Please check your details and try again.';
-        submitButton.disabled = false;
-        return;
-      }
-
-      if (data.session) {
-        registerMessage.textContent = 'Your account has been created. Redirecting...';
-        window.location.href = '/portal/?package=' + encodeURIComponent(selectedPackage) + '&term=' + encodeURIComponent(requestedTerm);
-        return;
-      }
-
-      registerForm.reset();
-      registerForm.hidden = true;
-      membershipNote.hidden = true;
-      existingAccountLinks.hidden = true;
-      registerSuccess.hidden = false;
-      registerEyebrow.textContent = 'Next step';
-      registerHeading.textContent = 'Check your email or sign in';
-      registerIntro.textContent = 'For your security, this page does not confirm whether an email address is already registered.';
-    });
+    const PACKAGES={STANDARD:{name:'LymphAware Membership',prices:{1:1999,2:2499,3:2999},renewals:{1:1499,2:1899,3:2299}},PLUS:{name:'LymphAware Plus',prices:{1:2999,2:3499,3:3999},renewals:{1:2299,2:2699,3:2999}},MULTILINGUAL:{name:'LymphAware Multilingual',prices:{1:3999,2:4499,3:4999},renewals:{1:2999,2:3399,3:3799}}};
+    const COUNTRIES=[['GB','United Kingdom'],['IE','Ireland'],['FR','France'],['ES','Spain'],['PT','Portugal'],['DE','Germany'],['NL','Netherlands'],['BE','Belgium'],['LU','Luxembourg'],['IT','Italy'],['AT','Austria'],['DK','Denmark'],['SE','Sweden'],['NO','Norway'],['FI','Finland'],['CH','Switzerland'],['US','United States'],['CA','Canada'],['AU','Australia'],['NZ','New Zealand'],['CY','Cyprus'],['MT','Malta'],['GR','Greece'],['PL','Poland'],['CZ','Czechia'],['SK','Slovakia'],['SI','Slovenia'],['HR','Croatia'],['HU','Hungary'],['RO','Romania'],['BG','Bulgaria'],['EE','Estonia'],['LV','Latvia'],['LT','Lithuania'],['IS','Iceland'],['AL','Albania'],['AD','Andorra'],['BA','Bosnia and Herzegovina'],['MD','Moldova'],['MC','Monaco'],['ME','Montenegro'],['MK','North Macedonia'],['RS','Serbia'],['UA','Ukraine'],['AE','United Arab Emirates'],['ZA','South Africa'],['IN','India'],['JP','Japan'],['SG','Singapore'],['HK','Hong Kong']];
+    const EUROPE=new Set(['AL','AD','AT','BE','BA','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IS','IE','IT','LV','LI','LT','LU','MT','MD','MC','ME','NL','MK','NO','PL','PT','RO','SM','RS','SK','SI','ES','SE','CH','UA','VA']);
+    const form=document.getElementById('join-form'),message=document.getElementById('join-message'),submit=document.getElementById('join-submit'),languageBox=document.getElementById('language-box'),autoRenew=document.getElementById('auto-renew'),renewalConfirmation=document.getElementById('renewal-confirmation'),deliveryCountry=document.getElementById('delivery-country');let step=1;
+    deliveryCountry.innerHTML='<option value="">Select a country</option>'+COUNTRIES.map(([code,name])=>`<option value="${code}">${name}</option>`).join('');deliveryCountry.value='GB';const requested=String(new URLSearchParams(location.search).get('package')||'').toUpperCase();if(PACKAGES[requested])document.querySelector(`input[name="package"][value="${requested}"]`).checked=true;
+    function money(pence){return`£${(pence/100).toFixed(2)}`}function selection(){const packageType=document.querySelector('input[name="package"]:checked')?.value||'',term=Number(document.querySelector('input[name="term"]:checked')?.value||0);return{packageType,term,pkg:PACKAGES[packageType]}}function postage(){const code=deliveryCountry.value;return code==='GB'?299:EUROPE.has(code)?499:999}
+    function updatePrices(){const {packageType,term,pkg}=selection();document.querySelectorAll('[data-term-price]').forEach(el=>{const years=Number(el.dataset.termPrice);el.textContent=pkg?money(pkg.prices[years]):'—'});languageBox.hidden=packageType!=='MULTILINGUAL';if(packageType!=='MULTILINGUAL'){document.getElementById('language').value='';document.getElementById('translation-consent').checked=false}if(pkg&&term){const shipping=postage(),renewal=pkg.renewals[term];document.getElementById('review-package-name').textContent=`${pkg.name} – ${term} year${term===1?'':'s'}`;document.getElementById('review-package-price').textContent=money(pkg.prices[term]);document.getElementById('review-postage').textContent=money(shipping);document.getElementById('review-total').textContent=money(pkg.prices[term]+shipping);document.getElementById('fixed-term-information').textContent=`This is a ${term}-year membership. It ends after ${term} year${term===1?'':'s'} unless you separately choose automatic renewal.`;document.getElementById('renewal-summary').textContent=`If selected, this membership will renew every ${term} year${term===1?'':'s'} for ${money(renewal)}.`;document.getElementById('auto-renew-acknowledgement-label').textContent=`I understand that after the initial ${term}-year term, ${money(renewal)} will be charged automatically every ${term} year${term===1?'':'s'} unless I cancel.`}}
+    function validateStep(){message.textContent='';const {packageType,term}=selection();if(step===1){if(!packageType){message.textContent='Please choose a membership package.';return false}if(!term){message.textContent='Please choose a membership length.';return false}if(packageType==='MULTILINGUAL'&&!document.getElementById('language').value){message.textContent='Please choose an additional language.';return false}if(packageType==='MULTILINGUAL'&&!document.getElementById('translation-consent').checked){message.textContent='Please confirm the translation agreement.';return false}}if(step===2){const email=document.getElementById('email'),password=document.getElementById('password'),confirmation=document.getElementById('confirm-password');if(!email.checkValidity()){message.textContent='Please enter a valid email address.';email.focus();return false}if(password.value.length<8){message.textContent='Please choose a password containing at least 8 characters.';password.focus();return false}if(password.value!==confirmation.value){message.textContent='The passwords do not match.';confirmation.focus();return false}if(!deliveryCountry.value){message.textContent='Please select your delivery country.';deliveryCountry.focus();return false}}return true}
+    function showStep(next){step=next;document.querySelectorAll('.join-step').forEach(section=>section.hidden=Number(section.dataset.step)!==step);document.querySelectorAll('[data-progress]').forEach(item=>{const number=Number(item.dataset.progress);item.classList.toggle('is-active',number===step);item.classList.toggle('is-complete',number<step)});message.textContent='';window.scrollTo({top:0,behavior:'smooth'});updatePrices()}
+    document.querySelectorAll('input[name="package"],input[name="term"]').forEach(input=>input.addEventListener('change',updatePrices));deliveryCountry.addEventListener('change',updatePrices);autoRenew.addEventListener('change',()=>{renewalConfirmation.hidden=!autoRenew.checked;if(!autoRenew.checked)document.getElementById('auto-renew-acknowledgement').checked=false});document.querySelectorAll('[data-next]').forEach(button=>button.addEventListener('click',()=>{if(validateStep())showStep(step+1)}));document.querySelectorAll('[data-back]').forEach(button=>button.addEventListener('click',()=>showStep(step-1)));
+    form.addEventListener('submit',async event=>{event.preventDefault();message.textContent='';if(!document.getElementById('terms-agreement').checked){message.textContent='Please accept the Terms and Privacy Notice.';return}if(autoRenew.checked&&!document.getElementById('auto-renew-acknowledgement').checked){message.textContent='Please confirm that you understand the automatic-renewal amount and frequency.';return}const {packageType,term}=selection();submit.disabled=true;submit.textContent='Preparing secure payment…';document.querySelectorAll('[data-progress]').forEach(item=>{const number=Number(item.dataset.progress);item.classList.toggle('is-active',number===4);item.classList.toggle('is-complete',number<4)});try{const response=await fetch('/.netlify/functions/start-membership-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:document.getElementById('email').value.trim(),password:document.getElementById('password').value,packageType,membershipTermYears:term,languageCode:document.getElementById('language').value,translationConsent:document.getElementById('translation-consent').checked,deliveryCountry:deliveryCountry.value,autoRenew:autoRenew.checked,autoRenewAcknowledged:document.getElementById('auto-renew-acknowledgement').checked,termsAccepted:document.getElementById('terms-agreement').checked})});const result=await response.json();if(!response.ok||!result.url)throw new Error(result.error||'Secure payment could not be opened.');location.href=result.url}catch(error){message.textContent=error.message||'Secure payment could not be opened.';submit.disabled=false;submit.textContent='Create Account and Continue to Secure Payment';document.querySelectorAll('[data-progress]').forEach(item=>{const number=Number(item.dataset.progress);item.classList.toggle('is-active',number===3);item.classList.toggle('is-complete',number<3)})}});updatePrices();
   </script>
 </body>
 </html>

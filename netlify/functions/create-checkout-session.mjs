@@ -215,6 +215,7 @@ export default async (request) => {
       if (membership.membership_status !== 'PENDING' || membership.payment_status !== 'PENDING') {
         return json({ error: 'No membership payment is currently due.' }, 403);
       }
+      if (body?.termsAccepted !== true) return json({ error: 'Please accept the Terms and Privacy Notice.' }, 400);
       packageType = String(body?.packageType || 'STANDARD').trim().toUpperCase();
       const packageDefinition = PACKAGE_DEFINITIONS[packageType];
       if (!packageDefinition) return json({ error: 'Please select a valid LymphAware membership package.' }, 400);
@@ -237,8 +238,29 @@ export default async (request) => {
           : `${membershipTermYears}-year membership with 1 English ID card and 1 lanyard & holder.`;
       amountPence = packageDefinition.prices[membershipTermYears];
       autoRenew = body?.autoRenew === true;
+      if (autoRenew && body?.autoRenewAcknowledged !== true) {
+        return json({ error: 'Please confirm the automatic-renewal amount and frequency.' }, 400);
+      }
       renewalPricePence = RENEWAL_DEFINITIONS[packageType].prices[membershipTermYears];
       renewalStripePrice = RENEWAL_DEFINITIONS[packageType].stripePrices[membershipTermYears];
+
+      const acceptedAt = new Date().toISOString();
+      const complianceUpdate = await fetch(`${process.env.SUPABASE_URL}/rest/v1/memberships?id=eq.${encodeURIComponent(membership.id)}`, {
+        method: 'PATCH',
+        headers: { ...serviceHeaders(), Prefer: 'return=minimal' },
+        body: JSON.stringify({
+          package_type: packageType,
+          membership_term_years: membershipTermYears,
+          initial_fee_pence: amountPence,
+          renewal_price_pence: autoRenew ? renewalPricePence : null,
+          auto_renew_requested: autoRenew,
+          subscription_terms_version: MEMBERSHIP_CONTRACT_VERSION,
+          precontract_accepted_at: acceptedAt,
+          auto_renew_consent_at: autoRenew ? acceptedAt : null,
+          updated_at: acceptedAt
+        })
+      });
+      if (!complianceUpdate.ok) return json({ error: 'Unable to record your membership selection. Please try again.' }, 500);
     } else if (paymentType === 'additional_items') {
       if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware membership is required.' }, 403);
 
@@ -385,12 +407,20 @@ export default async (request) => {
     stripeForm.append('metadata[shipping_band]', band);
     stripeForm.append('metadata[shipping_pence]', String(shippingPence));
     stripeForm.append('metadata[shipping_charge_method]', 'LINE_ITEM');
+    if (paymentType === 'initial_membership') {
+      stripeForm.append('metadata[contract_version]', 'DMCCA-READY-2026-09-12');
+      stripeForm.append('metadata[first_reminder_window]', '60 to 45 days before renewal');
+      stripeForm.append('metadata[final_reminder_window]', '14 to 7 days before renewal');
+      stripeForm.append('metadata[initial_cooling_off_days]', '14');
+      stripeForm.append('metadata[renewal_cooling_off_days]', autoRenew ? '14' : '0');
+    }
     if (autoRenew) {
       stripeForm.append('subscription_data[metadata][lymphaware_user_id]', user.id);
       stripeForm.append('subscription_data[metadata][membership_id]', membership.id);
       stripeForm.append('subscription_data[metadata][package_type]', packageType);
       stripeForm.append('subscription_data[metadata][membership_term_years]', String(membershipTermYears));
       stripeForm.append('subscription_data[metadata][renewal_price_pence]', String(renewalPricePence));
+      stripeForm.append('subscription_data[metadata][contract_version]', MEMBERSHIP_CONTRACT_VERSION);
     }
 
     const successType = paymentType === 'additional_language'
@@ -408,7 +438,8 @@ export default async (request) => {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Stripe-Version': '2026-07-29.dahlia'
       },
       body: stripeForm.toString()
     });
@@ -417,9 +448,19 @@ export default async (request) => {
       console.error('Stripe Checkout error:', checkoutSession);
       return json({ error: 'Unable to create the secure payment page.' }, 500);
     }
+    if (paymentType === 'initial_membership') {
+      const details = { package_type: packageType, membership_term_years: membershipTermYears, initial_package_price_pence: amountPence, postage_pence: shippingPence, auto_renew_selected: autoRenew, renewal_price_pence: autoRenew ? renewalPricePence : null };
+      try {
+        await recordContractEvent({ membershipId: membership.id, userId: user.id, eventType: 'PRECONTRACT_ACCEPTED', stripeReference: checkoutSession.id, details });
+        if (autoRenew) await recordContractEvent({ membershipId: membership.id, userId: user.id, eventType: 'AUTO_RENEW_CONSENT', stripeReference: `${checkoutSession.id}:auto-renew`, details });
+      } catch (error) {
+        console.error('Unable to store the checkout agreement audit event:', error);
+      }
+    }
     return json({ url: checkoutSession.url });
   } catch (error) {
     console.error('Unable to create Stripe Checkout session:', error);
     return json({ error: 'Unable to start secure payment.' }, 500);
   }
 };
+import { MEMBERSHIP_CONTRACT_VERSION, recordContractEvent } from './_shared/membership-contract.mjs';

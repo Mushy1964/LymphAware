@@ -1,4 +1,13 @@
 import crypto from 'node:crypto';
+import {
+  MEMBERSHIP_CONTRACT_VERSION,
+  dateUK,
+  memberEmail,
+  money,
+  recordContractEvent,
+  renewalNoticeText,
+  sendMembershipEmail
+} from './_shared/membership-contract.mjs';
 
 const INITIAL_PACKAGE_PRICES = {
   STANDARD: { 1: 1999, 2: 2499, 3: 2999, 5: 2999 },
@@ -54,6 +63,7 @@ async function stripeRequest(path, method = 'GET', values = null) {
     method,
     headers: {
       Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+      'Stripe-Version': '2026-07-29.dahlia',
       ...(values ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {})
     },
     body: values ? new URLSearchParams(values).toString() : undefined
@@ -73,36 +83,36 @@ async function patchMembershipBySubscription(subscriptionId, values) {
   if (!response.ok) throw new Error(`Membership renewal update failed: ${await response.text()}`);
 }
 
+async function membershipBySubscription(subscriptionId) {
+  if (!subscriptionId) return null;
+  const response = await fetch(
+    `${process.env.SUPABASE_URL}/rest/v1/memberships?stripe_subscription_id=eq.${encodeURIComponent(subscriptionId)}&select=*&limit=1`,
+    { headers: supabaseHeaders() }
+  );
+  if (!response.ok) throw new Error(`Unable to load renewed membership: ${await response.text()}`);
+  return (await response.json())?.[0] || null;
+}
+
 function invoiceSubscriptionId(invoice) {
   const value = invoice?.subscription || invoice?.parent?.subscription_details?.subscription;
   return typeof value === 'string' ? value : value?.id || null;
 }
 
-async function sendRenewalReminder(invoice) {
-  const apiKey = String(process.env.RESEND_API_KEY || '').trim();
-  const customerEmail = String(invoice?.customer_email || '').trim();
-  if (!apiKey || !customerEmail) return;
-  const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware <notifications@lymphaware.com>').trim();
-  const amount = `£${(Number(invoice.amount_due || 0) / 100).toFixed(2)}`;
-  const renewalDate = invoice.next_payment_attempt ? new Date(invoice.next_payment_attempt * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) : 'the date shown in your Patient Portal';
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      from,
-      to: [customerEmail],
-      reply_to: ['admin@lymphaware.com'],
-      subject: 'Your LymphAware membership will renew soon',
-      text: `Your LymphAware digital membership is due to renew for ${amount} on ${renewalDate}.\n\nThis renewal continues your digital membership only. It does not include new cards, lanyards or postage.\n\nIf you do not want it to renew, cancel automatic renewal before the renewal date in your Patient Portal:\nhttps://lymphaware.com/portal/`
-    })
-  });
-  if (!response.ok) console.error('Unable to send renewal reminder:', await response.text());
-}
-
 async function handleRecurringEvent(event) {
   const object = event.data?.object || {};
   if (event.type === 'invoice.upcoming') {
-    await sendRenewalReminder(object);
+    const upcomingSubscriptionId = invoiceSubscriptionId(object);
+    const membership = await membershipBySubscription(upcomingSubscriptionId);
+    if (membership) {
+      const email = String(object?.customer_email || '').trim() || await memberEmail(membership.user_id);
+      const result = await sendMembershipEmail({
+        to: email,
+        subject: 'Your LymphAware automatic-renewal payment is approaching',
+        text: renewalNoticeText(membership, 'Additional automatic-renewal payment reminder'),
+        idempotencyKey: `stripe-upcoming-${upcomingSubscriptionId}-${new Date(membership.next_renewal_at).toISOString().slice(0, 10)}`
+      });
+      if (!result.ok) console.error('Unable to send Stripe upcoming reminder:', result.error);
+    }
     return true;
   }
   if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.deleted') {
@@ -120,14 +130,39 @@ async function handleRecurringEvent(event) {
   }
   if (event.type === 'invoice.paid') {
     const subscriptionId = invoiceSubscriptionId(object);
-    if (!subscriptionId || !['subscription_cycle', 'subscription_update'].includes(object.billing_reason)) return true;
+    if (!subscriptionId || object.billing_reason !== 'subscription_cycle') return true;
+    const membership = await membershipBySubscription(subscriptionId);
+    if (!membership) return true;
     const periodEnd = object.lines?.data?.map(line => line.period?.end).filter(Boolean).sort((a, b) => b - a)[0];
+    const renewalPaidAt = new Date((object.status_transitions?.paid_at || event.created) * 1000);
+    const renewalCoolingEnds = new Date(renewalPaidAt.getTime() + (14 * 86400000));
     await patchMembershipBySubscription(subscriptionId, {
       membership_status: 'ACTIVE',
       payment_status: 'PAID',
       stripe_subscription_status: 'active',
-      paid_at: new Date((object.status_transitions?.paid_at || event.created) * 1000).toISOString(),
+      paid_at: renewalPaidAt.toISOString(),
+      latest_renewal_paid_at: renewalPaidAt.toISOString(),
+      renewal_cooling_off_ends_at: renewalCoolingEnds.toISOString(),
+      renewal_cooling_notice_sent_at: renewalPaidAt.toISOString(),
+      renewal_reminder_first_sent_at: null,
+      renewal_reminder_final_sent_at: null,
       ...(periodEnd ? { membership_end: new Date(periodEnd * 1000).toISOString(), next_renewal_at: new Date(periodEnd * 1000).toISOString() } : {})
+    });
+    const email = String(object?.customer_email || '').trim() || await memberEmail(membership.user_id);
+    const amountPaid = money(object.amount_paid || membership.renewal_price_pence);
+    const emailResult = await sendMembershipEmail({
+      to: email,
+      subject: 'Your LymphAware membership has renewed',
+      idempotencyKey: `renewal-cooling-${object.id}`,
+      text: `Your LymphAware digital membership has renewed and ${amountPaid} has been paid. Your new membership end date is ${dateUK(periodEnd ? new Date(periodEnd * 1000) : null)}.\n\nRENEWAL COOLING-OFF PERIOD\n\nYou may cancel this renewed membership until ${dateUK(renewalCoolingEnds)}. Use the “Cancel this renewal” option in your Patient Portal:\nhttps://lymphaware.com/portal/\n\nIf you cancel during this period, the renewal payment will be refunded and renewed access will end. You can also email admin@lymphaware.com.\n\nThe LymphAware Team`
+    });
+    if (!emailResult.ok) console.error('Unable to send renewal cooling-off notice:', emailResult.error);
+    await recordContractEvent({
+      membershipId: membership.id,
+      userId: membership.user_id,
+      eventType: 'RENEWAL_COOLING_NOTICE',
+      stripeReference: object.id,
+      details: { renewal_paid_at: renewalPaidAt.toISOString(), cooling_off_ends_at: renewalCoolingEnds.toISOString(), amount_paid_pence: object.amount_paid || membership.renewal_price_pence, notice_sent: emailResult.ok }
     });
     return true;
   }
@@ -277,6 +312,7 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
       `Once you save your display name and photograph, LymphAware will be notified automatically that your card details are ready. We will then begin preparing your ID card, lanyard and holder, together with any additional cards or language versions included in your order.\n\n` +
       `We aim to prepare and dispatch your order within 7–10 working days after your required card details have been completed. Delivery time after dispatch will depend on the postal service and destination.\n\n` +
       `You can continue to update your QR profile at any time, including after your physical card has been produced.\n\n` +
+      `YOUR INITIAL COOLING-OFF PERIOD\n\nYou may tell us that you want to cancel within 14 days of joining. Contact admin@lymphaware.com. Any refund and deduction for services or personalised items already supplied will be handled in accordance with your statutory rights and the Terms.\n\n` +
       `Complete your profile:\nhttps://lymphaware.com/profile/`;
     if (languageName) {
       nextSteps +=
@@ -541,7 +577,12 @@ export default async (request) => {
             membership_status: 'ACTIVE', payment_status: 'PAID', payment_provider: 'STRIPE', payment_reference: session.id,
             paid_at: paidAt.toISOString(), membership_start: paidAt.toISOString(), membership_end: membershipEnd.toISOString(), initial_fee_pence: packagePricePence,
             package_type: packageType, membership_term_years: membershipTermYears, auto_renew_enabled: autoRenew,
+            auto_renew_requested: autoRenew,
             renewal_price_pence: renewalPricePence,
+            subscription_terms_version: String(session.metadata?.contract_version || MEMBERSHIP_CONTRACT_VERSION),
+            precontract_accepted_at: paidAt.toISOString(),
+            auto_renew_consent_at: autoRenew ? paidAt.toISOString() : null,
+            auto_renew_cancelled_at: null,
             stripe_customer_id: typeof session.customer === 'string' ? session.customer : null,
             stripe_subscription_id: autoRenew ? session.subscription : null,
             stripe_subscription_item_id: subscription?.items?.data?.[0]?.id || null,
@@ -554,6 +595,22 @@ export default async (request) => {
       if (!membershipResponse.ok) {
         console.error('Unable to update LymphAware membership:', await membershipResponse.text());
         return new Response('Membership update failed', { status: 500 });
+      }
+      if (membershipId) {
+        await recordContractEvent({
+          membershipId,
+          userId,
+          eventType: 'PRECONTRACT_ACCEPTED',
+          stripeReference: session.id,
+          details: {
+            paid_at: paidAt.toISOString(),
+            package_type: packageType,
+            membership_term_years: membershipTermYears,
+            amount_total_pence: session.amount_total,
+            auto_renew_selected: autoRenew,
+            renewal_price_pence: renewalPricePence
+          }
+        });
       }
     }
 
