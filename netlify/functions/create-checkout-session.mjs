@@ -7,7 +7,7 @@ const APPROVED_LANGUAGES = {
 const PACKAGE_DEFINITIONS = {
   STANDARD: { name: 'LymphAware Membership', prices: { 1: 1999, 2: 2499, 3: 2999 }, requiresLanguage: false },
   PLUS: { name: 'LymphAware Plus', prices: { 1: 2999, 2: 3499, 3: 3999 }, requiresLanguage: false },
-  MULTILINGUAL: { name: 'LymphAware Multilingual', prices: { 1: 4499, 2: 4999, 3: 5499 }, requiresLanguage: true }
+  MULTILINGUAL: { name: 'LymphAware Multilingual', prices: { 1: 3999, 2: 4499, 3: 4999 }, requiresLanguage: true }
 };
 
 const RENEWAL_DEFINITIONS = {
@@ -20,8 +20,8 @@ const RENEWAL_DEFINITIONS = {
     stripePrices: { 1: 'price_1UEoS2PMYhQKb2OT04lGzolV', 2: 'price_1UEoSGPMYhQKb2OTUgrnaFEu', 3: 'price_1UEoSHPMYhQKb2OTOOSq3K1Z' }
   },
   MULTILINGUAL: {
-    prices: { 1: 3399, 2: 3799, 3: 4199 },
-    stripePrices: { 1: 'price_1UEoS3PMYhQKb2OT0ZKqHK4H', 2: 'price_1UEoSIPMYhQKb2OTQDyz18Ie', 3: 'price_1UEoSJPMYhQKb2OTze0EwlaO' }
+    prices: { 1: 2999, 2: 3399, 3: 3799 },
+    stripePrices: { 1: 'price_1UEsAyPMYhQKb2OT8Ut5gfFS', 2: 'price_1UEsAzPMYhQKb2OTMNX78xlV', 3: 'price_1UEsB0PMYhQKb2OTucRp4zc3' }
   }
 };
 
