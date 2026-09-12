@@ -140,7 +140,7 @@
     const signInParams = new URLSearchParams(location.search);
     const requestedPackage = String(signInParams.get('package') || '').toUpperCase();
     const selectedPackage = ['STANDARD', 'PLUS', 'MULTILINGUAL'].includes(requestedPackage) ? requestedPackage : '';
-    const requestedTerm = [1, 3, 5].includes(Number(signInParams.get('term'))) ? Number(signInParams.get('term')) : 5;
+    const requestedTerm = [1, 2, 3].includes(Number(signInParams.get('term'))) ? Number(signInParams.get('term')) : 3;
     const loginForm = document.getElementById('login-form');
     const loginMessage = document.getElementById('login-message');
 
