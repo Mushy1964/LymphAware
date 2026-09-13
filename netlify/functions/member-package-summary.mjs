@@ -58,7 +58,7 @@ function packageFromItems(items) {
   }
   return {
     code: 'STANDARD',
-    name: `${termYears}-Year Membership`,
+    name: `${termYears}-Year Standard`,
     language_name: null,
     included_summary: '1 English QR profile · 1 English ID card · 1 Lanyard & holder'
   };

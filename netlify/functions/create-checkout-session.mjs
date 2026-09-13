@@ -5,7 +5,7 @@ const APPROVED_LANGUAGES = {
 };
 
 const PACKAGE_DEFINITIONS = {
-  STANDARD: { name: 'LymphAware Membership', prices: { 1: 1999, 2: 2499, 3: 2999 }, requiresLanguage: false },
+  STANDARD: { name: 'LymphAware Standard', prices: { 1: 1999, 2: 2499, 3: 2999 }, requiresLanguage: false },
   PLUS: { name: 'LymphAware Plus', prices: { 1: 2999, 2: 3499, 3: 3999 }, requiresLanguage: false },
   MULTILINGUAL: { name: 'LymphAware Multilingual', prices: { 1: 3999, 2: 4499, 3: 4999 }, requiresLanguage: true }
 };

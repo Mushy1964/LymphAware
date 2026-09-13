@@ -9,7 +9,7 @@ export const APPROVED_LANGUAGES = {
 
 export const PACKAGE_DEFINITIONS = {
   STANDARD: {
-    name: 'LymphAware Membership',
+    name: 'LymphAware Standard',
     prices: { 1: 1999, 2: 2499, 3: 2999 },
     renewals: { 1: 1499, 2: 1899, 3: 2299 },
     stripePrices: { 1: 'price_1UEoS1PMYhQKb2OTJ1muyO9G', 2: 'price_1UEoSFPMYhQKb2OTUjWipeEt', 3: 'price_1UEoSGPMYhQKb2OTTiL95BYd' }
