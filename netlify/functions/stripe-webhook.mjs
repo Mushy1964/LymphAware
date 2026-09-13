@@ -10,19 +10,19 @@ import {
 } from './_shared/membership-contract.mjs';
 
 const INITIAL_PACKAGE_PRICES = {
-  STANDARD: { 1: 1999, 2: 2499, 3: 2999, 5: 2999 },
-  PLUS: { 1: 2999, 2: 3499, 3: 3999, 5: 3999 },
-  MULTILINGUAL: { 1: 3999, 2: 4499, 3: 4999, 5: 4999 }
+  STANDARD: { 1: 2499, 2: 3499, 3: 4499, 5: 2999 },
+  PLUS: { 1: 3499, 2: 4499, 3: 5499, 5: 3999 },
+  MULTILINGUAL: { 1: 5499, 2: 6999, 3: 8499, 5: 4999 }
 };
 
 const RENEWAL_PRICES = {
-  STANDARD: { 1: 1499, 2: 1899, 3: 2299 },
-  PLUS: { 1: 2299, 2: 2699, 3: 2999 },
-  MULTILINGUAL: { 1: 2999, 2: 3399, 3: 3799 }
+  STANDARD: { 1: 1899, 2: 2599, 3: 3399 },
+  PLUS: { 1: 1899, 2: 2599, 3: 3399 },
+  MULTILINGUAL: { 1: 4099, 2: 5299, 3: 6399 }
 };
 
 const RENEWAL_STRIPE_PRICES = {
-  MULTILINGUAL: { 1: 'price_1UEsAyPMYhQKb2OT8Ut5gfFS', 2: 'price_1UEsAzPMYhQKb2OTMNX78xlV', 3: 'price_1UEsB0PMYhQKb2OTucRp4zc3' }
+  MULTILINGUAL: { 1: 'price_1UFGEVPMYhQKb2OT4B45XA28', 2: 'price_1UFGEWPMYhQKb2OTbVjZEvW4', 3: 'price_1UFGEWPMYhQKb2OTD1iA0xNU' }
 };
 
 function verifyStripeSignature(payload, signatureHeader, secret) {
