@@ -94,6 +94,7 @@ function checkProjectConsistency() {
   const homePath = path.join(root, 'index.html');
   const webhookPath = path.join(root, 'netlify/functions/stripe-webhook.mjs');
   const registerPath = path.join(root, 'register/index.html');
+  const initialMembershipCheckoutPath = path.join(root, 'netlify/functions/_shared/initial-membership-checkout.mjs');
   const adminOrdersPath = path.join(root, 'netlify/functions/admin-orders-list.mjs');
 
   const checkout = fs.readFileSync(checkoutPath, 'utf8');
@@ -103,6 +104,7 @@ function checkProjectConsistency() {
   const home = fs.readFileSync(homePath, 'utf8');
   const webhook = fs.readFileSync(webhookPath, 'utf8');
   const register = fs.readFileSync(registerPath, 'utf8');
+  const initialMembershipCheckout = fs.readFileSync(initialMembershipCheckoutPath, 'utf8');
   const adminOrders = fs.readFileSync(adminOrdersPath, 'utf8');
 
   for (const [code, name] of [['FR', 'French'], ['ES', 'Spanish'], ['DE', 'German']]) {
@@ -136,7 +138,7 @@ function checkProjectConsistency() {
   }
   const renewalPrices = {
     STANDARD: { 1: 1899, 2: 2599, 3: 3399 },
-    PLUS: { 1: 1899, 2: 2599, 3: 3399 },
+    PLUS: { 1: 2599, 2: 3399, 3: 4099 },
     MULTILINGUAL: { 1: 4099, 2: 5299, 3: 6399 }
   };
   for (const [packageCode, terms] of Object.entries(renewalPrices)) {
@@ -148,6 +150,16 @@ function checkProjectConsistency() {
       if (!home.includes(pounds)) errors.push(`Homepage is missing renewal price ${pounds}.`);
     }
   }
+  const compact = value => value.replace(/\s+/g, '');
+  const plusRenewals = '1:2599,2:3399,3:4099';
+  const plusStripePrices = "1:'price_1UFIpVPMYhQKb2OTycEm07OF',2:'price_1UFIpgPMYhQKb2OTwLhaQcjU',3:'price_1UFIpgPMYhQKb2OTKfOwgqx8'";
+  if (!compact(checkout).includes(`PLUS:{prices:{${plusRenewals}},stripePrices:{${plusStripePrices}}}`)) errors.push('Checkout Plus renewal mapping is incorrect.');
+  if (!compact(initialMembershipCheckout).includes(`renewals:{${plusRenewals}},stripePrices:{${plusStripePrices}}`)) errors.push('Initial membership checkout Plus renewal mapping is incorrect.');
+  if (!compact(portal).includes(`PLUS:{${plusRenewals}}`)) errors.push('Portal Plus renewal mapping is incorrect.');
+  if (!compact(webhook).includes(`PLUS:{${plusRenewals}}`)) errors.push('Webhook Plus renewal mapping is incorrect.');
+  if (!compact(register).includes(`renewals:{${plusRenewals}}`)) errors.push('Registration Plus renewal mapping is incorrect.');
+  const plusHomeCard = home.match(/<article class="home-membership-price-card home-membership-package-plus">([\s\S]*?)<\/article>/)?.[1] || '';
+  if (!plusHomeCard.includes('1 year £25.99 · 2 years £33.99 · 3 years £40.99')) errors.push('Homepage Plus renewal prices are incorrect.');
   if (!home.includes('Choose one, two or three years of membership')) {
     errors.push('Homepage membership wording does not offer the agreed one-, two- and three-year terms.');
   }
