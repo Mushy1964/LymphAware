@@ -117,9 +117,9 @@ function checkProjectConsistency() {
   if (!checkout.includes('amountPence: 650')) errors.push('Checkout additional card/lanyard price is not £6.50.');
 
   const membershipPrices = {
-    STANDARD: { 1: 1999, 2: 2499, 3: 2999 },
-    PLUS: { 1: 2999, 2: 3499, 3: 3999 },
-    MULTILINGUAL: { 1: 3999, 2: 4499, 3: 4999 }
+    STANDARD: { 1: 2499, 2: 3499, 3: 4499 },
+    PLUS: { 1: 3499, 2: 4499, 3: 5499 },
+    MULTILINGUAL: { 1: 5499, 2: 6999, 3: 8499 }
   };
   for (const [packageCode, terms] of Object.entries(membershipPrices)) {
     for (const [years, pence] of Object.entries(terms)) {
@@ -131,9 +131,9 @@ function checkProjectConsistency() {
     }
   }
   const renewalPrices = {
-    STANDARD: { 1: 1499, 2: 1899, 3: 2299 },
-    PLUS: { 1: 2299, 2: 2699, 3: 2999 },
-    MULTILINGUAL: { 1: 2999, 2: 3399, 3: 3799 }
+    STANDARD: { 1: 1899, 2: 2599, 3: 3399 },
+    PLUS: { 1: 1899, 2: 2599, 3: 3399 },
+    MULTILINGUAL: { 1: 4099, 2: 5299, 3: 6399 }
   };
   for (const [packageCode, terms] of Object.entries(renewalPrices)) {
     for (const [years, pence] of Object.entries(terms)) {
