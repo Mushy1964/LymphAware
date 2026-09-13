@@ -760,11 +760,15 @@
   place-items: center;
 
   border-radius: 50%;
-  background: #000000;
+  background: #2c922a;
   color: #ffffff;
 
   font-size: 0.86rem;
   font-weight: 800;
+}
+
+.home-page .how-step-number-blue {
+  background: #0053b7;
 }
 
 
