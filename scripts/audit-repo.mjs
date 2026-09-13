@@ -163,6 +163,12 @@ function checkProjectConsistency() {
   if (!home.includes('Choose one, two or three years of membership')) {
     errors.push('Homepage membership wording does not offer the agreed one-, two- and three-year terms.');
   }
+  if (!register.includes('id="auto-renew-acknowledgement" disabled') || !register.includes("acknowledgement.disabled=!enabled")) {
+    errors.push('Registration renewal acknowledgement is not visibly disabled until automatic renewal is selected.');
+  }
+  if (register.includes('renewalConfirmation.hidden=!autoRenew.checked')) {
+    errors.push('Registration still hides the renewal acknowledgement instead of showing its disabled state.');
+  }
   if (home.includes('five years') || portal.includes('<strong>5 years</strong>')) {
     errors.push('An obsolete five-year option remains visible in the new-member journey.');
   }
