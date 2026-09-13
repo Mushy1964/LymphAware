@@ -93,6 +93,8 @@ function checkProjectConsistency() {
   const publicProfilePath = path.join(root, 'p-v3/index.html');
   const homePath = path.join(root, 'index.html');
   const webhookPath = path.join(root, 'netlify/functions/stripe-webhook.mjs');
+  const registerPath = path.join(root, 'register/index.html');
+  const adminOrdersPath = path.join(root, 'netlify/functions/admin-orders-list.mjs');
 
   const checkout = fs.readFileSync(checkoutPath, 'utf8');
   const portal = fs.readFileSync(portalPath, 'utf8');
@@ -100,6 +102,8 @@ function checkProjectConsistency() {
   const publicProfile = fs.readFileSync(publicProfilePath, 'utf8');
   const home = fs.readFileSync(homePath, 'utf8');
   const webhook = fs.readFileSync(webhookPath, 'utf8');
+  const register = fs.readFileSync(registerPath, 'utf8');
+  const adminOrders = fs.readFileSync(adminOrdersPath, 'utf8');
 
   for (const [code, name] of [['FR', 'French'], ['ES', 'Spanish'], ['DE', 'German']]) {
     if (!checkout.includes(`${code}: '${name}'`)) errors.push(`Checkout language configuration is missing ${name} (${code}).`);
@@ -152,6 +156,21 @@ function checkProjectConsistency() {
   }
   if (!checkout.includes('if (![1, 2, 3].includes(membershipTermYears))')) {
     errors.push('Checkout does not restrict new memberships to one, two or three years.');
+  }
+  if (!checkout.includes("shipping_address_collection[allowed_countries][0]") || !checkout.includes('metadata[delivery_country_selected]')) {
+    errors.push('Checkout does not restrict and record the selected delivery country.');
+  }
+  if (!webhook.includes('deliveryCountryMismatch') || !webhook.includes("'ADDRESS_REVIEW_REQUIRED'")) {
+    errors.push('Webhook does not hold an order when the checkout delivery country differs from the selected country.');
+  }
+  if (!adminOrders.includes("order.order_status === 'ADDRESS_REVIEW_REQUIRED'")) {
+    errors.push('Admin order workflow does not identify delivery-address review holds.');
+  }
+  if (!register.includes('Postage & packing — ${countryName}') || !register.includes('only accept a delivery address in ${countryName}')) {
+    errors.push('Joining review does not clearly identify the selected delivery country.');
+  }
+  if (!home.includes('import VAT, customs duties or local handling charges')) {
+    errors.push('Homepage does not disclose possible international destination charges.');
   }
 
   const customerFacingFiles = walk(root).filter(file => {
