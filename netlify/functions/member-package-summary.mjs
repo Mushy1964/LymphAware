@@ -170,6 +170,7 @@ export default async (request) => {
 
     const orderStatusLabels = {
       PAID_AWAITING_PROFILE: 'Waiting for your display name and photograph',
+      ADDRESS_REVIEW_REQUIRED: 'Your delivery address is being checked',
       READY_TO_PRINT: 'Ready for card production',
       IN_PRODUCTION: 'Cards in production',
       PRINTED: 'Printed and being packed',
