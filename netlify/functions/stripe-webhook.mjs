@@ -626,6 +626,20 @@ export default async (request) => {
     const shipping = session.collected_information?.shipping_details || session.shipping_details || null;
     const address = shipping?.address || session.customer_details?.address || {};
     const deliveryName = shipping?.name || session.customer_details?.name || null;
+    const selectedDeliveryCountry = String(session.metadata?.delivery_country_selected || '').trim().toUpperCase();
+    const checkoutDeliveryCountry = String(address.country || '').trim().toUpperCase();
+    const deliveryCountryMismatch = Boolean(
+      selectedDeliveryCountry &&
+      checkoutDeliveryCountry &&
+      selectedDeliveryCountry !== checkoutDeliveryCountry
+    );
+    if (deliveryCountryMismatch) {
+      console.error('Checkout delivery country does not match the country used to calculate postage.', {
+        checkoutSessionId: session.id,
+        selectedDeliveryCountry,
+        checkoutDeliveryCountry
+      });
+    }
     const orderType = paymentType === 'initial_membership'
       ? 'INITIAL_MEMBERSHIP'
       : paymentType === 'additional_language' || (paymentType === 'additional_items' && languageName && !cardQuantity && !lanyardQuantity)
@@ -636,7 +650,7 @@ export default async (request) => {
       user_id: userId,
       membership_id: membershipId,
       order_type: orderType,
-      order_status: 'PAID_AWAITING_PROFILE',
+      order_status: deliveryCountryMismatch ? 'ADDRESS_REVIEW_REQUIRED' : 'PAID_AWAITING_PROFILE',
       payment_status: 'PAID',
       stripe_checkout_session_id: session.id,
       stripe_payment_intent_id: typeof session.payment_intent === 'string' ? session.payment_intent : null,
