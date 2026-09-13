@@ -17,8 +17,8 @@ export const PACKAGE_DEFINITIONS = {
   PLUS: {
     name: 'LymphAware Plus',
     prices: { 1: 3499, 2: 4499, 3: 5499 },
-    renewals: { 1: 1899, 2: 2599, 3: 3399 },
-    stripePrices: { 1: 'price_1UFGESPMYhQKb2OTuCSOsX8D', 2: 'price_1UFGETPMYhQKb2OTMZwrGxqu', 3: 'price_1UFGEUPMYhQKb2OTjKLPKJDd' }
+    renewals: { 1: 2599, 2: 3399, 3: 4099 },
+    stripePrices: { 1: 'price_1UFIpVPMYhQKb2OTycEm07OF', 2: 'price_1UFIpgPMYhQKb2OTwLhaQcjU', 3: 'price_1UFIpgPMYhQKb2OTKfOwgqx8' }
   },
   MULTILINGUAL: {
     name: 'LymphAware Multilingual',
