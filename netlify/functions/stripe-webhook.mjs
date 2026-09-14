@@ -25,6 +25,10 @@ const RENEWAL_STRIPE_PRICES = {
   MULTILINGUAL: { 1: 'price_1UFGEVPMYhQKb2OT4B45XA28', 2: 'price_1UFGEWPMYhQKb2OTbVjZEvW4', 3: 'price_1UFGEWPMYhQKb2OTD1iA0xNU' }
 };
 
+const ADDITIONAL_CARD_PRICE_PENCE = 699;
+const LANYARD_HOLDER_PRICE_PENCE = 799;
+const ADDITIONAL_LANGUAGE_PRICE_PENCE = 2499;
+
 function verifyStripeSignature(payload, signatureHeader, secret) {
   if (!signatureHeader || !secret) return false;
   const parts = signatureHeader.split(',');
@@ -415,7 +419,7 @@ function buildInitialItems(packageType, languageCode, languageName, membershipTe
 
 function buildAdditionalLanguageItems(languageCode, languageName) {
   return [
-    normaliseItem({ item_type: 'LANGUAGE_PACKAGE', description: 'Additional Language Package', quantity: 1, unit_price_pence: 1999, line_total_pence: 1999, language_code: languageCode, language_name: languageName }),
+    normaliseItem({ item_type: 'LANGUAGE_PACKAGE', description: 'Additional Language Package', quantity: 1, unit_price_pence: ADDITIONAL_LANGUAGE_PRICE_PENCE, line_total_pence: ADDITIONAL_LANGUAGE_PRICE_PENCE, language_code: languageCode, language_name: languageName }),
     normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Lanyard & Holder – included in Additional Language Package', quantity: 1, unit_price_pence: 0, line_total_pence: 0, language_code: languageCode, language_name: languageName })
   ];
 }
@@ -423,10 +427,10 @@ function buildAdditionalLanguageItems(languageCode, languageName) {
 function buildReplacementItems(cardSelected, lanyardSelected) {
   const items = [];
   if (cardSelected) {
-    items.push(normaliseItem({ item_type: 'EXTRA_CARD', description: 'Replacement LymphAware ID Card', quantity: 1, unit_price_pence: 650, line_total_pence: 650 }));
+    items.push(normaliseItem({ item_type: 'EXTRA_CARD', description: 'Replacement LymphAware ID Card', quantity: 1, unit_price_pence: ADDITIONAL_CARD_PRICE_PENCE, line_total_pence: ADDITIONAL_CARD_PRICE_PENCE }));
   }
   if (lanyardSelected) {
-    items.push(normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Replacement Lanyard & Holder', quantity: 1, unit_price_pence: 650, line_total_pence: 650 }));
+    items.push(normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Replacement Lanyard & Holder', quantity: 1, unit_price_pence: LANYARD_HOLDER_PRICE_PENCE, line_total_pence: LANYARD_HOLDER_PRICE_PENCE }));
   }
   return items;
 }
@@ -438,14 +442,14 @@ function buildAdditionalPurchaseItems(cardSelections, lanyardQuantity, languageC
       item_type: 'EXTRA_CARD',
       description: 'Additional or Replacement LymphAware ID Card',
       quantity: selection.quantity,
-      unit_price_pence: 650,
-      line_total_pence: selection.quantity * 650,
+      unit_price_pence: ADDITIONAL_CARD_PRICE_PENCE,
+      line_total_pence: selection.quantity * ADDITIONAL_CARD_PRICE_PENCE,
       language_code: selection.languageCode,
       language_name: selection.languageName
     }));
   }
   if (lanyardQuantity > 0) {
-    items.push(normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Additional or Replacement Lanyard & Holder', quantity: lanyardQuantity, unit_price_pence: 650, line_total_pence: lanyardQuantity * 650 }));
+    items.push(normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Additional or Replacement Lanyard & Holder', quantity: lanyardQuantity, unit_price_pence: LANYARD_HOLDER_PRICE_PENCE, line_total_pence: lanyardQuantity * LANYARD_HOLDER_PRICE_PENCE }));
   }
   if (languageName) items.push(...buildAdditionalLanguageItems(languageCode, languageName));
   return items;
