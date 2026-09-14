@@ -458,6 +458,29 @@ main:not(.admin-page):not(.portal-page) .section-heading {
   color: var(--muted);
 }
 
+.trusted-resource-grid .privacy-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.trusted-resource-grid .trusted-resource-action {
+  width: 100%;
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+.trusted-resource-grid .trusted-resource-action .button {
+  display: inline-flex;
+  width: 100%;
+  min-height: 50px;
+  align-items: center;
+  justify-content: center;
+  padding-left: 16px;
+  padding-right: 16px;
+  text-align: center;
+  white-space: normal;
+}
+
 .mission-box,
 .cta-box {
   border-radius: 24px;
