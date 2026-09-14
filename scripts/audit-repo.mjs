@@ -96,6 +96,8 @@ function checkProjectConsistency() {
   const registerPath = path.join(root, 'register/index.html');
   const initialMembershipCheckoutPath = path.join(root, 'netlify/functions/_shared/initial-membership-checkout.mjs');
   const adminOrdersPath = path.join(root, 'netlify/functions/admin-orders-list.mjs');
+  const stylesPath = path.join(root, 'css/styles.css');
+  const understandingPath = path.join(root, 'understanding-lymphoedema/index.html');
 
   const checkout = fs.readFileSync(checkoutPath, 'utf8');
   const portal = fs.readFileSync(portalPath, 'utf8');
@@ -106,6 +108,8 @@ function checkProjectConsistency() {
   const register = fs.readFileSync(registerPath, 'utf8');
   const initialMembershipCheckout = fs.readFileSync(initialMembershipCheckoutPath, 'utf8');
   const adminOrders = fs.readFileSync(adminOrdersPath, 'utf8');
+  const styles = fs.readFileSync(stylesPath, 'utf8');
+  const understanding = fs.readFileSync(understandingPath, 'utf8');
 
   for (const [code, name] of [['FR', 'French'], ['ES', 'Spanish'], ['DE', 'German']]) {
     if (!checkout.includes(`${code}: '${name}'`)) errors.push(`Checkout language configuration is missing ${name} (${code}).`);
@@ -120,7 +124,15 @@ function checkProjectConsistency() {
   if (!portal.includes('SHIPPING_PRICES={UK:299,EUROPE:499,REST_OF_WORLD:999}')) {
     errors.push('Portal postage rates do not match £2.99 UK / £4.99 Europe / £9.99 Rest of World.');
   }
-  if (!checkout.includes('amountPence: 650')) errors.push('Checkout additional card/lanyard price is not £6.50.');
+  if (!checkout.includes('const ADDITIONAL_CARD_PRICE_PENCE = 699;')) errors.push('Checkout additional card price is not £6.99.');
+  if (!checkout.includes('const LANYARD_HOLDER_PRICE_PENCE = 799;')) errors.push('Checkout lanyard and holder price is not £7.99.');
+  if (!checkout.includes('const ADDITIONAL_LANGUAGE_PRICE_PENCE = 2499;')) errors.push('Checkout additional-language package price is not £24.99.');
+  if (!portal.includes('ADDITIONAL_ITEM_PRICES={CARD:699,LANYARD:799,LANGUAGE:2499}')) errors.push('Portal additional-item prices do not match checkout.');
+  if (!portal.includes('£6.99 each') || !portal.includes('£7.99 each') || !portal.includes('Add another language – £24.99')) errors.push('Portal does not display the agreed additional-item prices.');
+  if (!webhook.includes('const ADDITIONAL_CARD_PRICE_PENCE = 699;') || !webhook.includes('const LANYARD_HOLDER_PRICE_PENCE = 799;') || !webhook.includes('const ADDITIONAL_LANGUAGE_PRICE_PENCE = 2499;')) errors.push('Webhook additional-item prices do not match checkout.');
+  if (!home.includes('.home-membership-packages .home-membership-package-badge') || !home.includes('font-size: 1.3rem;')) errors.push('Homepage membership headings are not enlarged for desktop and tablet.');
+  if (!understanding.includes('privacy-grid trusted-resource-grid') || (understanding.match(/class="trusted-resource-action"/g) || []).length !== 6) errors.push('Trusted-resource link buttons are not grouped for consistent alignment.');
+  if (!styles.includes('.trusted-resource-grid .trusted-resource-action .button') || !styles.includes('width: 100%;')) errors.push('Trusted-resource link buttons do not share a consistent width.');
 
   const membershipPrices = {
     STANDARD: { 1: 2499, 2: 3499, 3: 4499 },
