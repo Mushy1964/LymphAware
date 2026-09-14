@@ -2,8 +2,8 @@ const VALID_REGISTRATION_MODES = new Set(['OPEN', 'INVITE_ONLY', 'CLOSED']);
 
 function serviceHeaders(prefer = '') {
   const headers = {
-    apikey: process.env.SUPABASE_SECRET_KEY,
-    Authorization: `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
+    apikey: Netlify.env.get('SUPABASE_SECRET_KEY'),
+    Authorization: `Bearer ${Netlify.env.get('SUPABASE_SECRET_KEY')}`,
     'Content-Type': 'application/json'
   };
   if (prefer) headers.Prefer = prefer;
@@ -16,7 +16,7 @@ export function normaliseInviteCode(value) {
 
 async function registrationMode() {
   const response = await fetch(
-    `${process.env.SUPABASE_URL}/rest/v1/system_settings?setting_key=eq.registration_mode&select=setting_value&limit=1`,
+    `${Netlify.env.get('SUPABASE_URL')}/rest/v1/system_settings?setting_key=eq.registration_mode&select=setting_value&limit=1`,
     { headers: serviceHeaders() }
   );
   if (!response.ok) throw new Error('Registration availability could not be checked.');
@@ -27,7 +27,7 @@ async function registrationMode() {
 async function unusedInvitationExists(inviteCode) {
   if (!inviteCode) return false;
   const response = await fetch(
-    `${process.env.SUPABASE_URL}/rest/v1/invitation_codes?code=eq.${encodeURIComponent(inviteCode)}&status=eq.unused&used_by=is.null&select=id&limit=1`,
+    `${Netlify.env.get('SUPABASE_URL')}/rest/v1/invitation_codes?code=eq.${encodeURIComponent(inviteCode)}&status=eq.unused&used_by=is.null&select=id&limit=1`,
     { headers: serviceHeaders() }
   );
   if (!response.ok) throw new Error('The trial invitation could not be checked.');
@@ -54,7 +54,7 @@ export async function releaseRegistrationInvitation(inviteCodeValue, userId) {
   const inviteCode = normaliseInviteCode(inviteCodeValue);
   if (!inviteCode || !userId) return;
   const response = await fetch(
-    `${process.env.SUPABASE_URL}/rest/v1/invitation_codes?code=eq.${encodeURIComponent(inviteCode)}&status=eq.used&used_by=eq.${encodeURIComponent(userId)}`,
+    `${Netlify.env.get('SUPABASE_URL')}/rest/v1/invitation_codes?code=eq.${encodeURIComponent(inviteCode)}&status=eq.used&used_by=eq.${encodeURIComponent(userId)}`,
     {
       method: 'PATCH',
       headers: serviceHeaders('return=minimal'),
