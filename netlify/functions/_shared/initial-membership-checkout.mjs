@@ -93,7 +93,7 @@ function packageDescription(selection) {
   return `${membershipTermYears}-year membership with 1 English ID card and 1 lanyard & holder.`;
 }
 
-export async function createInitialMembershipCheckout({ userId, email, membershipId, selection }) {
+export async function createInitialMembershipCheckout({ userId, email, membershipId, selection, trialPromotionCodeId = '' }) {
   const form = new URLSearchParams();
   const checkoutName = `${selection.packageDefinition.name} – ${selection.membershipTermYears}-Year`;
   form.append('mode', selection.autoRenew ? 'subscription' : 'payment');
@@ -115,7 +115,8 @@ export async function createInitialMembershipCheckout({ userId, email, membershi
   const shippingLabel = selection.shippingBand === 'UK' ? 'UK postage & packing' : selection.shippingBand === 'EUROPE' ? 'Europe postage & packing' : 'Rest of World postage & packing';
   appendInlinePrice(form, shippingIndex, shippingLabel, selection.shippingPence, 'Postage & packing for this LymphAware order.');
 
-  form.append('allow_promotion_codes', 'true');
+  if (trialPromotionCodeId) form.append('discounts[0][promotion_code]', trialPromotionCodeId);
+  else form.append('allow_promotion_codes', 'true');
   form.append('billing_address_collection', 'required');
   form.append('shipping_address_collection[allowed_countries][0]', selection.deliveryCountry);
   form.append('client_reference_id', userId);
@@ -148,7 +149,8 @@ export async function createInitialMembershipCheckout({ userId, email, membershi
     first_reminder_window: FIRST_REMINDER_WINDOW,
     final_reminder_window: FINAL_REMINDER_WINDOW,
     initial_cooling_off_days: '14',
-    renewal_cooling_off_days: selection.autoRenew ? '14' : '0'
+    renewal_cooling_off_days: selection.autoRenew ? '14' : '0',
+    trial_discount_applied: trialPromotionCodeId ? '1' : '0'
   };
   for (const [key, value] of Object.entries(metadata)) form.append(`metadata[${key}]`, value);
   if (selection.autoRenew) {

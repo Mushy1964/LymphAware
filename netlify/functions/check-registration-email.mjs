@@ -35,7 +35,7 @@ export default async request => {
       return json({ error: 'Please enter a valid email address.' }, 400);
     }
 
-    const registrationAccess = await authoriseRegistration(body.inviteCode);
+    const registrationAccess = await authoriseRegistration(body.inviteCode, email);
     if (!registrationAccess.allowed) {
       await finishAfter(startedAt);
       return json({ error: registrationUnavailableMessage(registrationAccess.mode) }, 403);

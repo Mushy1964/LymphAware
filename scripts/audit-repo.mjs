@@ -182,11 +182,17 @@ function checkProjectConsistency() {
   if (!register.includes('id="trial-invite-code"') || !register.includes('inviteCode:trialInviteInput.value.trim().toUpperCase()')) {
     errors.push('Registration page does not require and submit a trial invitation code.');
   }
-  if (!registrationAccess.includes("mode === 'INVITE_ONLY'") || !registrationAccess.includes('invitation_codes?code=eq.')) {
-    errors.push('Server registration access does not enforce the invite-only code gate.');
+  if (!registrationAccess.includes("mode === 'INVITE_ONLY'") || !registrationAccess.includes('pilot_invites?invite_code=eq.')) {
+    errors.push('Server registration access does not enforce the invite-only trial-code gate.');
   }
-  if (!startMembershipCheckout.includes('registration_invite_code: inviteCode') || !startMembershipCheckout.includes('authoriseRegistration(body.inviteCode)')) {
-    errors.push('Initial membership signup does not pass and validate the invitation code.');
+  if (!registrationAccess.includes("Number(coupon?.percent_off) !== 100") || !registrationAccess.includes("coupon?.duration !== 'once'")) {
+    errors.push('Server registration access does not verify the trial code maps to the active 100%-off Stripe promotion.');
+  }
+  if (!startMembershipCheckout.includes('registration_invite_code: inviteCode') || !startMembershipCheckout.includes('authoriseRegistration(body.inviteCode, email)')) {
+    errors.push('Initial membership signup does not pass and validate the trial code.');
+  }
+  if (!startMembershipCheckout.includes('trialPromotionCodeId: registrationAccess.promotionCodeId') || !initialMembershipCheckout.includes("discounts[0][promotion_code]")) {
+    errors.push('The validated trial code is not applied automatically at Stripe Checkout.');
   }
   if (!register.includes('id="auto-renew-acknowledgement" disabled') || !register.includes("acknowledgement.disabled=!enabled")) {
     errors.push('Registration renewal acknowledgement is not visibly disabled until automatic renewal is selected.');

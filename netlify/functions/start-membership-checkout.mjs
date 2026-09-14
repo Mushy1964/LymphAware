@@ -7,8 +7,7 @@ import {
 import { recordContractEvent } from './_shared/membership-contract.mjs';
 import {
   authoriseRegistration,
-  registrationUnavailableMessage,
-  releaseRegistrationInvitation
+  registrationUnavailableMessage
 } from './_shared/registration-access.mjs';
 
 function json(body, status = 200) {
@@ -88,7 +87,7 @@ export default async (request) => {
     const password = String(body.password || '');
     if (!/^\S+@\S+\.\S+$/.test(email)) return json({ error: 'Please enter a valid email address.' }, 400);
     if (password.length < 8) return json({ error: 'Please choose a password containing at least 8 characters.' }, 400);
-    const registrationAccess = await authoriseRegistration(body.inviteCode);
+    const registrationAccess = await authoriseRegistration(body.inviteCode, email);
     if (!registrationAccess.allowed) return json({ error: registrationUnavailableMessage(registrationAccess.mode) }, 403);
     inviteCode = registrationAccess.inviteCode;
     const selection = normaliseInitialSelection(body);
@@ -121,7 +120,6 @@ export default async (request) => {
 
     const membership = await waitForMembership(createdUserId);
     if (!membership || membership.membership_status !== 'PENDING' || membership.payment_status !== 'PENDING') {
-      await releaseRegistrationInvitation(inviteCode, createdUserId);
       await removeIncompleteSignup(createdUserId);
       return json({ error: 'Your membership could not be prepared. Please try again.' }, 500);
     }
@@ -131,7 +129,8 @@ export default async (request) => {
       userId: createdUserId,
       email,
       membershipId: membership.id,
-      selection
+      selection,
+      trialPromotionCodeId: registrationAccess.promotionCodeId
     });
     return json({ url: checkout.url });
   } catch (error) {
@@ -139,7 +138,6 @@ export default async (request) => {
     // Keep a successfully prepared pending account if Stripe is temporarily unavailable. The member can
     // confirm their email, sign in and resume payment without receiving a second verification email.
     if (!accountPrepared) {
-      await releaseRegistrationInvitation(inviteCode, createdUserId);
       await removeIncompleteSignup(createdUserId);
     }
     const reason = error instanceof Error ? error.message : 'Unable to start secure payment.';
