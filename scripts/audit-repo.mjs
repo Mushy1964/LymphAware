@@ -94,6 +94,8 @@ function checkProjectConsistency() {
   const homePath = path.join(root, 'index.html');
   const webhookPath = path.join(root, 'netlify/functions/stripe-webhook.mjs');
   const registerPath = path.join(root, 'register/index.html');
+  const registrationAccessPath = path.join(root, 'netlify/functions/_shared/registration-access.mjs');
+  const startMembershipCheckoutPath = path.join(root, 'netlify/functions/start-membership-checkout.mjs');
   const initialMembershipCheckoutPath = path.join(root, 'netlify/functions/_shared/initial-membership-checkout.mjs');
   const adminOrdersPath = path.join(root, 'netlify/functions/admin-orders-list.mjs');
   const stylesPath = path.join(root, 'css/styles.css');
@@ -106,6 +108,8 @@ function checkProjectConsistency() {
   const home = fs.readFileSync(homePath, 'utf8');
   const webhook = fs.readFileSync(webhookPath, 'utf8');
   const register = fs.readFileSync(registerPath, 'utf8');
+  const registrationAccess = fs.readFileSync(registrationAccessPath, 'utf8');
+  const startMembershipCheckout = fs.readFileSync(startMembershipCheckoutPath, 'utf8');
   const initialMembershipCheckout = fs.readFileSync(initialMembershipCheckoutPath, 'utf8');
   const adminOrders = fs.readFileSync(adminOrdersPath, 'utf8');
   const styles = fs.readFileSync(stylesPath, 'utf8');
@@ -174,6 +178,15 @@ function checkProjectConsistency() {
   if (!plusHomeCard.includes('1 year £25.99 · 2 years £33.99 · 3 years £40.99')) errors.push('Homepage Plus renewal prices are incorrect.');
   if (!home.includes('Choose one, two or three years of membership')) {
     errors.push('Homepage membership wording does not offer the agreed one-, two- and three-year terms.');
+  }
+  if (!register.includes('id="trial-invite-code"') || !register.includes('inviteCode:trialInviteInput.value.trim().toUpperCase()')) {
+    errors.push('Registration page does not require and submit a trial invitation code.');
+  }
+  if (!registrationAccess.includes("mode === 'INVITE_ONLY'") || !registrationAccess.includes('invitation_codes?code=eq.')) {
+    errors.push('Server registration access does not enforce the invite-only code gate.');
+  }
+  if (!startMembershipCheckout.includes('registration_invite_code: inviteCode') || !startMembershipCheckout.includes('authoriseRegistration(body.inviteCode)')) {
+    errors.push('Initial membership signup does not pass and validate the invitation code.');
   }
   if (!register.includes('id="auto-renew-acknowledgement" disabled') || !register.includes("acknowledgement.disabled=!enabled")) {
     errors.push('Registration renewal acknowledgement is not visibly disabled until automatic renewal is selected.');

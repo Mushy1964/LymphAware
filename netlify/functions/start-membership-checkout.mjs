@@ -5,6 +5,11 @@ import {
   normaliseInitialSelection
 } from './_shared/initial-membership-checkout.mjs';
 import { recordContractEvent } from './_shared/membership-contract.mjs';
+import {
+  authoriseRegistration,
+  registrationUnavailableMessage,
+  releaseRegistrationInvitation
+} from './_shared/registration-access.mjs';
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -21,14 +26,6 @@ function serviceHeaders(prefer = '') {
   };
   if (prefer) headers.Prefer = prefer;
   return headers;
-}
-
-async function registrationIsOpen() {
-  const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/system_settings?setting_key=eq.registration_mode&select=setting_value&limit=1`, {
-    headers: serviceHeaders()
-  });
-  if (!response.ok) return false;
-  return String((await response.json())?.[0]?.setting_value || '').toUpperCase() === 'OPEN';
 }
 
 async function waitForMembership(userId) {
@@ -84,13 +81,16 @@ export default async (request) => {
   if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
   let createdUserId = '';
   let accountPrepared = false;
+  let inviteCode = '';
   try {
-    if (!(await registrationIsOpen())) return json({ error: 'New LymphAware membership registration is currently closed.' }, 403);
     const body = await request.json().catch(() => ({}));
     const email = String(body.email || '').trim().toLowerCase();
     const password = String(body.password || '');
     if (!/^\S+@\S+\.\S+$/.test(email)) return json({ error: 'Please enter a valid email address.' }, 400);
     if (password.length < 8) return json({ error: 'Please choose a password containing at least 8 characters.' }, 400);
+    const registrationAccess = await authoriseRegistration(body.inviteCode);
+    if (!registrationAccess.allowed) return json({ error: registrationUnavailableMessage(registrationAccess.mode) }, 403);
+    inviteCode = registrationAccess.inviteCode;
     const selection = normaliseInitialSelection(body);
 
     const signupResponse = await fetch(`${process.env.SUPABASE_URL}/auth/v1/signup?redirect_to=${encodeURIComponent('https://lymphaware.com/portal/?email=confirmed')}`, {
@@ -106,7 +106,8 @@ export default async (request) => {
         data: {
           selected_package: selection.packageType,
           selected_membership_term_years: selection.membershipTermYears,
-          membership_contract_version: MEMBERSHIP_CONTRACT_VERSION
+          membership_contract_version: MEMBERSHIP_CONTRACT_VERSION,
+          registration_invite_code: inviteCode
         }
       })
     });
@@ -120,6 +121,7 @@ export default async (request) => {
 
     const membership = await waitForMembership(createdUserId);
     if (!membership || membership.membership_status !== 'PENDING' || membership.payment_status !== 'PENDING') {
+      await releaseRegistrationInvitation(inviteCode, createdUserId);
       await removeIncompleteSignup(createdUserId);
       return json({ error: 'Your membership could not be prepared. Please try again.' }, 500);
     }
@@ -136,7 +138,10 @@ export default async (request) => {
     console.error('Unable to start membership registration and checkout:', error instanceof Error ? error.message : error);
     // Keep a successfully prepared pending account if Stripe is temporarily unavailable. The member can
     // confirm their email, sign in and resume payment without receiving a second verification email.
-    if (!accountPrepared) await removeIncompleteSignup(createdUserId);
+    if (!accountPrepared) {
+      await releaseRegistrationInvitation(inviteCode, createdUserId);
+      await removeIncompleteSignup(createdUserId);
+    }
     const reason = error instanceof Error ? error.message : 'Unable to start secure payment.';
     return json({ error: accountPrepared ? `${reason} Your unpaid membership has not been activated. Confirm your email and sign in to try payment again.` : reason }, 500);
   }

@@ -1,3 +1,5 @@
+import { authoriseRegistration, registrationUnavailableMessage } from './_shared/registration-access.mjs';
+
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -31,6 +33,12 @@ export default async request => {
     if (!/^\S+@\S+\.\S+$/.test(email)) {
       await finishAfter(startedAt);
       return json({ error: 'Please enter a valid email address.' }, 400);
+    }
+
+    const registrationAccess = await authoriseRegistration(body.inviteCode);
+    if (!registrationAccess.allowed) {
+      await finishAfter(startedAt);
+      return json({ error: registrationUnavailableMessage(registrationAccess.mode) }, 403);
     }
 
     const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/rpc/registration_email_exists`, {
