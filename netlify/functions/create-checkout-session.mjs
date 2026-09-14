@@ -25,6 +25,10 @@ const RENEWAL_DEFINITIONS = {
   }
 };
 
+const ADDITIONAL_CARD_PRICE_PENCE = 699;
+const LANYARD_HOLDER_PRICE_PENCE = 799;
+const ADDITIONAL_LANGUAGE_PRICE_PENCE = 2499;
+
 const EUROPE_COUNTRIES = new Set([
   'AL','AD','AT','BE','BA','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IS','IE','IT',
   'XK','LV','LI','LT','LU','MT','MD','MC','ME','NL','MK','NO','PL','PT','RO','SM','RS','SK','SI',
@@ -292,13 +296,13 @@ export default async (request) => {
       for (const selection of cardSelections) {
         checkoutItems.push({
           name: `${selection.languageName} LymphAware ID Card`,
-          amountPence: 650,
+          amountPence: ADDITIONAL_CARD_PRICE_PENCE,
           description: `Additional or replacement card for the existing ${selection.languageName} profile.`,
           quantity: selection.quantity
         });
       }
-      if (lanyardQuantity) checkoutItems.push({ name: 'LymphAware Lanyard & Holder', amountPence: 650, description: 'Additional or replacement lanyard and holder.', quantity: lanyardQuantity });
-      if (languageName) checkoutItems.push({ name: `LymphAware Additional Language Package – ${languageName}`, amountPence: 1999, description: `One ${languageName} QR profile, one ${languageName} ID card and one lanyard & holder.`, quantity: 1 });
+      if (lanyardQuantity) checkoutItems.push({ name: 'LymphAware Lanyard & Holder', amountPence: LANYARD_HOLDER_PRICE_PENCE, description: 'Additional or replacement lanyard and holder.', quantity: lanyardQuantity });
+      if (languageName) checkoutItems.push({ name: `LymphAware Additional Language Package – ${languageName}`, amountPence: ADDITIONAL_LANGUAGE_PRICE_PENCE, description: `One ${languageName} QR profile, one ${languageName} ID card and one lanyard & holder.`, quantity: 1 });
 
       amountPence = checkoutItems.reduce((sum, item) => sum + (item.amountPence * item.quantity), 0);
       checkoutName = 'LymphAware Additional Items';
@@ -320,7 +324,7 @@ export default async (request) => {
 
       checkoutName = `LymphAware Additional Language Package – ${languageName}`;
       checkoutDescription = `One ${languageName} QR profile, one ${languageName} ID card and one lanyard & holder.`;
-      amountPence = 1999;
+      amountPence = ADDITIONAL_LANGUAGE_PRICE_PENCE;
       packageType = 'ADDITIONAL_LANGUAGE';
     } else if (paymentType === 'replacement_items') {
       if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware membership is required.' }, 403);
@@ -331,7 +335,7 @@ export default async (request) => {
         return json({ error: 'Please select at least one item.' }, 400);
       }
 
-      amountPence = (replacementCard ? 650 : 0) + (replacementLanyard ? 650 : 0);
+      amountPence = (replacementCard ? ADDITIONAL_CARD_PRICE_PENCE : 0) + (replacementLanyard ? LANYARD_HOLDER_PRICE_PENCE : 0);
       checkoutName = replacementCard && replacementLanyard
         ? 'LymphAware Replacement Card + Lanyard & Holder'
         : replacementCard
