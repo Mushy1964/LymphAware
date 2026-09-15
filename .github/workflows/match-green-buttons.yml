@@ -1,0 +1,54 @@
+name: Match green buttons to logo
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/match-green-buttons.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Match green buttons to approved logo green
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          logo_green = '#2c922b'
+          hover_green = '#247a24'
+
+          p = Path('css/styles.css')
+          css = p.read_text(encoding='utf-8')
+          css = css.replace('.button-primary {\n  background: var(--green);\n  color: white;\n}', f'.button-primary {{\n  background: {logo_green};\n  color: white;\n}}', 1)
+          css = css.replace('.button-primary:hover,\n.button-primary:focus {\n  background: var(--green-dark);\n}', f'.button-primary:hover,\n.button-primary:focus {{\n  background: {hover_green};\n}}', 1)
+          css = css.replace('.mobile-menu-panel .mobile-primary {\n  margin-top: 8px;\n  background: var(--green);\n  color: white;\n  text-align: center;\n}', f'.mobile-menu-panel .mobile-primary {{\n  margin-top: 8px;\n  background: {logo_green};\n  color: white;\n  text-align: center;\n}}', 1)
+          css = css.replace('.mobile-menu-panel .mobile-primary:hover,\n.mobile-menu-panel .mobile-primary:focus {\n  background: var(--green-dark);\n  color: white;\n}', f'.mobile-menu-panel .mobile-primary:hover,\n.mobile-menu-panel .mobile-primary:focus {{\n  background: {hover_green};\n  color: white;\n}}', 1)
+          p.write_text(css, encoding='utf-8')
+
+          p = Path('css/home.css')
+          css = p.read_text(encoding='utf-8')
+          css = css.replace('.home-page .home-account-button {\n  min-width: 132px;\n  min-height: 46px;\n  padding: 0 24px;\n  border: none;\n  border-radius: 10px;\n  background: var(--green);\n  color: white;\n}', f'.home-page .home-account-button {{\n  min-width: 132px;\n  min-height: 46px;\n  padding: 0 24px;\n  border: none;\n  border-radius: 10px;\n  background: {logo_green};\n  color: white;\n}}', 1)
+          css = css.replace('.home-page .home-account-button:hover,\n.home-page .home-account-button:focus {\n  background: var(--green-dark);\n}', f'.home-page .home-account-button:hover,\n.home-page .home-account-button:focus {{\n  background: {hover_green};\n}}', 1)
+          p.write_text(css, encoding='utf-8')
+
+          p = Path('css/public-chrome.css')
+          css = p.read_text(encoding='utf-8')
+          css = css.replace('background: #4c9b57;', f'background: {logo_green};')
+          css = css.replace('background: #2f6f3a;', f'background: {hover_green};')
+          p.write_text(css, encoding='utf-8')
+          PY
+      - name: Run repository audit
+        run: node scripts/audit-repo.mjs
+      - name: Commit change
+        run: |
+          git config user.name "Mushy1964"
+          git config user.email "graham.rooms@gmail.com"
+          git add css/styles.css css/home.css css/public-chrome.css
+          git diff --cached --quiet && exit 0
+          git commit -m "Match green buttons to LymphAware logo green"
+          git push
