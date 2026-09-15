@@ -77,7 +77,7 @@
             </details>
 
             <a href="/sign-in/" id="desktop-account-link" class="public-account-link">
-              <svg class="public-account-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M20 21a8 8 0 0 0-16 0M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/></svg>
+              <svg class="public-account-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.1" fill="currentColor"/><path d="M5.8 19.2c.8-3.5 3-5.3 6.2-5.3s5.4 1.8 6.2 5.3" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg>
               <span>Sign In</span>
             </a>
 

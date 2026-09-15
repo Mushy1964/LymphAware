@@ -17,7 +17,7 @@
 .public-header-inner {
   min-height: 92px;
   display: grid;
-  grid-template-columns: minmax(275px, 330px) minmax(220px, 1fr) auto auto;
+  grid-template-columns: minmax(275px, 330px) minmax(220px, 1fr) 132px 132px;
   align-items: center;
   gap: 16px;
 }
@@ -116,15 +116,16 @@
 .public-search-result:focus { background: #eef6fb; color: #1768b0; outline: 0; }
 .public-search-empty { color: #667585; }
 
-.public-help-menu { position: relative; }
+.public-help-menu { position: relative; width: 132px; }
 .public-help-menu summary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-width: 104px;
-  min-height: 50px;
-  padding: 0 14px;
+  width: 100%;
+  min-width: 132px;
+  min-height: 52px;
+  padding: 0 16px;
   list-style: none;
   border: 0;
   border-radius: 12px;
@@ -174,20 +175,33 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-width: 112px;
-  min-height: 50px;
-  padding: 0 12px;
+  gap: 9px;
+  width: 132px;
+  min-width: 132px;
+  min-height: 52px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: #eef6fb;
   color: #10294b;
   font-weight: 800;
   white-space: nowrap;
+  transition: background .18s ease, color .18s ease, box-shadow .18s ease;
 }
 .public-account-link:hover,
-.public-account-link:focus { color:#1768b0; }
+.public-account-link:focus {
+  background: #e2f0f8;
+  color: #1768b0;
+  box-shadow: 0 0 0 3px rgba(40,120,184,.08);
+}
 .public-account-icon {
-  width: 22px;
-  height: 22px;
-  flex: 0 0 22px;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  box-sizing: border-box;
+  padding: 4px;
+  border-radius: 50%;
+  background: #1768b0;
+  color: #fff;
 }
 
 .public-nav-bar {
@@ -341,15 +355,16 @@
 
 @media (max-width: 980px) and (min-width: 681px) {
   .public-header-inner {
-    grid-template-columns: minmax(225px, 270px) minmax(160px,1fr) auto auto;
+    grid-template-columns: minmax(225px, 270px) minmax(160px,1fr) 112px 112px;
     gap: 10px;
   }
   .public-site-logo { width:270px; }
   .public-search-shell { min-height:46px; }
   .public-site-search input { height:44px; font-size:.9rem; }
   .public-search-icon { width:42px; flex-basis:42px; }
-  .public-help-menu summary { min-width:88px; min-height:46px; padding:0 10px; }
-  .public-account-link { min-width:88px; min-height:46px; padding:0 8px; font-size:.9rem; }
+  .public-help-menu { width:112px; }
+  .public-help-menu summary { width:112px; min-width:112px; min-height:46px; padding:0 10px; }
+  .public-account-link { width:112px; min-width:112px; min-height:46px; padding:0 10px; font-size:.9rem; }
   .public-nav-inner { min-height:50px; }
   .public-nav-inner a { padding:0 10px; font-size:.82rem; }
   .public-footer-main { grid-template-columns: 230px 1fr; }
