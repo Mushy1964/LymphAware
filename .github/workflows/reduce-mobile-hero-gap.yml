@@ -1,0 +1,39 @@
+name: Reduce mobile hero gap
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/reduce-mobile-hero-gap.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reduce mobile homepage top spacing
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('css/home.css')
+          css = p.read_text(encoding='utf-8')
+          old = '  .home-page .home-hero {\n    padding: 38px 0 44px;\n    overflow: hidden;\n  }'
+          new = '  .home-page .home-hero {\n    padding: 20px 0 44px;\n    overflow: hidden;\n  }'
+          if old not in css:
+              raise SystemExit('Mobile home hero spacing block not found')
+          css = css.replace(old, new, 1)
+          p.write_text(css, encoding='utf-8')
+          PY
+      - name: Run repository audit
+        run: node scripts/audit-repo.mjs
+      - name: Commit change
+        run: |
+          git config user.name "Mushy1964"
+          git config user.email "graham.rooms@gmail.com"
+          git add css/home.css
+          git diff --cached --quiet && exit 0
+          git commit -m "Reduce mobile homepage header gap"
+          git push
