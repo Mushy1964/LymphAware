@@ -96,6 +96,9 @@
             </details>
           </div>
         </div>
+        <div class="public-mobile-brand-strip" aria-label="LymphAware values">
+          <span>Patient-led</span><span aria-hidden="true">•</span><span>Private by design</span><span aria-hidden="true">•</span><span>Easy to share</span>
+        </div>
         <nav class="public-nav-bar" aria-label="Main navigation">
           <div class="container public-nav-inner">${desktopNav}</div>
         </nav>

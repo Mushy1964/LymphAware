@@ -252,6 +252,8 @@
   background: #9bd1a3;
 }
 
+.public-mobile-brand-strip { display:none; }
+
 .public-mobile-menu { display:none; position:relative; justify-self:end; }
 .public-mobile-menu summary {
   display:inline-flex;
@@ -383,6 +385,28 @@
   .public-help-menu,
   .public-account-link,
   .public-nav-bar { display:none !important; }
+  .public-mobile-brand-strip {
+    display:flex;
+    width:100%;
+    min-height:48px;
+    padding:0 14px;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    background:#0053b7;
+    color:#fff;
+    font-size:.82rem;
+    line-height:1;
+    font-weight:800;
+    letter-spacing:.01em;
+    text-align:center;
+    white-space:nowrap;
+    border-top:1px solid #00479d;
+  }
+  .public-mobile-brand-strip span[aria-hidden="true"] {
+    opacity:.7;
+    font-size:.72rem;
+  }
   .public-mobile-menu { display:block; }
   .public-footer-main { display:block; }
   .public-footer-brand img { width:235px; }
