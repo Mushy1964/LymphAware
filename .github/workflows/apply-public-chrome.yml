@@ -1,0 +1,76 @@
+name: Apply public site header and footer
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-public-chrome.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Add shared public chrome assets to public pages
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          targets = [
+              'index.html',
+              '404.html',
+              'about/index.html',
+              'understanding-lymphoedema/index.html',
+              'for-professionals/index.html',
+              'privacy/index.html',
+              'help/index.html',
+              'contact/index.html',
+              'accessibility/index.html',
+              'cookies/index.html',
+              'terms/index.html',
+              'how-it-works/index.html',
+              'quick-guide/index.html',
+              'emergency-contact-privacy/index.html',
+          ]
+
+          css = '<link rel="stylesheet" href="/css/public-chrome.css">'
+          js = '<script src="/js/public-chrome.js" defer></script>'
+
+          changed = []
+          for name in targets:
+              p = Path(name)
+              if not p.exists():
+                  continue
+              text = p.read_text(encoding='utf-8')
+              original = text
+              additions = []
+              if '/css/public-chrome.css' not in text:
+                  additions.append(css)
+              if '/js/public-chrome.js' not in text:
+                  additions.append(js)
+              if additions:
+                  marker = '</head>'
+                  if marker not in text:
+                      raise SystemExit(f'No </head> found in {name}')
+                  text = text.replace(marker, '  ' + '\n  '.join(additions) + '\n' + marker, 1)
+              if text != original:
+                  p.write_text(text, encoding='utf-8')
+                  changed.append(name)
+
+          print('Updated:', ', '.join(changed) if changed else 'none')
+          PY
+      - name: Run repository audit
+        run: node scripts/audit-repo.mjs
+      - name: Commit public site chrome references
+        run: |
+          git config user.name "Mushy1964"
+          git config user.email "graham.rooms@gmail.com"
+          git add index.html 404.html about/index.html understanding-lymphoedema/index.html for-professionals/index.html privacy/index.html help/index.html contact/index.html accessibility/index.html cookies/index.html terms/index.html how-it-works/index.html quick-guide/index.html emergency-contact-privacy/index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Apply new public header and footer across website"
+          git push
