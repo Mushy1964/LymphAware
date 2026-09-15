@@ -567,14 +567,14 @@ footer {
 }
 
 .founder-photo {
-  width: min(100%, 260px);
-  aspect-ratio: 1 / 1;
+  width: clamp(150px, 42vw, 190px);
+  height: clamp(150px, 42vw, 190px);
   margin: 0 auto;
-  border: 6px solid rgba(255, 255, 255, 0.96);
+  border: 5px solid rgba(255, 255, 255, 0.96);
   border-radius: 50%;
   object-fit: cover;
   object-position: 50% 18%;
-  box-shadow: 0 12px 28px rgba(31, 41, 51, 0.16);
+  box-shadow: 0 10px 24px rgba(31, 41, 51, 0.14);
 }
 
 .founder-profile figcaption {
