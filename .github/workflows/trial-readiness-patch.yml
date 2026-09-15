@@ -1,0 +1,126 @@
+name: Apply trial readiness fixes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/trial-readiness-patch.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply remaining trial-readiness fixes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new, label):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              if new in text:
+                  print(f'{label}: already applied')
+                  return
+              if old not in text:
+                  raise SystemExit(f'{label}: expected source text not found')
+              p.write_text(text.replace(old, new, 1), encoding='utf-8')
+              print(f'{label}: applied')
+
+          # Homepage: make the invitation-only trial clear at both Join points.
+          replace_once(
+              'index.html',
+              '''        <div class="home-hero-actions">\n          <a href="/register/" id="hero-membership-link" class="button button-primary">Join LymphAware</a>\n          <a href="#sample-card" class="button button-secondary">View sample card</a>\n        </div>''',
+              '''        <div class="home-hero-actions">\n          <a href="/register/" id="hero-membership-link" class="button button-primary">Join LymphAware</a>\n          <a href="#sample-card" class="button button-secondary">View sample card</a>\n        </div>\n        <p class="home-trial-notice" role="note"><strong>Private invitation-only trial:</strong> LymphAware is currently available to invited trial participants. You will need the trial code supplied with your invitation; it reduces the trial checkout total to £0.</p>''',
+              'homepage hero trial notice'
+          )
+
+          replace_once(
+              'index.html',
+              '''      <div class="home-membership-actions">\n        <a id="membership-join-link" href="/register/" class="button button-primary">Join LymphAware</a>''',
+              '''      <div class="home-membership-actions">\n        <p class="home-trial-notice home-trial-notice-membership" role="note"><strong>Trial access:</strong> membership is currently invitation-only. Use the trial code supplied with your invitation.</p>\n        <a id="membership-join-link" href="/register/" class="button button-primary">Join LymphAware</a>''',
+              'homepage membership trial notice'
+          )
+
+          replace_once(
+              'index.html',
+              '''          LymphAware is being designed around patient control and data\n          minimisation, collecting and displaying only information needed\n          for the service.''',
+              '''          LymphAware is built around patient control and data minimisation,\n          collecting and displaying only information needed for the service.''',
+              'homepage current-service wording'
+          )
+
+          # Shared homepage styling for the new notice.
+          css = Path('css/home-width-fix.css')
+          css_text = css.read_text(encoding='utf-8')
+          css_marker = '/* PRIVATE TRIAL NOTICE */'
+          if css_marker not in css_text:
+              css_text += '''\n\n/* PRIVATE TRIAL NOTICE */\n.home-page .home-trial-notice {\n  max-width: 720px;\n  margin: 14px 0 0;\n  padding: 12px 14px;\n  border: 1px solid #b8cee0;\n  border-left: 5px solid #2878b8;\n  border-radius: 10px;\n  background: #f1f7fb;\n  color: #344b60;\n  font-size: 0.94rem;\n  line-height: 1.5;\n}\n\n.home-page .home-membership-actions .home-trial-notice-membership {\n  width: 100%;\n  max-width: none;\n  margin: 0 0 6px;\n}\n'''
+              css.write_text(css_text, encoding='utf-8')
+              print('homepage trial notice styling: applied')
+
+          # Registration: explain invitation-only status before package selection.
+          replace_once(
+              'register/index.html',
+              '''    .join-card>.eyebrow{margin-bottom:8px}.join-card h1{margin:0 0 10px;font-size:2.35rem;line-height:1.13}.join-intro{margin:0 0 34px;color:var(--muted);font-size:1.08rem;line-height:1.55}.join-step[hidden]{display:none}''',
+              '''    .join-card>.eyebrow{margin-bottom:8px}.join-card h1{margin:0 0 10px;font-size:2.35rem;line-height:1.13}.join-intro{margin:0 0 18px;color:var(--muted);font-size:1.08rem;line-height:1.55}.trial-notice{margin:0 0 30px;padding:16px 18px;border:1px solid #b8cee0;border-left:5px solid #2878b8;border-radius:12px;background:#f1f7fb;color:#344b60;line-height:1.55}.trial-notice strong{color:#17283d}.join-step[hidden]{display:none}''',
+              'register trial notice styling'
+          )
+
+          replace_once(
+              'register/index.html',
+              '''    <section class="join-card" aria-labelledby="join-heading"><p class="eyebrow">LymphAware membership</p><h1 id="join-heading">Join LymphAware</h1><p class="join-intro">Choose your membership, create your secure account and continue to payment.</p>\n      <form id="join-form" novalidate>''',
+              '''    <section class="join-card" aria-labelledby="join-heading"><p class="eyebrow">LymphAware membership</p><h1 id="join-heading">Join LymphAware</h1><p class="join-intro">Choose your membership, create your secure account and continue to payment.</p>\n      <div class="trial-notice" role="note"><strong>LymphAware is currently available through a private, invitation-only trial.</strong> You will need the trial code supplied with your invitation. The same code is applied automatically as a 100% discount at secure checkout, so invited trial participants are not charged for their trial order.</div>\n      <form id="join-form" novalidate>''',
+              'register trial notice content'
+          )
+
+          # Existing invited trial members: automatically carry the same 100% trial
+          # promotion into subsequent additional-item and additional-language checkouts.
+          replace_once(
+              'netlify/functions/create-checkout-session.mjs',
+              '''    const user = await userResponse.json();\n    if (!user?.id) return json({ error: 'Unable to verify your LymphAware account.' }, 401);\n\n    const membership = await getMembership(user.id);''',
+              '''    const user = await userResponse.json();\n    if (!user?.id) return json({ error: 'Unable to verify your LymphAware account.' }, 401);\n\n    const savedInviteCode = String(user?.user_metadata?.registration_invite_code || '').trim();\n    let trialPromotionCodeId = '';\n    if (savedInviteCode) {\n      try {\n        const trialAccess = await authoriseRegistration(savedInviteCode, user.email || '');\n        trialPromotionCodeId = trialAccess?.promotionCodeId || '';\n      } catch (error) {\n        console.error('Unable to check the existing member trial discount:', error instanceof Error ? error.message : error);\n      }\n    }\n\n    const membership = await getMembership(user.id);''',
+              'subsequent checkout trial lookup'
+          )
+
+          replace_once(
+              'netlify/functions/create-checkout-session.mjs',
+              '''    stripeForm.append('allow_promotion_codes', 'true');\n    if (autoRenew) stripeForm.append('payment_method_collection', 'always');''',
+              '''    if (trialPromotionCodeId) stripeForm.append('discounts[0][promotion_code]', trialPromotionCodeId);\n    else stripeForm.append('allow_promotion_codes', 'true');\n    if (autoRenew) stripeForm.append('payment_method_collection', 'always');''',
+              'subsequent checkout trial discount'
+          )
+
+          checkout = Path('netlify/functions/create-checkout-session.mjs')
+          checkout_text = checkout.read_text(encoding='utf-8')
+          import_line = "import { authoriseRegistration } from './_shared/registration-access.mjs';"
+          if import_line not in checkout_text:
+              membership_import = "import { MEMBERSHIP_CONTRACT_VERSION, recordContractEvent } from './_shared/membership-contract.mjs';"
+              if membership_import not in checkout_text:
+                  raise SystemExit('registration-access import: membership-contract import marker not found')
+              checkout.write_text(checkout_text.replace(membership_import, membership_import + '\n' + import_line, 1), encoding='utf-8')
+              print('registration-access import: applied')
+
+          PY
+
+      - name: Validate patched files
+        run: |
+          node --check netlify/functions/create-checkout-session.mjs
+          node scripts/audit-repo.mjs
+          grep -q "Private invitation-only trial" index.html
+          grep -q "private, invitation-only trial" register/index.html
+          grep -q "registration_invite_code" netlify/functions/create-checkout-session.mjs
+          grep -q "discounts\[0\]\[promotion_code\]" netlify/functions/create-checkout-session.mjs
+
+      - name: Commit trial-readiness fixes
+        run: |
+          git config user.name "Mushy1964"
+          git config user.email "graham.rooms@gmail.com"
+          git add index.html css/home-width-fix.css register/index.html netlify/functions/create-checkout-session.mjs
+          git diff --cached --quiet && exit 0
+          git commit -m "Complete invitation-only trial readiness fixes"
+          git push
