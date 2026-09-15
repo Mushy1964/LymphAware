@@ -88,12 +88,52 @@
 
 /* =========================================================
    HEADER NAVIGATION
-   Keep the desktop navigation focused on high-priority destinations while
-   retaining About in the fuller mobile menu.
+   Keep About, For Professionals and Privacy & Security visible together in
+   the PC/tablet top navigation. Compact the tablet header rather than hiding
+   the navigation; smaller screens continue to use the mobile menu.
    ========================================================= */
 
-.home-page .main-nav.home-nav a[href="/about/"] {
-  display: none !important;
+@media (min-width: 761px) and (max-width: 980px) {
+  .home-page .main-nav.home-nav {
+    display: flex !important;
+    gap: 12px !important;
+    font-size: 0.82rem !important;
+  }
+
+  .home-page .main-nav.home-nav a {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .home-page .home-header .header-logo {
+    width: 230px !important;
+    max-width: 230px !important;
+  }
+
+  .home-page .home-header .header-inner {
+    width: min(100% - 28px, 1180px) !important;
+    gap: 12px !important;
+  }
+
+  .home-page .home-header .header-actions .button,
+  .home-page .home-account-button {
+    width: auto !important;
+    min-width: 116px !important;
+    max-width: none !important;
+    min-height: 44px !important;
+    padding: 0 12px !important;
+    font-size: 0.88rem !important;
+  }
+}
+
+@media (min-width: 681px) and (max-width: 760px) {
+  .home-page .mobile-menu {
+    display: block !important;
+  }
+
+  .home-page .header-actions {
+    display: none !important;
+  }
 }
 
 
@@ -304,6 +344,17 @@
   min-height: 92px !important;
   margin-left: auto !important;
   margin-right: auto !important;
+}
+
+@media (min-width: 761px) and (max-width: 980px) {
+  .home-page .home-header .header-logo {
+    width: 230px !important;
+    max-width: 230px !important;
+  }
+
+  .home-page .home-header .header-inner {
+    width: min(100% - 28px, 1180px) !important;
+  }
 }
 
 @media (max-width: 680px) {
