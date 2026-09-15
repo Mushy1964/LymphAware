@@ -1,2 +1,0 @@
-Trigger production deployment of the latest main branch for final controlled-trial verification.
-2026-09-15
