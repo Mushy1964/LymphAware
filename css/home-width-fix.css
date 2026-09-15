@@ -88,13 +88,11 @@
 
 /* =========================================================
    HEADER NAVIGATION
-   Keep the top navigation focused on high-priority destinations. About remains
-   available in the footer, but is intentionally removed from desktop/mobile
-   header navigation.
+   Keep the desktop navigation focused on high-priority destinations while
+   retaining About in the fuller mobile menu.
    ========================================================= */
 
-.home-page .main-nav.home-nav a[href="/about/"],
-.home-page .mobile-menu-panel a[href="/about/"] {
+.home-page .main-nav.home-nav a[href="/about/"] {
   display: none !important;
 }
 
