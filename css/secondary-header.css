@@ -225,8 +225,8 @@ body:has(.secondary-header) .button {
     transform: translateX(-50%);
     margin-left: 0;
     justify-content: flex-start;
-    background: #eef6fb;
-    border-top: 1px solid #dce8f0;
+    background: linear-gradient(180deg, #263d77 0%, #203568 100%);
+    border-top: 1px solid #203568;
   }
 
   .secondary-header .header-actions > .back-to-website-button {
@@ -234,14 +234,14 @@ body:has(.secondary-header) .button {
     width: calc(100% - 28px) !important;
     min-width: 0 !important;
     max-width: none !important;
-    min-height: 44px !important;
+    min-height: 48px !important;
     margin: 0 auto !important;
     padding: 0 !important;
     justify-content: flex-start !important;
     border: 0 !important;
     background: transparent !important;
     box-shadow: none !important;
-    color: #1768b0 !important;
+    color: #ffffff !important;
     font-size: 0 !important;
   }
 
@@ -249,7 +249,7 @@ body:has(.secondary-header) .button {
     content: "Return to website";
     font-size: 1rem;
     line-height: 1.2;
-    font-weight: 700;
+    font-weight: 800;
   }
 
   .secondary-header.profile-site-header .header-actions > .back-to-website-button::before {
@@ -258,7 +258,8 @@ body:has(.secondary-header) .button {
 
   .secondary-header .header-actions > .back-to-website-button:hover,
   .secondary-header .header-actions > .back-to-website-button:focus-visible {
-    background: transparent !important;
-    text-decoration: underline;
+    background: rgba(255,255,255,.10) !important;
+    color: #ffffff !important;
+    text-decoration: none;
   }
 }
