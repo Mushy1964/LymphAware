@@ -389,3 +389,23 @@
   max-width: none;
   margin: 0 0 6px;
 }
+
+/* MOBILE TRIAL NOTICE POSITION */
+@media (max-width: 680px) {
+  /* Mobile hero sequence: heading, copy, product graphic, trial notice, actions. */
+  .home-page .home-trial-notice:not(.home-trial-notice-membership) {
+    order: 4;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 24px;
+  }
+
+  .home-page .home-hero-product {
+    margin-bottom: 24px;
+  }
+
+  .home-page .home-hero-actions {
+    order: 5;
+    margin-top: 0;
+  }
+}
