@@ -23,33 +23,37 @@ jobs:
           from pathlib import Path
           p = Path('index.html')
           t = p.read_text(encoding='utf-8')
-          replacements = [
+
+          pairs = [
             (
-              '''          If you regularly travel, spend time abroad or would find another language\n          useful, you will be able to add an additional language package to your membership.\n        </p>\n        <p>\n          The aim is to provide a dedicated card in the chosen language, linked to a\n          QR profile presented in that same language — while keeping the familiar\n          LymphAware profile design.''',
-              '''          If you regularly travel, spend time abroad or would find another language\n          useful, you can add an additional language package to your membership.\n        </p>\n        <p>\n          An additional language package provides a dedicated card in the chosen language,\n          linked to a QR profile presented in that same language — while keeping the familiar\n          LymphAware profile design.'''
+              'useful, you will be able to add an additional language package to your membership.',
+              'useful, you can add an additional language package to your membership.'
             ),
             (
-              '''          LymphAware is being developed from first-hand understanding of\n          the communication challenges that can come with living with\n          lymphoedema.''',
-              '''          LymphAware is shaped by first-hand understanding of the\n          communication challenges that can come with living with lymphoedema.'''
+              'The aim is to provide a dedicated card in the chosen language, linked to a',
+              'An additional language package provides a dedicated card in the chosen language, linked to a'
             ),
             (
-              '''          LymphAware is being designed around patient control and data\n          minimisation, collecting and displaying only information needed\n          for the service.''',
-              '''          LymphAware is built around patient control and data minimisation,\n          collecting and displaying only information needed for the service.'''
+              'LymphAware is being developed from first-hand understanding of\n          the communication challenges that can come with living with\n          lymphoedema.',
+              'LymphAware is shaped by first-hand understanding of the\n          communication challenges that can come with living with lymphoedema.'
             ),
             (
-              '''          Privacy and security will remain central as LymphAware develops.''',
-              '''          Privacy and security remain central as LymphAware grows.'''
+              'LymphAware is being designed around patient control and data\n          minimisation, collecting and displaying only information needed\n          for the service.',
+              'LymphAware is built around patient control and data minimisation,\n          collecting and displaying only information needed for the service.'
+            ),
+            (
+              'Privacy and security will remain central as LymphAware develops.',
+              'Privacy and security remain central as LymphAware grows.'
             )
           ]
-          changed = False
-          for old, new in replacements:
+
+          for old, new in pairs:
               if old in t:
                   t = t.replace(old, new, 1)
-                  changed = True
               elif new not in t:
-                  raise SystemExit('Expected homepage wording was not found')
-          if changed:
-              p.write_text(t, encoding='utf-8')
+                  raise SystemExit(f'Expected wording not found: {old}')
+
+          p.write_text(t, encoding='utf-8')
           PY
 
       - name: Validate homepage wording
