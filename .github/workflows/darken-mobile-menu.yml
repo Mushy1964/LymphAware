@@ -18,8 +18,14 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Replace colourful icon menu with dark navigation
         run: |
-          cat >> css/public-chrome.css <<'CSS'
-
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('css/public-chrome.css')
+          css = p.read_text(encoding='utf-8')
+          marker = '/* Dark mobile navigation refinement */'
+          if marker in css:
+              css = css.split(marker)[0].rstrip() + '\n'
+          css += r'''
 /* Dark mobile navigation refinement */
 @media (max-width: 680px) {
   .public-mobile-panel {
@@ -117,7 +123,9 @@ jobs:
     padding-left: 22px;
   }
 }
-CSS
+'''
+          p.write_text(css, encoding='utf-8')
+          PY
       - name: Run repository audit
         run: node scripts/audit-repo.mjs
       - name: Commit change
