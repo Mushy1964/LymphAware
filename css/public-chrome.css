@@ -191,6 +191,9 @@
 }
 
 .public-nav-bar {
+  width: min(1180px, calc(100% - 40px));
+  margin-left: auto;
+  margin-right: auto;
   background: linear-gradient(90deg, #0d62b4 0%, #0f78c9 100%);
   color: #fff;
 }

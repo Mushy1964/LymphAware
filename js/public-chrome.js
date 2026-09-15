@@ -18,6 +18,8 @@
 
   if (!publicPaths.has(path) && path !== '/404.html') return;
 
+  const isHomepage = path === '/';
+
   const navItems = [
     { label: 'Understanding Lymphoedema', href: '/understanding-lymphoedema/' },
     { label: 'For Professionals', href: '/for-professionals/' },
@@ -45,7 +47,7 @@
   const mobileNav = navItems.map(item => `<a href="${item.href}">${item.label}</a>`).join('');
 
   const header = document.querySelector('header.site-header');
-  if (header) {
+  if (header && isHomepage) {
     header.outerHTML = `
       <header class="site-header public-site-header">
         <div class="public-header-main">
@@ -69,6 +71,8 @@
                 <a href="/quick-guide/">Quick Guide</a>
                 <a href="/contact/">Contact</a>
                 <a href="/accessibility/">Accessibility</a>
+                <a href="/cookies/">Cookies</a>
+                <a href="/terms/">Terms &amp; Conditions</a>
               </nav>
             </details>
 
@@ -84,6 +88,9 @@
                 <a href="/help/">Help &amp; FAQs</a>
                 <a href="/quick-guide/">Quick Guide</a>
                 <a href="/contact/">Contact</a>
+                <a href="/accessibility/">Accessibility</a>
+                <a href="/cookies/">Cookies</a>
+                <a href="/terms/">Terms &amp; Conditions</a>
                 <a href="/sign-in/" id="mobile-account-link" class="public-mobile-account">Sign In</a>
               </nav>
             </details>
@@ -93,6 +100,13 @@
           <div class="container public-nav-inner">${desktopNav}</div>
         </nav>
       </header>`;
+  } else if (header && header.classList.contains('secondary-header') && path !== '/404.html') {
+    // Keep the original secondary-page header and its page-specific Return to website/portal controls.
+    // Add only the shared blue navigation strip underneath it.
+    header.insertAdjacentHTML('afterend', `
+      <nav class="public-nav-bar public-nav-bar-secondary" aria-label="Main navigation">
+        <div class="container public-nav-inner">${desktopNav}</div>
+      </nav>`);
   }
 
   const footer = document.querySelector('footer');
