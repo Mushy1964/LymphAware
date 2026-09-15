@@ -133,13 +133,13 @@ svg {
 }
 
 .button-primary {
-  background: var(--green);
+  background: #2c922b;
   color: white;
 }
 
 .button-primary:hover,
 .button-primary:focus {
-  background: var(--green-dark);
+  background: #247a24;
 }
 
 .button-secondary {
@@ -772,14 +772,14 @@ footer {
 
 .mobile-menu-panel .mobile-primary {
   margin-top: 8px;
-  background: var(--green);
+  background: #2c922b;
   color: white;
   text-align: center;
 }
 
 .mobile-menu-panel .mobile-primary:hover,
 .mobile-menu-panel .mobile-primary:focus {
-  background: var(--green-dark);
+  background: #247a24;
   color: white;
 }
 

@@ -526,7 +526,7 @@
     justify-content: center;
     border: 0;
     border-radius: 0 0 16px 16px;
-    background: #4c9b57;
+    background: #2c922b;
     color: #ffffff;
     text-align: center;
     font-weight: 850;
@@ -540,7 +540,7 @@
 
   .public-mobile-panel .public-mobile-account:hover,
   .public-mobile-panel .public-mobile-account:focus {
-    background: #2f6f3a;
+    background: #247a24;
     color: #ffffff;
     padding-left: 22px;
   }

@@ -55,7 +55,7 @@
   padding: 0 24px;
   border: none;
   border-radius: 10px;
-  background: var(--green);
+  background: #2c922b;
   color: white;
 }
 
@@ -78,7 +78,7 @@
 
 .home-page .home-account-button:hover,
 .home-page .home-account-button:focus {
-  background: var(--green-dark);
+  background: #247a24;
 }
 
 
