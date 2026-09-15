@@ -1,0 +1,70 @@
+name: Finalise homepage live wording
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/homepage-live-wording-patch.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Replace remaining future-development wording
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          t = p.read_text(encoding='utf-8')
+          replacements = [
+            (
+              '''          If you regularly travel, spend time abroad or would find another language\n          useful, you will be able to add an additional language package to your membership.\n        </p>\n        <p>\n          The aim is to provide a dedicated card in the chosen language, linked to a\n          QR profile presented in that same language — while keeping the familiar\n          LymphAware profile design.''',
+              '''          If you regularly travel, spend time abroad or would find another language\n          useful, you can add an additional language package to your membership.\n        </p>\n        <p>\n          An additional language package provides a dedicated card in the chosen language,\n          linked to a QR profile presented in that same language — while keeping the familiar\n          LymphAware profile design.'''
+            ),
+            (
+              '''          LymphAware is being developed from first-hand understanding of\n          the communication challenges that can come with living with\n          lymphoedema.''',
+              '''          LymphAware is shaped by first-hand understanding of the\n          communication challenges that can come with living with lymphoedema.'''
+            ),
+            (
+              '''          LymphAware is being designed around patient control and data\n          minimisation, collecting and displaying only information needed\n          for the service.''',
+              '''          LymphAware is built around patient control and data minimisation,\n          collecting and displaying only information needed for the service.'''
+            ),
+            (
+              '''          Privacy and security will remain central as LymphAware develops.''',
+              '''          Privacy and security remain central as LymphAware grows.'''
+            )
+          ]
+          changed = False
+          for old, new in replacements:
+              if old in t:
+                  t = t.replace(old, new, 1)
+                  changed = True
+              elif new not in t:
+                  raise SystemExit('Expected homepage wording was not found')
+          if changed:
+              p.write_text(t, encoding='utf-8')
+          PY
+
+      - name: Validate homepage wording
+        run: |
+          ! grep -q "being developed" index.html
+          ! grep -q "being designed" index.html
+          ! grep -q "will be able to add an additional language" index.html
+          ! grep -q "as LymphAware develops" index.html
+          node scripts/audit-repo.mjs
+
+      - name: Commit homepage wording
+        run: |
+          git config user.name "Mushy1964"
+          git config user.email "graham.rooms@gmail.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Use current-service wording across homepage"
+          git push
