@@ -1,14 +1,11 @@
 name: Refine mobile navigation menu
-
 on:
   push:
     branches: [main]
     paths:
       - '.github/workflows/refine-mobile-menu.yml'
-
 permissions:
   contents: write
-
 jobs:
   refine:
     runs-on: ubuntu-latest
@@ -16,142 +13,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Improve mobile menu styling
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p = Path('css/public-chrome.css')
-          css = p.read_text(encoding='utf-8')
-          old = '''.public-mobile-panel {
-  position:absolute;
-  top:calc(100% + 9px);
-  right:0;
-  z-index:700;
-  width:min(330px, calc(100vw - 28px));
-  max-height:calc(100dvh - 100px);
-  overflow:auto;
-  padding:10px;
-  border:1px solid #d7e3eb;
-  border-radius:14px;
-  background:#fff;
-  box-shadow:0 14px 36px rgba(31,47,66,.16);
-}
-.public-mobile-panel a {
-  display:block;
-  padding:10px 11px;
-  border-radius:8px;
-  color:#17283d;
-  font-weight:700;
-}
-.public-mobile-panel a:hover,
-.public-mobile-panel a:focus { background:#eef6fb; color:#1768b0; }
-.public-mobile-panel .public-mobile-account {
-  margin-top:8px;
-  background:#eef7f0;
-  color:#2f6f3a;
-  text-align:center;
-}'''
-          new = '''.public-mobile-panel {
-  position:absolute;
-  top:calc(100% + 9px);
-  right:0;
-  z-index:700;
-  width:min(352px, calc(100vw - 24px));
-  max-height:calc(100dvh - 100px);
-  overflow:auto;
-  padding:12px;
-  border:1px solid #cfe0eb;
-  border-radius:18px;
-  background:linear-gradient(180deg,#f8fcff 0%,#ffffff 38%);
-  box-shadow:0 18px 46px rgba(31,47,66,.20);
-}
-.public-mobile-panel a {
-  position:relative;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  min-height:48px;
-  margin:2px 0;
-  padding:10px 12px 10px 48px;
-  border-radius:11px;
-  color:#17283d;
-  font-weight:750;
-  transition:background .16s ease,color .16s ease,transform .16s ease;
-}
-.public-mobile-panel a::before {
-  position:absolute;
-  left:12px;
-  top:50%;
-  transform:translateY(-50%);
-  display:grid;
-  place-items:center;
-  width:26px;
-  height:26px;
-  border-radius:50%;
-  background:#eaf4fb;
-  color:#1768b0;
-  font-size:.88rem;
-  font-weight:900;
-  line-height:1;
-}
-.public-mobile-panel a:nth-child(1)::before { content:"i"; background:#e7f3ff; color:#1768b0; }
-.public-mobile-panel a:nth-child(2)::before { content:"+"; background:#eaf7ec; color:#238a45; }
-.public-mobile-panel a:nth-child(3)::before { content:"✓"; background:#eef3ff; color:#315fb4; }
-.public-mobile-panel a:nth-child(4)::before { content:"●"; background:#edf8ef; color:#2f984e; font-size:.68rem; }
-.public-mobile-panel a:nth-child(5)::before { content:"?"; background:#e7f3ff; color:#1768b0; }
-.public-mobile-panel a:nth-child(6)::before { content:"→"; background:#edf8ef; color:#258a42; }
-.public-mobile-panel a:nth-child(7)::before { content:"✉"; background:#eef3ff; color:#315fb4; }
-.public-mobile-panel a:nth-child(8)::before { content:"A"; background:#f2f6fb; color:#52677f; }
-.public-mobile-panel a:nth-child(9)::before { content:"C"; background:#fff4df; color:#a96a00; }
-.public-mobile-panel a:nth-child(10)::before { content:"T"; background:#f3efff; color:#6950b5; }
-.public-mobile-panel a:nth-child(5) { margin-top:10px; padding-top:12px; }
-.public-mobile-panel a:nth-child(5)::after {
-  content:"";
-  position:absolute;
-  left:12px;
-  right:12px;
-  top:-6px;
-  height:1px;
-  background:#e0e9ef;
-}
-.public-mobile-panel a:hover,
-.public-mobile-panel a:focus {
-  background:#eef7fc;
-  color:#1768b0;
-  transform:translateX(2px);
-}
-.public-mobile-panel .public-mobile-account {
-  margin-top:12px;
-  justify-content:center;
-  padding:12px 16px;
-  min-height:52px;
-  background:linear-gradient(135deg,#eaf7ed,#f2fbf4);
-  border:1px solid #d3ead8;
-  color:#2f743d;
-  text-align:center;
-  font-weight:850;
-}
-.public-mobile-panel .public-mobile-account::before {
-  position:static;
-  transform:none;
-  content:"●";
-  width:24px;
-  height:24px;
-  background:#3b9650;
-  color:#fff;
-  font-size:.56rem;
-}
-.public-mobile-panel .public-mobile-account:hover,
-.public-mobile-panel .public-mobile-account:focus {
-  background:#e2f3e6;
-  color:#246533;
-  transform:none;
-}'''
-          if old not in css:
-              raise SystemExit('Could not locate mobile panel CSS block')
-          css = css.replace(old, new, 1)
-          p.write_text(css, encoding='utf-8')
-          PY
+      - name: Append mobile menu polish
+        run: echo 'LyogTW9iaWxlIG5hdmlnYXRpb24gcG9saXNoICovCkBtZWRpYSAobWF4LXdpZHRoOiA2ODBweCkgewogIC5wdWJsaWMtbW9iaWxlLXBhbmVsIHsgd2lkdGg6bWluKDM1MnB4LCBjYWxjKDEwMHZ3IC0gMjRweCkpOyBwYWRkaW5nOjEycHg7IGJvcmRlcjoxcHggc29saWQgI2NmZTBlYjsgYm9yZGVyLXJhZGl1czoxOHB4OyBiYWNrZ3JvdW5kOmxpbmVhci1ncmFkaWVudCgxODBkZWcsI2Y4ZmNmZiAwJSwjZmZmZmZmIDM4JSk7IGJveC1zaGFkb3c6MCAxOHB4IDQ2cHggcmdiYSgzMSw0Nyw2NiwuMjApOyB9CiAgLnB1YmxpYy1tb2JpbGUtcGFuZWwgYSB7IHBvc2l0aW9uOnJlbGF0aXZlOyBkaXNwbGF5OmZsZXg7IGFsaWduLWl0ZW1zOmNlbnRlcjsgZ2FwOjEycHg7IG1pbi1oZWlnaHQ6NDhweDsgbWFyZ2luOjJweCAwOyBwYWRkaW5nOjEwcHggMTJweCAxMHB4IDQ4cHg7IGJvcmRlci1yYWRpdXM6MTFweDsgY29sb3I6IzE3MjgzZDsgZm9udC13ZWlnaHQ6NzUwOyB0cmFuc2l0aW9uOmJhY2tncm91bmQgLjE2cyBlYXNlLGNvbG9yIC4xNnMgZWFzZSx0cmFuc2Zvcm0gLjE2cyBlYXNlOyB9CiAgLnB1YmxpYy1tb2JpbGUtcGFuZWwgYTo6YmVmb3JlIHsgcG9zaXRpb246YWJzb2x1dGU7IGxlZnQ6MTJweDsgdG9wOjUwJTsgdHJhbnNmb3JtOnRyYW5zbGF0ZVkoLTUwJSk7IGRpc3BsYXk6Z3JpZDsgcGxhY2UtaXRlbXM6Y2VudGVyOyB3aWR0aDoyNnB4OyBoZWlnaHQ6MjZweDsgYm9yZGVyLXJhZGl1czo1MCU7IGJhY2tncm91bmQ6I2VhZjRmYjsgY29sb3I6IzE3NjhiMDsgZm9udC1zaXplOi44OHJlbTsgZm9udC13ZWlnaHQ6OTAwOyBsaW5lLWhlaWdodDoxOyB9CiAgLnB1YmxpYy1tb2JpbGUtcGFuZWwgYTpudGgtY2hpbGQoMSk6OmJlZm9yZSB7IGNvbnRlbnQ6ImkiOyBiYWNrZ3JvdW5kOiNlN2YzZmY7IGNvbG9yOiMxNzY4YjA7IH0KICAucHVibGljLW1vYmlsZS1wYW5lbCBhOm50aC1jaGlsZCgyKTo6YmVmb3JlIHsgY29udGVudDoiKyI7IGJhY2tncm91bmQ6I2VhZjdlYzsgY29sb3I6IzIzOGE0NTsgfQogIC5wdWJsaWMtbW9iaWxlLXBhbmVsIGE6bnRoLWNoaWxkKDMpOjpiZWZvcmUgeyBjb250ZW50OiLinJMiOyBiYWNrZ3JvdW5kOiNlZWYzZmY7IGNvbG9yOiMzMTVmYjQ7IH0KICAucHVibGljLW1vYmlsZS1wYW5lbCBhOm50aC1jaGlsZCg0KTo6YmVmb3JlIHsgY29udGVudDoi4pePIjsgYmFja2dyb3VuZDojZWRmOGVmOyBjb2xvcjojMmY5ODRlOyBmb250LXNpemU6LjY4cmVtOyB9CiAgLnB1YmxpYy1tb2JpbGUtcGFuZWwgYTpudGgtY2hpbGQoNSk6OmJlZm9yZSB7IGNvbnRlbnQ6Ij8iOyBiYWNrZ3JvdW5kOiNlN2YzZmY7IGNvbG9yOiMxNzY4YjA7IH0KICAucHVibGljLW1vYmlsZS1wYW5lbCBhOm50aC1jaGlsZCg2KTo6YmVmb3JlIHsgY29udGVudDoi4oaSIjsgYmFja2dyb3VuZDojZWRmOGVmOyBjb2xvcjojMjU4YTQyOyB9CiAgLnB1YmxpYy1tb2JpbGUtcGFuZWwgYTpudGgtY2hpbGQoNyk6OmJlZm9yZSB7IGNvbnRlbnQ6IuKciSI7IGJhY2tncm91bmQ6I2VlZjNmZjsgY29sb3I6IzMxNWZiNDsgfQogIC5wdWJsaWMtbW9iaWxlLXBhbmVsIGE6bnRoLWNoaWxkKDgpOjpiZWZvcmUgeyBjb250ZW50OiJBIjsgYmFja2dyb3VuZDojZjJmNmZiOyBjb2xvcjojNTI2NzdmOyB9CiAgLnB1YmxpYy1tb2JpbGUtcGFuZWwgYTpudGgtY2hpbGQoOSk6OmJlZm9yZSB7IGNvbnRlbnQ6IkMiOyBiYWNrZ3JvdW5kOiNmZmY0ZGY7IGNvbG9yOiNhOTZhMDA7IH0KICAucHVibGljLW1vYmlsZS1wYW5lbCBhOm50aC1jaGlsZCgxMCk6OmJlZm9yZSB7IGNvbnRlbnQ6IlQiOyBiYWNrZ3JvdW5kOiNmM2VmZmY7IGNvbG9yOiM2OTUwYjU7IH0KICAucHVibGljLW1vYmlsZS1wYW5lbCBhOm50aC1jaGlsZCg1KSB7IG1hcmdpbi10b3A6MTBweDsgfQogIC5wdWJsaWMtbW9iaWxlLXBhbmVsIGE6bnRoLWNoaWxkKDUpOjphZnRlciB7IGNvbnRlbnQ6IiI7IHBvc2l0aW9uOmFic29sdXRlOyBsZWZ0OjEycHg7IHJpZ2h0OjEycHg7IHRvcDotNnB4OyBoZWlnaHQ6MXB4OyBiYWNrZ3JvdW5kOiNlMGU5ZWY7IH0KICAucHVibGljLW1vYmlsZS1wYW5lbCBhOmhvdmVyLCAucHVibGljLW1vYmlsZS1wYW5lbCBhOmZvY3VzIHsgYmFja2dyb3VuZDojZWVmN2ZjOyBjb2xvcjojMTc2OGIwOyB0cmFuc2Zvcm06dHJhbnNsYXRlWCgycHgpOyB9CiAgLnB1YmxpYy1tb2JpbGUtcGFuZWwgLnB1YmxpYy1tb2JpbGUtYWNjb3VudCB7IG1hcmdpbi10b3A6MTJweDsganVzdGlmeS1jb250ZW50OmNlbnRlcjsgbWluLWhlaWdodDo1MnB4OyBwYWRkaW5nOjEycHggMTZweDsgYm9yZGVyOjFweCBzb2xpZCAjZDNlYWQ4OyBiYWNrZ3JvdW5kOmxpbmVhci1ncmFkaWVudCgxMzVkZWcsI2VhZjdlZCwjZjJmYmY0KTsgY29sb3I6IzJmNzQzZDsgdGV4dC1hbGlnbjpjZW50ZXI7IGZvbnQtd2VpZ2h0Ojg1MDsgfQogIC5wdWJsaWMtbW9iaWxlLXBhbmVsIC5wdWJsaWMtbW9iaWxlLWFjY291bnQ6OmJlZm9yZSB7IHBvc2l0aW9uOnN0YXRpYzsgdHJhbnNmb3JtOm5vbmU7IGNvbnRlbnQ6IuKXjyI7IHdpZHRoOjI0cHg7IGhlaWdodDoyNHB4OyBiYWNrZ3JvdW5kOiMzYjk2NTA7IGNvbG9yOiNmZmY7IGZvbnQtc2l6ZTouNTZyZW07IH0KICAucHVibGljLW1vYmlsZS1wYW5lbCAucHVibGljLW1vYmlsZS1hY2NvdW50OmhvdmVyLCAucHVibGljLW1vYmlsZS1wYW5lbCAucHVibGljLW1vYmlsZS1hY2NvdW50OmZvY3VzIHsgYmFja2dyb3VuZDojZTJmM2U2OyBjb2xvcjojMjQ2NTMzOyB0cmFuc2Zvcm06bm9uZTsgfQp9Cg==' | base64 -d >> css/public-chrome.css
       - name: Run repository audit
         run: node scripts/audit-repo.mjs
       - name: Commit change
