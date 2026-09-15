@@ -23,20 +23,19 @@ jobs:
           p = Path('css/public-chrome.css')
           css = p.read_text(encoding='utf-8')
           old = 'background: linear-gradient(180deg, #263d77 0%, #203568 100%);'
-          new = 'background: #0053b7;'
           if old not in css:
               raise SystemExit('Could not find mobile menu background')
-          css = css.replace(old, new, 1)
+          css = css.replace(old, 'background: #0053b7;', 1)
           css = css.replace('background: rgba(20, 120, 200, .32);', 'background: #00479d;', 1)
           p.write_text(css, encoding='utf-8')
 
           p = Path('css/secondary-header.css')
           css = p.read_text(encoding='utf-8')
-          old = 'background: #263d77 !important;'
+          old = 'background: linear-gradient(180deg, #263d77 0%, #203568 100%);'
           if old not in css:
               raise SystemExit('Could not find Return to website blue background')
-          css = css.replace(old, 'background: #0053b7 !important;', 1)
-          css = css.replace('background: #203568 !important;', 'background: #00479d !important;', 1)
+          css = css.replace(old, 'background: #0053b7;', 1)
+          css = css.replace('border-top: 1px solid #203568;', 'border-top: 1px solid #00479d;', 1)
           p.write_text(css, encoding='utf-8')
           PY
       - name: Run repository audit
