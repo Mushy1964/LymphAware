@@ -189,6 +189,17 @@ export default async (request) => {
     const user = await userResponse.json();
     if (!user?.id) return json({ error: 'Unable to verify your LymphAware account.' }, 401);
 
+    const savedInviteCode = String(user?.user_metadata?.registration_invite_code || '').trim();
+    let trialPromotionCodeId = '';
+    if (savedInviteCode) {
+      try {
+        const trialAccess = await authoriseRegistration(savedInviteCode, user.email || '');
+        trialPromotionCodeId = trialAccess?.promotionCodeId || '';
+      } catch (error) {
+        console.error('Unable to check the existing member trial discount:', error instanceof Error ? error.message : error);
+      }
+    }
+
     const membership = await getMembership(user.id);
     if (!membership) return json({ error: 'Unable to verify your membership.' }, 403);
 
@@ -385,7 +396,8 @@ export default async (request) => {
       1
     );
 
-    stripeForm.append('allow_promotion_codes', 'true');
+    if (trialPromotionCodeId) stripeForm.append('discounts[0][promotion_code]', trialPromotionCodeId);
+    else stripeForm.append('allow_promotion_codes', 'true');
     if (autoRenew) stripeForm.append('payment_method_collection', 'always');
     stripeForm.append('billing_address_collection', 'required');
     stripeForm.append('shipping_address_collection[allowed_countries][0]', deliveryCountry);
@@ -468,3 +480,4 @@ export default async (request) => {
   }
 };
 import { MEMBERSHIP_CONTRACT_VERSION, recordContractEvent } from './_shared/membership-contract.mjs';
+import { authoriseRegistration } from './_shared/registration-access.mjs';
