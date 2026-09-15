@@ -561,6 +561,44 @@ footer {
   font-size: 0.9rem;
 }
 
+.founder-profile {
+  margin: 0 0 28px;
+  text-align: center;
+}
+
+.founder-photo {
+  width: min(100%, 260px);
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  border: 6px solid rgba(255, 255, 255, 0.96);
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: 50% 18%;
+  box-shadow: 0 12px 28px rgba(31, 41, 51, 0.16);
+}
+
+.founder-profile figcaption {
+  margin-top: 14px;
+  line-height: 1.35;
+}
+
+.founder-profile figcaption strong,
+.founder-profile figcaption span {
+  display: block;
+}
+
+.founder-profile figcaption strong {
+  color: var(--text);
+  font-size: 1.12rem;
+}
+
+.founder-profile figcaption span {
+  margin-top: 2px;
+  color: var(--green-dark);
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
 /* RESPONSIVE */
 
 @media (max-width: 980px) {
