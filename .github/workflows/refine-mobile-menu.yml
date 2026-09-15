@@ -1,0 +1,164 @@
+name: Refine mobile navigation menu
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/refine-mobile-menu.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  refine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Improve mobile menu styling
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('css/public-chrome.css')
+          css = p.read_text(encoding='utf-8')
+          old = '''.public-mobile-panel {
+  position:absolute;
+  top:calc(100% + 9px);
+  right:0;
+  z-index:700;
+  width:min(330px, calc(100vw - 28px));
+  max-height:calc(100dvh - 100px);
+  overflow:auto;
+  padding:10px;
+  border:1px solid #d7e3eb;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 14px 36px rgba(31,47,66,.16);
+}
+.public-mobile-panel a {
+  display:block;
+  padding:10px 11px;
+  border-radius:8px;
+  color:#17283d;
+  font-weight:700;
+}
+.public-mobile-panel a:hover,
+.public-mobile-panel a:focus { background:#eef6fb; color:#1768b0; }
+.public-mobile-panel .public-mobile-account {
+  margin-top:8px;
+  background:#eef7f0;
+  color:#2f6f3a;
+  text-align:center;
+}'''
+          new = '''.public-mobile-panel {
+  position:absolute;
+  top:calc(100% + 9px);
+  right:0;
+  z-index:700;
+  width:min(352px, calc(100vw - 24px));
+  max-height:calc(100dvh - 100px);
+  overflow:auto;
+  padding:12px;
+  border:1px solid #cfe0eb;
+  border-radius:18px;
+  background:linear-gradient(180deg,#f8fcff 0%,#ffffff 38%);
+  box-shadow:0 18px 46px rgba(31,47,66,.20);
+}
+.public-mobile-panel a {
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-height:48px;
+  margin:2px 0;
+  padding:10px 12px 10px 48px;
+  border-radius:11px;
+  color:#17283d;
+  font-weight:750;
+  transition:background .16s ease,color .16s ease,transform .16s ease;
+}
+.public-mobile-panel a::before {
+  position:absolute;
+  left:12px;
+  top:50%;
+  transform:translateY(-50%);
+  display:grid;
+  place-items:center;
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  background:#eaf4fb;
+  color:#1768b0;
+  font-size:.88rem;
+  font-weight:900;
+  line-height:1;
+}
+.public-mobile-panel a:nth-child(1)::before { content:"i"; background:#e7f3ff; color:#1768b0; }
+.public-mobile-panel a:nth-child(2)::before { content:"+"; background:#eaf7ec; color:#238a45; }
+.public-mobile-panel a:nth-child(3)::before { content:"✓"; background:#eef3ff; color:#315fb4; }
+.public-mobile-panel a:nth-child(4)::before { content:"●"; background:#edf8ef; color:#2f984e; font-size:.68rem; }
+.public-mobile-panel a:nth-child(5)::before { content:"?"; background:#e7f3ff; color:#1768b0; }
+.public-mobile-panel a:nth-child(6)::before { content:"→"; background:#edf8ef; color:#258a42; }
+.public-mobile-panel a:nth-child(7)::before { content:"✉"; background:#eef3ff; color:#315fb4; }
+.public-mobile-panel a:nth-child(8)::before { content:"A"; background:#f2f6fb; color:#52677f; }
+.public-mobile-panel a:nth-child(9)::before { content:"C"; background:#fff4df; color:#a96a00; }
+.public-mobile-panel a:nth-child(10)::before { content:"T"; background:#f3efff; color:#6950b5; }
+.public-mobile-panel a:nth-child(5) { margin-top:10px; padding-top:12px; }
+.public-mobile-panel a:nth-child(5)::after {
+  content:"";
+  position:absolute;
+  left:12px;
+  right:12px;
+  top:-6px;
+  height:1px;
+  background:#e0e9ef;
+}
+.public-mobile-panel a:hover,
+.public-mobile-panel a:focus {
+  background:#eef7fc;
+  color:#1768b0;
+  transform:translateX(2px);
+}
+.public-mobile-panel .public-mobile-account {
+  margin-top:12px;
+  justify-content:center;
+  padding:12px 16px;
+  min-height:52px;
+  background:linear-gradient(135deg,#eaf7ed,#f2fbf4);
+  border:1px solid #d3ead8;
+  color:#2f743d;
+  text-align:center;
+  font-weight:850;
+}
+.public-mobile-panel .public-mobile-account::before {
+  position:static;
+  transform:none;
+  content:"●";
+  width:24px;
+  height:24px;
+  background:#3b9650;
+  color:#fff;
+  font-size:.56rem;
+}
+.public-mobile-panel .public-mobile-account:hover,
+.public-mobile-panel .public-mobile-account:focus {
+  background:#e2f3e6;
+  color:#246533;
+  transform:none;
+}'''
+          if old not in css:
+              raise SystemExit('Could not locate mobile panel CSS block')
+          css = css.replace(old, new, 1)
+          p.write_text(css, encoding='utf-8')
+          PY
+      - name: Run repository audit
+        run: node scripts/audit-repo.mjs
+      - name: Commit change
+        run: |
+          git config user.name "Mushy1964"
+          git config user.email "graham.rooms@gmail.com"
+          git add css/public-chrome.css
+          git diff --cached --quiet && exit 0
+          git commit -m "Make mobile menu more colourful and dynamic"
+          git push
