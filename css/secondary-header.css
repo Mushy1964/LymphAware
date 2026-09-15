@@ -225,8 +225,8 @@ body:has(.secondary-header) .button {
     transform: translateX(-50%);
     margin-left: 0;
     justify-content: flex-start;
-    background: linear-gradient(180deg, #263d77 0%, #203568 100%);
-    border-top: 1px solid #203568;
+    background: #0053b7;
+    border-top: 1px solid #00479d;
   }
 
   .secondary-header .header-actions > .back-to-website-button {

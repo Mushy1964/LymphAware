@@ -432,7 +432,7 @@
     border: 0;
     border-radius: 16px;
     overflow: auto;
-    background: linear-gradient(180deg, #263d77 0%, #203568 100%);
+    background: #0053b7;
     box-shadow: 0 20px 48px rgba(20, 36, 67, .28);
   }
 
@@ -471,7 +471,7 @@
 
   .public-mobile-panel a:hover,
   .public-mobile-panel a:focus {
-    background: rgba(20, 120, 200, .32);
+    background: #00479d;
     color: #fff;
     padding-left: 27px;
     transform: none;
