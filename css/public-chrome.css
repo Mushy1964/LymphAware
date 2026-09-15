@@ -17,7 +17,7 @@
 .public-header-inner {
   min-height: 92px;
   display: grid;
-  grid-template-columns: minmax(275px, 330px) minmax(220px, 1fr) 132px 132px;
+  grid-template-columns: minmax(320px, 390px) minmax(220px, 1fr) 132px 132px;
   align-items: center;
   gap: 16px;
 }
@@ -30,7 +30,7 @@
 
 .public-site-logo {
   display: block;
-  width: 330px;
+  width: 390px;
   max-width: 100%;
   height: auto;
 }
@@ -355,10 +355,10 @@
 
 @media (max-width: 980px) and (min-width: 681px) {
   .public-header-inner {
-    grid-template-columns: minmax(225px, 270px) minmax(160px,1fr) 112px 112px;
+    grid-template-columns: minmax(250px, 300px) minmax(160px,1fr) 112px 112px;
     gap: 10px;
   }
-  .public-site-logo { width:270px; }
+  .public-site-logo { width:300px; }
   .public-search-shell { min-height:46px; }
   .public-site-search input { height:44px; font-size:.9rem; }
   .public-search-icon { width:42px; flex-basis:42px; }
@@ -378,7 +378,7 @@
     justify-content:space-between;
     gap:12px;
   }
-  .public-site-logo { width:270px; max-width:calc(100vw - 132px); }
+  .public-site-logo { width:300px; max-width:calc(100vw - 132px); }
   .public-site-search,
   .public-help-menu,
   .public-account-link,
