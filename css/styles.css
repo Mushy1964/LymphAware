@@ -35,6 +35,18 @@
   --field-focus-ring: rgba(40, 120, 184, 0.16);
   --field-disabled: #f1f5f9;
   --field-radius: 10px;
+
+  /* Shared spacing rhythm */
+  --space-section: 72px;
+  --space-section-mobile: 52px;
+  --space-account-top: 60px;
+  --space-account-bottom: 72px;
+  --space-account-mobile-top: 36px;
+  --space-account-mobile-bottom: 52px;
+  --space-page-gutter: 20px;
+  --space-page-gutter-mobile: 14px;
+  --space-card-gap: 22px;
+  --space-card-gap-mobile: 16px;
 }
 
 * {
@@ -384,7 +396,7 @@ svg {
 /* CONTENT */
 
 .content-section {
-  padding: 72px 0;
+  padding: var(--space-section) 0;
 }
 
 .section-heading {
@@ -578,7 +590,7 @@ main:not(.admin-page):not(.portal-page) .section-heading {
 }
 
 .cta-section {
-  padding: 72px 0;
+  padding: var(--space-section) 0;
 }
 
 /* FOOTER */
@@ -760,7 +772,7 @@ footer {
   }
 
   .content-section {
-    padding: 52px 0;
+    padding: var(--space-section-mobile) 0;
   }
 
   .footer-grid {
@@ -868,7 +880,7 @@ footer {
   }
 
   .content-section {
-    padding: 52px 0;
+    padding: var(--space-section-mobile) 0;
   }
 
   .section-heading {
