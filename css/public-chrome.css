@@ -62,9 +62,18 @@
   place-items: center;
   width: 48px;
   flex: 0 0 48px;
-  color: #1768b0;
-  font-size: 1.28rem;
+  color: #0053b7;
   line-height: 1;
+}
+
+.public-search-icon svg {
+  display: block;
+  width: 21px;
+  height: 21px;
+}
+
+.public-site-search input::-webkit-search-decoration {
+  -webkit-appearance: none;
 }
 
 .public-site-search input {
@@ -208,7 +217,7 @@
   width: min(1180px, calc(100% - 40px));
   margin-left: auto;
   margin-right: auto;
-  background: linear-gradient(90deg, #0d62b4 0%, #0f78c9 100%);
+  background: #0053b7;
   color: #fff;
 }
 .public-nav-inner {
