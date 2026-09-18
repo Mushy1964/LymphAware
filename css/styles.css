@@ -2,13 +2,22 @@
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-legacy: Arial, Helvetica, sans-serif;
 
-  --green: #4c9b57;
-  --green-dark: #2f6f3a;
-  --green-light: #eef7f0;
+  /* Core LymphAware brand colours taken directly from the approved logo. */
+  --brand-green: #2c922b;
+  --brand-green-dark: #247a24;
+  --brand-green-light: #eef7f0;
+  --brand-blue: #0053b7;
+  --brand-blue-dark: #003f8a;
+  --brand-blue-light: #eef6fb;
+  --brand-multilingual: #237e7b;
 
-  --blue: #2878b8;
-  --blue-dark: #1f5f93;
-  --blue-light: #eef6fb;
+  --green: var(--brand-green);
+  --green-dark: var(--brand-green-dark);
+  --green-light: var(--brand-green-light);
+
+  --blue: var(--brand-blue);
+  --blue-dark: var(--brand-blue-dark);
+  --blue-light: var(--brand-blue-light);
 
   --text: #1f2933;
   --muted: #5b6873;
@@ -20,10 +29,10 @@
 
   /* Shared button styling: keeps the established LymphAware colours while
      making actions feel more consistent and polished. */
-  --button-primary: #2c922b;
+  --button-primary: var(--brand-green);
   --button-primary-top: #38a63a;
-  --button-primary-hover: #247a24;
-  --button-focus-ring: rgba(40, 120, 184, 0.22);
+  --button-primary-hover: var(--brand-green-dark);
+  --button-focus-ring: rgba(0, 83, 183, 0.22);
   --button-shadow-rest: 0 3px 9px rgba(31, 47, 66, 0.12);
   --button-shadow: 0 7px 16px rgba(31, 47, 66, 0.14);
   --button-radius: 10px;
@@ -34,8 +43,8 @@
   --field-background: #ffffff;
   --field-text: #1f2933;
   --field-placeholder: #7b8996;
-  --field-focus: #2878b8;
-  --field-focus-ring: rgba(40, 120, 184, 0.16);
+  --field-focus: var(--brand-blue);
+  --field-focus-ring: rgba(0, 83, 183, 0.16);
   --field-disabled: #f1f5f9;
   --field-radius: 10px;
 
@@ -455,9 +464,13 @@ main:not(.admin-page):not(.portal-page) .section-heading {
   place-items: center;
   border-radius: 50%;
   margin-bottom: 20px;
-  background: var(--green-light);
-  color: var(--green-dark);
+  background: var(--brand-green);
+  color: #ffffff;
   font-weight: 800;
+}
+
+.steps-grid .info-card:nth-child(even) .step-number {
+  background: var(--brand-blue);
 }
 
 .info-card h3 {
