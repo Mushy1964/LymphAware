@@ -58,7 +58,12 @@
 
             <form class="public-site-search" role="search" aria-label="Search LymphAware">
               <div class="public-search-shell">
-                <span class="public-search-icon" aria-hidden="true">⌕</span>
+                <span class="public-search-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                    <circle cx="10.5" cy="10.5" r="6.25" fill="none" stroke="currentColor" stroke-width="2"></circle>
+                    <path d="M15.2 15.2 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                  </svg>
+                </span>
                 <input type="search" name="q" autocomplete="off" placeholder="Search LymphAware..." aria-label="Search LymphAware">
               </div>
               <div class="public-search-results" role="listbox" hidden></div>
