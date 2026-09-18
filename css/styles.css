@@ -5,6 +5,7 @@
   /* Core LymphAware brand colours taken directly from the approved logo. */
   --brand-green: #2c922b;
   --brand-green-dark: #247a24;
+  --brand-green-action-top: #288628;
   --brand-green-light: #eef7f0;
   --brand-blue: #0053b7;
   --brand-blue-dark: #003f8a;
@@ -29,8 +30,8 @@
 
   /* Shared button styling: keeps the established LymphAware colours while
      making actions feel more consistent and polished. */
-  --button-primary: var(--brand-green);
-  --button-primary-top: #38a63a;
+  --button-primary: var(--brand-green-dark);
+  --button-primary-top: var(--brand-green-action-top);
   --button-primary-hover: var(--brand-green-dark);
   --button-focus-ring: rgba(0, 83, 183, 0.22);
   --button-shadow-rest: 0 3px 9px rgba(31, 47, 66, 0.12);
@@ -464,7 +465,7 @@ main:not(.admin-page):not(.portal-page) .section-heading {
   place-items: center;
   border-radius: 50%;
   margin-bottom: 20px;
-  background: var(--brand-green);
+  background: var(--brand-green-dark);
   color: #ffffff;
   font-weight: 800;
 }
