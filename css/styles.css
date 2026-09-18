@@ -14,6 +14,14 @@
   --soft: #f7f9fa;
   --content-shadow: 0 8px 24px rgba(31, 47, 66, 0.06);
   --feature-shadow: 0 12px 32px rgba(31, 41, 51, 0.08);
+
+  /* Shared button styling: keeps the established LymphAware colours while
+     making actions feel more consistent and polished. */
+  --button-primary: #2c922b;
+  --button-primary-hover: #247a24;
+  --button-focus-ring: rgba(40, 120, 184, 0.22);
+  --button-shadow: 0 5px 14px rgba(31, 47, 66, 0.09);
+  --button-radius: 9px;
 }
 
 * {
@@ -123,23 +131,44 @@ svg {
   min-height: 46px;
   padding: 0 20px;
   white-space: nowrap;
-  border-radius: 9px;
+  border-radius: var(--button-radius);
   border: 2px solid transparent;
   font-size: 1rem !important;
   line-height: 1.2 !important;
   font-weight: 700;
   cursor: pointer;
-  transition: 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--button-shadow);
+}
+
+.button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--button-focus-ring);
 }
 
 .button-primary {
-  background: #2c922b;
+  background: var(--button-primary);
   color: white;
 }
 
 .button-primary:hover,
-.button-primary:focus {
-  background: #247a24;
+.button-primary:focus-visible {
+  background: var(--button-primary-hover);
 }
 
 .button-secondary {
@@ -149,8 +178,29 @@ svg {
 }
 
 .button-secondary:hover,
-.button-secondary:focus {
+.button-secondary:focus-visible {
   background: var(--blue-light);
+  border-color: var(--blue-dark);
+  color: var(--blue-dark);
+}
+
+.button:disabled,
+.button[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+
+  .button:hover {
+    transform: none;
+  }
 }
 
 /* HOME HERO */
