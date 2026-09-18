@@ -39,7 +39,7 @@
     { title: 'Contact LymphAware', href: '/contact/', keywords: 'contact email enquiry support message' },
     { title: 'Accessibility', href: '/accessibility/', keywords: 'accessibility accessible screen reader keyboard' },
     { title: 'Cookies', href: '/cookies/', keywords: 'cookies tracking analytics' },
-    { title: 'Terms & Conditions', href: '/terms/', keywords: 'terms conditions membership agreement' }
+    { title: 'Terms of Use', href: '/terms/', keywords: 'terms conditions membership agreement' }
   ];
 
   const activeClass = href => path === href ? ' class="active" aria-current="page"' : '';
