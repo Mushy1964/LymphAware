@@ -92,12 +92,12 @@
   background:
     radial-gradient(
       circle at 82% 28%,
-      rgba(40, 120, 184, 0.08),
+      rgba(0, 83, 183, 0.08),
       transparent 34%
     ),
     radial-gradient(
       circle at 15% 80%,
-      rgba(76, 155, 87, 0.08),
+      rgba(44, 146, 43, 0.08),
       transparent 30%
     ),
     linear-gradient(
@@ -146,7 +146,7 @@
 }
 
 .home-page .hero-line-green {
-  color: #16853f;
+  color: #2c922b;
 }
 
 .home-page .home-hero-copy {
@@ -212,11 +212,11 @@
 }
 
 .home-page .home-hero-reassurance-item:nth-child(2)::before {
-  background: #2878b8;
+  background: #0053b7;
 }
 
 .home-page .home-hero-reassurance-item:nth-child(3)::before {
-  background: #4c9b57;
+  background: #2c922b;
 }
 
 .home-page .home-hero-reassurance-copy {
@@ -233,11 +233,11 @@
 }
 
 .home-page .home-hero-reassurance-item:nth-child(2) .home-hero-reassurance-copy strong {
-  color: #1768b0;
+  color: #0053b7;
 }
 
 .home-page .home-hero-reassurance-item:nth-child(3) .home-hero-reassurance-copy strong {
-  color: #16853f;
+  color: #2c922b;
 }
 
 .home-page .home-hero-reassurance-copy small {
@@ -760,7 +760,7 @@
   place-items: center;
 
   border-radius: 50%;
-  background: #2c922a;
+  background: #2c922b;
   color: #ffffff;
 
   font-size: 0.86rem;
@@ -783,7 +783,7 @@
 
 .home-page .how-step-icon-blue {
   background: #eef6fb;
-  color: #1768b0;
+  color: #0053b7;
 }
 
 
@@ -838,7 +838,7 @@
   display: grid;
   place-items: center;
 
-  color: #1768b0;
+  color: #0053b7;
   font-size: 1.55rem;
   font-weight: 800;
 }
@@ -982,13 +982,13 @@
 
 .home-page .help-icon-blue {
   background: #eef6fb;
-  color: #1768b0;
+  color: #0053b7;
 }
 
 
 .home-page .help-icon-green {
   background: #eef7f0;
-  color: #16853f;
+  color: #2c922b;
 }
 
 
@@ -1095,7 +1095,7 @@
   background:
     radial-gradient(
       circle at 85% 20%,
-      rgba(40, 120, 184, 0.08),
+      rgba(0, 83, 183, 0.08),
       transparent 34%
     ),
     linear-gradient(
@@ -1122,7 +1122,7 @@
 .home-page .home-demo-eyebrow {
   margin: 0 0 10px;
 
-  color: #16853f;
+  color: #2c922b;
   font-size: 1.05rem;
   font-weight: 800;
 
@@ -1173,7 +1173,7 @@
 
   border-radius: 50%;
 
-  background: #1768b0;
+  background: #0053b7;
   color: white;
 
   font-size: 0.84rem;
@@ -1226,7 +1226,7 @@
   border-radius: 999px;
 
   background: #eef7f0;
-  color: #16853f;
+  color: #2c922b;
 
   font-size: 0.86rem;
   font-weight: 800;
@@ -1255,7 +1255,7 @@
 
 
 .home-page .home-demo-card-link:focus-visible {
-  outline: 4px solid rgba(40, 120, 184, 0.25);
+  outline: 4px solid rgba(0, 83, 183, 0.25);
   outline-offset: 6px;
 }
 
@@ -1278,7 +1278,7 @@
 
   margin-top: 18px;
 
-  color: #1768b0;
+  color: #0053b7;
 
   font-size: 0.96rem;
   font-weight: 800;
@@ -1379,7 +1379,7 @@
 .home-page .home-understanding-eyebrow {
   margin: 0 0 12px;
 
-  color: #16853f;
+  color: #2c922b;
   font-size: 1.05rem;
   font-weight: 800;
 
@@ -1447,7 +1447,7 @@
   border-radius: 18px;
 
   background: #ffffff;
-  color: #16853f;
+  color: #2c922b;
 }
 
 
@@ -1588,7 +1588,7 @@
 .home-page .home-control-eyebrow {
   margin: 0 0 12px;
 
-  color: #16853f;
+  color: #2c922b;
   font-size: 1.05rem;
   font-weight: 800;
 
@@ -1671,13 +1671,13 @@
 
 .home-page .home-control-icon-green {
   background: #eef7f0;
-  color: #16853f;
+  color: #2c922b;
 }
 
 
 .home-page .home-control-icon-blue {
   background: #eef6fb;
-  color: #1768b0;
+  color: #0053b7;
 }
 
 
@@ -1816,7 +1816,7 @@
 .home-page .home-story-eyebrow {
   margin: 0 0 12px;
 
-  color: #16853f;
+  color: #2c922b;
   font-size: 1.05rem;
   font-weight: 800;
 
@@ -1882,13 +1882,13 @@
 
 .home-page .home-professional-icon-green {
   background: #eef7f0;
-  color: #16853f;
+  color: #2c922b;
 }
 
 
 .home-page .home-professional-icon-blue {
   background: #eef6fb;
-  color: #1768b0;
+  color: #0053b7;
 }
 
 
@@ -1924,7 +1924,7 @@
   display: inline-block;
   margin-top: 18px;
 
-  color: #1768b0;
+  color: #0053b7;
   font-weight: 800;
 }
 
@@ -1994,17 +1994,17 @@
   border-radius: 17px;
 
   background: #ffffff;
-  color: #16853f;
+  color: #2c922b;
 }
 
 
 .home-page .home-story-icon-blue {
-  color: #1768b0;
+  color: #0053b7;
 }
 
 
 .home-page .home-story-eyebrow-blue {
-  color: #1768b0;
+  color: #0053b7;
 }
 
 
