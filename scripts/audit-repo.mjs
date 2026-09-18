@@ -229,8 +229,8 @@ function checkProjectConsistency() {
   }
 
   if (!styles.includes('--brand-blue: #0053b7;')) errors.push('Core brand blue is not anchored to the approved logo colour #0053b7.');
-  if (!styles.includes('--brand-green: #2c922b;')) errors.push('Core brand green is not anchored to the approved logo colour #2c922b.');
-  const legacyAccentColours = ['#16853f', '#1768b0', '#2878b8', '#168b43', '#176fba', '#0055b8'];
+  if (!styles.includes('--brand-green: #247a24;')) errors.push('Core brand green is not anchored to the accessible LymphAware green #247a24.');
+  const legacyAccentColours = ['#16853f', '#1768b0', '#2878b8', '#168b43', '#176fba', '#0055b8', '#2c922b', '#2c922a'];
   const brandFacingSources = [
     ['homepage', home],
     ['homepage styles', homeStyles],
