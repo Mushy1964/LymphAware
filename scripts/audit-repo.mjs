@@ -99,6 +99,9 @@ function checkProjectConsistency() {
   const initialMembershipCheckoutPath = path.join(root, 'netlify/functions/_shared/initial-membership-checkout.mjs');
   const adminOrdersPath = path.join(root, 'netlify/functions/admin-orders-list.mjs');
   const stylesPath = path.join(root, 'css/styles.css');
+  const homeStylesPath = path.join(root, 'css/home.css');
+  const publicChromePath = path.join(root, 'css/public-chrome.css');
+  const profilePath = path.join(root, 'profile-v2/index.html');
   const understandingPath = path.join(root, 'understanding-lymphoedema/index.html');
 
   const checkout = fs.readFileSync(checkoutPath, 'utf8');
@@ -113,6 +116,9 @@ function checkProjectConsistency() {
   const initialMembershipCheckout = fs.readFileSync(initialMembershipCheckoutPath, 'utf8');
   const adminOrders = fs.readFileSync(adminOrdersPath, 'utf8');
   const styles = fs.readFileSync(stylesPath, 'utf8');
+  const homeStyles = fs.readFileSync(homeStylesPath, 'utf8');
+  const publicChrome = fs.readFileSync(publicChromePath, 'utf8');
+  const profile = fs.readFileSync(profilePath, 'utf8');
   const understanding = fs.readFileSync(understandingPath, 'utf8');
 
   for (const [code, name] of [['FR', 'French'], ['ES', 'Spanish'], ['DE', 'German']]) {
@@ -220,6 +226,28 @@ function checkProjectConsistency() {
   }
   if (!home.includes('import VAT, customs duties or local handling charges')) {
     errors.push('Homepage does not disclose possible international destination charges.');
+  }
+
+  if (!styles.includes('--brand-blue: #0053b7;')) errors.push('Core brand blue is not anchored to the approved logo colour #0053b7.');
+  if (!styles.includes('--brand-green: #2c922b;')) errors.push('Core brand green is not anchored to the approved logo colour #2c922b.');
+  const legacyAccentColours = ['#16853f', '#1768b0', '#2878b8', '#168b43', '#176fba', '#0055b8'];
+  const brandFacingSources = [
+    ['homepage', home],
+    ['homepage styles', homeStyles],
+    ['public chrome', publicChrome],
+    ['registration', register],
+    ['portal', portal],
+    ['profile editor', profile],
+    ['public QR profile', publicProfile]
+  ];
+  for (const [label, source] of brandFacingSources) {
+    const lower = source.toLowerCase();
+    for (const colour of legacyAccentColours) {
+      if (lower.includes(colour)) errors.push(`${label} still contains legacy accent colour ${colour}.`);
+    }
+  }
+  if (!register.includes('--package-accent:#237e7b') || !home.includes('#4f9290')) {
+    warnings.push('The deliberate Multilingual teal accent may have been removed or changed.');
   }
 
   const portalCountryCodes = ['GB','IE','FR','ES','PT','DE','NL','BE','LU','IT','AT','DK','SE','NO','FI','CH','CY','MT','GR','PL','CZ','SK','SI','HR','HU','RO','BG','EE','LV','LT','IS','AL','AD','BA','MD','MC','ME','MK','RS','UA','US','CA','AU','NZ','AE','ZA','IN','JP','SG','HK'];
