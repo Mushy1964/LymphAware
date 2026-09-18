@@ -222,6 +222,13 @@ function checkProjectConsistency() {
     errors.push('Homepage does not disclose possible international destination charges.');
   }
 
+  const portalCountryCodes = ['GB','IE','FR','ES','PT','DE','NL','BE','LU','IT','AT','DK','SE','NO','FI','CH','CY','MT','GR','PL','CZ','SK','SI','HR','HU','RO','BG','EE','LV','LT','IS','AL','AD','BA','MD','MC','ME','MK','RS','UA','US','CA','AU','NZ','AE','ZA','IN','JP','SG','HK'];
+  for (const code of portalCountryCodes) {
+    if (!portal.includes(`['${code}',`)) errors.push(`Portal delivery-country selector is missing ${code}.`);
+    if (!checkout.includes(`'${code}'`)) errors.push(`Checkout supported-country list is missing ${code}.`);
+    if (!register.includes(`['${code}',`)) errors.push(`Registration delivery-country selector is missing ${code}.`);
+  }
+
   const customerFacingFiles = walk(root).filter(file => {
     const name = relative(file);
     return /\.html$/i.test(file) && !name.startsWith('admin/');
