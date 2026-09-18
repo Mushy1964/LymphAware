@@ -16,7 +16,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 70px 20px;
+      padding: var(--space-account-top) var(--space-page-gutter) var(--space-account-bottom);
       background: linear-gradient(135deg, rgba(76,155,87,.06), rgba(40,120,184,.05));
     }
 
@@ -79,7 +79,7 @@
     .portal-links a { color: var(--blue); font-weight: 700; }
 
     @media (max-width: 680px) {
-      .portal-page { padding: 40px 14px; }
+      .portal-page { padding: var(--space-account-mobile-top) var(--space-page-gutter-mobile) var(--space-account-mobile-bottom); }
       .portal-card { padding: 26px 20px; }
       .portal-card h1 { font-size: 2rem; }
     }
