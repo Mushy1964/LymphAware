@@ -18,10 +18,12 @@
   /* Shared button styling: keeps the established LymphAware colours while
      making actions feel more consistent and polished. */
   --button-primary: #2c922b;
+  --button-primary-top: #38a63a;
   --button-primary-hover: #247a24;
   --button-focus-ring: rgba(40, 120, 184, 0.22);
-  --button-shadow: 0 5px 14px rgba(31, 47, 66, 0.09);
-  --button-radius: 9px;
+  --button-shadow-rest: 0 3px 9px rgba(31, 47, 66, 0.12);
+  --button-shadow: 0 7px 16px rgba(31, 47, 66, 0.14);
+  --button-radius: 10px;
 }
 
 * {
@@ -128,14 +130,16 @@ svg {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 46px;
-  padding: 0 20px;
+  min-height: 48px;
+  padding: 0 22px;
   white-space: nowrap;
   border-radius: var(--button-radius);
   border: 2px solid transparent;
+  box-shadow: var(--button-shadow-rest);
   font-size: 1rem !important;
   line-height: 1.2 !important;
   font-weight: 700;
+  letter-spacing: 0.01em;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition:
@@ -162,19 +166,21 @@ svg {
 }
 
 .button-primary {
-  background: var(--button-primary);
+  background: linear-gradient(180deg, var(--button-primary-top), var(--button-primary));
+  border-color: var(--button-primary);
   color: white;
 }
 
 .button-primary:hover,
 .button-primary:focus-visible {
   background: var(--button-primary-hover);
+  border-color: var(--button-primary-hover);
 }
 
 .button-secondary {
   border-color: var(--blue);
-  color: var(--blue);
-  background: white;
+  color: var(--blue-dark);
+  background: #f8fbfe;
 }
 
 .button-secondary:hover,
