@@ -146,7 +146,7 @@
   background: #1768b0;
   color: #fff;
   font-size: .82rem;
-  font-weight: 900;
+  font-weight: 800;
 }
 .public-help-panel {
   position: absolute;
@@ -428,8 +428,8 @@
 /* Mobile navigation polish */
 @media (max-width: 680px) {
   .public-mobile-panel { width:min(352px, calc(100vw - 24px)); padding:12px; border:1px solid #cfe0eb; border-radius:18px; background:linear-gradient(180deg,#f8fcff 0%,#ffffff 38%); box-shadow:0 18px 46px rgba(31,47,66,.20); }
-  .public-mobile-panel a { position:relative; display:flex; align-items:center; gap:12px; min-height:48px; margin:2px 0; padding:10px 12px 10px 48px; border-radius:11px; color:#17283d; font-weight:750; transition:background .16s ease,color .16s ease,transform .16s ease; }
-  .public-mobile-panel a::before { position:absolute; left:12px; top:50%; transform:translateY(-50%); display:grid; place-items:center; width:26px; height:26px; border-radius:50%; background:#eaf4fb; color:#1768b0; font-size:.88rem; font-weight:900; line-height:1; }
+  .public-mobile-panel a { position:relative; display:flex; align-items:center; gap:12px; min-height:48px; margin:2px 0; padding:10px 12px 10px 48px; border-radius:11px; color:#17283d; font-weight:700; transition:background .16s ease,color .16s ease,transform .16s ease; }
+  .public-mobile-panel a::before { position:absolute; left:12px; top:50%; transform:translateY(-50%); display:grid; place-items:center; width:26px; height:26px; border-radius:50%; background:#eaf4fb; color:#1768b0; font-size:.88rem; font-weight:800; line-height:1; }
   .public-mobile-panel a:nth-child(1)::before { content:"i"; background:#e7f3ff; color:#1768b0; }
   .public-mobile-panel a:nth-child(2)::before { content:"+"; background:#eaf7ec; color:#238a45; }
   .public-mobile-panel a:nth-child(3)::before { content:"✓"; background:#eef3ff; color:#315fb4; }
@@ -471,7 +471,7 @@
     border-bottom: 1px dashed rgba(255,255,255,.20);
     background: transparent;
     color: #fff;
-    font-weight: 760;
+    font-weight: 700;
     letter-spacing: .01em;
     transition: background .16s ease, padding-left .16s ease;
   }
