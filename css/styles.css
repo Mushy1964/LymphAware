@@ -257,8 +257,8 @@ svg {
   background:
     linear-gradient(
       135deg,
-      rgba(76, 155, 87, 0.07),
-      rgba(40, 120, 184, 0.05)
+      rgba(44, 146, 43, 0.07),
+      rgba(0, 83, 183, 0.05)
     );
 }
 
@@ -377,8 +377,8 @@ svg {
   padding: 82px 0 70px;
   background: linear-gradient(
     135deg,
-    rgba(76, 155, 87, 0.07),
-    rgba(40, 120, 184, 0.05)
+    rgba(44, 146, 43, 0.07),
+    rgba(0, 83, 183, 0.05)
   );
 }
 
