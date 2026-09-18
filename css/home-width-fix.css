@@ -63,7 +63,7 @@
 /* Additional language packages now follows the same green section-label
    convention as the other principal homepage sections. */
 .home-page .home-language-eyebrow {
-  color: #16853f !important;
+  color: #2c922b !important;
 }
 
 
@@ -230,7 +230,7 @@
   background:
     radial-gradient(
       circle at 85% 20%,
-      rgba(40, 120, 184, 0.08),
+      rgba(0, 83, 183, 0.08),
       transparent 34%
     ),
     linear-gradient(
@@ -376,7 +376,7 @@
   margin: 14px 0 0;
   padding: 12px 14px;
   border: 1px solid #b8cee0;
-  border-left: 5px solid #2878b8;
+  border-left: 5px solid #0053b7;
   border-radius: 10px;
   background: #f1f7fb;
   color: #344b60;
