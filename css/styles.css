@@ -1092,3 +1092,139 @@ main.page .brand img {
     white-space: nowrap !important;
   }
 }
+
+
+/* =========================================================
+   CUSTOMER-FACING BUTTON CONSISTENCY
+   Keep public, sign-up, portal, profile and preview actions visually
+   consistent without changing specialist admin workflow controls.
+   ========================================================= */
+
+:where(.home-page, body:has(.secondary-header), body:has(main.page)) .button:not(.button-danger) {
+  min-height: 48px !important;
+  padding: 0 22px !important;
+  border-radius: var(--button-radius) !important;
+  box-shadow: var(--button-shadow-rest) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease !important;
+}
+
+:where(.home-page, body:has(.secondary-header), body:has(main.page)) .button:not(.button-danger):hover {
+  transform: translateY(-1px);
+  box-shadow: var(--button-shadow) !important;
+}
+
+:where(.home-page, body:has(.secondary-header), body:has(main.page)) .button:not(.button-danger):active {
+  transform: translateY(0);
+  box-shadow: var(--button-shadow-rest) !important;
+}
+
+:where(.home-page, body:has(.secondary-header), body:has(main.page)) .button:not(.button-danger):focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 4px var(--button-focus-ring) !important;
+}
+
+:where(.home-page, body:has(.secondary-header), body:has(main.page)) .button-primary {
+  background: linear-gradient(180deg, var(--button-primary-top), var(--button-primary)) !important;
+  border-color: var(--button-primary) !important;
+  color: #ffffff !important;
+}
+
+:where(.home-page, body:has(.secondary-header), body:has(main.page)) .button-primary:hover,
+:where(.home-page, body:has(.secondary-header), body:has(main.page)) .button-primary:focus-visible {
+  background: var(--button-primary-hover) !important;
+  border-color: var(--button-primary-hover) !important;
+  color: #ffffff !important;
+}
+
+:where(.home-page, body:has(.secondary-header), body:has(main.page)) .button-secondary {
+  background: #f8fbfe !important;
+  border-color: var(--blue) !important;
+  color: var(--blue-dark) !important;
+}
+
+:where(.home-page, body:has(.secondary-header), body:has(main.page)) .button-secondary:hover,
+:where(.home-page, body:has(.secondary-header), body:has(main.page)) .button-secondary:focus-visible {
+  background: var(--blue-light) !important;
+  border-color: var(--blue-dark) !important;
+  color: var(--blue-dark) !important;
+}
+
+/* The homepage account button is intentionally a primary action even though
+   it predates the shared button-primary class. */
+.home-page .home-account-button {
+  background: linear-gradient(180deg, var(--button-primary-top), var(--button-primary)) !important;
+  border: 2px solid var(--button-primary) !important;
+  color: #ffffff !important;
+  box-shadow: var(--button-shadow-rest) !important;
+}
+
+.home-page .home-account-button:hover,
+.home-page .home-account-button:focus-visible {
+  background: var(--button-primary-hover) !important;
+  border-color: var(--button-primary-hover) !important;
+  color: #ffffff !important;
+}
+
+/* Match the primary action inside the mobile menu to the same visual system. */
+.mobile-menu-panel .mobile-primary {
+  border-radius: var(--button-radius) !important;
+  background: linear-gradient(180deg, var(--button-primary-top), var(--button-primary)) !important;
+  box-shadow: var(--button-shadow-rest);
+  color: #ffffff !important;
+  font-weight: 700;
+}
+
+.mobile-menu-panel .mobile-primary:hover,
+.mobile-menu-panel .mobile-primary:focus-visible {
+  background: var(--button-primary-hover) !important;
+  color: #ffffff !important;
+}
+
+/* Sign out remains secondary rather than competing with the main CTA. */
+.home-page .mobile-sign-out-button {
+  border: 2px solid var(--blue) !important;
+  border-radius: var(--button-radius) !important;
+  background: #f8fbfe !important;
+  box-shadow: var(--button-shadow-rest);
+  color: var(--blue-dark) !important;
+}
+
+.home-page .mobile-sign-out-button:hover,
+.home-page .mobile-sign-out-button:focus-visible {
+  background: var(--blue-light) !important;
+  border-color: var(--blue-dark) !important;
+  outline: none;
+  box-shadow: 0 0 0 4px var(--button-focus-ring);
+}
+
+@media (max-width: 680px) {
+  :where(.home-page, body:has(.secondary-header), body:has(main.page)) .button:not(.button-danger) {
+    min-height: 50px !important;
+  }
+
+  /* Compact header/navigation actions retain their established geometry. */
+  .secondary-header .header-actions > .button,
+  .portal-header .header-actions .button,
+  .profile-site-header .header-actions .button,
+  .preview-header .header-actions .button {
+    min-height: 44px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(.home-page, body:has(.secondary-header), body:has(main.page)) .button:not(.button-danger) {
+    transition: none !important;
+  }
+
+  :where(.home-page, body:has(.secondary-header), body:has(main.page)) .button:not(.button-danger):hover {
+    transform: none;
+  }
+}
