@@ -24,6 +24,17 @@
   --button-shadow-rest: 0 3px 9px rgba(31, 47, 66, 0.12);
   --button-shadow: 0 7px 16px rgba(31, 47, 66, 0.14);
   --button-radius: 10px;
+
+  /* Shared customer form controls */
+  --field-border: #cbd5e1;
+  --field-border-hover: #94a3b8;
+  --field-background: #ffffff;
+  --field-text: #1f2933;
+  --field-placeholder: #7b8996;
+  --field-focus: #2878b8;
+  --field-focus-ring: rgba(40, 120, 184, 0.16);
+  --field-disabled: #f1f5f9;
+  --field-radius: 10px;
 }
 
 * {
@@ -1226,5 +1237,193 @@ main.page .brand img {
 
   :where(.home-page, body:has(.secondary-header), body:has(main.page)) .button:not(.button-danger):hover {
     transform: none;
+  }
+}
+
+
+/* =========================================================
+   CUSTOMER FORM & CONTROL REFINEMENT
+   Sign-up, authentication, portal, profile and contact forms.
+   ========================================================= */
+
+/* Text fields, selects and textareas.
+   Number, file, checkbox and radio controls are deliberately handled
+   separately so compact portal controls keep their existing geometry. */
+body:has(.secondary-header) main input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="number"]),
+body:has(.secondary-header) main select,
+body:has(.secondary-header) main textarea {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 14px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--field-radius);
+  background: var(--field-background);
+  color: var(--field-text);
+  font: inherit;
+  line-height: 1.4;
+  box-shadow: 0 1px 2px rgba(31, 47, 66, 0.035);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
+}
+
+body:has(.secondary-header) main textarea {
+  min-height: 118px;
+  resize: vertical;
+}
+
+body:has(.secondary-header) main input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="number"]):hover,
+body:has(.secondary-header) main select:hover,
+body:has(.secondary-header) main textarea:hover {
+  border-color: var(--field-border-hover);
+}
+
+body:has(.secondary-header) main input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="number"]):focus,
+body:has(.secondary-header) main select:focus,
+body:has(.secondary-header) main textarea:focus {
+  outline: none;
+  border-color: var(--field-focus);
+  box-shadow: 0 0 0 4px var(--field-focus-ring);
+}
+
+body:has(.secondary-header) main input::placeholder,
+body:has(.secondary-header) main textarea::placeholder {
+  color: var(--field-placeholder);
+  opacity: 1;
+}
+
+body:has(.secondary-header) main input:disabled,
+body:has(.secondary-header) main select:disabled,
+body:has(.secondary-header) main textarea:disabled {
+  border-color: #d8e0e7;
+  background: var(--field-disabled);
+  color: #7a8793;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+/* Clear, consistent form labels without making compact checkbox copy too bold. */
+body:has(.secondary-header) main .form-group > label,
+body:has(.secondary-header) main .contact-field > label,
+body:has(.secondary-header) main .language-choice > label,
+body:has(.secondary-header) main .delivery-choice > label,
+body:has(.secondary-header) main .additional-language-box > label {
+  margin-bottom: 8px;
+  color: #263746;
+  font-weight: 750;
+}
+
+/* Native checkboxes/radios keep familiar behaviour but use the brand blue. */
+.join-page input[type="checkbox"],
+.join-page input[type="radio"],
+.portal-page input[type="checkbox"],
+.portal-page input[type="radio"],
+.profile-page input[type="checkbox"],
+.profile-page input[type="radio"] {
+  accent-color: var(--blue);
+}
+
+.join-page input[type="checkbox"]:focus-visible,
+.join-page input[type="radio"]:focus-visible,
+.portal-page input[type="checkbox"]:focus-visible,
+.portal-page input[type="radio"]:focus-visible,
+.profile-page input[type="checkbox"]:focus-visible,
+.profile-page input[type="radio"]:focus-visible {
+  outline: 3px solid var(--field-focus-ring);
+  outline-offset: 3px;
+}
+
+/* Registration package and term cards: a cleaner selected and keyboard state. */
+.join-page .choice-card input:checked + .choice-card-body {
+  border-color: var(--blue);
+  box-shadow:
+    0 0 0 3px var(--field-focus-ring),
+    0 10px 24px rgba(31, 47, 66, 0.09);
+}
+
+.join-page .choice-card input:focus-visible + .choice-card-body {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px var(--field-focus-ring);
+}
+
+/* Portal package/term choices now read clearly as selectable controls. */
+.portal-page .package-option,
+.portal-page .membership-duration-option,
+.profile-page .assistance-option,
+.profile-page .information-resource-option {
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.15s ease;
+}
+
+.portal-page .package-option:hover,
+.portal-page .membership-duration-option:hover,
+.profile-page .assistance-option:hover,
+.profile-page .information-resource-option:hover {
+  border-color: #9ab7c9;
+}
+
+.portal-page .package-option:has(input:checked),
+.portal-page .membership-duration-option:has(input:checked),
+.profile-page .assistance-option:has(input:checked),
+.profile-page .information-resource-option:has(input:checked) {
+  border-color: var(--blue);
+  background: #f2f8fc;
+  box-shadow: 0 0 0 3px var(--field-focus-ring);
+}
+
+.portal-page .package-option:has(input:focus-visible),
+.portal-page .membership-duration-option:has(input:focus-visible),
+.profile-page .assistance-option:has(input:focus-visible),
+.profile-page .information-resource-option:has(input:focus-visible) {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px var(--field-focus-ring);
+}
+
+/* Compact quantity inputs remain compact, but use the same visual language. */
+.portal-page .quantity-control input[type="number"] {
+  min-height: 46px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--field-radius);
+  background: var(--field-background);
+  color: var(--field-text);
+  box-shadow: 0 1px 2px rgba(31, 47, 66, 0.035);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.portal-page .quantity-control input[type="number"]:focus {
+  outline: none;
+  border-color: var(--field-focus);
+  box-shadow: 0 0 0 4px var(--field-focus-ring);
+}
+
+/* Error states can opt in through aria-invalid without colouring untouched fields. */
+body:has(.secondary-header) main [aria-invalid="true"] {
+  border-color: #c2413b !important;
+  box-shadow: 0 0 0 4px rgba(194, 65, 59, 0.11) !important;
+}
+
+@media (max-width: 680px) {
+  body:has(.secondary-header) main input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="number"]),
+  body:has(.secondary-header) main select {
+    min-height: 52px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:has(.secondary-header) main input,
+  body:has(.secondary-header) main select,
+  body:has(.secondary-header) main textarea,
+  .join-page .choice-card-body,
+  .portal-page .package-option,
+  .portal-page .membership-duration-option,
+  .profile-page .assistance-option,
+  .profile-page .information-resource-option {
+    transition: none !important;
   }
 }
