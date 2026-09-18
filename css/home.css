@@ -97,7 +97,7 @@
     ),
     radial-gradient(
       circle at 15% 80%,
-      rgba(44, 146, 43, 0.08),
+      rgba(36, 122, 36, 0.08),
       transparent 30%
     ),
     linear-gradient(
@@ -146,7 +146,7 @@
 }
 
 .home-page .hero-line-green {
-  color: #2c922b;
+  color: #247a24;
 }
 
 .home-page .home-hero-copy {
@@ -216,7 +216,7 @@
 }
 
 .home-page .home-hero-reassurance-item:nth-child(3)::before {
-  background: #2c922b;
+  background: #247a24;
 }
 
 .home-page .home-hero-reassurance-copy {
@@ -988,7 +988,7 @@
 
 .home-page .help-icon-green {
   background: #eef7f0;
-  color: #2c922b;
+  color: #247a24;
 }
 
 
@@ -1226,7 +1226,7 @@
   border-radius: 999px;
 
   background: #eef7f0;
-  color: #2c922b;
+  color: #247a24;
 
   font-size: 0.86rem;
   font-weight: 800;
@@ -1447,7 +1447,7 @@
   border-radius: 18px;
 
   background: #ffffff;
-  color: #2c922b;
+  color: #247a24;
 }
 
 
@@ -1671,7 +1671,7 @@
 
 .home-page .home-control-icon-green {
   background: #eef7f0;
-  color: #2c922b;
+  color: #247a24;
 }
 
 
@@ -1882,7 +1882,7 @@
 
 .home-page .home-professional-icon-green {
   background: #eef7f0;
-  color: #2c922b;
+  color: #247a24;
 }
 
 
@@ -1994,7 +1994,7 @@
   border-radius: 17px;
 
   background: #ffffff;
-  color: #2c922b;
+  color: #247a24;
 }
 
 
