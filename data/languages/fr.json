@@ -12,7 +12,7 @@
   },
   "profile": {
     "patient_status": "PATIENT ATTEINT DE LYMPHŒDÈME",
-    "lymphaware_id_label": "ID LymphAware :",
+    "lymphaware_id_label": "LymphAware ID:",
     "sections": {
       "lymphoedema": {
         "title": "À propos de mon lymphœdème",
@@ -56,22 +56,22 @@
     },
     "call_emergency_contact": "Appeler le contact d’urgence",
     "footer": {
-      "heading": "À propos de ce profil LymphAware",
+      "heading": "À propos de ce profil LymphAware ID",
       "paragraph_1": "Ce profil contient des informations que la personne a choisi de partager afin d’aider les autres à mieux comprendre son lymphœdème et toute assistance dont elle peut avoir besoin.",
-      "paragraph_2": "LymphAware favorise la communication et la sensibilisation. Il ne fournit pas de conseils médicaux et ne remplace pas l’évaluation ou le traitement par des professionnels de santé."
+      "paragraph_2": "LymphAware ID favorise la communication et la sensibilisation. Il ne fournit pas de conseils médicaux et ne remplace pas l’évaluation ou le traitement par des professionnels de santé."
     },
     "system": {
       "loading_title": "Chargement du profil…",
-      "loading_message": "Veuillez patienter pendant le chargement du profil LymphAware.",
-      "unavailable_title": "Profil LymphAware indisponible",
-      "unavailable_message": "Ce profil LymphAware est actuellement indisponible.",
+      "loading_message": "Veuillez patienter pendant le chargement du profil LymphAware ID.",
+      "unavailable_title": "Profil LymphAware ID indisponible",
+      "unavailable_message": "Ce profil LymphAware ID est actuellement indisponible.",
       "urgent_message": "Si vous aidez une personne qui nécessite des soins médicaux urgents, veuillez suivre les procédures d’urgence appropriées."
     }
   },
   "review_notes": {
-    "purpose": "Approved fixed-text translation for the LymphAware French language package.",
+    "purpose": "Approved fixed-text translation for the LymphAware ID French language package.",
     "patient_entered_content": "Patient-entered profile information is not included in this language pack and must be translated/reviewed separately before publication.",
-    "brand": "The LymphAware logo and English tagline remain unchanged.",
+    "brand": "The LymphAware ID logo and English tagline remain unchanged.",
     "approval_scope": "Fixed card and QR-profile interface wording approved. This approval does not approve or publish patient-entered translated content."
   }
 }
