@@ -7,7 +7,7 @@
   },
   "profile": {
     "patient_status":"PACIENTE CON LINFEDEMA",
-    "lymphaware_id_label":"ID LymphAware:",
+    "lymphaware_id_label":"LymphAware ID:",
     "sections": {
       "lymphoedema":{"title":"Acerca de mi linfedema","description":"Una visión general de mi linfedema y de cómo me afecta."},
       "compression":{"title":"Compresión","description":"Mis prendas de compresión y mis preferencias."},
@@ -29,15 +29,15 @@
     "details":{"name":"Nombre","relationship":"Relación","telephone":"Teléfono"},
     "call_emergency_contact":"Llamar al contacto de emergencia",
     "footer": {
-      "heading":"Acerca de este perfil LymphAware",
+      "heading":"Acerca de este perfil LymphAware ID",
       "paragraph_1":"Este perfil contiene información que la persona ha elegido compartir para ayudar a otras personas a comprender mejor su linfedema y cualquier asistencia que pueda necesitar.",
-      "paragraph_2":"LymphAware facilita la comunicación y la sensibilización. No proporciona asesoramiento médico ni sustituye la evaluación o el tratamiento por profesionales sanitarios."
+      "paragraph_2":"LymphAware ID facilita la comunicación y la sensibilización. No proporciona asesoramiento médico ni sustituye la evaluación o el tratamiento por profesionales sanitarios."
     },
     "system": {
       "loading_title":"Cargando perfil…",
-      "loading_message":"Espere mientras se carga el perfil LymphAware.",
-      "unavailable_title":"Perfil LymphAware no disponible",
-      "unavailable_message":"Este perfil LymphAware no está disponible actualmente.",
+      "loading_message":"Espere mientras se carga el perfil LymphAware ID.",
+      "unavailable_title":"Perfil LymphAware ID no disponible",
+      "unavailable_message":"Este perfil LymphAware ID no está disponible actualmente.",
       "urgent_message":"Si está ayudando a una persona que necesita atención médica urgente, siga los procedimientos de emergencia adecuados."
     }
   },
