@@ -95,7 +95,7 @@ export default async (request) => {
 
     const apiKey = env('RESEND_API_KEY');
     const to = env('ORDER_NOTIFICATION_EMAIL') || 'admin@lymphaware.com';
-    const from = env('ORDER_NOTIFICATION_FROM') || 'LymphAware <notifications@lymphaware.com>';
+    const from = env('ORDER_NOTIFICATION_FROM') || 'LymphAware ID <notifications@lymphaware.com>';
     if (!apiKey) {
       await patchOrder(order.id, {
         profile_ready_notification_status: 'FAILED',
@@ -116,16 +116,16 @@ export default async (request) => {
         from,
         to: [to],
         reply_to: ['admin@lymphaware.com'],
-        subject: `LymphAware profile details ready for card production – ${profile.lymphaware_id || orderReference(order.order_number)}`,
+        subject: `LymphAware ID profile details ready for card production – ${profile.lymphaware_id || orderReference(order.order_number)}`,
         text:
-          `A LymphAware member has now saved the two mandatory details needed for ID card production.\n\n` +
+          `A LymphAware ID member has now saved the two mandatory details needed for ID card production.\n\n` +
           `Order: ${orderReference(order.order_number)}\n` +
           `LymphAware ID: ${profile.lymphaware_id || 'Pending'}\n` +
           `Display name: ${profile.display_name}\n` +
           `Customer email: ${order.customer_email || user.email || ''}\n\n` +
           `Order contents:\n${itemLines || 'Membership order'}\n\n` +
-          `The order will now appear at the appropriate stage in LymphAware Administration. If the order includes an additional language, that language version may still be preparing before the complete order is ready to print.\n\n` +
-          `Open LymphAware Administration:\nhttps://lymphaware.com/admin/orders/`
+          `The order will now appear at the appropriate stage in LymphAware ID Administration. If the order includes an additional language, that language version may still be preparing before the complete order is ready to print.\n\n` +
+          `Open LymphAware ID Administration:\nhttps://lymphaware.com/admin/orders/`
       })
     });
 
