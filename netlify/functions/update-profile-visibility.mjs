@@ -85,7 +85,7 @@ export default async (request) => {
         const consentActive = await consentResponse.json().catch(() => false);
         if (consentActive !== true) {
           return json({
-            error: 'Before your QR profile can be shown, open Edit my profile and give your explicit consent for LymphAware to process and display the health information you choose to provide.',
+            error: 'Before your QR profile can be shown, open Edit my profile and give your explicit consent for LymphAware ID to process and display the health information you choose to provide.',
             code: 'HEALTH_CONSENT_REQUIRED'
           }, 422);
         }
