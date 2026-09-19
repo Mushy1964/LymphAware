@@ -77,6 +77,6 @@ export async function authoriseRegistration(inviteCodeValue, email = '') {
 
 export function registrationUnavailableMessage(mode) {
   return mode === 'INVITE_ONLY'
-    ? 'LymphAware is currently available by invitation for testing. Please enter the valid trial code supplied with your invitation.'
-    : 'New LymphAware membership registration is currently closed.';
+    ? 'LymphAware ID is currently available by invitation for testing. Please enter the valid trial code supplied with your invitation.'
+    : 'New LymphAware ID membership registration is currently closed.';
 }
