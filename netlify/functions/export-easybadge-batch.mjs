@@ -35,7 +35,7 @@ async function requireAdmin(request) {
   });
 
   if (!userResponse.ok) {
-    return { error: json({ error: 'Unable to verify your LymphAware account.' }, 401) };
+    return { error: json({ error: 'Unable to verify your LymphAware ID account.' }, 401) };
   }
 
   const user = await userResponse.json();
@@ -369,7 +369,7 @@ export default async (request) => {
         'Content-Type': 'text/csv; charset=utf-8',
         'Content-Disposition': 'attachment; filename="LymphAware_EasyBadge.csv"',
         'Cache-Control': 'no-store',
-        'X-LymphAware-Card-Count': String(jobs.reduce((sum, job) => sum + Math.max(1, Number(job.quantity || 1)), 0))
+        'X-LymphAware ID-Card-Count': String(jobs.reduce((sum, job) => sum + Math.max(1, Number(job.quantity || 1)), 0))
       }
     });
   } catch (error) {
