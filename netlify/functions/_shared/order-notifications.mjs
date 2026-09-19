@@ -36,7 +36,7 @@ async function sendEmail({ to, subject, text }) {
     method: 'POST',
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: env('ORDER_NOTIFICATION_FROM') || 'LymphAware <notifications@lymphaware.com>',
+      from: env('ORDER_NOTIFICATION_FROM') || 'LymphAware ID <notifications@lymphaware.com>',
       to: [to],
       subject,
       text
@@ -53,19 +53,19 @@ async function auditedOrderEmail(order, kind) {
       status: 'production_notification_status',
       error: 'production_notification_error',
       sent: 'production_notification_sent_at',
-      subject: `Your LymphAware cards are now in production – ${orderReference(order.order_number)}`,
+      subject: `Your LymphAware ID cards are now in production – ${orderReference(order.order_number)}`,
       text:
-        `Your LymphAware order ${orderReference(order.order_number)} has entered card production.\n\n` +
+        `Your LymphAware ID order ${orderReference(order.order_number)} has entered card production.\n\n` +
         'We will email you again when the complete order has been packed and dispatched. You can review your details in the Patient Portal:\nhttps://lymphaware.com/portal/'
     },
     completion: {
       status: 'completion_notification_status',
       error: 'completion_notification_error',
       sent: 'completion_notification_sent_at',
-      subject: `Your LymphAware order has been dispatched – ${orderReference(order.order_number)}`,
+      subject: `Your LymphAware ID order has been dispatched – ${orderReference(order.order_number)}`,
       text:
-        `Your LymphAware order ${orderReference(order.order_number)} has been completed, packed and dispatched.\n\n` +
-        'Thank you for being a LymphAware member. You can continue to update your QR profile at any time from the Patient Portal:\nhttps://lymphaware.com/portal/'
+        `Your LymphAware ID order ${orderReference(order.order_number)} has been completed, packed and dispatched.\n\n` +
+        'Thank you for being a LymphAware ID member. You can continue to update your QR profile at any time from the Patient Portal:\nhttps://lymphaware.com/portal/'
     }
   }[kind];
   if (!settings) throw new Error('Unknown customer notification type.');
@@ -116,10 +116,10 @@ export async function sendLanguageReadyEmail({ languageProfileId, customerEmail,
   if (String(row?.first_ready_notification_status || '').toUpperCase() === 'SENT') return { ok: true, already_sent: true };
   const result = await sendEmail({
     to: customerEmail,
-    subject: `Your ${languageName} LymphAware profile is ready`,
+    subject: `Your ${languageName} LymphAware ID profile is ready`,
     text:
-      `Your ${languageName} LymphAware QR profile has been prepared from your English profile and is now ready.\n\n` +
-      'Whenever you update your English profile, LymphAware will automatically refresh the translated version. Your existing translated profile remains available while an update is being prepared.\n\n' +
+      `Your ${languageName} LymphAware ID QR profile has been prepared from your English profile and is now ready.\n\n` +
+      'Whenever you update your English profile, LymphAware ID will automatically refresh the translated version. Your existing translated profile remains available while an update is being prepared.\n\n' +
       'View your Patient Portal:\nhttps://lymphaware.com/portal/'
   });
   const patch = await fetch(
