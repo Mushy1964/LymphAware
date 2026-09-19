@@ -64,7 +64,7 @@ export default async (request) => {
     const from =
       env('CONTACT_NOTIFICATION_FROM') ||
       env('ORDER_NOTIFICATION_FROM') ||
-      'LymphAware <notifications@lymphaware.com>';
+      'LymphAware ID <notifications@lymphaware.com>';
 
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -76,7 +76,7 @@ export default async (request) => {
         from,
         to: [to],
         reply_to: [email],
-        subject: `LymphAware website enquiry – ${enquiryType}`,
+        subject: `LymphAware ID website enquiry – ${enquiryType}`,
         text:
           `A new enquiry has been submitted through lymphaware.com.\n\n` +
           `Name: ${name}\n` +
