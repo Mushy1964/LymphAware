@@ -7,7 +7,7 @@
   },
   "profile": {
     "patient_status":"LYMPHÖDEM-PATIENT",
-    "lymphaware_id_label":"LymphAware-ID:",
+    "lymphaware_id_label":"LymphAware ID:",
     "sections": {
       "lymphoedema":{"title":"Über mein Lymphödem","description":"Ein Überblick über mein Lymphödem und darüber, wie es mich betrifft."},
       "compression":{"title":"Kompression","description":"Meine Kompressionskleidung und meine Präferenzen."},
@@ -29,15 +29,15 @@
     "details":{"name":"Name","relationship":"Beziehung","telephone":"Telefon"},
     "call_emergency_contact":"Notfallkontakt anrufen",
     "footer": {
-      "heading":"Über dieses LymphAware-Profil",
+      "heading":"Über dieses LymphAware ID-Profil",
       "paragraph_1":"Dieses Profil enthält Informationen, die die Person freiwillig teilt, damit andere ihr Lymphödem und mögliche Unterstützungsbedürfnisse besser verstehen können.",
-      "paragraph_2":"LymphAware unterstützt Kommunikation und Bewusstseinsbildung. Es bietet keine medizinische Beratung und ersetzt keine Beurteilung oder Behandlung durch medizinisches Fachpersonal."
+      "paragraph_2":"LymphAware ID unterstützt Kommunikation und Bewusstseinsbildung. Es bietet keine medizinische Beratung und ersetzt keine Beurteilung oder Behandlung durch medizinisches Fachpersonal."
     },
     "system": {
       "loading_title":"Profil wird geladen…",
-      "loading_message":"Bitte warten Sie, während das LymphAware-Profil geladen wird.",
-      "unavailable_title":"LymphAware-Profil nicht verfügbar",
-      "unavailable_message":"Dieses LymphAware-Profil ist derzeit nicht verfügbar.",
+      "loading_message":"Bitte warten Sie, während das LymphAware ID-Profil geladen wird.",
+      "unavailable_title":"LymphAware ID-Profil nicht verfügbar",
+      "unavailable_message":"Dieses LymphAware ID-Profil ist derzeit nicht verfügbar.",
       "urgent_message":"Wenn Sie einer Person helfen, die dringend medizinische Versorgung benötigt, befolgen Sie bitte die entsprechenden Notfallverfahren."
     }
   },
