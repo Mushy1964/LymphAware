@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Preview My ID Card | LymphAware</title>
+  <title>Preview My ID Card | LymphAware ID</title>
   <link rel="stylesheet" href="/css/styles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
@@ -50,7 +50,7 @@
   <main class="card-preview-page">
     <section class="card-preview-shell">
       <div id="card-preview-toolbar" class="card-preview-toolbar">
-        <strong>Your ID card preview.</strong> This shows how the front of your English LymphAware card will look. The QR code can be scanned from this screen using another phone or tablet.
+        <strong>Your ID card preview.</strong> This shows how the front of your English LymphAware ID card will look. The QR code can be scanned from this screen using another phone or tablet.
       </div>
 
       <div id="card-preview-loading" class="card-preview-loading">Preparing your ID card preview…</div>
@@ -59,7 +59,7 @@
       <div id="card-preview-content" hidden>
         <div class="card-stage">
           <div class="member-card" role="img" aria-label="Preview of my English LymphAware ID card">
-            <img class="member-card-logo" src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg" alt="LymphAware – Helping People Living with Lymphoedema Be Understood.">
+            <img class="member-card-logo" src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood.">
             <img id="card-photo" class="member-card-photo" alt="Member photograph">
             <div class="member-card-main">
               <p id="card-condition" class="member-card-condition">Lymphoedema<br>Patient</p>
@@ -67,7 +67,7 @@
               <p class="member-card-id">LymphAware ID: <strong id="card-id"></strong></p>
             </div>
             <div class="member-card-qr-wrap">
-              <div id="card-qr" class="member-card-qr" aria-label="QR code linking to my LymphAware profile"></div>
+              <div id="card-qr" class="member-card-qr" aria-label="QR code linking to my LymphAware ID profile"></div>
               <p id="card-qr-copy" class="member-card-qr-copy">SCAN QR CODE<br>to view my profile</p>
             </div>
             <div class="member-card-bars" aria-hidden="true"></div>
@@ -137,7 +137,7 @@
       if(missing.length){showError(`Your card preview will be available after you add or receive the following: ${missing.join(', ')}.`);return}
 
       const profileUrl=`https://lymphaware.com/p/${encodeURIComponent(cardToken)}`;
-      document.title=`Preview My ${copy.name} ID Card | LymphAware`;
+      document.title=`Preview My ${copy.name} ID Card | LymphAware ID`;
       document.querySelector('.member-card').setAttribute('aria-label',`Preview of my ${copy.name} LymphAware ID card`);
       document.getElementById('card-name').textContent=profile.display_name;
       document.getElementById('card-id').textContent=profile.lymphaware_id;
@@ -149,7 +149,7 @@
       matchingProfileLink.textContent=`Preview ${copy.name} profile`;
 
       const toolbar=document.getElementById('card-preview-toolbar');
-      toolbar.innerHTML=`<strong>Your ${copy.name} ID card preview.</strong> This shows how the front of your ${copy.name} LymphAware card will look. The QR code can be scanned from this screen using another phone or tablet.`;
+      toolbar.innerHTML=`<strong>Your ${copy.name} ID card preview.</strong> This shows how the front of your ${copy.name} LymphAware ID card will look. The QR code can be scanned from this screen using another phone or tablet.`;
       if(!cardVisible){
         toolbar.innerHTML=`<strong>Your ${copy.name} ID card preview.</strong> Your QR profile is currently switched off. The QR code is valid, but a scanner will see the unavailable-profile screen until you reactivate it.`;
       }
