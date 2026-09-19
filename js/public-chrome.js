@@ -24,19 +24,19 @@
     { label: 'Understanding Lymphoedema', href: '/understanding-lymphoedema/' },
     { label: 'For Professionals', href: '/for-professionals/' },
     { label: 'Privacy & Security', href: '/privacy/' },
-    { label: 'About LymphAware', href: '/about/' }
+    { label: 'About LymphAware ID', href: '/about/' }
   ];
 
   const searchPages = [
     { title: 'Understanding Lymphoedema', href: '/understanding-lymphoedema/', keywords: 'lymphoedema swelling symptoms causes treatment compression cellulitis lymphatic condition' },
     { title: 'For Professionals', href: '/for-professionals/', keywords: 'healthcare professionals clinician nurse doctor staff scan qr care' },
     { title: 'Privacy & Security', href: '/privacy/', keywords: 'privacy security personal information data consent gdpr' },
-    { title: 'About LymphAware', href: '/about/', keywords: 'about lymphaware founder graham story lived experience' },
+    { title: 'About LymphAware ID', href: '/about/', keywords: 'about lymphaware founder graham story lived experience' },
     { title: 'Help & FAQs', href: '/help/', keywords: 'help faq questions support account profile password card qr' },
-    { title: 'How LymphAware Works', href: '/how-it-works/', keywords: 'how it works id card qr profile scan' },
+    { title: 'How LymphAware ID Works', href: '/how-it-works/', keywords: 'how it works id card qr profile scan' },
     { title: 'Membership & Pricing', href: '/#membership', keywords: 'membership pricing price cost packages standard plus multilingual join' },
     { title: 'Quick Guide', href: '/quick-guide/', keywords: 'quick guide instructions getting started' },
-    { title: 'Contact LymphAware', href: '/contact/', keywords: 'contact email enquiry support message' },
+    { title: 'Contact LymphAware ID', href: '/contact/', keywords: 'contact email enquiry support message' },
     { title: 'Accessibility', href: '/accessibility/', keywords: 'accessibility accessible screen reader keyboard' },
     { title: 'Cookies', href: '/cookies/', keywords: 'cookies tracking analytics' },
     { title: 'Terms of Use', href: '/terms/', keywords: 'terms conditions membership agreement' }
@@ -52,11 +52,11 @@
       <header class="site-header public-site-header">
         <div class="public-header-main">
           <div class="container public-header-inner">
-            <a href="/" class="public-header-brand" aria-label="LymphAware home">
-              <img class="public-site-logo" src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg" alt="LymphAware – Helping People Living with Lymphoedema Be Understood">
+            <a href="/" class="public-header-brand" aria-label="LymphAware ID home">
+              <img class="public-site-logo" src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood">
             </a>
 
-            <form class="public-site-search" role="search" aria-label="Search LymphAware">
+            <form class="public-site-search" role="search" aria-label="Search LymphAware ID">
               <div class="public-search-shell">
                 <span class="public-search-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
@@ -64,7 +64,7 @@
                     <path d="M15.2 15.2 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
                   </svg>
                 </span>
-                <input type="search" name="q" autocomplete="off" placeholder="Search LymphAware..." aria-label="Search LymphAware">
+                <input type="search" name="q" autocomplete="off" placeholder="Search LymphAware ID..." aria-label="Search LymphAware ID">
               </div>
               <div class="public-search-results" role="listbox" hidden></div>
             </form>
@@ -101,7 +101,7 @@
             </details>
           </div>
         </div>
-        <div class="public-mobile-brand-strip" aria-label="LymphAware values">
+        <div class="public-mobile-brand-strip" aria-label="LymphAware ID values">
           <span>Patient-led</span><span aria-hidden="true">•</span><span>Private by design</span><span aria-hidden="true">•</span><span>Easy to share</span>
         </div>
         <nav class="public-nav-bar" aria-label="Main navigation">
@@ -123,17 +123,17 @@
       <footer id="help" class="public-site-footer">
         <div class="container">
           <div class="public-footer-main">
-            <a href="/" class="public-footer-brand" aria-label="LymphAware home">
-              <img src="/assets/brand/LymphAware_APPROVED_No_Tagline_Centred_v1.svg" alt="LymphAware">
+            <a href="/" class="public-footer-brand" aria-label="LymphAware ID home">
+              <img src="/assets/brand/LymphAware_APPROVED_No_Tagline_Centred_v1.svg" alt="LymphAware ID">
             </a>
             <nav class="public-footer-primary" aria-label="Footer navigation">
               <a href="/understanding-lymphoedema/">Understanding Lymphoedema</a>
               <a href="/privacy/">Privacy &amp; Security</a>
               <a href="/for-professionals/">For Professionals</a>
-              <a href="/about/">About LymphAware</a>
+              <a href="/about/">About LymphAware ID</a>
             </nav>
             <div class="public-footer-meta">
-              <p class="public-footer-copyright">© <span data-public-year></span> LymphAware. All rights reserved.</p>
+              <p class="public-footer-copyright">© <span data-public-year></span> LymphAware ID. All rights reserved.</p>
               <nav class="public-footer-utility" aria-label="Footer information links">
                 <a href="/help/">Help</a>
                 <a href="/contact/">Contact</a>
@@ -144,7 +144,7 @@
               </nav>
             </div>
           </div>
-          <div class="public-footer-note">LymphAware is a communication and identification aid. It does not provide medical diagnosis or replace professional medical advice.</div>
+          <div class="public-footer-note">LymphAware ID is a communication and identification aid. It does not provide medical diagnosis or replace professional medical advice.</div>
         </div>
       </footer>`;
   }
