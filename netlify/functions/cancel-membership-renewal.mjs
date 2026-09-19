@@ -9,7 +9,7 @@ export default async (request) => {
     if (!authHeader?.startsWith('Bearer ')) return json({ error: 'Authentication required.' }, 401);
     const token = authHeader.slice(7).trim();
     const userResponse = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, { headers: { apikey: process.env.SUPABASE_PUBLISHABLE_KEY, Authorization: `Bearer ${token}` } });
-    if (!userResponse.ok) return json({ error: 'Unable to verify your LymphAware account.' }, 401);
+    if (!userResponse.ok) return json({ error: 'Unable to verify your LymphAware ID account.' }, 401);
     const user = await userResponse.json();
     const headers = { apikey: process.env.SUPABASE_SECRET_KEY, Authorization: `Bearer ${process.env.SUPABASE_SECRET_KEY}`, 'Content-Type': 'application/json' };
     const membershipResponse = await fetch(`${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${encodeURIComponent(user.id)}&select=id,stripe_subscription_id,auto_renew_enabled,membership_end&limit=1`, { headers });
@@ -34,9 +34,9 @@ export default async (request) => {
     });
     const emailResult = await sendMembershipEmail({
       to: user.email,
-      subject: 'Your LymphAware automatic renewal is cancelled',
+      subject: 'Your LymphAware ID automatic renewal is cancelled',
       idempotencyKey: `renewal-cancelled-${membership.stripe_subscription_id}`,
-      text: `Automatic renewal has been cancelled. No further automatic-renewal payment will be taken for this membership.\n\nYour current LymphAware membership remains active until ${dateUK(membership.membership_end)}.\n\nYou can review its status in your Patient Portal:\nhttps://lymphaware.com/portal/\n\nIf you did not make this change, contact admin@lymphaware.com.\n\nThe LymphAware Team`
+      text: `Automatic renewal has been cancelled. No further automatic-renewal payment will be taken for this membership.\n\nYour current LymphAware ID membership remains active until ${dateUK(membership.membership_end)}.\n\nYou can review its status in your Patient Portal:\nhttps://lymphaware.com/portal/\n\nIf you did not make this change, contact admin@lymphaware.com.\n\nThe LymphAware ID Team`
     });
     if (!emailResult.ok) console.error('Unable to send renewal cancellation confirmation:', emailResult.error);
     return json({ cancelled: true, membershipEnd: membership.membership_end });
