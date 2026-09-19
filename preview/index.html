@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Preview My QR Profile | LymphAware</title>
+  <title>Preview My QR Profile | LymphAware ID</title>
   <link rel="stylesheet" href="/css/styles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -36,7 +36,7 @@
     <section class="preview-shell">
       <div class="preview-toolbar" id="preview-toolbar">
         <strong>Preview only.</strong>
-        This is the same profile someone will see when they scan your LymphAware card.
+        This is the same profile someone will see when they scan your LymphAware ID card.
       </div>
 
       <div id="preview-loading" class="preview-loading">Loading your QR profile preview…</div>
@@ -46,7 +46,7 @@
         <iframe
           id="preview-frame"
           class="preview-frame"
-          title="Preview of my LymphAware QR profile"
+          title="Preview of my LymphAware ID QR profile"
           loading="eager">
         </iframe>
       </div>
@@ -131,13 +131,13 @@
         return;
       }
 
-      document.title=`Preview My ${languageName} QR Profile | LymphAware`;
-      frame.title=`Preview of my ${languageName} LymphAware QR profile`;
+      document.title=`Preview My ${languageName} QR Profile | LymphAware ID`;
+      frame.title=`Preview of my ${languageName} LymphAware ID QR profile`;
       matchingCardLink.href=language==='EN'?'/card-preview/':`/card-preview/?language=${encodeURIComponent(language)}`;
       matchingCardLink.textContent=`Preview ${languageName} ID card`;
 
       if(profileActive){
-        toolbar.innerHTML=`<strong>Preview only.</strong> This is the same ${languageName} profile someone will see when they scan your LymphAware card. Your QR profile is currently active.`;
+        toolbar.innerHTML=`<strong>Preview only.</strong> This is the same ${languageName} profile someone will see when they scan your LymphAware ID card. Your QR profile is currently active.`;
       }else{
         toolbar.innerHTML=`<strong>Preview only.</strong> Your ${languageName} QR profile is currently switched off, so a scanner will see the unavailable-profile screen until you reactivate it.`;
       }
