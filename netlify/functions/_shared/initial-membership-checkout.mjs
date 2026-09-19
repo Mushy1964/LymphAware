@@ -9,19 +9,19 @@ export const APPROVED_LANGUAGES = {
 
 export const PACKAGE_DEFINITIONS = {
   STANDARD: {
-    name: 'LymphAware Standard',
+    name: 'LymphAware ID Standard',
     prices: { 1: 2499, 2: 3499, 3: 4499 },
     renewals: { 1: 1899, 2: 2599, 3: 3399 },
     stripePrices: { 1: 'price_1UFGECPMYhQKb2OTxec6KcE8', 2: 'price_1UFGERPMYhQKb2OTLU8gqlJ0', 3: 'price_1UFGETPMYhQKb2OTGS496BLh' }
   },
   PLUS: {
-    name: 'LymphAware Plus',
+    name: 'LymphAware ID Plus',
     prices: { 1: 3499, 2: 4499, 3: 5499 },
     renewals: { 1: 2599, 2: 3399, 3: 4099 },
     stripePrices: { 1: 'price_1UFIpVPMYhQKb2OTycEm07OF', 2: 'price_1UFIpgPMYhQKb2OTwLhaQcjU', 3: 'price_1UFIpgPMYhQKb2OTKfOwgqx8' }
   },
   MULTILINGUAL: {
-    name: 'LymphAware Multilingual',
+    name: 'LymphAware ID Multilingual',
     prices: { 1: 5499, 2: 6999, 3: 8499 },
     renewals: { 1: 4099, 2: 5299, 3: 6399 },
     stripePrices: { 1: 'price_1UFGEVPMYhQKb2OT4B45XA28', 2: 'price_1UFGEWPMYhQKb2OTbVjZEvW4', 3: 'price_1UFGEWPMYhQKb2OTD1iA0xNU' }
@@ -49,7 +49,7 @@ export function normaliseInitialSelection(body = {}) {
   const languageName = APPROVED_LANGUAGES[languageCode] || '';
   const autoRenew = body.autoRenew === true;
 
-  if (!packageDefinition) throw new Error('Please select a LymphAware membership package.');
+  if (!packageDefinition) throw new Error('Please select a LymphAware ID membership package.');
   if (![1, 2, 3].includes(membershipTermYears)) throw new Error('Please select a membership length.');
   if (!CHECKOUT_COUNTRIES.has(deliveryCountry)) throw new Error('Please select a supported delivery country.');
   if (packageType === 'MULTILINGUAL' && !languageName) throw new Error('Please select an additional language.');
@@ -113,7 +113,7 @@ export async function createInitialMembershipCheckout({ userId, email, membershi
   }
 
   const shippingLabel = selection.shippingBand === 'UK' ? 'UK postage & packing' : selection.shippingBand === 'EUROPE' ? 'Europe postage & packing' : 'Rest of World postage & packing';
-  appendInlinePrice(form, shippingIndex, shippingLabel, selection.shippingPence, 'Postage & packing for this LymphAware order.');
+  appendInlinePrice(form, shippingIndex, shippingLabel, selection.shippingPence, 'Postage & packing for this LymphAware ID order.');
 
   if (trialPromotionCodeId) form.append('discounts[0][promotion_code]', trialPromotionCodeId);
   else form.append('allow_promotion_codes', 'true');
