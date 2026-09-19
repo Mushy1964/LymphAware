@@ -27,7 +27,7 @@ export default async (request) => {
     const userResponse = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
       headers: { apikey: process.env.SUPABASE_PUBLISHABLE_KEY, Authorization: `Bearer ${token}` }
     });
-    if (!userResponse.ok) return json({ error: 'Unable to verify your LymphAware account.' }, 401);
+    if (!userResponse.ok) return json({ error: 'Unable to verify your LymphAware ID account.' }, 401);
     const user = await userResponse.json();
 
     const membershipResponse = await fetch(
@@ -73,8 +73,8 @@ export default async (request) => {
     });
 
     const amount = money(refund.amount || membership.renewal_price_pence);
-    const customerText = `Your renewed LymphAware membership has been cancelled during its renewal cooling-off period.\n\nA ${amount} refund has been submitted to your original payment method. Your bank may take several working days to show it. Renewed membership access has now ended.\n\nReference: ${refund.id}\n\nIf you need help, contact admin@lymphaware.com.\n\nThe LymphAware Team`;
-    const customerEmail = await sendMembershipEmail({ to: user.email, subject: 'Your renewed LymphAware membership has been cancelled', text: customerText, idempotencyKey: `cooling-off-customer-${refund.id}` });
+    const customerText = `Your renewed LymphAware ID membership has been cancelled during its renewal cooling-off period.\n\nA ${amount} refund has been submitted to your original payment method. Your bank may take several working days to show it. Renewed membership access has now ended.\n\nReference: ${refund.id}\n\nIf you need help, contact admin@lymphaware.com.\n\nThe LymphAware ID Team`;
+    const customerEmail = await sendMembershipEmail({ to: user.email, subject: 'Your renewed LymphAware ID membership has been cancelled', text: customerText, idempotencyKey: `cooling-off-customer-${refund.id}` });
     if (!customerEmail.ok) console.error('Unable to send renewal cancellation email:', customerEmail.error);
     const adminEmail = await sendMembershipEmail({
       to: 'admin@lymphaware.com',
