@@ -111,7 +111,7 @@ async function handleRecurringEvent(event) {
       const email = String(object?.customer_email || '').trim() || await memberEmail(membership.user_id);
       const result = await sendMembershipEmail({
         to: email,
-        subject: 'Your LymphAware automatic-renewal payment is approaching',
+        subject: 'Your LymphAware ID automatic-renewal payment is approaching',
         text: renewalNoticeText(membership, 'Additional automatic-renewal payment reminder'),
         idempotencyKey: `stripe-upcoming-${upcomingSubscriptionId}-${new Date(membership.next_renewal_at).toISOString().slice(0, 10)}`
       });
@@ -156,9 +156,9 @@ async function handleRecurringEvent(event) {
     const amountPaid = money(object.amount_paid || membership.renewal_price_pence);
     const emailResult = await sendMembershipEmail({
       to: email,
-      subject: 'Your LymphAware membership has renewed',
+      subject: 'Your LymphAware ID membership has renewed',
       idempotencyKey: `renewal-cooling-${object.id}`,
-      text: `Your LymphAware digital membership has renewed and ${amountPaid} has been paid. Your new membership end date is ${dateUK(periodEnd ? new Date(periodEnd * 1000) : null)}.\n\nRENEWAL COOLING-OFF PERIOD\n\nYou may cancel this renewed membership until ${dateUK(renewalCoolingEnds)}. Use the “Cancel this renewal” option in your Patient Portal:\nhttps://lymphaware.com/portal/\n\nIf you cancel during this period, the renewal payment will be refunded and renewed access will end. You can also email admin@lymphaware.com.\n\nThe LymphAware Team`
+      text: `Your LymphAware ID digital membership has renewed and ${amountPaid} has been paid. Your new membership end date is ${dateUK(periodEnd ? new Date(periodEnd * 1000) : null)}.\n\nRENEWAL COOLING-OFF PERIOD\n\nYou may cancel this renewed membership until ${dateUK(renewalCoolingEnds)}. Use the “Cancel this renewal” option in your Patient Portal:\nhttps://lymphaware.com/portal/\n\nIf you cancel during this period, the renewal payment will be refunded and renewed access will end. You can also email admin@lymphaware.com.\n\nThe LymphAware ID Team`
     });
     if (!emailResult.ok) console.error('Unable to send renewal cooling-off notice:', emailResult.error);
     await recordContractEvent({
@@ -229,7 +229,7 @@ async function patchOrder(orderId, values) {
     headers: supabaseHeaders('return=minimal'),
     body: JSON.stringify({ ...values, updated_at: new Date().toISOString() })
   });
-  if (!response.ok) console.error('Unable to update LymphAware order:', await response.text());
+  if (!response.ok) console.error('Unable to update LymphAware ID order:', await response.text());
 }
 
 async function sendOrderNotification(order, session, items) {
@@ -242,7 +242,7 @@ async function sendOrderNotification(order, session, items) {
   }
 
   const to = String(process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphaware.com').trim();
-  const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware <notifications@lymphaware.com>').trim();
+  const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphaware.com>').trim();
   const itemLines = items.map((item) => {
     const language = item.language_name ? ` – ${item.language_name}` : '';
     return `${item.quantity} × ${item.description}${language}`;
@@ -261,12 +261,12 @@ async function sendOrderNotification(order, session, items) {
         from,
         to: [to],
         reply_to: ['admin@lymphaware.com'],
-        subject: `New LymphAware order – ${orderRef}`,
+        subject: `New LymphAware ID order – ${orderRef}`,
         text:
-          `A new LymphAware order has been paid and requires attention.\n\n` +
+          `A new LymphAware ID order has been paid and requires attention.\n\n` +
           `Order: ${orderRef}\nCustomer: ${customerName}\nEmail: ${customerEmail}\nPostage & packing (before any promotion discount): ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
           `Items:\n${itemLines || 'No item detail recorded'}\n\n` +
-          `Open LymphAware Administration to manage fulfilment:\nhttps://lymphaware.com/admin/orders/`
+          `Open LymphAware ID Administration to manage fulfilment:\nhttps://lymphaware.com/admin/orders/`
       })
     });
     if (!response.ok) {
@@ -289,7 +289,7 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
   const customerEmail = String(session.customer_details?.email || session.customer_email || '').trim();
   if (!apiKey || !customerEmail) return { ok: false, error: 'Customer email notification is not configured.' };
 
-  const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware <notifications@lymphaware.com>').trim();
+  const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphaware.com>').trim();
   const orderRef = `ORD-${String(order.order_number).padStart(6, '0')}`;
   const itemLines = items.map((item) => `• ${item.quantity} × ${item.description}${item.language_name ? ` – ${item.language_name}` : ''}`).join('\n');
   const postageChargePence = Number(session.metadata?.shipping_pence || session.total_details?.amount_shipping || 0);
@@ -298,44 +298,44 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
   const membershipTermYears = [1, 2, 3, 5].includes(Number(session.metadata?.membership_term_years))
     ? Number(session.metadata.membership_term_years)
     : 5;
-  let subject = `Your LymphAware order is confirmed – ${orderRef}`;
+  let subject = `Your LymphAware ID order is confirmed – ${orderRef}`;
   let nextSteps =
-    `Your order has been received. We will use the current name and photograph in your LymphAware profile for any ID card included in this order.\n\n` +
+    `Your order has been received. We will use the current name and photograph in your LymphAware ID profile for any ID card included in this order.\n\n` +
     `You can review your profile and delivery progress from your Patient Portal:\nhttps://lymphaware.com/portal/`;
 
   if (paymentType === 'initial_membership') {
-    subject = `Welcome to LymphAware – your membership is now active`;
+    subject = `Welcome to LymphAware ID – your membership is now active`;
     nextSteps =
-      `Your ${membershipTermYears}-year LymphAware membership is now active.\n\n` +
+      `Your ${membershipTermYears}-year LymphAware ID membership is now active.\n\n` +
       `WHAT YOU NEED TO DO NEXT\n\n` +
       `Before your LymphAware ID card can be produced, please complete these two mandatory details in your Patient Portal:\n\n` +
       `1. Your display name – this is the name that will appear on your LymphAware ID card and QR profile.\n` +
       `2. A clear, recent photograph – this will appear on your ID card and at the top of your QR profile.\n\n` +
       `Both details are required before your card can enter production.\n\n` +
       `The remaining QR profile sections are optional and can be completed now or at any time that suits you. You can add as much or as little information as you wish. If you leave a section empty, it will still appear when your QR code is scanned and will state that no information has been added to that section.\n\n` +
-      `Once you save your display name and photograph, LymphAware will be notified automatically that your card details are ready. We will then begin preparing your ID card, lanyard and holder, together with any additional cards or language versions included in your order.\n\n` +
+      `Once you save your display name and photograph, LymphAware ID will be notified automatically that your card details are ready. We will then begin preparing your ID card, lanyard and holder, together with any additional cards or language versions included in your order.\n\n` +
       `We aim to prepare and dispatch your order within 7–10 working days after your required card details have been completed. Delivery time after dispatch will depend on the postal service and destination.\n\n` +
       `You can continue to update your QR profile at any time, including after your physical card has been produced.\n\n` +
       `YOUR INITIAL COOLING-OFF PERIOD\n\nYou may tell us that you want to cancel within 14 days of joining. Contact admin@lymphaware.com. Any refund and deduction for services or personalised items already supplied will be handled in accordance with your statutory rights and the Terms.\n\n` +
       `Complete your profile:\nhttps://lymphaware.com/profile/`;
     if (languageName) {
       nextSteps +=
-        `\n\nYour package includes a ${languageName} profile and card. Keep your main English profile accurate and LymphAware will automatically prepare the ${languageName} version from it and keep it updated when your English information changes. You do not need to translate anything yourself. Empty English sections will also remain empty in the translated profile.`;
+        `\n\nYour package includes a ${languageName} profile and card. Keep your main English profile accurate and LymphAware ID will automatically prepare the ${languageName} version from it and keep it updated when your English information changes. You do not need to translate anything yourself. Empty English sections will also remain empty in the translated profile.`;
     }
     if (String(session.metadata?.auto_renew || '') === '1') {
       const renewalPence = Number(session.metadata?.renewal_price_pence || 0);
       nextSteps += `\n\nAUTOMATIC RENEWAL\n\nYou chose automatic renewal. At the end of this ${membershipTermYears}-year term, your digital membership will renew for £${(renewalPence / 100).toFixed(2)} for another ${membershipTermYears} year${membershipTermYears === 1 ? '' : 's'}. No new cards, lanyards or postage are included. You can cancel automatic renewal from your Patient Portal before the renewal date.`;
     }
   } else if (paymentType === 'additional_items') {
-    subject = `Your LymphAware additional order is confirmed – ${orderRef}`;
+    subject = `Your LymphAware ID additional order is confirmed – ${orderRef}`;
     if (languageName) {
       nextSteps +=
-        `\n\nYour order includes a ${languageName} language package. You do not need to translate your profile yourself. LymphAware will prepare the ${languageName} version from your main English profile and automatically keep it updated when your English profile changes. Any English sections left empty will also be empty in the translated profile.`;
+        `\n\nYour order includes a ${languageName} language package. You do not need to translate your profile yourself. LymphAware ID will prepare the ${languageName} version from your main English profile and automatically keep it updated when your English profile changes. Any English sections left empty will also be empty in the translated profile.`;
     }
   } else if (paymentType === 'additional_language') {
-    subject = `Your ${languageName || 'additional-language'} LymphAware package is confirmed`;
+    subject = `Your ${languageName || 'additional-language'} LymphAware ID package is confirmed`;
     nextSteps =
-      `You do not need to translate your profile yourself. LymphAware will prepare the ${languageName || 'selected-language'} version for you from the information in your main English profile and automatically keep it updated when your English profile changes.\n\n` +
+      `You do not need to translate your profile yourself. LymphAware ID will prepare the ${languageName || 'selected-language'} version for you from the information in your main English profile and automatically keep it updated when your English profile changes.\n\n` +
       `Please make sure your main English profile is accurate and complete. Any English sections left empty will also be empty in the translated profile.\n\n` +
       `Review your main profile:\nhttps://lymphaware.com/profile/`;
   }
@@ -354,8 +354,8 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
         reply_to: ['admin@lymphaware.com'],
         subject,
         text:
-          `Thank you for your LymphAware purchase.\n\nOrder: ${orderRef}\n\nItems:\n${itemLines || 'Your selected LymphAware package'}\n\nPostage & packing (before any promotion discount): ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
-          `${nextSteps}\n\nIf you need help, contact admin@lymphaware.com.\n\nThe LymphAware Team`
+          `Thank you for your LymphAware ID purchase.\n\nOrder: ${orderRef}\n\nItems:\n${itemLines || 'Your selected LymphAware ID package'}\n\nPostage & packing (before any promotion discount): ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
+          `${nextSteps}\n\nIf you need help, contact admin@lymphaware.com.\n\nThe LymphAware ID Team`
       })
     });
     if (!response.ok) return { ok: false, error: await response.text() };
@@ -401,20 +401,20 @@ function buildInitialItems(packageType, languageCode, languageName, membershipTe
   const termLabel = `${membershipTermYears}-Year`;
   if (packageType === 'PLUS') {
     return [
-      normaliseItem({ item_type: 'MEMBERSHIP', description: `LymphAware ${termLabel} Plus`, quantity: 1, unit_price_pence: packagePricePence, line_total_pence: packagePricePence }),
+      normaliseItem({ item_type: 'MEMBERSHIP', description: `LymphAware ID ${termLabel} Plus`, quantity: 1, unit_price_pence: packagePricePence, line_total_pence: packagePricePence }),
       normaliseItem({ item_type: 'EXTRA_CARD', description: 'Additional English ID Card – included in Plus package', quantity: 1, unit_price_pence: 0, line_total_pence: 0 }),
       normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Additional Lanyard & Holder – included in Plus package', quantity: 1, unit_price_pence: 0, line_total_pence: 0 })
     ];
   }
   if (packageType === 'MULTILINGUAL') {
     return [
-      normaliseItem({ item_type: 'MEMBERSHIP', description: `LymphAware ${termLabel} Multilingual`, quantity: 1, unit_price_pence: packagePricePence, line_total_pence: packagePricePence }),
+      normaliseItem({ item_type: 'MEMBERSHIP', description: `LymphAware ID ${termLabel} Multilingual`, quantity: 1, unit_price_pence: packagePricePence, line_total_pence: packagePricePence }),
       normaliseItem({ item_type: 'EXTRA_CARD', description: 'Second English ID Card – included in Multilingual package', quantity: 1, unit_price_pence: 0, line_total_pence: 0 }),
       normaliseItem({ item_type: 'LANGUAGE_PACKAGE', description: 'Multilingual translated ID Cards & QR Profile', quantity: 2, unit_price_pence: 0, line_total_pence: 0, language_code: languageCode, language_name: languageName }),
       normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Translated-language Lanyard & Holder – included in Multilingual package', quantity: 1, unit_price_pence: 0, line_total_pence: 0, language_code: languageCode, language_name: languageName })
     ];
   }
-  return [normaliseItem({ item_type: 'MEMBERSHIP', description: `LymphAware ${termLabel} Membership`, quantity: 1, unit_price_pence: packagePricePence, line_total_pence: packagePricePence })];
+  return [normaliseItem({ item_type: 'MEMBERSHIP', description: `LymphAware ID ${termLabel} Membership`, quantity: 1, unit_price_pence: packagePricePence, line_total_pence: packagePricePence })];
 }
 
 function buildAdditionalLanguageItems(languageCode, languageName) {
@@ -597,7 +597,7 @@ export default async (request) => {
         }
       );
       if (!membershipResponse.ok) {
-        console.error('Unable to update LymphAware membership:', await membershipResponse.text());
+        console.error('Unable to update LymphAware ID membership:', await membershipResponse.text());
         return new Response('Membership update failed', { status: 500 });
       }
       if (membershipId) {
@@ -687,7 +687,7 @@ export default async (request) => {
     } else {
       const errorText = await orderResponse.text();
       if (!errorText.includes('duplicate key')) {
-        console.error('Unable to create LymphAware order:', errorText);
+        console.error('Unable to create LymphAware ID order:', errorText);
         return new Response('Order creation failed', { status: 500 });
       }
       order = await getExistingOrder(session.id);
@@ -696,7 +696,7 @@ export default async (request) => {
 
     const itemResult = await ensureOrderItems(order.id, items);
     if (!itemResult.ok) {
-      console.error('Unable to create LymphAware order items:', itemResult.error);
+      console.error('Unable to create LymphAware ID order items:', itemResult.error);
       return new Response('Order item creation failed', { status: 500 });
     }
 
