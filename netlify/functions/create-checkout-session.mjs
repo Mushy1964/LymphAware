@@ -5,9 +5,9 @@ const APPROVED_LANGUAGES = {
 };
 
 const PACKAGE_DEFINITIONS = {
-  STANDARD: { name: 'LymphAware Standard', prices: { 1: 2499, 2: 3499, 3: 4499 }, requiresLanguage: false },
-  PLUS: { name: 'LymphAware Plus', prices: { 1: 3499, 2: 4499, 3: 5499 }, requiresLanguage: false },
-  MULTILINGUAL: { name: 'LymphAware Multilingual', prices: { 1: 5499, 2: 6999, 3: 8499 }, requiresLanguage: true }
+  STANDARD: { name: 'LymphAware ID Standard', prices: { 1: 2499, 2: 3499, 3: 4499 }, requiresLanguage: false },
+  PLUS: { name: 'LymphAware ID Plus', prices: { 1: 3499, 2: 4499, 3: 5499 }, requiresLanguage: false },
+  MULTILINGUAL: { name: 'LymphAware ID Multilingual', prices: { 1: 5499, 2: 6999, 3: 8499 }, requiresLanguage: true }
 };
 
 const RENEWAL_DEFINITIONS = {
@@ -185,9 +185,9 @@ export default async (request) => {
     const userResponse = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
       headers: { apikey: process.env.SUPABASE_PUBLISHABLE_KEY, Authorization: `Bearer ${accessToken}` }
     });
-    if (!userResponse.ok) return json({ error: 'Unable to verify your LymphAware account.' }, 401);
+    if (!userResponse.ok) return json({ error: 'Unable to verify your LymphAware ID account.' }, 401);
     const user = await userResponse.json();
-    if (!user?.id) return json({ error: 'Unable to verify your LymphAware account.' }, 401);
+    if (!user?.id) return json({ error: 'Unable to verify your LymphAware ID account.' }, 401);
 
     const savedInviteCode = String(user?.user_metadata?.registration_invite_code || '').trim();
     let trialPromotionCodeId = '';
@@ -233,7 +233,7 @@ export default async (request) => {
       if (body?.termsAccepted !== true) return json({ error: 'Please accept the Terms and Privacy Notice.' }, 400);
       packageType = String(body?.packageType || 'STANDARD').trim().toUpperCase();
       const packageDefinition = PACKAGE_DEFINITIONS[packageType];
-      if (!packageDefinition) return json({ error: 'Please select a valid LymphAware membership package.' }, 400);
+      if (!packageDefinition) return json({ error: 'Please select a valid LymphAware ID membership package.' }, 400);
       membershipTermYears = Number(body?.membershipTermYears || 3);
       if (![1, 2, 3].includes(membershipTermYears)) return json({ error: 'Please select a valid membership length.' }, 400);
 
@@ -242,7 +242,7 @@ export default async (request) => {
         languageName = APPROVED_LANGUAGES[languageCode] || '';
         if (!languageName) return json({ error: 'Please select an additional language that is currently available.' }, 400);
         translationConsent = body?.translationConsent === true;
-        if (!translationConsent) return json({ error: 'Please confirm that LymphAware may process your English profile to prepare the translated version.' }, 400);
+        if (!translationConsent) return json({ error: 'Please confirm that LymphAware ID may process your English profile to prepare the translated version.' }, 400);
       }
 
       checkoutName = `${packageDefinition.name} – ${membershipTermYears}-Year`;
@@ -277,7 +277,7 @@ export default async (request) => {
       });
       if (!complianceUpdate.ok) return json({ error: 'Unable to record your membership selection. Please try again.' }, 500);
     } else if (paymentType === 'additional_items') {
-      if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware membership is required.' }, 403);
+      if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware ID membership is required.' }, 403);
 
       const legacyCardQuantity = parseQuantity(body?.cardQuantity);
       lanyardQuantity = parseQuantity(body?.lanyardQuantity);
@@ -294,7 +294,7 @@ export default async (request) => {
         languageName = APPROVED_LANGUAGES[languageCode] || '';
         if (!languageName) return json({ error: 'Please select an additional language that is currently available.' }, 400);
         translationConsent = body?.translationConsent === true;
-        if (!translationConsent) return json({ error: 'Please confirm that LymphAware may process your English profile to prepare the translated version.' }, 400);
+        if (!translationConsent) return json({ error: 'Please confirm that LymphAware ID may process your English profile to prepare the translated version.' }, 400);
         if (await alreadyPurchasedLanguage(user.id, languageCode, languageName)) {
           return json({ error: `Your account already has a ${languageName} language package.` }, 400);
         }
@@ -312,33 +312,33 @@ export default async (request) => {
           quantity: selection.quantity
         });
       }
-      if (lanyardQuantity) checkoutItems.push({ name: 'LymphAware Lanyard & Holder', amountPence: LANYARD_HOLDER_PRICE_PENCE, description: 'Additional or replacement lanyard and holder.', quantity: lanyardQuantity });
-      if (languageName) checkoutItems.push({ name: `LymphAware Additional Language Package – ${languageName}`, amountPence: ADDITIONAL_LANGUAGE_PRICE_PENCE, description: `One ${languageName} QR profile, one ${languageName} ID card and one lanyard & holder.`, quantity: 1 });
+      if (lanyardQuantity) checkoutItems.push({ name: 'LymphAware ID Lanyard & Holder', amountPence: LANYARD_HOLDER_PRICE_PENCE, description: 'Additional or replacement lanyard and holder.', quantity: lanyardQuantity });
+      if (languageName) checkoutItems.push({ name: `LymphAware ID Additional Language Package – ${languageName}`, amountPence: ADDITIONAL_LANGUAGE_PRICE_PENCE, description: `One ${languageName} QR profile, one ${languageName} ID card and one lanyard & holder.`, quantity: 1 });
 
       amountPence = checkoutItems.reduce((sum, item) => sum + (item.amountPence * item.quantity), 0);
-      checkoutName = 'LymphAware Additional Items';
-      checkoutDescription = 'Additional items for an existing LymphAware membership.';
+      checkoutName = 'LymphAware ID Additional Items';
+      checkoutDescription = 'Additional items for an existing LymphAware ID membership.';
       packageType = 'ADDITIONAL_ITEMS';
       replacementCard = cardQuantity > 0;
       replacementLanyard = lanyardQuantity > 0;
     } else if (paymentType === 'additional_language') {
-      if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware membership is required.' }, 403);
+      if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware ID membership is required.' }, 403);
 
       languageCode = normaliseLanguageCode(body?.languageCode);
       languageName = APPROVED_LANGUAGES[languageCode] || '';
       if (!languageName) return json({ error: 'Please select an additional language that is currently available.' }, 400);
       translationConsent = body?.translationConsent === true;
-      if (!translationConsent) return json({ error: 'Please confirm that LymphAware may process your English profile to prepare the translated version.' }, 400);
+      if (!translationConsent) return json({ error: 'Please confirm that LymphAware ID may process your English profile to prepare the translated version.' }, 400);
       if (await alreadyPurchasedLanguage(user.id, languageCode, languageName)) {
         return json({ error: `Your account already has a ${languageName} language package.` }, 400);
       }
 
-      checkoutName = `LymphAware Additional Language Package – ${languageName}`;
+      checkoutName = `LymphAware ID Additional Language Package – ${languageName}`;
       checkoutDescription = `One ${languageName} QR profile, one ${languageName} ID card and one lanyard & holder.`;
       amountPence = ADDITIONAL_LANGUAGE_PRICE_PENCE;
       packageType = 'ADDITIONAL_LANGUAGE';
     } else if (paymentType === 'replacement_items') {
-      if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware membership is required.' }, 403);
+      if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware ID membership is required.' }, 403);
 
       replacementCard = body?.replacementCard === true;
       replacementLanyard = body?.replacementLanyard === true;
@@ -348,11 +348,11 @@ export default async (request) => {
 
       amountPence = (replacementCard ? ADDITIONAL_CARD_PRICE_PENCE : 0) + (replacementLanyard ? LANYARD_HOLDER_PRICE_PENCE : 0);
       checkoutName = replacementCard && replacementLanyard
-        ? 'LymphAware Replacement Card + Lanyard & Holder'
+        ? 'LymphAware ID Replacement Card + Lanyard & Holder'
         : replacementCard
-          ? 'LymphAware Replacement ID Card'
-          : 'LymphAware Replacement Lanyard & Holder';
-      checkoutDescription = 'Replacement items for an existing LymphAware membership.';
+          ? 'LymphAware ID Replacement ID Card'
+          : 'LymphAware ID Replacement Lanyard & Holder';
+      checkoutDescription = 'Replacement items for an existing LymphAware ID membership.';
       packageType = 'REPLACEMENT_ITEMS';
     } else {
       return json({ error: 'Unsupported payment type.' }, 400);
@@ -392,7 +392,7 @@ export default async (request) => {
       nextLineItemIndex,
       shippingLabelForBand(band),
       shippingPence,
-      'Postage & packing for this LymphAware order.',
+      'Postage & packing for this LymphAware ID order.',
       1
     );
 
