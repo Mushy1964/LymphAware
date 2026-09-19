@@ -93,7 +93,7 @@ export default async (request) => {
     const orderRef = `ORD-${String(order.order_number).padStart(6, '0')}`;
     const itemLines = items.map(item => `${item.quantity} × ${item.description}`).join('\n');
     const to = String(process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphaware.com').trim();
-    const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware <notifications@lymphaware.com>').trim();
+    const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphaware.com>').trim();
 
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -105,15 +105,15 @@ export default async (request) => {
         from,
         to: [to],
         reply_to: ['admin@lymphaware.com'],
-        subject: `New LymphAware order – ${orderRef}`,
+        subject: `New LymphAware ID order – ${orderRef}`,
         text:
-          `A new LymphAware membership order has been paid and requires attention.\n\n` +
+          `A new LymphAware ID membership order has been paid and requires attention.\n\n` +
           `Order: ${orderRef}\n` +
           `Customer: ${order.delivery_name || order.customer_email || 'Customer'}\n` +
           `Email: ${order.customer_email || ''}\n` +
           `Total paid: ${money(order.total_pence)}\n\n` +
           `Items:\n${itemLines || 'No item detail recorded'}\n\n` +
-          `Open LymphAware Administration to manage fulfilment:\n` +
+          `Open LymphAware ID Administration to manage fulfilment:\n` +
           `https://lymphaware.com/admin/orders/`
       })
     });
