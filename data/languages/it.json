@@ -7,7 +7,7 @@
   },
   "profile": {
     "patient_status":"PAZIENTE CON LINFEDEMA",
-    "lymphaware_id_label":"ID LymphAware:",
+    "lymphaware_id_label":"LymphAware ID:",
     "sections": {
       "lymphoedema":{"title":"Informazioni sul mio linfedema","description":"Una panoramica del mio linfedema e di come influisce su di me."},
       "compression":{"title":"Compressione","description":"I miei indumenti compressivi e le mie preferenze."},
@@ -29,15 +29,15 @@
     "details":{"name":"Nome","relationship":"Relazione","telephone":"Telefono"},
     "call_emergency_contact":"Chiama il contatto di emergenza",
     "footer": {
-      "heading":"Informazioni su questo profilo LymphAware",
+      "heading":"Informazioni su questo profilo LymphAware ID",
       "paragraph_1":"Questo profilo contiene informazioni che la persona ha scelto di condividere per aiutare gli altri a comprendere meglio il suo linfedema e qualsiasi assistenza di cui possa aver bisogno.",
-      "paragraph_2":"LymphAware favorisce la comunicazione e la consapevolezza. Non fornisce consulenza medica e non sostituisce la valutazione o il trattamento da parte di professionisti sanitari."
+      "paragraph_2":"LymphAware ID favorisce la comunicazione e la consapevolezza. Non fornisce consulenza medica e non sostituisce la valutazione o il trattamento da parte di professionisti sanitari."
     },
     "system": {
       "loading_title":"Caricamento del profilo…",
-      "loading_message":"Attendere mentre viene caricato il profilo LymphAware.",
-      "unavailable_title":"Profilo LymphAware non disponibile",
-      "unavailable_message":"Questo profilo LymphAware non è attualmente disponibile.",
+      "loading_message":"Attendere mentre viene caricato il profilo LymphAware ID.",
+      "unavailable_title":"Profilo LymphAware ID non disponibile",
+      "unavailable_message":"Questo profilo LymphAware ID non è attualmente disponibile.",
       "urgent_message":"Se sta aiutando una persona che necessita di cure mediche urgenti, segua le procedure di emergenza appropriate."
     }
   },
