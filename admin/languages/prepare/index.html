@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prepare Language Profile | LymphAware Administration</title>
+  <title>Prepare Language Profile | LymphAware ID Administration</title>
   <link rel="stylesheet" href="/css/styles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -46,8 +46,8 @@
 <body>
   <header class="site-header">
     <div class="container header-inner">
-      <a href="/" class="header-brand" aria-label="LymphAware home">
-        <img class="header-logo" src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg" alt="LymphAware – Helping People Living with Lymphoedema Be Understood.">
+      <a href="/" class="header-brand" aria-label="LymphAware ID home">
+        <img class="header-logo" src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood.">
       </a>
       <div class="header-actions"><button type="button" id="admin-sign-out" class="button button-secondary">Sign Out</button></div>
     </div>
@@ -72,7 +72,7 @@
         <div class="summary-card">
           <div class="summary-row">
             <div>
-              <h2 id="patient-name">LymphAware Patient</h2>
+              <h2 id="patient-name">LymphAware ID Patient</h2>
               <p>Patient ID: <span id="patient-id"></span> · Language: <span id="language-name"></span></p>
             </div>
             <span id="setup-status" class="status-pill">Setup required</span>
@@ -209,7 +209,7 @@
           return;
         }
 
-        document.getElementById('patient-name').textContent=p.display_name||'LymphAware Patient';
+        document.getElementById('patient-name').textContent=p.display_name||'LymphAware ID Patient';
         document.getElementById('patient-id').textContent=p.lymphaware_id||'No LymphAware ID';
         document.getElementById('language-name').textContent=lp.language_name||'French';
         document.getElementById('setup-status').textContent=statusLabel(lp.setup_status);
