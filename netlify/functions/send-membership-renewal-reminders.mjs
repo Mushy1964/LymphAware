@@ -45,7 +45,7 @@ async function sendReminder(membership, kind) {
   const first = kind === 'first';
   const result = await sendMembershipEmail({
     to: email,
-    subject: first ? 'Advance notice of your LymphAware membership renewal' : 'Your LymphAware membership renews soon',
+    subject: first ? 'Advance notice of your LymphAware ID membership renewal' : 'Your LymphAware ID membership renews soon',
     text: renewalNoticeText(membership, first ? 'Advance automatic-renewal reminder' : 'Final automatic-renewal reminder'),
     idempotencyKey: `renewal-${kind}-${membership.id}-${new Date(membership.next_renewal_at).toISOString().slice(0, 10)}`
   });
