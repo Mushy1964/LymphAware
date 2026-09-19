@@ -42,7 +42,7 @@ async function supabaseRequest(path, options = {}) {
 async function sendDeletionEmails(email, lymphawareId) {
   const apiKey = env('RESEND_API_KEY');
   if (!apiKey) return;
-  const from = env('ORDER_NOTIFICATION_FROM') || 'LymphAware <notifications@lymphaware.com>';
+  const from = env('ORDER_NOTIFICATION_FROM') || 'LymphAware ID <notifications@lymphaware.com>';
   const adminEmail = env('ORDER_NOTIFICATION_EMAIL') || 'admin@lymphaware.com';
   const reference = lymphawareId ? ` (${lymphawareId})` : '';
   await Promise.allSettled([
@@ -52,8 +52,8 @@ async function sendDeletionEmails(email, lymphawareId) {
       body: JSON.stringify({
         from,
         to: [email],
-        subject: 'Your LymphAware account has been deleted',
-        text: 'Your LymphAware account, QR profile, additional-language profiles and stored photograph have been permanently deleted. Completed transaction records are retained only where required for financial and legal record keeping.\n\nIf you did not expect this email, contact admin@lymphaware.com.'
+        subject: 'Your LymphAware ID account has been deleted',
+        text: 'Your LymphAware ID account, QR profile, additional-language profiles and stored photograph have been permanently deleted. Completed transaction records are retained only where required for financial and legal record keeping.\n\nIf you did not expect this email, contact admin@lymphaware.com.'
       })
     }),
     fetch('https://api.resend.com/emails', {
@@ -62,7 +62,7 @@ async function sendDeletionEmails(email, lymphawareId) {
       body: JSON.stringify({
         from,
         to: [adminEmail],
-        subject: `LymphAware account deleted${reference}`,
+        subject: `LymphAware ID account deleted${reference}`,
         text: `A member completed the self-service account deletion process${reference}. Their profile, translated profiles, photograph and login were removed. Identifying delivery and email details were removed from retained completed order records.`
       })
     })
