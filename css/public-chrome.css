@@ -17,7 +17,7 @@
 .public-header-inner {
   min-height: 92px;
   display: grid;
-  grid-template-columns: minmax(320px, 390px) minmax(220px, 1fr) 132px 132px;
+  grid-template-columns: minmax(350px, 440px) minmax(220px, 1fr) 132px 132px;
   align-items: center;
   gap: 16px;
 }
@@ -30,7 +30,7 @@
 
 .public-site-logo {
   display: block;
-  width: 390px;
+  width: 440px;
   max-width: 100%;
   height: auto;
 }
