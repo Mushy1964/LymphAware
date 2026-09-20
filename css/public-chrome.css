@@ -27,6 +27,8 @@
 .public-header-brand {
   display: flex;
   align-items: center;
+  width: 440px;
+  flex: 0 0 440px;
   min-width: 0;
 }
 
@@ -371,6 +373,7 @@
     grid-template-columns: minmax(250px, 300px) minmax(160px,1fr) 112px 112px;
     gap: 10px;
   }
+  .public-header-brand { width:300px; flex-basis:300px; }
   .public-site-logo { width:300px; }
   .public-search-shell { min-height:46px; }
   .public-site-search input { height:44px; font-size:.9rem; }
@@ -391,6 +394,7 @@
     justify-content:space-between;
     gap:12px;
   }
+  .public-header-brand { width:auto; flex:0 1 auto; }
   .public-site-logo { width:300px; max-width:calc(100vw - 132px); }
   .public-site-search,
   .public-help-menu,
