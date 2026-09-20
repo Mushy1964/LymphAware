@@ -5,7 +5,7 @@
 
    The original homepage header is the visual reference:
    - approved with-tagline logo
-   - 390px logo on desktop
+   - 440px logo on desktop
    - 300px logo target on mobile, constrained only when needed
    - consistent 1180px content width
    ========================================================= */
@@ -25,7 +25,7 @@
 
 .secondary-header .header-logo {
   display: block;
-  width: 390px;
+  width: 440px;
   max-width: 100%;
   height: auto;
 }
