@@ -127,7 +127,7 @@ svg {
 
 .header-logo {
   display: block;
-  width: 390px;
+  width: 440px;
   max-width: 100%;
   height: auto;
 }
@@ -950,7 +950,7 @@ footer {
 .portal-header .header-logo,
 .profile-site-header .header-logo,
 .preview-header .header-logo {
-  width: 390px !important;
+  width: 440px !important;
   max-width: 100% !important;
   height: auto !important;
 }
