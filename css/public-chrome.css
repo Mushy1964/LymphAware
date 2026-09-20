@@ -16,6 +16,8 @@
 
 .public-header-inner {
   min-height: 92px;
+  padding-top: 4px;
+  padding-bottom: 10px;
   display: grid;
   grid-template-columns: minmax(350px, 440px) minmax(220px, 1fr) 132px 132px;
   align-items: center;
