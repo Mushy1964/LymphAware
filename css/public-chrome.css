@@ -389,40 +389,51 @@
 
 @media (max-width: 680px) {
   .public-header-inner {
-    min-height:74px;
-    display:flex;
-    justify-content:space-between;
-    gap:12px;
+    width:calc(100% - 28px);
+    min-height:0;
+    display:block;
   }
-  .public-header-brand { width:auto; flex:0 1 auto; }
-  .public-site-logo { width:300px; max-width:calc(100vw - 132px); }
+  .public-header-brand { width:100%; max-width:none; }
+  .public-site-logo { width:100%; max-width:100%; }
   .public-site-search,
   .public-help-menu,
   .public-account-link,
   .public-nav-bar { display:none !important; }
   .public-mobile-brand-strip {
-    display:flex;
+    display:block;
     width:100%;
     min-height:48px;
-    padding:0 14px;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
+    padding:0;
     background:#0053b7;
     color:#fff;
-    font-size:.82rem;
-    line-height:1;
-    font-weight:800;
-    letter-spacing:.01em;
-    text-align:center;
-    white-space:nowrap;
     border-top:1px solid #00479d;
   }
-  .public-mobile-brand-strip span[aria-hidden="true"] {
-    opacity:.7;
-    font-size:.72rem;
+  .public-mobile-menu {
+    display:block;
+    width:calc(100% - 28px);
+    margin:0 auto;
   }
-  .public-mobile-menu { display:block; }
+  .public-mobile-menu summary {
+    width:100%;
+    min-height:48px;
+    padding:0;
+    justify-content:flex-start;
+    border:0;
+    border-radius:0;
+    background:transparent;
+    color:#fff;
+    font-size:1rem;
+  }
+  .public-mobile-menu summary::before {
+    margin-right:10px;
+  }
+  .public-mobile-menu[open] summary {
+    background:rgba(0,35,80,.12);
+  }
+  .public-mobile-panel {
+    top:100%;
+    right:0;
+  }
   .public-footer-main { display:block; }
   .public-footer-brand img { width:235px; }
   .public-footer-primary {

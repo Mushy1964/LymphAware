@@ -86,23 +86,22 @@
               <span>Sign In</span>
             </a>
 
-            <details class="public-mobile-menu">
-              <summary>Menu</summary>
-              <nav class="public-mobile-panel" aria-label="Mobile navigation">
-                ${mobileNav}
-                <a href="/help/">Help &amp; FAQs</a>
-                <a href="/quick-guide/">Quick Guide</a>
-                <a href="/contact/">Contact</a>
-                <a href="/accessibility/">Accessibility</a>
-                <a href="/cookies/">Cookies</a>
-                <a href="/terms/">Terms &amp; Conditions</a>
-                <a href="/sign-in/" id="mobile-account-link" class="public-mobile-account">Sign In</a>
-              </nav>
-            </details>
           </div>
         </div>
-        <div class="public-mobile-brand-strip" aria-label="LymphAware ID values">
-          <span>Patient-led</span><span aria-hidden="true">•</span><span>Private by design</span><span aria-hidden="true">•</span><span>Easy to share</span>
+        <div class="public-mobile-brand-strip">
+          <details class="public-mobile-menu">
+            <summary>Menu</summary>
+            <nav class="public-mobile-panel" aria-label="Mobile navigation">
+              ${mobileNav}
+              <a href="/help/">Help &amp; FAQs</a>
+              <a href="/quick-guide/">Quick Guide</a>
+              <a href="/contact/">Contact</a>
+              <a href="/accessibility/">Accessibility</a>
+              <a href="/cookies/">Cookies</a>
+              <a href="/terms/">Terms &amp; Conditions</a>
+              <a href="/sign-in/" id="mobile-account-link" class="public-mobile-account">Sign In</a>
+            </nav>
+          </details>
         </div>
         <nav class="public-nav-bar" aria-label="Main navigation">
           <div class="container public-nav-inner">${desktopNav}</div>
