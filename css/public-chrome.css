@@ -565,7 +565,7 @@
     right: 0;
     bottom: 0;
     height: calc(220px + env(safe-area-inset-bottom, 0px));
-    z-index: 690;
+    z-index: 499;
     background: #ffffff;
     pointer-events: none;
   }
