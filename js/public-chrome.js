@@ -124,7 +124,7 @@
         <div class="container">
           <div class="public-footer-main">
             <a href="/" class="public-footer-brand" aria-label="LymphAware ID home">
-              <img src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID">
+              <img src="/assets/brand/LymphAwareID_Logo_No_Tagline_20260921.svg" alt="LymphAware ID">
             </a>
             <nav class="public-footer-primary" aria-label="Footer navigation">
               <a href="/understanding-lymphoedema/">Understanding Lymphoedema</a>
