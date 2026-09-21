@@ -2645,3 +2645,34 @@
     transform: rotate(90deg);
   }
 }
+
+
+/* Mobile awareness cards — align copy alongside icons */
+@media (max-width: 680px) {
+  .home-page .home-wearing-benefit {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 16px;
+    row-gap: 6px;
+    align-items: start;
+  }
+
+  .home-page .home-wearing-benefit-icon {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    margin: 0;
+  }
+
+  .home-page .home-wearing-benefit h4 {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 3px 0 0;
+  }
+
+  .home-page .home-wearing-benefit p {
+    grid-column: 2;
+    grid-row: 2;
+    margin: 0;
+  }
+}
