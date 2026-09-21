@@ -101,6 +101,7 @@
               <a href="/terms/">Terms &amp; Conditions</a>
               <a href="/sign-in/" id="mobile-account-link" class="public-mobile-account">Sign In</a>
             </nav>
+            <div class="public-mobile-menu-bottom-spacer" aria-hidden="true"></div>
           </details>
         </div>
         <nav class="public-nav-bar" aria-label="Main navigation">
