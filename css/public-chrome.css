@@ -554,14 +554,17 @@
 
 
 
+
+
 @media (max-width: 680px) {
-  /*
-    Hide homepage content beneath the expanded mobile menu so iPhone Safari's
-    translucent bottom browser bar samples the white page background instead
-    of the coloured homepage sections. The header and logo are untouched.
-  */
-  body.home-page:has(.public-mobile-menu[open]) > main,
-  body.home-page:has(.public-mobile-menu[open]) > .public-site-footer {
-    visibility: hidden;
+  /* Safari mobile menu tint footer:
+     keep a white edge at the bottom of the sticky menu content so Safari
+     extends white into its translucent bottom browser chrome instead of
+     extending the green Patient Portal row. */
+  .public-mobile-panel::after {
+    content: "";
+    display: block;
+    height: 14px;
+    background: #ffffff;
   }
 }
