@@ -1286,7 +1286,7 @@
   height: 27%;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   padding: 1.6% 0 0;
   box-sizing: border-box;
   background: #ffffff;
@@ -1296,10 +1296,10 @@
 
 .home-page .home-demo-card-logo-overlay img {
   display: block;
-  width: 108%;
+  width: 97%;
   max-width: none;
   height: auto;
-  margin-left: -4%;
+  margin: 0 auto;
 }
 
 
