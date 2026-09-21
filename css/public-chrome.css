@@ -552,26 +552,16 @@
 
 
 
+
+
 @media (max-width: 680px) {
   /*
-    Small white buffer used only while the homepage mobile menu is open.
-    It sits behind the menu panel but above the page content so Safari's
-    translucent bottom toolbar samples white rather than the green portal row.
-    This does not alter the header or logo geometry.
+    Hide homepage content beneath the expanded mobile menu so iPhone Safari's
+    translucent bottom browser bar samples the white page background instead
+    of the coloured homepage sections. The header and logo are untouched.
   */
-  .public-mobile-menu-bottom-spacer {
-    display: none;
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: calc(128px + env(safe-area-inset-bottom, 0px));
-    background: #ffffff;
-    z-index: 650;
-    pointer-events: none;
-  }
-
-  .public-mobile-menu[open] .public-mobile-menu-bottom-spacer {
-    display: block;
+  body.home-page:has(.public-mobile-menu[open]) > main,
+  body.home-page:has(.public-mobile-menu[open]) > .public-site-footer {
+    visibility: hidden;
   }
 }
