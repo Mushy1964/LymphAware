@@ -1234,12 +1234,14 @@
 
 
 .home-page .home-demo-card-link {
+  position: relative;
   display: block;
   width: 100%;
   max-width: 590px;
 
   margin: 0 auto;
 
+  overflow: hidden;
   border-radius: 18px;
 
   transition:
@@ -1270,6 +1272,30 @@
   box-shadow:
     0 22px 48px rgba(31, 47, 66, 0.15),
     0 5px 14px rgba(31, 47, 66, 0.08);
+}
+
+/* Updated branding on the demonstration card.
+   The original card artwork is retained underneath; this clean white
+   header band replaces only its old logo area with the approved logo. */
+.home-page .home-demo-card-logo-overlay {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 27%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.6% 4% 0;
+  background: #ffffff;
+  pointer-events: none;
+}
+
+.home-page .home-demo-card-logo-overlay img {
+  display: block;
+  width: 92%;
+  height: auto;
 }
 
 
