@@ -2453,8 +2453,11 @@
 }
 
 .home-page .home-wearing-awareness-note strong {
-  flex: 0 0 auto;
+  display: block;
+  flex: 0 0 210px;
+  max-width: 210px;
   color: #17283d;
+  line-height: 1.35;
 }
 
 @media (max-width: 900px) {
