@@ -270,19 +270,22 @@
 .public-mobile-menu { display:none; position:relative; justify-self:end; }
 
 @media (max-width: 680px) {
-  /* When the mobile menu is open, mask the page beneath it with white so
-     coloured homepage sections do not show around the menu or behind Safari's
-     bottom controls. The menu panel itself sits above this layer. */
-  .public-mobile-menu[open]::before {
+  /*
+    When the mobile menu is open, cover the whole page beneath the header
+    with white. This also keeps Safari's translucent bottom toolbar neutral
+    instead of picking up coloured homepage sections underneath it.
+  */
+  html:has(.public-mobile-menu[open]),
+  body:has(.public-mobile-menu[open]) {
+    background: #ffffff !important;
+  }
+
+  body:has(.public-mobile-menu[open])::before {
     content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    width: 100vw;
-    height: 100vh;
-    transform: translateX(-50%);
+    position: fixed;
+    inset: 0;
+    z-index: 450;
     background: #ffffff;
-    z-index: 640;
     pointer-events: none;
   }
 }
