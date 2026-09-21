@@ -556,15 +556,3 @@
 
 
 
-@media (max-width: 680px) {
-  /* Safari mobile menu tint footer:
-     keep a white edge at the bottom of the sticky menu content so Safari
-     extends white into its translucent bottom browser chrome instead of
-     extending the green Patient Portal row. */
-  .public-mobile-panel::after {
-    content: "";
-    display: block;
-    height: 14px;
-    background: #ffffff;
-  }
-}
