@@ -2575,3 +2575,19 @@
     font-size: 1rem;
   }
 }
+
+
+/* Value of being visible — match the alignment and lead-copy styling above */
+.home-page .home-wearing-benefits-heading {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  text-align: left;
+}
+
+.home-page .home-wearing-benefits-heading > p:last-child {
+  max-width: 760px;
+  color: #17283d;
+  font-size: 1.12rem;
+  line-height: 1.6;
+}
