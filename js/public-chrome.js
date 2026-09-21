@@ -200,34 +200,24 @@
 
   const mobileMenu = document.querySelector('.public-mobile-menu');
   if (mobileMenu) {
-    const backdrop = document.createElement('div');
-    backdrop.className = 'public-mobile-menu-backdrop';
-    backdrop.hidden = true;
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
 
-    const bottomGuard = document.createElement('div');
-    bottomGuard.className = 'public-mobile-menu-bottom-guard';
-    bottomGuard.hidden = true;
-
-    document.body.append(backdrop, bottomGuard);
-
-    const syncMobileMenuBackdrop = () => {
+    const syncMobileMenuState = () => {
       const isOpen = mobileMenu.hasAttribute('open');
-
-      backdrop.hidden = !isOpen;
-      bottomGuard.hidden = !isOpen;
 
       document.documentElement.classList.toggle('mobile-menu-open', isOpen);
       document.body.classList.toggle('mobile-menu-open', isOpen);
 
-      document.documentElement.style.backgroundColor = isOpen ? '#ffffff' : '';
-      document.body.style.backgroundColor = isOpen ? '#ffffff' : '';
+      document.documentElement.style.backgroundColor = '#ffffff';
+      document.body.style.backgroundColor = '#ffffff';
+
+      if (themeMeta) {
+        themeMeta.setAttribute('content', '#ffffff');
+      }
     };
 
-    mobileMenu.addEventListener('toggle', syncMobileMenuBackdrop);
-    backdrop.addEventListener('click', () => {
-      mobileMenu.removeAttribute('open');
-      syncMobileMenuBackdrop();
-    });
+    mobileMenu.addEventListener('toggle', syncMobileMenuState);
+    syncMobileMenuState();
   }
 
   document.addEventListener('click', event => {
