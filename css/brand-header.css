@@ -60,4 +60,10 @@ body:has(main.admin-page) .site-header .header-inner::before {
     padding-top: 0 !important;
     padding-bottom: 4px !important;
   }
+
+  /* Current /p/* profile route (p-v3): remove shared header padding on mobile. */
+  body .page .shell > .brand {
+    padding-top: 0 !important;
+    padding-bottom: 3px !important;
+  }
 }
