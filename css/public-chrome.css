@@ -269,26 +269,6 @@
 
 .public-mobile-menu { display:none; position:relative; justify-self:end; }
 
-@media (max-width: 680px) {
-  /*
-    When the mobile menu is open, cover the whole page beneath the header
-    with white. This also keeps Safari's translucent bottom toolbar neutral
-    instead of picking up coloured homepage sections underneath it.
-  */
-  html:has(.public-mobile-menu[open]),
-  body:has(.public-mobile-menu[open]) {
-    background: #ffffff !important;
-  }
-
-  body:has(.public-mobile-menu[open])::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 450;
-    background: #ffffff;
-    pointer-events: none;
-  }
-}
 .public-mobile-menu summary {
   display:inline-flex;
   align-items:center;
@@ -579,10 +559,23 @@
     background: #ffffff;
   }
 
-  .public-mobile-menu-backdrop[hidden] {
+  .public-mobile-menu-bottom-guard {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(220px + env(safe-area-inset-bottom, 0px));
+    z-index: 690;
+    background: #ffffff;
+    pointer-events: none;
+  }
+
+  .public-mobile-menu-backdrop[hidden],
+  .public-mobile-menu-bottom-guard[hidden] {
     display: none !important;
   }
 
+  html.mobile-menu-open,
   body.mobile-menu-open {
     overflow: hidden;
     background: #ffffff !important;
