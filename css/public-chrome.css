@@ -550,34 +550,3 @@
   }
 }
 
-
-@media (max-width: 680px) {
-  .public-mobile-menu-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 490;
-    background: #ffffff;
-  }
-
-  .public-mobile-menu-bottom-guard {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: calc(220px + env(safe-area-inset-bottom, 0px));
-    z-index: 499;
-    background: #ffffff;
-    pointer-events: none;
-  }
-
-  .public-mobile-menu-backdrop[hidden],
-  .public-mobile-menu-bottom-guard[hidden] {
-    display: none !important;
-  }
-
-  html.mobile-menu-open,
-  body.mobile-menu-open {
-    overflow: hidden;
-    background: #ffffff !important;
-  }
-}
