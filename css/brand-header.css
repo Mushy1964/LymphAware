@@ -52,3 +52,12 @@ body:has(main.admin-page) .site-header .header-inner::before {
     padding-bottom: var(--brand-header-padding);
   }
 }
+
+
+@media (max-width: 600px) {
+  /* QR profile: keep the brand close to the top of the mobile viewport. */
+  body .public-profile-page .public-brand {
+    padding-top: 0 !important;
+    padding-bottom: 4px !important;
+  }
+}
