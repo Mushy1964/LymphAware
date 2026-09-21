@@ -198,6 +198,27 @@
     });
   }
 
+  const mobileMenu = document.querySelector('.public-mobile-menu');
+  if (mobileMenu) {
+    const backdrop = document.createElement('div');
+    backdrop.className = 'public-mobile-menu-backdrop';
+    backdrop.hidden = true;
+    document.body.appendChild(backdrop);
+
+    const syncMobileMenuBackdrop = () => {
+      const isOpen = mobileMenu.hasAttribute('open');
+      backdrop.hidden = !isOpen;
+      document.body.classList.toggle('mobile-menu-open', isOpen);
+      document.documentElement.style.backgroundColor = isOpen ? '#ffffff' : '';
+    };
+
+    mobileMenu.addEventListener('toggle', syncMobileMenuBackdrop);
+    backdrop.addEventListener('click', () => {
+      mobileMenu.removeAttribute('open');
+      syncMobileMenuBackdrop();
+    });
+  }
+
   document.addEventListener('click', event => {
     document.querySelectorAll('.public-help-menu[open], .public-mobile-menu[open]').forEach(details => {
       if (!details.contains(event.target)) details.removeAttribute('open');
