@@ -198,38 +198,6 @@
     });
   }
 
-  const mobileMenu = document.querySelector('.public-mobile-menu');
-  if (mobileMenu) {
-    const backdrop = document.createElement('div');
-    backdrop.className = 'public-mobile-menu-backdrop';
-    backdrop.hidden = true;
-
-    const bottomGuard = document.createElement('div');
-    bottomGuard.className = 'public-mobile-menu-bottom-guard';
-    bottomGuard.hidden = true;
-
-    document.body.append(backdrop, bottomGuard);
-
-    const syncMobileMenuBackdrop = () => {
-      const isOpen = mobileMenu.hasAttribute('open');
-
-      backdrop.hidden = !isOpen;
-      bottomGuard.hidden = !isOpen;
-
-      document.documentElement.classList.toggle('mobile-menu-open', isOpen);
-      document.body.classList.toggle('mobile-menu-open', isOpen);
-
-      document.documentElement.style.backgroundColor = isOpen ? '#ffffff' : '';
-      document.body.style.backgroundColor = isOpen ? '#ffffff' : '';
-    };
-
-    mobileMenu.addEventListener('toggle', syncMobileMenuBackdrop);
-    backdrop.addEventListener('click', () => {
-      mobileMenu.removeAttribute('open');
-      syncMobileMenuBackdrop();
-    });
-  }
-
   document.addEventListener('click', event => {
     document.querySelectorAll('.public-help-menu[open], .public-mobile-menu[open]').forEach(details => {
       if (!details.contains(event.target)) details.removeAttribute('open');
