@@ -2596,8 +2596,7 @@
 }
 
 
-/* How-it-works connectors: drawn in CSS so the arrow weight/shape is
-   identical on desktop, tablet and mobile rather than depending on a font glyph. */
+/* How-it-works connectors use the supplied blue arrow SVG. */
 .home-page .how-arrow {
   position: relative;
   place-self: center;
@@ -2605,34 +2604,14 @@
   height: 38px;
   font-size: 0;
   line-height: 0;
-}
-
-.home-page .how-arrow::before {
-  content: "";
-  position: absolute;
-  left: 7px;
-  top: 17px;
-  width: 23px;
-  height: 4px;
-  border-radius: 999px;
-  background: #0053b7;
-}
-
-.home-page .how-arrow::after {
-  content: "";
-  position: absolute;
-  right: 6px;
-  top: 11px;
-  width: 12px;
-  height: 12px;
-  border-top: 4px solid #0053b7;
-  border-right: 4px solid #0053b7;
-  border-radius: 1px;
-  transform: rotate(45deg);
+  /* The supplied SVG includes whitespace around the arrow. */
+  background: url("/assets/icons/noun_Arrow_2841742_0053B7.svg") center / 64px 64px no-repeat;
+  transform: none;
 }
 
 @media (max-width: 980px) {
   .home-page .how-arrow {
     height: 38px;
+    transform: rotate(90deg);
   }
 }
