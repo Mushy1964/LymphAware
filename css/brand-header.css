@@ -41,29 +41,38 @@ body:has(main.admin-page) .site-header .header-inner::before {
 }
 
 @media (max-width: 680px) {
-  /* The account return bar is a separate row below the padded logo. */
+  /*
+    Keep the approved logo in the same vertical position throughout the
+    mobile website: tight to the top, with a clear 14px breathing space
+    beneath it before navigation or page content begins.
+  */
+  body .public-site-header .public-header-inner {
+    padding-top: 0 !important;
+    padding-bottom: 14px !important;
+  }
+
+  /* The account return bar remains a separate blue row below the logo. */
   body .secondary-header .header-inner {
     padding-top: 0 !important;
     padding-bottom: 0 !important;
   }
 
   body .secondary-header .header-brand {
-    padding-top: var(--brand-header-padding);
-    padding-bottom: var(--brand-header-padding);
-  }
-}
-
-
-@media (max-width: 600px) {
-  /* QR profile: keep the brand close to the top of the mobile viewport. */
-  body .public-profile-page .public-brand {
     padding-top: 0 !important;
-    padding-bottom: 4px !important;
+    padding-bottom: 14px !important;
   }
 
-  /* Current /p/* profile route (p-v3): remove shared header padding on mobile. */
+  /* Legacy and current QR profile layouts use the same mobile logo spacing. */
+  body .public-profile-page .public-brand,
   body .page .shell > .brand {
     padding-top: 0 !important;
-    padding-bottom: 3px !important;
+    padding-bottom: 14px !important;
+  }
+
+  /* The live profile has 10px page gutters; add 4px here so its logo
+     aligns with the 14px mobile gutters used throughout the website. */
+  body .page .shell > .brand {
+    margin-left: 4px;
+    margin-right: 4px;
   }
 }
