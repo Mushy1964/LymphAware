@@ -724,7 +724,7 @@
 
 .home-page .how-steps {
   display: grid;
-  grid-template-columns: 1fr 34px 1fr 34px 1fr;
+  grid-template-columns: minmax(0, 1fr) 42px minmax(0, 1fr) 42px minmax(0, 1fr);
   align-items: stretch;
   gap: 0;
 }
@@ -2600,6 +2600,7 @@
    identical on desktop, tablet and mobile rather than depending on a font glyph. */
 .home-page .how-arrow {
   position: relative;
+  place-self: center;
   width: 38px;
   height: 38px;
   font-size: 0;
