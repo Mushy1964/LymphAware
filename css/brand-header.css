@@ -1,37 +1,38 @@
-/* Shared spacing for the amended logo across public and account headers. */
+/* Shared LymphAware logo geometry across the public website. */
 :root {
-  --brand-header-padding: 14px;
+  --brand-header-padding-top: 4px;
+  --brand-header-padding-bottom: 10px;
+  --brand-mobile-logo-gap: 14px;
 }
 
-body .site-header .header-inner,
-body .public-site-header .public-header-inner {
+/* Homepage and supporting pages use the same desktop/tablet logo position. */
+body .public-site-header .public-header-inner,
+body .secondary-header .header-inner {
   min-height: 0 !important;
-  padding-top: var(--brand-header-padding) !important;
-  padding-bottom: var(--brand-header-padding) !important;
+  padding-top: var(--brand-header-padding-top) !important;
+  padding-bottom: var(--brand-header-padding-bottom) !important;
   align-items: center;
 }
 
-body .site-header .header-brand,
-body .public-site-header .public-header-brand {
-  padding-top: 0;
-  padding-bottom: 0;
-  margin-top: 0;
-  margin-bottom: 0;
+body .public-site-header .public-header-brand,
+body .secondary-header .header-brand {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
-body .site-header .header-logo,
-body .public-site-header .public-site-logo {
+body .public-site-header .public-site-logo,
+body .secondary-header .header-logo {
   display: block;
   height: auto !important;
-  margin-top: 0;
-  margin-bottom: 0;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
-/* Profile branding keeps its full-width layout, with equal space either side. */
+/* QR profile branding keeps its own full-width profile layout. */
 body .public-brand,
 body .shell > .brand {
-  padding-top: var(--brand-header-padding);
-  padding-bottom: var(--brand-header-padding);
+  padding-top: 14px;
+  padding-bottom: 14px;
 }
 
 /* Admin branding is displayed as a non-clickable image. */
@@ -42,35 +43,31 @@ body:has(main.admin-page) .site-header .header-inner::before {
 
 @media (max-width: 680px) {
   /*
-    Keep the approved logo in the same vertical position throughout the
-    mobile website: tight to the top, with a clear 14px breathing space
-    beneath it before navigation or page content begins.
+    Homepage and every supporting page use exactly the same mobile logo
+    position: no extra space above the logo and a 14px gap beneath it before
+    the blue navigation/return bar.
   */
-  body .public-site-header .public-header-inner {
-    padding-top: 0 !important;
-    padding-bottom: 14px !important;
-  }
-
-  /* The account return bar remains a separate blue row below the logo. */
+  body .public-site-header .public-header-inner,
   body .secondary-header .header-inner {
     padding-top: 0 !important;
     padding-bottom: 0 !important;
   }
 
+  body .public-site-header .public-header-brand,
   body .secondary-header .header-brand {
     padding-top: 0 !important;
-    padding-bottom: 14px !important;
+    padding-bottom: var(--brand-mobile-logo-gap) !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
   }
 
-  /* Legacy and current QR profile layouts use the same mobile logo spacing. */
+  /* Keep current QR-profile mobile spacing aligned independently. */
   body .public-profile-page .public-brand,
   body .page .shell > .brand {
     padding-top: 0 !important;
     padding-bottom: 14px !important;
   }
 
-  /* The live profile has 10px page gutters; add 4px here so its logo
-     aligns with the 14px mobile gutters used throughout the website. */
   body .page .shell > .brand {
     margin-left: 4px;
     margin-right: 4px;
