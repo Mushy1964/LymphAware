@@ -35,7 +35,13 @@ body .shell > .brand {
   padding-bottom: 14px;
 }
 
-/* Admin branding is displayed as a non-clickable image. */
+/* Preserve the established administration header independently. */
+body:has(main.admin-page) .site-header .header-inner {
+  min-height: 0 !important;
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
+}
+
 body:has(main.admin-page) .site-header .header-inner::before {
   height: auto;
   aspect-ratio: 1121 / 197;
