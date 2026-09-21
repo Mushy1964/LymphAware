@@ -268,6 +268,24 @@
 .public-mobile-brand-strip { display:none; }
 
 .public-mobile-menu { display:none; position:relative; justify-self:end; }
+
+@media (max-width: 680px) {
+  /* When the mobile menu is open, mask the page beneath it with white so
+     coloured homepage sections do not show around the menu or behind Safari's
+     bottom controls. The menu panel itself sits above this layer. */
+  .public-mobile-menu[open]::before {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: 100vw;
+    height: 100vh;
+    transform: translateX(-50%);
+    background: #ffffff;
+    z-index: 640;
+    pointer-events: none;
+  }
+}
 .public-mobile-menu summary {
   display:inline-flex;
   align-items:center;
