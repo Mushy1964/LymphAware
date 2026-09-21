@@ -569,3 +569,22 @@
     padding-left: 22px;
   }
 }
+
+
+@media (max-width: 680px) {
+  .public-mobile-menu-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 490;
+    background: #ffffff;
+  }
+
+  .public-mobile-menu-backdrop[hidden] {
+    display: none !important;
+  }
+
+  body.mobile-menu-open {
+    overflow: hidden;
+    background: #ffffff !important;
+  }
+}
