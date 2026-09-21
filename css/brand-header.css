@@ -47,8 +47,8 @@ body:has(main.admin-page) .site-header .header-inner::before {
     beneath it before navigation or page content begins.
   */
   body .public-site-header .public-header-inner {
-    padding-top: var(--brand-header-padding) !important;
-    padding-bottom: var(--brand-header-padding) !important;
+    padding-top: 0 !important;
+    padding-bottom: 14px !important;
   }
 
   /* The account return bar remains a separate blue row below the logo. */
