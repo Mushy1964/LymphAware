@@ -1,0 +1,54 @@
+/* Shared spacing for the amended logo across public and account headers. */
+:root {
+  --brand-header-padding: 14px;
+}
+
+body .site-header .header-inner,
+body .public-site-header .public-header-inner {
+  min-height: 0 !important;
+  padding-top: var(--brand-header-padding) !important;
+  padding-bottom: var(--brand-header-padding) !important;
+  align-items: center;
+}
+
+body .site-header .header-brand,
+body .public-site-header .public-header-brand {
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+body .site-header .header-logo,
+body .public-site-header .public-site-logo {
+  display: block;
+  height: auto !important;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Profile branding keeps its full-width layout, with equal space either side. */
+body .public-brand,
+body .shell > .brand {
+  padding-top: var(--brand-header-padding);
+  padding-bottom: var(--brand-header-padding);
+}
+
+/* Admin branding is displayed as a non-clickable image. */
+body:has(main.admin-page) .site-header .header-inner::before {
+  height: auto;
+  aspect-ratio: 1121 / 197;
+}
+
+@media (max-width: 680px) {
+  /* The account return bar is a separate row below the padded logo. */
+  body .secondary-header .header-inner {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  body .secondary-header .header-brand {
+    padding-top: var(--brand-header-padding);
+    padding-bottom: var(--brand-header-padding);
+  }
+}

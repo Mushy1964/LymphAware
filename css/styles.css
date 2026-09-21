@@ -1061,7 +1061,7 @@ body:has(main.admin-page) .site-header .header-inner::before {
   width: 390px;
   max-width: calc(100% - 170px);
   height: 72px;
-  background: url("/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg") left center / contain no-repeat;
+  background: url("/assets/brand/LymphAwareID_Logo_20260921.svg") left center / contain no-repeat;
 }
 
 @media (max-width: 680px) {
@@ -1118,7 +1118,7 @@ main.page .brand img {
   pointer-events: none;
   background:
     #f5f8f7
-    url("/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg")
+    url("/assets/brand/LymphAwareID_Logo_20260921.svg")
     center center / 94% auto
     no-repeat;
 }

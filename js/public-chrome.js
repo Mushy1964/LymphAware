@@ -53,7 +53,7 @@
         <div class="public-header-main">
           <div class="container public-header-inner">
             <a href="/" class="public-header-brand" aria-label="LymphAware ID home">
-              <img class="public-site-logo" src="/assets/brand/LymphAware_APPROVED_With_Tagline_v1.svg" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood">
+              <img class="public-site-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood">
             </a>
 
             <form class="public-site-search" role="search" aria-label="Search LymphAware ID">
@@ -124,7 +124,7 @@
         <div class="container">
           <div class="public-footer-main">
             <a href="/" class="public-footer-brand" aria-label="LymphAware ID home">
-              <img src="/assets/brand/LymphAware_APPROVED_No_Tagline_Centred_v1.svg" alt="LymphAware ID">
+              <img src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID">
             </a>
             <nav class="public-footer-primary" aria-label="Footer navigation">
               <a href="/understanding-lymphoedema/">Understanding Lymphoedema</a>
