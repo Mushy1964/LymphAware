@@ -86,46 +86,14 @@
 
 .home-page .home-hero {
   position: relative;
-  overflow: visible;
+  overflow: hidden;
   padding: 42px 0 48px;
 
-  /*
-    One continuous soft background across the complete hero.
-    The colour wash deliberately spans behind both the copy and the
-    product artwork so the right-hand image no longer reads as a
-    separate rectangular panel.
-  */
   background:
-    radial-gradient(
-      ellipse 42% 44% at 4% 8%,
-      rgba(70, 139, 52, 0.10) 0%,
-      rgba(70, 139, 52, 0.035) 38%,
-      transparent 72%
-    ),
-    radial-gradient(
-      ellipse 58% 54% at 74% 22%,
-      rgba(0, 83, 183, 0.11) 0%,
-      rgba(0, 83, 183, 0.045) 42%,
-      transparent 76%
-    ),
-    radial-gradient(
-      ellipse 48% 42% at 100% 82%,
-      rgba(36, 122, 36, 0.095) 0%,
-      rgba(36, 122, 36, 0.03) 38%,
-      transparent 72%
-    ),
-    radial-gradient(
-      ellipse 54% 34% at 38% 100%,
-      rgba(0, 83, 183, 0.055) 0%,
-      transparent 74%
-    ),
-    linear-gradient(
-      118deg,
-      #f8fcfd 0%,
-      #f4f9fc 42%,
-      #f6fbfa 72%,
-      #f8fcfd 100%
-    );
+    radial-gradient(ellipse 70% 58% at 78% 26%, rgba(0, 83, 183, 0.10) 0%, rgba(0, 83, 183, 0.035) 46%, transparent 78%),
+    radial-gradient(ellipse 58% 52% at 8% 88%, rgba(36, 122, 36, 0.085) 0%, rgba(36, 122, 36, 0.025) 46%, transparent 78%),
+    radial-gradient(ellipse 48% 40% at 100% 100%, rgba(36, 122, 36, 0.06) 0%, transparent 74%),
+    linear-gradient(118deg, #f7fbfd 0%, #f4f9fc 48%, #f5faf9 76%, #f7fbfd 100%);
 }
 
 .home-page .home-hero-grid {
@@ -318,51 +286,24 @@
   position: relative;
   min-height: 620px;
   margin-top: 76px;
-  isolation: isolate;
 }
 
-/* Blend the photographic hero artwork into the section background rather than
-   displaying it as a hard-edged rectangular image. */
+/* Feather the photograph into the hero background without placing any
+   rectangular overlay over the artwork. */
 .home-page .hero-product-mockup {
   display: block;
   width: 112%;
   max-width: none;
   height: auto;
   margin: -12px -7% 0 -5%;
-  -webkit-mask-image: radial-gradient(
-    ellipse 88% 92% at 50% 50%,
-    #000 0%,
-    #000 72%,
-    rgba(0, 0, 0, 0.96) 80%,
-    rgba(0, 0, 0, 0.58) 91%,
-    transparent 100%
-  );
-  mask-image: radial-gradient(
-    ellipse 88% 92% at 50% 50%,
-    #000 0%,
-    #000 72%,
-    rgba(0, 0, 0, 0.96) 80%,
-    rgba(0, 0, 0, 0.58) 91%,
-    transparent 100%
-  );
-}
-
-/* The supplied hero artwork contains a small handwritten strapline in its
-   top-right corner. Cover only that area with the same soft hero background;
-   the lanyard, card and phone artwork remain untouched. */
-.home-page .home-hero-product::after {
-  content: "";
-  position: absolute;
-  z-index: 2;
-  top: -14px;
-  right: -8%;
-  width: 31%;
-  height: 15%;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 12% 86%, rgba(0, 83, 183, 0.055), transparent 58%),
-    linear-gradient(135deg, rgba(247, 251, 253, 0.98), rgba(244, 249, 252, 0.99));
-  filter: blur(0.2px);
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, #000 7%, #000 96%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 5%, #000 96%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 7%, #000 96%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 5%, #000 96%, transparent 100%);
+  mask-composite: intersect;
 }
 
 .home-page .hero-product-slices {
