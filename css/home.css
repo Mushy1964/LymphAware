@@ -686,9 +686,9 @@
   }
 
   .home-page .hero-product-mockup {
-    width: 100%;
-    max-width: 430px;
-    margin: 0 auto;
+    width: calc(100% + 20px);
+    max-width: none;
+    margin: 0 0 0 -10px;
   }
 
   .home-page .hero-phone {
