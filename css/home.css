@@ -297,34 +297,28 @@
 */
 .home-page .hero-product-mockup {
   display: block;
-  width: 134%;
+  width: 122%;
   max-width: none;
   height: auto;
   margin: -8px 0 0 -22%;
   position: relative;
   z-index: 1;
 
-  /*
-    Enlarge the complete hero scene so the lower-right edge reaches the
-    marked alignment point while keeping the existing left/top placement.
-    Retain a soft feather on the outer right edge.
-  */
   -webkit-mask-image:
     linear-gradient(
       to right,
       transparent 0%,
-      rgba(0, 0, 0, .32) 5%,
+      rgba(0, 0, 0, 0.32) 5%,
       #000 15%,
-      #000 91%,
-      rgba(0, 0, 0, .78) 95%,
-      rgba(0, 0, 0, .36) 98%,
+      #000 95%,
+      rgba(0, 0, 0, 0.72) 98%,
       transparent 100%
     ),
     linear-gradient(
       to bottom,
       transparent 0%,
       #000 5%,
-      #000 97%,
+      #000 96%,
       transparent 100%
     );
   -webkit-mask-composite: source-in;
@@ -333,18 +327,17 @@
     linear-gradient(
       to right,
       transparent 0%,
-      rgba(0, 0, 0, .32) 5%,
+      rgba(0, 0, 0, 0.32) 5%,
       #000 15%,
-      #000 91%,
-      rgba(0, 0, 0, .78) 95%,
-      rgba(0, 0, 0, .36) 98%,
+      #000 95%,
+      rgba(0, 0, 0, 0.72) 98%,
       transparent 100%
     ),
     linear-gradient(
       to bottom,
       transparent 0%,
       #000 5%,
-      #000 97%,
+      #000 96%,
       transparent 100%
     );
   mask-composite: intersect;
