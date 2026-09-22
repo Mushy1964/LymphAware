@@ -355,6 +355,8 @@
 @media (min-width: 981px) {
   .home-page .hero-product-mockup {
     width: calc(122% / 0.9);
+    /* Raise the holder clear of the sample-card button. */
+    margin-top: -40px;
     --hero-fade-mid: 88%;
     --hero-fade-end: 89%;
     --hero-crop-edge: 90%;
