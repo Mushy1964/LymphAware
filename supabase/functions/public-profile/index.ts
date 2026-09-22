@@ -1,5 +1,5 @@
-import { createClient } from 'npm:@supabase/supabase-js@2'
-import { corsHeaders } from 'npm:@supabase/supabase-js@^2/cors'
+import { createClient } from 'npm:@supabase/supabase-js@2.116.0'
+import { corsHeaders } from 'npm:@supabase/supabase-js@2.116.0/cors'
 
 const secretKeys = JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') ?? '{}')
 const supabaseAdmin = createClient(Deno.env.get('SUPABASE_URL')!, secretKeys['default'])
