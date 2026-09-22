@@ -107,7 +107,7 @@
   pointer-events: none;
   background:
     linear-gradient(rgba(247,251,253,.58), rgba(247,251,253,.58)),
-    url("/assets/demo/LymphAware_Hero_Final_v7.png?v=20260922-background-wash") center 42% / cover no-repeat;
+    url("/assets/demo/LymphAware_Hero_Product_Showcase_v1.png?v=20260922-background-wash") center 42% / cover no-repeat;
   filter: blur(22px) saturate(.88);
   opacity: .34;
   transform: scale(1.05);
