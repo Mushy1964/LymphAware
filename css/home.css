@@ -298,14 +298,51 @@
   position: relative;
   min-height: 620px;
   margin-top: 76px;
+  isolation: isolate;
 }
 
+/* Blend the photographic hero artwork into the section background rather than
+   displaying it as a hard-edged rectangular image. */
 .home-page .hero-product-mockup {
   display: block;
   width: 112%;
   max-width: none;
   height: auto;
   margin: -12px -7% 0 -5%;
+  -webkit-mask-image: radial-gradient(
+    ellipse 88% 92% at 50% 50%,
+    #000 0%,
+    #000 72%,
+    rgba(0, 0, 0, 0.96) 80%,
+    rgba(0, 0, 0, 0.58) 91%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 88% 92% at 50% 50%,
+    #000 0%,
+    #000 72%,
+    rgba(0, 0, 0, 0.96) 80%,
+    rgba(0, 0, 0, 0.58) 91%,
+    transparent 100%
+  );
+}
+
+/* The supplied hero artwork contains a small handwritten strapline in its
+   top-right corner. Cover only that area with the same soft hero background;
+   the lanyard, card and phone artwork remain untouched. */
+.home-page .home-hero-product::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: -14px;
+  right: -8%;
+  width: 31%;
+  height: 15%;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 12% 86%, rgba(0, 83, 183, 0.055), transparent 58%),
+    linear-gradient(135deg, rgba(247, 251, 253, 0.98), rgba(244, 249, 252, 0.99));
+  filter: blur(0.2px);
 }
 
 .home-page .hero-product-slices {
