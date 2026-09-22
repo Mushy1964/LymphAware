@@ -297,21 +297,26 @@
 */
 .home-page .hero-product-mockup {
   display: block;
-  width: 134%;
+  width: 132%;
   max-width: none;
   height: auto;
-  margin: -8px 0 0 -17%;
+  margin: -8px 0 0 -14%;
   position: relative;
   z-index: 1;
-  clip-path: inset(0 14% 0 0);
 
+  /*
+    Keep the complete phone visible. Fade the outer image edges instead of
+    using a hard clip so the hero artwork blends naturally into the section.
+  */
   -webkit-mask-image:
     linear-gradient(to right,
       transparent 0%,
       rgba(0,0,0,.18) 5%,
       rgba(0,0,0,.72) 13%,
       #000 24%,
-      #000 100%
+      #000 94%,
+      rgba(0,0,0,.72) 97%,
+      transparent 100%
     ),
     linear-gradient(to bottom,
       transparent 0%,
@@ -327,7 +332,9 @@
       rgba(0,0,0,.18) 5%,
       rgba(0,0,0,.72) 13%,
       #000 24%,
-      #000 100%
+      #000 94%,
+      rgba(0,0,0,.72) 97%,
+      transparent 100%
     ),
     linear-gradient(to bottom,
       transparent 0%,
