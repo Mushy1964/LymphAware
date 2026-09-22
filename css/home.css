@@ -300,10 +300,10 @@
   width: 134%;
   max-width: none;
   height: auto;
-  margin: -8px -2% 0 -27%;
+  margin: -8px 0 0 -17%;
   position: relative;
   z-index: 1;
-  clip-path: inset(0 11% 0 0);
+  clip-path: inset(0 14% 0 0);
 
   -webkit-mask-image:
     linear-gradient(to right,
