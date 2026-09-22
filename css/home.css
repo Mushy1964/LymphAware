@@ -297,27 +297,23 @@
 */
 .home-page .hero-product-mockup {
   display: block;
-  width: 132%;
+  width: 129%;
   max-width: none;
   height: auto;
-
-  /*
-    132% wide with a -32% left offset means the image's true right edge
-    lands exactly on the right edge of its hero column.
-  */
-  margin: -8px 0 0 -32%;
+  margin: -8px 0 0 -22%;
   position: relative;
   z-index: 1;
 
-  /* Keep only a narrow soft fade at the outer edges; no hard crop. */
+  /* Keep the artwork clear of the copy, reduce the visible right edge
+     slightly, and retain a soft blend into the hero background. */
   -webkit-mask-image:
     linear-gradient(
       to right,
       transparent 0%,
-      rgba(0, 0, 0, .35) 5%,
-      #000 14%,
-      #000 94%,
-      rgba(0, 0, 0, .72) 97%,
+      rgba(0, 0, 0, .32) 5%,
+      #000 15%,
+      #000 92%,
+      rgba(0, 0, 0, .70) 96%,
       transparent 100%
     ),
     linear-gradient(
@@ -333,10 +329,10 @@
     linear-gradient(
       to right,
       transparent 0%,
-      rgba(0, 0, 0, .35) 5%,
-      #000 14%,
-      #000 94%,
-      rgba(0, 0, 0, .72) 97%,
+      rgba(0, 0, 0, .32) 5%,
+      #000 15%,
+      #000 92%,
+      rgba(0, 0, 0, .70) 96%,
       transparent 100%
     ),
     linear-gradient(
