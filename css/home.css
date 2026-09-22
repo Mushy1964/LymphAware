@@ -300,19 +300,24 @@
   width: 132%;
   max-width: none;
   height: auto;
-  margin: -8px 0 0 -18%;
+
+  /*
+    132% wide with a -32% left offset means the image's true right edge
+    lands exactly on the right edge of its hero column.
+  */
+  margin: -8px 0 0 -32%;
   position: relative;
   z-index: 1;
 
+  /* Keep only a narrow soft fade at the outer edges; no hard crop. */
   -webkit-mask-image:
     linear-gradient(
       to right,
       transparent 0%,
-      rgba(0, 0, 0, 0.18) 4%,
-      rgba(0, 0, 0, 0.72) 10%,
-      #000 18%,
-      #000 90%,
-      rgba(0, 0, 0, 0.72) 95%,
+      rgba(0, 0, 0, .35) 5%,
+      #000 14%,
+      #000 94%,
+      rgba(0, 0, 0, .72) 97%,
       transparent 100%
     ),
     linear-gradient(
@@ -328,11 +333,10 @@
     linear-gradient(
       to right,
       transparent 0%,
-      rgba(0, 0, 0, 0.18) 4%,
-      rgba(0, 0, 0, 0.72) 10%,
-      #000 18%,
-      #000 90%,
-      rgba(0, 0, 0, 0.72) 95%,
+      rgba(0, 0, 0, .35) 5%,
+      #000 14%,
+      #000 94%,
+      rgba(0, 0, 0, .72) 97%,
       transparent 100%
     ),
     linear-gradient(
