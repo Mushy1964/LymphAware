@@ -297,22 +297,28 @@
 */
 .home-page .hero-product-mockup {
   display: block;
-  width: 122%;
+  width: 131.2%;
   max-width: none;
   height: auto;
   margin: -8px 0 0 -22%;
   position: relative;
   z-index: 1;
 
+  /*
+    Keep the left edge fixed. Treat 93% of the source artwork as the
+    cropped/faded right edge, then enlarge the image so that edge lands
+    exactly on the product column / blue-header boundary.
+  */
   -webkit-mask-image:
     linear-gradient(
       to right,
       transparent 0%,
-      rgba(0, 0, 0, 0.32) 5%,
+      rgba(0, 0, 0, .32) 5%,
       #000 15%,
-      #000 95%,
-      rgba(0, 0, 0, 0.72) 98%,
-      transparent 100%
+      #000 86.5%,
+      rgba(0, 0, 0, .78) 89.5%,
+      rgba(0, 0, 0, .34) 91.5%,
+      transparent 93%
     ),
     linear-gradient(
       to bottom,
@@ -327,11 +333,12 @@
     linear-gradient(
       to right,
       transparent 0%,
-      rgba(0, 0, 0, 0.32) 5%,
+      rgba(0, 0, 0, .32) 5%,
       #000 15%,
-      #000 95%,
-      rgba(0, 0, 0, 0.72) 98%,
-      transparent 100%
+      #000 86.5%,
+      rgba(0, 0, 0, .78) 89.5%,
+      rgba(0, 0, 0, .34) 91.5%,
+      transparent 93%
     ),
     linear-gradient(
       to bottom,
