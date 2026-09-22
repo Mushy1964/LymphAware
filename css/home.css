@@ -316,9 +316,9 @@
       rgba(0, 0, 0, .32) 5%,
       #000 15%,
       #000 86.5%,
-      rgba(0, 0, 0, .78) 89.5%,
-      rgba(0, 0, 0, .34) 91.5%,
-      transparent 93%
+      rgba(0, 0, 0, .78) var(--hero-fade-mid, 89.5%),
+      rgba(0, 0, 0, .34) var(--hero-fade-end, 91.5%),
+      transparent var(--hero-crop-edge, 93%)
     ),
     linear-gradient(
       to bottom,
@@ -336,9 +336,9 @@
       rgba(0, 0, 0, .32) 5%,
       #000 15%,
       #000 86.5%,
-      rgba(0, 0, 0, .78) 89.5%,
-      rgba(0, 0, 0, .34) 91.5%,
-      transparent 93%
+      rgba(0, 0, 0, .78) var(--hero-fade-mid, 89.5%),
+      rgba(0, 0, 0, .34) var(--hero-fade-end, 91.5%),
+      transparent var(--hero-crop-edge, 93%)
     ),
     linear-gradient(
       to bottom,
@@ -348,6 +348,17 @@
       transparent 100%
     );
   mask-composite: intersect;
+}
+
+/* Desktop crop follows the marked right edge of the artwork. With the
+   left edge at -22%, 122% / 0.90 puts the crop on the grid/header edge. */
+@media (min-width: 981px) {
+  .home-page .hero-product-mockup {
+    width: calc(122% / 0.9);
+    --hero-fade-mid: 88%;
+    --hero-fade-end: 89%;
+    --hero-crop-edge: 90%;
+  }
 }
 
 .home-page .hero-product-slices {
