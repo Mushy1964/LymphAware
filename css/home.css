@@ -284,28 +284,56 @@
 
 .home-page .home-hero-product {
   position: relative;
+  z-index: 1;
   min-height: 620px;
-  margin-top: 76px;
+  margin-top: 58px;
+  overflow: visible;
 }
 
-/* Feather the photograph into the hero background without placing any
-   rectangular overlay over the artwork. */
+/*
+  Let the hero artwork flow left into the overall hero rather than reading
+  as a separate rectangular image. The product remains on the right while
+  the soft photographic background feathers behind the copy.
+*/
 .home-page .hero-product-mockup {
   display: block;
-  width: 118%;
+  width: 142%;
   max-width: none;
   height: auto;
-  margin: -12px -7% 0 -11%;
+  margin: -18px -10% 0 -34%;
+  position: relative;
+  z-index: 1;
 
-  /* Keep the complete phone and product artwork visible while softly
-     feathering the image into the full-width hero background. */
   -webkit-mask-image:
-    linear-gradient(to right, transparent 0%, #000 6%, #000 98%, transparent 100%),
-    linear-gradient(to bottom, transparent 0%, #000 4%, #000 98%, transparent 100%);
+    linear-gradient(to right,
+      transparent 0%,
+      rgba(0,0,0,.18) 5%,
+      rgba(0,0,0,.72) 13%,
+      #000 24%,
+      #000 100%
+    ),
+    linear-gradient(to bottom,
+      transparent 0%,
+      #000 5%,
+      #000 96%,
+      transparent 100%
+    );
   -webkit-mask-composite: source-in;
+
   mask-image:
-    linear-gradient(to right, transparent 0%, #000 6%, #000 98%, transparent 100%),
-    linear-gradient(to bottom, transparent 0%, #000 4%, #000 98%, transparent 100%);
+    linear-gradient(to right,
+      transparent 0%,
+      rgba(0,0,0,.18) 5%,
+      rgba(0,0,0,.72) 13%,
+      #000 24%,
+      #000 100%
+    ),
+    linear-gradient(to bottom,
+      transparent 0%,
+      #000 5%,
+      #000 96%,
+      transparent 100%
+    );
   mask-composite: intersect;
 }
 
