@@ -87,13 +87,35 @@
 .home-page .home-hero {
   position: relative;
   overflow: hidden;
-  padding: 42px 0 48px;
+  padding: 42px 0 88px;
 
   background:
     radial-gradient(ellipse 70% 58% at 78% 26%, rgba(0, 83, 183, 0.10) 0%, rgba(0, 83, 183, 0.035) 46%, transparent 78%),
     radial-gradient(ellipse 58% 52% at 8% 88%, rgba(36, 122, 36, 0.085) 0%, rgba(36, 122, 36, 0.025) 46%, transparent 78%),
     radial-gradient(ellipse 48% 40% at 100% 100%, rgba(36, 122, 36, 0.06) 0%, transparent 74%),
     linear-gradient(118deg, #f7fbfd 0%, #f4f9fc 48%, #f5faf9 76%, #f7fbfd 100%);
+}
+
+/* Carry a very soft version of the same hero photograph behind the whole
+   section so the photographic atmosphere continues behind the copy and down
+   to the privacy area instead of stopping at the product image. */
+.home-page .home-hero::before {
+  content: "";
+  position: absolute;
+  inset: -5% -3% -8%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(247,251,253,.58), rgba(247,251,253,.58)),
+    url("/assets/demo/LymphAware_Hero_Final_v7.png?v=20260922-background-wash") center 42% / cover no-repeat;
+  filter: blur(22px) saturate(.88);
+  opacity: .34;
+  transform: scale(1.05);
+}
+
+.home-page .home-hero-grid {
+  position: relative;
+  z-index: 1;
 }
 
 .home-page .home-hero-grid {
@@ -297,12 +319,13 @@
 */
 .home-page .hero-product-mockup {
   display: block;
-  width: 142%;
+  width: 140%;
   max-width: none;
   height: auto;
-  margin: -18px -10% 0 -34%;
+  margin: -8px 0 0 -38%;
   position: relative;
   z-index: 1;
+  clip-path: inset(0 4% 0 0);
 
   -webkit-mask-image:
     linear-gradient(to right,
