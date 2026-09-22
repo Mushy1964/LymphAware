@@ -304,16 +304,16 @@
   position: relative;
   z-index: 1;
 
-  /* Keep the artwork clear of the copy, reduce the visible right edge
-     slightly, and retain a soft blend into the hero background. */
+  /* Keep the current image position. Trim only the visible right edge
+     and preserve a soft fade into the hero background. */
   -webkit-mask-image:
     linear-gradient(
       to right,
       transparent 0%,
       rgba(0, 0, 0, .32) 5%,
       #000 15%,
-      #000 92%,
-      rgba(0, 0, 0, .70) 96%,
+      #000 89%,
+      rgba(0, 0, 0, .72) 94%,
       transparent 100%
     ),
     linear-gradient(
@@ -331,8 +331,8 @@
       transparent 0%,
       rgba(0, 0, 0, .32) 5%,
       #000 15%,
-      #000 92%,
-      rgba(0, 0, 0, .70) 96%,
+      #000 89%,
+      rgba(0, 0, 0, .72) 94%,
       transparent 100%
     ),
     linear-gradient(
