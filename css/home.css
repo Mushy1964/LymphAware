@@ -89,22 +89,42 @@
   overflow: visible;
   padding: 42px 0 48px;
 
+  /*
+    One continuous soft background across the complete hero.
+    The colour wash deliberately spans behind both the copy and the
+    product artwork so the right-hand image no longer reads as a
+    separate rectangular panel.
+  */
   background:
     radial-gradient(
-      circle at 82% 28%,
-      rgba(0, 83, 183, 0.08),
-      transparent 34%
+      ellipse 42% 44% at 4% 8%,
+      rgba(70, 139, 52, 0.10) 0%,
+      rgba(70, 139, 52, 0.035) 38%,
+      transparent 72%
     ),
     radial-gradient(
-      circle at 15% 80%,
-      rgba(36, 122, 36, 0.08),
-      transparent 30%
+      ellipse 58% 54% at 74% 22%,
+      rgba(0, 83, 183, 0.11) 0%,
+      rgba(0, 83, 183, 0.045) 42%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 48% 42% at 100% 82%,
+      rgba(36, 122, 36, 0.095) 0%,
+      rgba(36, 122, 36, 0.03) 38%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 54% 34% at 38% 100%,
+      rgba(0, 83, 183, 0.055) 0%,
+      transparent 74%
     ),
     linear-gradient(
-      135deg,
-      #ffffff 0%,
-      #f7fbfd 48%,
-      #f4f9fc 100%
+      118deg,
+      #f8fcfd 0%,
+      #f4f9fc 42%,
+      #f6fbfa 72%,
+      #f8fcfd 100%
     );
 }
 
