@@ -292,17 +292,24 @@
    rectangular overlay over the artwork. */
 .home-page .hero-product-mockup {
   display: block;
-  width: 112%;
+  width: 122%;
   max-width: none;
   height: auto;
-  margin: -12px -7% 0 -5%;
+  margin: -12px -8% 0 -15%;
+
+  /*
+    Pull more of the pale stone/photo area into the centre of the hero,
+    while feathering the artwork into the section background.
+  */
   -webkit-mask-image:
-    linear-gradient(to right, transparent 0%, #000 7%, #000 96%, transparent 100%),
-    linear-gradient(to bottom, transparent 0%, #000 5%, #000 96%, transparent 100%);
-  -webkit-mask-composite: source-in;
+    linear-gradient(to right, transparent 0%, #000 5%, #000 97%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 4%, #000 97%, transparent 100%),
+    radial-gradient(circle at 92% 5%, transparent 0%, transparent 10%, #000 18%);
+  -webkit-mask-composite: source-in, source-in;
   mask-image:
-    linear-gradient(to right, transparent 0%, #000 7%, #000 96%, transparent 100%),
-    linear-gradient(to bottom, transparent 0%, #000 5%, #000 96%, transparent 100%);
+    linear-gradient(to right, transparent 0%, #000 5%, #000 97%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 4%, #000 97%, transparent 100%),
+    radial-gradient(circle at 92% 5%, transparent 0%, transparent 10%, #000 18%);
   mask-composite: intersect;
 }
 
