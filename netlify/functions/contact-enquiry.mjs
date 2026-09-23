@@ -59,12 +59,12 @@ export default async (request) => {
     const to =
       env('CONTACT_NOTIFICATION_EMAIL') ||
       env('ORDER_NOTIFICATION_EMAIL') ||
-      'admin@lymphaware.com';
+      'admin@lymphawareid.com';
 
     const from =
       env('CONTACT_NOTIFICATION_FROM') ||
       env('ORDER_NOTIFICATION_FROM') ||
-      'LymphAware ID <notifications@lymphaware.com>';
+      'LymphAware ID <notifications@lymphawareid.com>';
 
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
