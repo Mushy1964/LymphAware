@@ -36,7 +36,7 @@ export default async (request) => {
       to: user.email,
       subject: 'Your LymphAware ID automatic renewal is cancelled',
       idempotencyKey: `renewal-cancelled-${membership.stripe_subscription_id}`,
-      text: `Automatic renewal has been cancelled. No further automatic-renewal payment will be taken for this membership.\n\nYour current LymphAware ID membership remains active until ${dateUK(membership.membership_end)}.\n\nYou can review its status in your Patient Portal:\nhttps://lymphawareid.com/portal/\n\nIf you did not make this change, contact admin@lymphaware.com.\n\nThe LymphAware ID Team`
+      text: `Automatic renewal has been cancelled. No further automatic-renewal payment will be taken for this membership.\n\nYour current LymphAware ID membership remains active until ${dateUK(membership.membership_end)}.\n\nYou can review its status in your Patient Portal:\nhttps://lymphawareid.com/portal/\n\nIf you did not make this change, contact admin@lymphawareid.com.\n\nThe LymphAware ID Team`
     });
     if (!emailResult.ok) console.error('Unable to send renewal cancellation confirmation:', emailResult.error);
     return json({ cancelled: true, membershipEnd: membership.membership_end });
