@@ -185,7 +185,7 @@ export function contractSnapshot(selection) {
     renewal_frequency_years: selection.autoRenew ? selection.membershipTermYears : null,
     first_reminder_window: selection.autoRenew ? FIRST_REMINDER_WINDOW : null,
     final_reminder_window: selection.autoRenew ? FINAL_REMINDER_WINDOW : null,
-    cancellation_method: 'Patient Portal or admin@lymphaware.com',
+    cancellation_method: 'Patient Portal or admin@lymphawareid.com',
     initial_cooling_off_days: 14,
     renewal_cooling_off_days: selection.autoRenew ? 14 : null,
     renewal_scope: selection.autoRenew ? 'Digital membership only; no physical cards, lanyards, holders or postage.' : null
