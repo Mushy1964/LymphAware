@@ -158,7 +158,7 @@ async function handleRecurringEvent(event) {
       to: email,
       subject: 'Your LymphAware ID membership has renewed',
       idempotencyKey: `renewal-cooling-${object.id}`,
-      text: `Your LymphAware ID digital membership has renewed and ${amountPaid} has been paid. Your new membership end date is ${dateUK(periodEnd ? new Date(periodEnd * 1000) : null)}.\n\nRENEWAL COOLING-OFF PERIOD\n\nYou may cancel this renewed membership until ${dateUK(renewalCoolingEnds)}. Use the “Cancel this renewal” option in your Patient Portal:\nhttps://lymphawareid.com/portal/\n\nIf you cancel during this period, the renewal payment will be refunded and renewed access will end. You can also email admin@lymphaware.com.\n\nThe LymphAware ID Team`
+      text: `Your LymphAware ID digital membership has renewed and ${amountPaid} has been paid. Your new membership end date is ${dateUK(periodEnd ? new Date(periodEnd * 1000) : null)}.\n\nRENEWAL COOLING-OFF PERIOD\n\nYou may cancel this renewed membership until ${dateUK(renewalCoolingEnds)}. Use the “Cancel this renewal” option in your Patient Portal:\nhttps://lymphawareid.com/portal/\n\nIf you cancel during this period, the renewal payment will be refunded and renewed access will end. You can also email admin@lymphawareid.com.\n\nThe LymphAware ID Team`
     });
     if (!emailResult.ok) console.error('Unable to send renewal cooling-off notice:', emailResult.error);
     await recordContractEvent({
@@ -241,8 +241,8 @@ async function sendOrderNotification(order, session, items) {
     return { ok: false, error };
   }
 
-  const to = String(process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphaware.com').trim();
-  const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphaware.com>').trim();
+  const to = String(process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphawareid.com').trim();
+  const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphawareid.com>').trim();
   const itemLines = items.map((item) => {
     const language = item.language_name ? ` – ${item.language_name}` : '';
     return `${item.quantity} × ${item.description}${language}`;
@@ -260,7 +260,7 @@ async function sendOrderNotification(order, session, items) {
       body: JSON.stringify({
         from,
         to: [to],
-        reply_to: ['admin@lymphaware.com'],
+        reply_to: ['admin@lymphawareid.com'],
         subject: `New LymphAware ID order – ${orderRef}`,
         text:
           `A new LymphAware ID order has been paid and requires attention.\n\n` +
@@ -289,7 +289,7 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
   const customerEmail = String(session.customer_details?.email || session.customer_email || '').trim();
   if (!apiKey || !customerEmail) return { ok: false, error: 'Customer email notification is not configured.' };
 
-  const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphaware.com>').trim();
+  const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphawareid.com>').trim();
   const orderRef = `ORD-${String(order.order_number).padStart(6, '0')}`;
   const itemLines = items.map((item) => `• ${item.quantity} × ${item.description}${item.language_name ? ` – ${item.language_name}` : ''}`).join('\n');
   const postageChargePence = Number(session.metadata?.shipping_pence || session.total_details?.amount_shipping || 0);
@@ -316,7 +316,7 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
       `Once you save your display name and photograph, LymphAware ID will be notified automatically that your card details are ready. We will then begin preparing your ID card, lanyard and holder, together with any additional cards or language versions included in your order.\n\n` +
       `We aim to prepare and dispatch your order within 7–10 working days after your required card details have been completed. Delivery time after dispatch will depend on the postal service and destination.\n\n` +
       `You can continue to update your QR profile at any time, including after your physical card has been produced.\n\n` +
-      `YOUR INITIAL COOLING-OFF PERIOD\n\nYou may tell us that you want to cancel within 14 days of joining. Contact admin@lymphaware.com. Any refund and deduction for services or personalised items already supplied will be handled in accordance with your statutory rights and the Terms.\n\n` +
+      `YOUR INITIAL COOLING-OFF PERIOD\n\nYou may tell us that you want to cancel within 14 days of joining. Contact admin@lymphawareid.com. Any refund and deduction for services or personalised items already supplied will be handled in accordance with your statutory rights and the Terms.\n\n` +
       `Complete your profile:\nhttps://lymphawareid.com/profile/`;
     if (languageName) {
       nextSteps +=
@@ -351,11 +351,11 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
       body: JSON.stringify({
         from,
         to: [customerEmail],
-        reply_to: ['admin@lymphaware.com'],
+        reply_to: ['admin@lymphawareid.com'],
         subject,
         text:
           `Thank you for your LymphAware ID purchase.\n\nOrder: ${orderRef}\n\nItems:\n${itemLines || 'Your selected LymphAware ID package'}\n\nPostage & packing (before any promotion discount): ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
-          `${nextSteps}\n\nIf you need help, contact admin@lymphaware.com.\n\nThe LymphAware ID Team`
+          `${nextSteps}\n\nIf you need help, contact admin@lymphawareid.com.\n\nThe LymphAware ID Team`
       })
     });
     if (!response.ok) return { ok: false, error: await response.text() };
