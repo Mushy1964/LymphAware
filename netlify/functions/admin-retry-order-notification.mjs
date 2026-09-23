@@ -92,8 +92,8 @@ export default async (request) => {
 
     const orderRef = `ORD-${String(order.order_number).padStart(6, '0')}`;
     const itemLines = items.map(item => `${item.quantity} × ${item.description}`).join('\n');
-    const to = String(process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphaware.com').trim();
-    const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphaware.com>').trim();
+    const to = String(process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphawareid.com').trim();
+    const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphawareid.com>').trim();
 
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -104,7 +104,7 @@ export default async (request) => {
       body: JSON.stringify({
         from,
         to: [to],
-        reply_to: ['admin@lymphaware.com'],
+        reply_to: ['admin@lymphawareid.com'],
         subject: `New LymphAware ID order – ${orderRef}`,
         text:
           `A new LymphAware ID membership order has been paid and requires attention.\n\n` +
