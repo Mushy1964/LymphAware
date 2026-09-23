@@ -94,8 +94,8 @@ export default async (request) => {
     const itemLines = items.map(item => `• ${Math.max(1, Number(item.quantity || 1))} × ${item.description}${item.language_name ? ` – ${item.language_name}` : ''}`).join('\n');
 
     const apiKey = env('RESEND_API_KEY');
-    const to = env('ORDER_NOTIFICATION_EMAIL') || 'admin@lymphaware.com';
-    const from = env('ORDER_NOTIFICATION_FROM') || 'LymphAware ID <notifications@lymphaware.com>';
+    const to = env('ORDER_NOTIFICATION_EMAIL') || 'admin@lymphawareid.com';
+    const from = env('ORDER_NOTIFICATION_FROM') || 'LymphAware ID <notifications@lymphawareid.com>';
     if (!apiKey) {
       await patchOrder(order.id, {
         profile_ready_notification_status: 'FAILED',
@@ -115,7 +115,7 @@ export default async (request) => {
       body: JSON.stringify({
         from,
         to: [to],
-        reply_to: ['admin@lymphaware.com'],
+        reply_to: ['admin@lymphawareid.com'],
         subject: `LymphAware ID profile details ready for card production – ${profile.lymphaware_id || orderReference(order.order_number)}`,
         text:
           `A LymphAware ID member has now saved the two mandatory details needed for ID card production.\n\n` +
