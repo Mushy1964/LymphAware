@@ -36,7 +36,7 @@ async function sendEmail({ to, subject, text }) {
     method: 'POST',
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: env('ORDER_NOTIFICATION_FROM') || 'LymphAware ID <notifications@lymphaware.com>',
+      from: env('ORDER_NOTIFICATION_FROM') || 'LymphAware ID <notifications@lymphawareid.com>',
       to: [to],
       subject,
       text
