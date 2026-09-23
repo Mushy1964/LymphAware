@@ -42,8 +42,8 @@ async function supabaseRequest(path, options = {}) {
 async function sendDeletionEmails(email, lymphawareId) {
   const apiKey = env('RESEND_API_KEY');
   if (!apiKey) return;
-  const from = env('ORDER_NOTIFICATION_FROM') || 'LymphAware ID <notifications@lymphaware.com>';
-  const adminEmail = env('ORDER_NOTIFICATION_EMAIL') || 'admin@lymphaware.com';
+  const from = env('ORDER_NOTIFICATION_FROM') || 'LymphAware ID <notifications@lymphawareid.com>';
+  const adminEmail = env('ORDER_NOTIFICATION_EMAIL') || 'admin@lymphawareid.com';
   const reference = lymphawareId ? ` (${lymphawareId})` : '';
   await Promise.allSettled([
     fetch('https://api.resend.com/emails', {
@@ -53,7 +53,7 @@ async function sendDeletionEmails(email, lymphawareId) {
         from,
         to: [email],
         subject: 'Your LymphAware ID account has been deleted',
-        text: 'Your LymphAware ID account, QR profile, additional-language profiles and stored photograph have been permanently deleted. Completed transaction records are retained only where required for financial and legal record keeping.\n\nIf you did not expect this email, contact admin@lymphaware.com.'
+        text: 'Your LymphAware ID account, QR profile, additional-language profiles and stored photograph have been permanently deleted. Completed transaction records are retained only where required for financial and legal record keeping.\n\nIf you did not expect this email, contact admin@lymphawareid.com.'
       })
     }),
     fetch('https://api.resend.com/emails', {
@@ -110,7 +110,7 @@ export default async (request) => {
     const openOrder = (paidOrders || []).find((order) => !finishedStatuses.has(String(order.order_status || '').toUpperCase()));
     if (openOrder) {
       return json({
-        error: `Your account cannot be deleted while order ORD-${String(openOrder.order_number || 0).padStart(6, '0')} is still being processed. Please contact admin@lymphaware.com if you need help.`
+        error: `Your account cannot be deleted while order ORD-${String(openOrder.order_number || 0).padStart(6, '0')} is still being processed. Please contact admin@lymphawareid.com if you need help.`
       }, 409);
     }
 
@@ -176,6 +176,6 @@ export default async (request) => {
     return json({ success: true });
   } catch (error) {
     console.error('Account deletion error:', error);
-    return json({ error: 'Your account could not be deleted completely. Please contact admin@lymphaware.com for assistance.' }, 500);
+    return json({ error: 'Your account could not be deleted completely. Please contact admin@lymphawareid.com for assistance.' }, 500);
   }
 };
