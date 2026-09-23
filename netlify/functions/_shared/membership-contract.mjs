@@ -55,9 +55,9 @@ export async function sendMembershipEmail({ to, subject, text, idempotencyKey = 
     method: 'POST',
     headers,
     body: JSON.stringify({
-      from: String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphaware.com>').trim(),
+      from: String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphawareid.com>').trim(),
       to: [to],
-      reply_to: ['admin@lymphaware.com'],
+      reply_to: ['admin@lymphawareid.com'],
       subject,
       text
     })
@@ -69,5 +69,5 @@ export function renewalNoticeText(membership, heading) {
   const years = Number(membership.membership_term_years || 1);
   const renewalDate = dateUK(membership.next_renewal_at);
   const renewalAmount = money(membership.renewal_price_pence);
-  return `${heading}\n\nYour LymphAware ID digital membership is scheduled to renew on ${renewalDate}.\n\nRenewal payment: ${renewalAmount}\nRenewal period: ${years} year${years === 1 ? '' : 's'}\nMinimum renewal total: ${renewalAmount}\nWhat continues: your digital LymphAware ID membership and QR profile.\nNot included: new cards, lanyards, holders or postage.\n\nIf you want the membership to renew, you do not need to do anything.\n\nYou can stop this payment at any time before ${renewalDate} by selecting “Cancel automatic renewal” in your Patient Portal:\nhttps://lymphawareid.com/portal/\n\nYou can also email admin@lymphaware.com. Cancelling automatic renewal does not shorten the membership term you have already paid for.\n\nAfter a renewal of 12 months or more, you will also have a 14-day renewal cooling-off period and an online cancellation option in your Patient Portal.\n\nThe LymphAware ID Team`;
+  return `${heading}\n\nYour LymphAware ID digital membership is scheduled to renew on ${renewalDate}.\n\nRenewal payment: ${renewalAmount}\nRenewal period: ${years} year${years === 1 ? '' : 's'}\nMinimum renewal total: ${renewalAmount}\nWhat continues: your digital LymphAware ID membership and QR profile.\nNot included: new cards, lanyards, holders or postage.\n\nIf you want the membership to renew, you do not need to do anything.\n\nYou can stop this payment at any time before ${renewalDate} by selecting “Cancel automatic renewal” in your Patient Portal:\nhttps://lymphawareid.com/portal/\n\nYou can also email admin@lymphawareid.com. Cancelling automatic renewal does not shorten the membership term you have already paid for.\n\nAfter a renewal of 12 months or more, you will also have a 14-day renewal cooling-off period and an online cancellation option in your Patient Portal.\n\nThe LymphAware ID Team`;
 }
