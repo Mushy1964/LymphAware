@@ -26,7 +26,7 @@ declare
   supplied_trial_code text;
   matching_invite_id uuid;
 begin
-  if lower(coalesce(new.email, '')) = 'admin@lymphaware.com' then
+  if lower(coalesce(new.email, '')) = 'admin@lymphawareid.com' then
     return new;
   end if;
 
