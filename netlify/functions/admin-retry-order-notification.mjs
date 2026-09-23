@@ -114,7 +114,7 @@ export default async (request) => {
           `Total paid: ${money(order.total_pence)}\n\n` +
           `Items:\n${itemLines || 'No item detail recorded'}\n\n` +
           `Open LymphAware ID Administration to manage fulfilment:\n` +
-          `https://lymphaware.com/admin/orders/`
+          `https://lymphawareid.com/admin/orders/`
       })
     });
 

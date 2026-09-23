@@ -255,8 +255,8 @@ export default async (request) => {
       return json({ error: 'Approved fixed card wording is not available for this language.' }, 400);
     }
 
-    const qrProfileUrl = `https://lymphaware.com/p/${job.qr_token}`;
-    const imageUrl = `https://lymphaware.com/ebp/${job.qr_token}`;
+    const qrProfileUrl = `https://lymphawareid.com/p/${job.qr_token}`;
+    const imageUrl = `https://lymphawareid.com/ebp/${job.qr_token}`;
 
     const rows = [[
       'LymphAware ID',

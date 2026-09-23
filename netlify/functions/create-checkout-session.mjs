@@ -446,8 +446,8 @@ export default async (request) => {
         : paymentType === 'replacement_items'
           ? 'replacement'
           : 'membership';
-    stripeForm.append('success_url', `https://lymphaware.com/portal/?payment=success&type=${successType}`);
-    stripeForm.append('cancel_url', 'https://lymphaware.com/portal/?payment=cancelled');
+    stripeForm.append('success_url', `https://lymphawareid.com/portal/?payment=success&type=${successType}`);
+    stripeForm.append('cancel_url', 'https://lymphawareid.com/portal/?payment=cancelled');
     if (user.email) stripeForm.append('customer_email', user.email);
 
     const stripeResponse = await fetch('https://api.stripe.com/v1/checkout/sessions', {

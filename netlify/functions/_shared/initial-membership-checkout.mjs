@@ -121,8 +121,8 @@ export async function createInitialMembershipCheckout({ userId, email, membershi
   form.append('shipping_address_collection[allowed_countries][0]', selection.deliveryCountry);
   form.append('client_reference_id', userId);
   form.append('customer_email', email);
-  form.append('success_url', 'https://lymphaware.com/register/confirmation/?payment=success');
-  form.append('cancel_url', 'https://lymphaware.com/register/payment-not-completed/');
+  form.append('success_url', 'https://lymphawareid.com/register/confirmation/?payment=success');
+  form.append('cancel_url', 'https://lymphawareid.com/register/payment-not-completed/');
 
   const metadata = {
     lymphaware_user_id: userId,

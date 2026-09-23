@@ -158,7 +158,7 @@ async function handleRecurringEvent(event) {
       to: email,
       subject: 'Your LymphAware ID membership has renewed',
       idempotencyKey: `renewal-cooling-${object.id}`,
-      text: `Your LymphAware ID digital membership has renewed and ${amountPaid} has been paid. Your new membership end date is ${dateUK(periodEnd ? new Date(periodEnd * 1000) : null)}.\n\nRENEWAL COOLING-OFF PERIOD\n\nYou may cancel this renewed membership until ${dateUK(renewalCoolingEnds)}. Use the “Cancel this renewal” option in your Patient Portal:\nhttps://lymphaware.com/portal/\n\nIf you cancel during this period, the renewal payment will be refunded and renewed access will end. You can also email admin@lymphaware.com.\n\nThe LymphAware ID Team`
+      text: `Your LymphAware ID digital membership has renewed and ${amountPaid} has been paid. Your new membership end date is ${dateUK(periodEnd ? new Date(periodEnd * 1000) : null)}.\n\nRENEWAL COOLING-OFF PERIOD\n\nYou may cancel this renewed membership until ${dateUK(renewalCoolingEnds)}. Use the “Cancel this renewal” option in your Patient Portal:\nhttps://lymphawareid.com/portal/\n\nIf you cancel during this period, the renewal payment will be refunded and renewed access will end. You can also email admin@lymphaware.com.\n\nThe LymphAware ID Team`
     });
     if (!emailResult.ok) console.error('Unable to send renewal cooling-off notice:', emailResult.error);
     await recordContractEvent({
@@ -266,7 +266,7 @@ async function sendOrderNotification(order, session, items) {
           `A new LymphAware ID order has been paid and requires attention.\n\n` +
           `Order: ${orderRef}\nCustomer: ${customerName}\nEmail: ${customerEmail}\nPostage & packing (before any promotion discount): ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
           `Items:\n${itemLines || 'No item detail recorded'}\n\n` +
-          `Open LymphAware ID Administration to manage fulfilment:\nhttps://lymphaware.com/admin/orders/`
+          `Open LymphAware ID Administration to manage fulfilment:\nhttps://lymphawareid.com/admin/orders/`
       })
     });
     if (!response.ok) {
@@ -301,7 +301,7 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
   let subject = `Your LymphAware ID order is confirmed – ${orderRef}`;
   let nextSteps =
     `Your order has been received. We will use the current name and photograph in your LymphAware ID profile for any ID card included in this order.\n\n` +
-    `You can review your profile and delivery progress from your Patient Portal:\nhttps://lymphaware.com/portal/`;
+    `You can review your profile and delivery progress from your Patient Portal:\nhttps://lymphawareid.com/portal/`;
 
   if (paymentType === 'initial_membership') {
     subject = `Welcome to LymphAware ID – your membership is now active`;
@@ -317,7 +317,7 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
       `We aim to prepare and dispatch your order within 7–10 working days after your required card details have been completed. Delivery time after dispatch will depend on the postal service and destination.\n\n` +
       `You can continue to update your QR profile at any time, including after your physical card has been produced.\n\n` +
       `YOUR INITIAL COOLING-OFF PERIOD\n\nYou may tell us that you want to cancel within 14 days of joining. Contact admin@lymphaware.com. Any refund and deduction for services or personalised items already supplied will be handled in accordance with your statutory rights and the Terms.\n\n` +
-      `Complete your profile:\nhttps://lymphaware.com/profile/`;
+      `Complete your profile:\nhttps://lymphawareid.com/profile/`;
     if (languageName) {
       nextSteps +=
         `\n\nYour package includes a ${languageName} profile and card. Keep your main English profile accurate and LymphAware ID will automatically prepare the ${languageName} version from it and keep it updated when your English information changes. You do not need to translate anything yourself. Empty English sections will also remain empty in the translated profile.`;
@@ -337,7 +337,7 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
     nextSteps =
       `You do not need to translate your profile yourself. LymphAware ID will prepare the ${languageName || 'selected-language'} version for you from the information in your main English profile and automatically keep it updated when your English profile changes.\n\n` +
       `Please make sure your main English profile is accurate and complete. Any English sections left empty will also be empty in the translated profile.\n\n` +
-      `Review your main profile:\nhttps://lymphaware.com/profile/`;
+      `Review your main profile:\nhttps://lymphawareid.com/profile/`;
   }
 
   try {

@@ -56,7 +56,7 @@ async function auditedOrderEmail(order, kind) {
       subject: `Your LymphAware ID cards are now in production – ${orderReference(order.order_number)}`,
       text:
         `Your LymphAware ID order ${orderReference(order.order_number)} has entered card production.\n\n` +
-        'We will email you again when the complete order has been packed and dispatched. You can review your details in the Patient Portal:\nhttps://lymphaware.com/portal/'
+        'We will email you again when the complete order has been packed and dispatched. You can review your details in the Patient Portal:\nhttps://lymphawareid.com/portal/'
     },
     completion: {
       status: 'completion_notification_status',
@@ -65,7 +65,7 @@ async function auditedOrderEmail(order, kind) {
       subject: `Your LymphAware ID order has been dispatched – ${orderReference(order.order_number)}`,
       text:
         `Your LymphAware ID order ${orderReference(order.order_number)} has been completed, packed and dispatched.\n\n` +
-        'Thank you for being a LymphAware ID member. You can continue to update your QR profile at any time from the Patient Portal:\nhttps://lymphaware.com/portal/'
+        'Thank you for being a LymphAware ID member. You can continue to update your QR profile at any time from the Patient Portal:\nhttps://lymphawareid.com/portal/'
     }
   }[kind];
   if (!settings) throw new Error('Unknown customer notification type.');
@@ -120,7 +120,7 @@ export async function sendLanguageReadyEmail({ languageProfileId, customerEmail,
     text:
       `Your ${languageName} LymphAware ID QR profile has been prepared from your English profile and is now ready.\n\n` +
       'Whenever you update your English profile, LymphAware ID will automatically refresh the translated version. Your existing translated profile remains available while an update is being prepared.\n\n' +
-      'View your Patient Portal:\nhttps://lymphaware.com/portal/'
+      'View your Patient Portal:\nhttps://lymphawareid.com/portal/'
   });
   const patch = await fetch(
     `${env('SUPABASE_URL')}/rest/v1/language_profiles?id=eq.${encodeURIComponent(languageProfileId)}`,
