@@ -162,7 +162,7 @@
       loginMessage.textContent = 'Sign in successful. Redirecting...';
       const signedInEmail = data?.user?.email?.toLowerCase() || '';
 
-      if (signedInEmail === 'admin@lymphawareid.com') {
+      if (['admin@lymphaware.com', 'admin@lymphawareid.com'].includes(signedInEmail)) {
         window.location.href = '/admin/orders/';
       } else {
         window.location.href = selectedPackage ? '/portal/?package=' + encodeURIComponent(selectedPackage) + '&term=' + encodeURIComponent(requestedTerm) : '/';
