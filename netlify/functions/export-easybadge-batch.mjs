@@ -305,8 +305,8 @@ export default async (request) => {
     ].join(',')];
 
     jobs.forEach(job => {
-      const qrProfileUrl = `https://lymphaware.com/p/${job.qr_token}`;
-      const imageUrl = `https://lymphaware.com/ebp/${job.qr_token}`;
+      const qrProfileUrl = `https://lymphawareid.com/p/${job.qr_token}`;
+      const imageUrl = `https://lymphawareid.com/ebp/${job.qr_token}`;
       const copies = Math.max(1, Number(job.quantity || 1));
 
       for (let copy = 0; copy < copies; copy += 1) {

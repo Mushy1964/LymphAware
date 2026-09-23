@@ -92,7 +92,7 @@ export default async (request) => {
     inviteCode = registrationAccess.inviteCode;
     const selection = normaliseInitialSelection(body);
 
-    const signupResponse = await fetch(`${process.env.SUPABASE_URL}/auth/v1/signup?redirect_to=${encodeURIComponent('https://lymphaware.com/portal/?email=confirmed')}`, {
+    const signupResponse = await fetch(`${process.env.SUPABASE_URL}/auth/v1/signup?redirect_to=${encodeURIComponent('https://lymphawareid.com/portal/?email=confirmed')}`, {
       method: 'POST',
       headers: {
         apikey: process.env.SUPABASE_PUBLISHABLE_KEY,

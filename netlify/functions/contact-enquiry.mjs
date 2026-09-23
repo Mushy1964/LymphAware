@@ -78,7 +78,7 @@ export default async (request) => {
         reply_to: [email],
         subject: `LymphAware ID website enquiry – ${enquiryType}`,
         text:
-          `A new enquiry has been submitted through lymphaware.com.\n\n` +
+          `A new enquiry has been submitted through lymphawareid.com.\n\n` +
           `Name: ${name}\n` +
           `Email: ${email}\n` +
           `Enquiry type: ${enquiryType}\n\n` +

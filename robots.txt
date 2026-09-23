@@ -16,4 +16,4 @@ Disallow: /p-v2/
 Disallow: /p-v3/
 Disallow: /ebp/
 
-Sitemap: https://lymphaware.com/sitemap.xml
+Sitemap: https://lymphawareid.com/sitemap.xml

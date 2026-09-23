@@ -129,7 +129,7 @@
       message.textContent = 'Sending reset instructions...';
 
       const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: 'https://lymphaware.com/reset-password/'
+        redirectTo: 'https://lymphawareid.com/reset-password/'
       });
 
       if (error) {

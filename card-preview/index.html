@@ -137,7 +137,7 @@
       if(!String(cardToken||'').trim())missing.push('QR profile link');
       if(missing.length){showError(`Your card preview will be available after you add or receive the following: ${missing.join(', ')}.`);return}
 
-      const profileUrl=`https://lymphaware.com/p/${encodeURIComponent(cardToken)}`;
+      const profileUrl=`https://lymphawareid.com/p/${encodeURIComponent(cardToken)}`;
       document.title=`Preview My ${copy.name} ID Card | LymphAware ID`;
       document.querySelector('.member-card').setAttribute('aria-label',`Preview of my ${copy.name} LymphAware ID card`);
       document.getElementById('card-name').textContent=profile.display_name;

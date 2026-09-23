@@ -125,7 +125,7 @@ export default async (request) => {
           `Customer email: ${order.customer_email || user.email || ''}\n\n` +
           `Order contents:\n${itemLines || 'Membership order'}\n\n` +
           `The order will now appear at the appropriate stage in LymphAware ID Administration. If the order includes an additional language, that language version may still be preparing before the complete order is ready to print.\n\n` +
-          `Open LymphAware ID Administration:\nhttps://lymphaware.com/admin/orders/`
+          `Open LymphAware ID Administration:\nhttps://lymphawareid.com/admin/orders/`
       })
     });
 
