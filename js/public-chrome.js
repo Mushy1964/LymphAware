@@ -100,6 +100,7 @@
               <a href="/cookies/">Cookies</a>
               <a href="/terms/">Terms &amp; Conditions</a>
               <a href="/sign-in/" id="mobile-account-link" class="public-mobile-account">Sign In</a>
+              <button type="button" id="public-mobile-sign-out" class="public-mobile-sign-out" hidden>Sign Out</button>
             </nav>
             <div class="public-mobile-menu-bottom-spacer" aria-hidden="true"></div>
           </details>
@@ -207,6 +208,7 @@
 
   const desktopAccountLink = document.getElementById('desktop-account-link');
   const mobileAccountLink = document.getElementById('mobile-account-link');
+  const mobileSignOutButton = document.getElementById('public-mobile-sign-out');
   let publicAuthClient = null;
 
   const updateAccountLink = session => {
@@ -224,7 +226,19 @@
       mobileAccountLink.href = signedIn ? '/portal/' : '/sign-in/';
       mobileAccountLink.textContent = signedIn ? 'Patient Portal' : 'Sign In';
     }
+    if (mobileSignOutButton) mobileSignOutButton.hidden = !signedIn;
   };
+
+  async function signOutPublicSite() {
+    if (!publicAuthClient) return;
+    const { error } = await publicAuthClient.auth.signOut();
+    if (error) {
+      console.error('Unable to sign out:', error);
+      return;
+    }
+    updateAccountLink(null);
+    window.location.href = '/';
+  }
 
   desktopAccountLink?.addEventListener('click', async event => {
     if (desktopAccountLink.dataset.authAction !== 'sign-out' || !publicAuthClient) return;
@@ -232,16 +246,11 @@
     const textTarget = desktopAccountLink.querySelector('span') || desktopAccountLink;
     desktopAccountLink.setAttribute('aria-busy', 'true');
     textTarget.textContent = 'Signing Out…';
-    const { error } = await publicAuthClient.auth.signOut();
+    await signOutPublicSite();
     desktopAccountLink.removeAttribute('aria-busy');
-    if (error) {
-      console.error('Unable to sign out:', error);
-      textTarget.textContent = 'Sign Out';
-      return;
-    }
-    updateAccountLink(null);
-    window.location.href = '/';
   });
+
+  mobileSignOutButton?.addEventListener('click', signOutPublicSite);
 
   if (window.supabase?.createClient) {
     try {
