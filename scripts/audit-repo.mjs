@@ -194,8 +194,15 @@ function checkProjectConsistency() {
   if (!registrationAccess.includes("Number(coupon?.percent_off) !== 100") || !registrationAccess.includes("coupon?.duration !== 'once'")) {
     errors.push('Server registration access does not verify the trial code maps to the active 100%-off Stripe promotion.');
   }
-  if (!startMembershipCheckout.includes('registration_invite_code: inviteCode') || !startMembershipCheckout.includes('authoriseRegistration(body.inviteCode, email)')) {
-    errors.push('Initial membership signup does not pass and validate the trial code.');
+  if (
+    !startMembershipCheckout.includes('authoriseRegistration(body.inviteCode, email)') ||
+    !startMembershipCheckout.includes('inviteCode: registrationAccess.inviteCode') ||
+    !initialMembershipCheckout.includes('registration_invite_code: inviteCode')
+  ) {
+    errors.push('Initial membership checkout does not pass and validate the trial code.');
+  }
+  if (startMembershipCheckout.includes('/auth/v1/signup') || startMembershipCheckout.includes('password.length < 8')) {
+    errors.push('Registration still creates a Supabase account before Stripe Checkout completes.');
   }
   if (!startMembershipCheckout.includes('trialPromotionCodeId: registrationAccess.promotionCodeId') || !initialMembershipCheckout.includes("discounts[0][promotion_code]")) {
     errors.push('The validated trial code is not applied automatically at Stripe Checkout.');
