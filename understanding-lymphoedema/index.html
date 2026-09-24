@@ -66,10 +66,7 @@
     }
 
     .self-care-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.7fr) minmax(290px, 0.85fr);
-      gap: 24px;
-      align-items: stretch;
+      display: block;
     }
 
     .self-care-grid {
@@ -105,6 +102,7 @@
     }
 
     .self-care-card h3,
+    .lymph-system-card h2,
     .lymph-system-card h3 {
       margin: 0 0 9px;
       color: #17283d;
@@ -122,6 +120,15 @@
 
     .lymph-system-card {
       padding: 22px;
+    }
+
+    .lymph-anatomy-section {
+      background: #f5fafb;
+    }
+
+    .lymph-anatomy-section .lymph-system-card {
+      max-width: 900px;
+      margin: 0 auto;
     }
 
     .lymph-system-card img {
@@ -611,6 +618,43 @@
     </section>
 
 
+    <section class="content-section lymph-anatomy-section" aria-labelledby="lymph-system-title">
+      <div class="container">
+        <article class="lymph-system-card">
+          <h2 id="lymph-system-title">How the lymphatic system helps</h2>
+          <a href="/assets/understanding/lymphatic-system-cruk.png" target="_blank" rel="noopener noreferrer" aria-label="Open a larger illustration of the lymphatic system">
+            <img src="/assets/understanding/lymphatic-system-cruk.png" width="960" height="1098" loading="lazy" alt="Cancer Research UK diagram of the human lymphatic system, showing branching lymph vessels and groups of lymph nodes through the body.">
+          </a>
+          <p>A network of vessels and nodes helps move excess fluid away from body tissues. When that drainage is disrupted, fluid can build up and cause swelling.</p>
+          <p class="image-credit">Illustration: <a href="https://commons.wikimedia.org/wiki/File:Diagram_of_the_lymphatic_system_CRUK_041.svg" target="_blank" rel="noopener noreferrer">Cancer Research UK / Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. PNG rendering of the original SVG.</p>
+        </article>
+
+        <aside class="lymph-organ-explainer" aria-labelledby="lymph-organ-title">
+          <h3 id="lymph-organ-title">What the highlighted organs do</h3>
+          <p>These organs mainly support immune defence and lymph formation. The vessels and nodes are the parts most directly involved in collecting, filtering and returning excess tissue fluid to the bloodstream.</p>
+          <dl class="lymph-organ-list">
+            <div>
+              <dt>Tonsils</dt>
+              <dd>Lymph tissue at the back of the throat helps recognise germs entering through the nose and mouth and supports the body's immune response.</dd>
+            </div>
+            <div>
+              <dt>Thymus</dt>
+              <dd>This gland helps T cells, a type of infection-fighting white blood cell, mature and learn how to support the immune system. It is most active during childhood.</dd>
+            </div>
+            <div>
+              <dt>Spleen</dt>
+              <dd>The spleen filters the blood, removes old or damaged blood cells and helps immune cells respond to germs carried in the bloodstream.</dd>
+            </div>
+            <div>
+              <dt>Liver</dt>
+              <dd>A large amount of lymph is formed in the liver as fluid is exchanged with the blood. Its lymphatic vessels carry this fluid towards nearby lymph nodes.</dd>
+            </div>
+          </dl>
+        </aside>
+      </div>
+    </section>
+
+
     <section class="content-section lymph-depth-section" aria-labelledby="lymph-depth-title">
       <div class="container">
         <div class="section-heading lymph-depth-intro">
@@ -840,38 +884,7 @@
             </article>
           </div>
 
-          <aside class="lymph-system-card" aria-labelledby="lymph-system-title">
-            <h3 id="lymph-system-title">How the lymphatic system helps</h3>
-            <a href="/assets/understanding/lymphatic-system-cruk.png" target="_blank" rel="noopener noreferrer" aria-label="Open a larger illustration of the lymphatic system">
-              <img src="/assets/understanding/lymphatic-system-cruk.png" width="960" height="1098" loading="lazy" alt="Cancer Research UK diagram of the human lymphatic system, showing branching lymph vessels and groups of lymph nodes through the body.">
-            </a>
-            <p>A network of vessels and nodes helps move excess fluid away from body tissues. When that drainage is disrupted, fluid can build up and cause swelling.</p>
-            <p class="image-credit">Illustration: <a href="https://commons.wikimedia.org/wiki/File:Diagram_of_the_lymphatic_system_CRUK_041.svg" target="_blank" rel="noopener noreferrer">Cancer Research UK / Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. PNG rendering of the original SVG.</p>
-          </aside>
         </div>
-
-        <aside class="lymph-organ-explainer" aria-labelledby="lymph-organ-title">
-          <h3 id="lymph-organ-title">What the highlighted organs do</h3>
-          <p>These organs mainly support immune defence and lymph formation. The vessels and nodes are the parts most directly involved in collecting, filtering and returning excess tissue fluid to the bloodstream.</p>
-          <dl class="lymph-organ-list">
-            <div>
-              <dt>Tonsils</dt>
-              <dd>Lymph tissue at the back of the throat helps recognise germs entering through the nose and mouth and supports the body's immune response.</dd>
-            </div>
-            <div>
-              <dt>Thymus</dt>
-              <dd>This gland helps T cells, a type of infection-fighting white blood cell, mature and learn how to support the immune system. It is most active during childhood.</dd>
-            </div>
-            <div>
-              <dt>Spleen</dt>
-              <dd>The spleen filters the blood, removes old or damaged blood cells and helps immune cells respond to germs carried in the bloodstream.</dd>
-            </div>
-            <div>
-              <dt>Liver</dt>
-              <dd>A large amount of lymph is formed in the liver as fluid is exchanged with the blood. Its lymphatic vessels carry this fluid towards nearby lymph nodes.</dd>
-            </div>
-          </dl>
-        </aside>
 
         <p class="self-care-note">The best combination varies from person to person. Follow advice from your lymphoedema team about compression, activity and massage. <a href="https://www.nhs.uk/conditions/lymphoedema/treatment/" target="_blank" rel="noopener noreferrer">Read the NHS guide to lymphoedema treatment</a>.</p>
       </div>
