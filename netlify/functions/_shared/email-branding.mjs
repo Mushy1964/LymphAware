@@ -57,7 +57,7 @@ export function brandedEmailHtml({ title, text, preheader = '' }) {
           </tr>
           <tr>
             <td style="padding:0 32px 28px;">
-              <h1 style="margin:0 0 18px;font:700 24px/1.3 Arial,sans-serif;color:#0b4f8a;">${safeTitle}</h1>
+              <h1 style="margin:0 0 18px;font:700 24px/1.3 Arial,sans-serif;color:#0053b7;">${safeTitle}</h1>
               ${bodyHtml(text)}
               <div style="margin-top:26px;padding-top:18px;border-top:1px solid #dbe6ec;font:400 13px/1.6 Arial,sans-serif;color:#667684;">
                 <strong style="color:#17283d;">LymphAware ID</strong><br>
