@@ -68,6 +68,7 @@
 
     .portal-button { width: 100%; margin-top: 4px; }
     #login-message { margin: 16px 0 0; line-height: 1.5; }
+    #resend-confirmation { width: 100%; margin-top: 12px; }
 
     .portal-links {
       margin-top: 22px;
@@ -123,6 +124,7 @@
 
         <button type="submit" class="button button-primary portal-button">Sign In</button>
         <p id="login-message" role="status" aria-live="polite"></p>
+        <button type="button" id="resend-confirmation" class="button button-secondary" hidden>Resend confirmation email</button>
       </form>
 
       <div class="portal-links">
@@ -144,6 +146,7 @@
     const requestedTerm = [1, 2, 3].includes(Number(signInParams.get('term'))) ? Number(signInParams.get('term')) : 0;
     const loginForm = document.getElementById('login-form');
     const loginMessage = document.getElementById('login-message');
+    const resendConfirmationButton = document.getElementById('resend-confirmation');
 
     loginForm.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -151,11 +154,19 @@
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       loginMessage.textContent = 'Signing in...';
+      resendConfirmationButton.hidden = true;
 
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
       if (error) {
-        loginMessage.textContent = 'Sign in unsuccessful. Please check your details and try again.';
+        const errorCode = String(error.code || '').toLowerCase();
+        const errorMessage = String(error.message || '').toLowerCase();
+        if (errorCode === 'email_not_confirmed' || errorMessage.includes('email not confirmed')) {
+          loginMessage.textContent = 'Your account has been created, but your email address has not yet been confirmed. Please open the LymphAware ID confirmation email, confirm your address, then sign in again.';
+          resendConfirmationButton.hidden = false;
+        } else {
+          loginMessage.textContent = 'Sign in unsuccessful. Please check your email address and password and try again.';
+        }
         return;
       }
 
@@ -170,6 +181,28 @@
         if (requestedTerm) portalParams.set('term', String(requestedTerm));
         window.location.href = '/portal/' + (portalParams.toString() ? '?' + portalParams.toString() : '');
       }
+    });
+
+    resendConfirmationButton.addEventListener('click', async () => {
+      const email = document.getElementById('email').value.trim();
+      if (!email) {
+        loginMessage.textContent = 'Enter your email address first.';
+        return;
+      }
+      resendConfirmationButton.disabled = true;
+      loginMessage.textContent = 'Sending a new confirmation email...';
+      const { error } = await supabaseClient.auth.resend({
+        type: 'signup',
+        email,
+        options: { emailRedirectTo: 'https://lymphawareid.com/portal/?email=confirmed' }
+      });
+      if (error) {
+        loginMessage.textContent = 'We could not resend the confirmation email just now. Please try again shortly.';
+        resendConfirmationButton.disabled = false;
+        return;
+      }
+      loginMessage.textContent = 'A new confirmation email has been sent. Check your inbox and spam/junk folder, confirm your email address, then sign in again.';
+      resendConfirmationButton.textContent = 'Confirmation email sent';
     });
   </script>
 </body>
