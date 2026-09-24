@@ -35,10 +35,11 @@ export default async request => {
       return json({ error: 'Please enter a valid email address.' }, 400);
     }
 
-    const registrationAccess = await authoriseRegistration(body.inviteCode, email);
+    const suppliedCode = body.discountCode ?? body.inviteCode ?? '';
+    const registrationAccess = await authoriseRegistration(suppliedCode, email);
     if (!registrationAccess.allowed) {
       await finishAfter(startedAt);
-      return json({ error: registrationUnavailableMessage(registrationAccess.mode) }, 403);
+      return json({ error: registrationUnavailableMessage(registrationAccess) }, 403);
     }
 
     const response = await fetch(`${Netlify.env.get('SUPABASE_URL')}/rest/v1/rpc/registration_email_exists`, {
