@@ -630,10 +630,14 @@ export default async (request) => {
     }
 
     const session = event.data?.object;
-    const userId = session?.metadata?.lymphaware_user_id;
-    const membershipId = session?.metadata?.membership_id || null;
+    let userId = session?.metadata?.lymphaware_user_id || '';
+    let membershipId = session?.metadata?.membership_id || null;
+    let accountSetupLink = '';
     const paymentType = String(session?.metadata?.payment_type || '').trim();
-    if (!userId || !['initial_membership', 'additional_language', 'replacement_items', 'additional_items'].includes(paymentType)) {
+    if (!['initial_membership', 'additional_language', 'replacement_items', 'additional_items'].includes(paymentType)) {
+      return new Response('Invalid payment metadata', { status: 400 });
+    }
+    if (paymentType !== 'initial_membership' && !userId) {
       return new Response('Invalid payment metadata', { status: 400 });
     }
 
@@ -659,19 +663,20 @@ export default async (request) => {
     const cardSelections = parseCardSelectionsMetadata(session.metadata?.card_selections, cardQuantity);
     const lanyardQuantity = Number.isInteger(metadataLanyardQuantity) && metadataLanyardQuantity >= 0 ? metadataLanyardQuantity : (replacementLanyard ? 1 : 0);
     const translationConsent = String(session.metadata?.translation_consent || '') === '1';
-    const trialDiscountApplied = String(session.metadata?.trial_discount_applied || '') === '1';
-    if (trialDiscountApplied && typeof session.subscription === 'string') {
-      try {
-        await stripeRequest(`subscriptions/${encodeURIComponent(session.subscription)}`, 'DELETE');
-      } catch (error) {
-        console.error('Unable to cancel trial-created Stripe subscription:', error instanceof Error ? error.message : error);
-        return new Response('Trial subscription cancellation failed', { status: 500 });
-      }
-    }
-    const autoRenew = !trialDiscountApplied && String(session.metadata?.auto_renew || '') === '1' && typeof session.subscription === 'string';
+    const autoRenew = String(session.metadata?.auto_renew || '') === '1' && typeof session.subscription === 'string';
     const renewalPricePence = autoRenew ? Number(session.metadata?.renewal_price_pence || RENEWAL_PRICES[packageType]?.[membershipTermYears] || 0) : null;
 
     if (paymentType === 'initial_membership') {
+      const existingOrder = await getExistingOrder(session.id);
+      if (existingOrder?.user_id) {
+        userId = existingOrder.user_id;
+        membershipId = existingOrder.membership_id || membershipId;
+      } else if (!userId || !membershipId) {
+        const provisioned = await provisionPaidSignup(session);
+        userId = provisioned.userId;
+        membershipId = provisioned.membershipId;
+        accountSetupLink = provisioned.accountSetupLink;
+      }
       const membershipEnd = new Date(paidAt);
       membershipEnd.setUTCFullYear(membershipEnd.getUTCFullYear() + membershipTermYears);
       let subscription = null;
@@ -688,8 +693,8 @@ export default async (request) => {
             auto_renew_requested: autoRenew,
             renewal_price_pence: renewalPricePence,
             subscription_terms_version: String(session.metadata?.contract_version || MEMBERSHIP_CONTRACT_VERSION),
-            precontract_accepted_at: paidAt.toISOString(),
-            auto_renew_consent_at: autoRenew ? paidAt.toISOString() : null,
+            precontract_accepted_at: String(session.metadata?.precontract_accepted_at || paidAt.toISOString()),
+            auto_renew_consent_at: autoRenew ? String(session.metadata?.precontract_accepted_at || paidAt.toISOString()) : null,
             auto_renew_cancelled_at: null,
             stripe_customer_id: typeof session.customer === 'string' ? session.customer : null,
             stripe_subscription_id: autoRenew ? session.subscription : null,
@@ -711,6 +716,7 @@ export default async (request) => {
           eventType: 'PRECONTRACT_ACCEPTED',
           stripeReference: session.id,
           details: {
+            accepted_at: String(session.metadata?.precontract_accepted_at || paidAt.toISOString()),
             paid_at: paidAt.toISOString(),
             package_type: packageType,
             membership_term_years: membershipTermYears,
@@ -818,7 +824,7 @@ export default async (request) => {
 
     if (order.notification_status !== 'SENT') await sendOrderNotification(order, session, items);
     if (order.customer_confirmation_status !== 'SENT') {
-      const customerNotification = await sendCustomerConfirmation(order, session, items, paymentType, languageName);
+      const customerNotification = await sendCustomerConfirmation(order, session, items, paymentType, languageName, accountSetupLink);
       await patchOrder(order.id, customerNotification.ok
         ? { customer_confirmation_status: 'SENT', customer_confirmation_error: null, customer_confirmation_sent_at: new Date().toISOString() }
         : { customer_confirmation_status: 'FAILED', customer_confirmation_error: customerNotification.error, customer_confirmation_sent_at: null });
