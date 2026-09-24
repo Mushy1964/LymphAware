@@ -93,7 +93,7 @@ function packageDescription(selection) {
   return `${membershipTermYears}-year membership with 1 English ID card and 1 lanyard & holder.`;
 }
 
-export async function createInitialMembershipCheckout({ email, selection, trialPromotionCodeId = '', inviteCode = '', acceptedAt = '' }) {
+export async function createInitialMembershipCheckout({ email, selection, promotionCodeId = '', promotionCode = '', isTrial = false, acceptedAt = '' }) {
   const form = new URLSearchParams();
   const checkoutName = `${selection.packageDefinition.name} – ${selection.membershipTermYears}-Year`;
   form.append('mode', selection.autoRenew ? 'subscription' : 'payment');
@@ -115,8 +115,7 @@ export async function createInitialMembershipCheckout({ email, selection, trialP
   const shippingLabel = selection.shippingBand === 'UK' ? 'UK postage & packing' : selection.shippingBand === 'EUROPE' ? 'Europe postage & packing' : 'Rest of World postage & packing';
   appendInlinePrice(form, shippingIndex, shippingLabel, selection.shippingPence, 'Postage & packing for this LymphAware ID order.');
 
-  if (trialPromotionCodeId) form.append('discounts[0][promotion_code]', trialPromotionCodeId);
-  else form.append('allow_promotion_codes', 'true');
+  if (promotionCodeId) form.append('discounts[0][promotion_code]', promotionCodeId);
   form.append('billing_address_collection', 'required');
   form.append('shipping_address_collection[allowed_countries][0]', selection.deliveryCountry);
   form.append('customer_email', email);
@@ -130,7 +129,9 @@ export async function createInitialMembershipCheckout({ email, selection, trialP
   const metadata = {
     payment_type: 'initial_membership',
     registration_email: email,
-    registration_invite_code: inviteCode,
+    registration_invite_code: isTrial ? promotionCode : '',
+    initial_promotion_code: promotionCode,
+    initial_discount_applied: promotionCodeId ? '1' : '0',
     precontract_accepted_at: acceptedAt || new Date().toISOString(),
     package_type: selection.packageType,
     membership_term_years: String(selection.membershipTermYears),
@@ -154,11 +155,11 @@ export async function createInitialMembershipCheckout({ email, selection, trialP
     final_reminder_window: FINAL_REMINDER_WINDOW,
     initial_cooling_off_days: '14',
     renewal_cooling_off_days: selection.autoRenew ? '14' : '0',
-    trial_discount_applied: trialPromotionCodeId ? '1' : '0'
+    trial_discount_applied: isTrial ? '1' : '0'
   };
   for (const [key, value] of Object.entries(metadata)) form.append(`metadata[${key}]`, value);
   if (selection.autoRenew) {
-    for (const key of ['package_type','membership_term_years','renewal_price_pence','contract_version','trial_discount_applied']) {
+    for (const key of ['package_type','membership_term_years','renewal_price_pence','contract_version','trial_discount_applied','initial_promotion_code']) {
       form.append(`subscription_data[metadata][${key}]`, metadata[key]);
     }
   }
