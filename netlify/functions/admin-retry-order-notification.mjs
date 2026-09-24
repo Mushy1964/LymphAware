@@ -1,3 +1,4 @@
+import { brandedEmailHtml } from './_shared/email-branding.mjs';
 async function verifyAdmin(request) {
   const authHeader = request.headers.get('authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
@@ -95,6 +96,17 @@ export default async (request) => {
     const to = String(process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphawareid.com').trim();
     const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphawareid.com>').trim();
 
+    const subject = `New LymphAware ID order – ${orderRef}`;
+    const emailText =
+      `A new LymphAware ID membership order has been paid and requires attention.\n\n` +
+      `Order: ${orderRef}\n` +
+      `Customer: ${order.delivery_name || order.customer_email || 'Customer'}\n` +
+      `Email: ${order.customer_email || ''}\n` +
+      `Total paid: ${money(order.total_pence)}\n\n` +
+      `Items:\n${itemLines || 'No item detail recorded'}\n\n` +
+      `Open LymphAware ID Administration to manage fulfilment:\n` +
+      `https://lymphawareid.com/admin/orders/`;
+
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -105,16 +117,9 @@ export default async (request) => {
         from,
         to: [to],
         reply_to: ['admin@lymphawareid.com'],
-        subject: `New LymphAware ID order – ${orderRef}`,
-        text:
-          `A new LymphAware ID membership order has been paid and requires attention.\n\n` +
-          `Order: ${orderRef}\n` +
-          `Customer: ${order.delivery_name || order.customer_email || 'Customer'}\n` +
-          `Email: ${order.customer_email || ''}\n` +
-          `Total paid: ${money(order.total_pence)}\n\n` +
-          `Items:\n${itemLines || 'No item detail recorded'}\n\n` +
-          `Open LymphAware ID Administration to manage fulfilment:\n` +
-          `https://lymphawareid.com/admin/orders/`
+        subject,
+        text: emailText,
+        html: brandedEmailHtml({ title: subject, text: emailText })
       })
     });
 

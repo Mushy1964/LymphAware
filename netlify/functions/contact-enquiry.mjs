@@ -1,3 +1,4 @@
+import { brandedEmailHtml } from './_shared/email-branding.mjs';
 function jsonResponse(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -66,6 +67,14 @@ export default async (request) => {
       env('ORDER_NOTIFICATION_FROM') ||
       'LymphAware ID <notifications@lymphawareid.com>';
 
+    const subject = `LymphAware ID website enquiry – ${enquiryType}`;
+    const emailText =
+      `A new enquiry has been submitted through lymphawareid.com.\n\n` +
+      `Name: ${name}\n` +
+      `Email: ${email}\n` +
+      `Enquiry type: ${enquiryType}\n\n` +
+      `Message:\n${message}\n`;
+
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -76,13 +85,9 @@ export default async (request) => {
         from,
         to: [to],
         reply_to: [email],
-        subject: `LymphAware ID website enquiry – ${enquiryType}`,
-        text:
-          `A new enquiry has been submitted through lymphawareid.com.\n\n` +
-          `Name: ${name}\n` +
-          `Email: ${email}\n` +
-          `Enquiry type: ${enquiryType}\n\n` +
-          `Message:\n${message}\n`
+        subject,
+        text: emailText,
+        html: brandedEmailHtml({ title: subject, text: emailText })
       })
     });
 

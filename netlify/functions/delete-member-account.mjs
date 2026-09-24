@@ -1,3 +1,4 @@
+import { brandedEmailHtml } from './_shared/email-branding.mjs';
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -45,6 +46,10 @@ async function sendDeletionEmails(email, lymphawareId) {
   const from = env('ORDER_NOTIFICATION_FROM') || 'LymphAware ID <notifications@lymphawareid.com>';
   const adminEmail = env('ORDER_NOTIFICATION_EMAIL') || 'admin@lymphawareid.com';
   const reference = lymphawareId ? ` (${lymphawareId})` : '';
+  const customerSubject = 'Your LymphAware ID account has been deleted';
+  const customerText = 'Your LymphAware ID account, QR profile, additional-language profiles and stored photograph have been permanently deleted. Completed transaction records are retained only where required for financial and legal record keeping.\n\nIf you did not expect this email, contact admin@lymphawareid.com.';
+  const adminSubject = `LymphAware ID account deleted${reference}`;
+  const adminText = `A member completed the self-service account deletion process${reference}. Their profile, translated profiles, photograph and login were removed. Identifying delivery and email details were removed from retained completed order records.`;
   await Promise.allSettled([
     fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -52,8 +57,9 @@ async function sendDeletionEmails(email, lymphawareId) {
       body: JSON.stringify({
         from,
         to: [email],
-        subject: 'Your LymphAware ID account has been deleted',
-        text: 'Your LymphAware ID account, QR profile, additional-language profiles and stored photograph have been permanently deleted. Completed transaction records are retained only where required for financial and legal record keeping.\n\nIf you did not expect this email, contact admin@lymphawareid.com.'
+        subject: customerSubject,
+        text: customerText,
+        html: brandedEmailHtml({ title: customerSubject, text: customerText })
       })
     }),
     fetch('https://api.resend.com/emails', {
@@ -62,8 +68,9 @@ async function sendDeletionEmails(email, lymphawareId) {
       body: JSON.stringify({
         from,
         to: [adminEmail],
-        subject: `LymphAware ID account deleted${reference}`,
-        text: `A member completed the self-service account deletion process${reference}. Their profile, translated profiles, photograph and login were removed. Identifying delivery and email details were removed from retained completed order records.`
+        subject: adminSubject,
+        text: adminText,
+        html: brandedEmailHtml({ title: adminSubject, text: adminText })
       })
     })
   ]);

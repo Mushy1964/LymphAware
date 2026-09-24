@@ -1,3 +1,4 @@
+import { brandedEmailHtml } from './_shared/email-branding.mjs';
 function env(name) {
   return String(process.env[name] || '').trim();
 }
@@ -105,6 +106,17 @@ export default async (request) => {
       return json({ error: 'Email delivery is not configured.' }, 500);
     }
 
+    const subject = `LymphAware ID profile details ready for card production – ${profile.lymphaware_id || orderReference(order.order_number)}`;
+    const emailText =
+      `A LymphAware ID member has now saved the two mandatory details needed for ID card production.\n\n` +
+      `Order: ${orderReference(order.order_number)}\n` +
+      `LymphAware ID: ${profile.lymphaware_id || 'Pending'}\n` +
+      `Display name: ${profile.display_name}\n` +
+      `Customer email: ${order.customer_email || user.email || ''}\n\n` +
+      `Order contents:\n${itemLines || 'Membership order'}\n\n` +
+      `The order will now appear at the appropriate stage in LymphAware ID Administration. If the order includes an additional language, that language version may still be preparing before the complete order is ready to print.\n\n` +
+      `Open LymphAware ID Administration:\nhttps://lymphawareid.com/admin/orders/`;
+
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -116,16 +128,9 @@ export default async (request) => {
         from,
         to: [to],
         reply_to: ['admin@lymphawareid.com'],
-        subject: `LymphAware ID profile details ready for card production – ${profile.lymphaware_id || orderReference(order.order_number)}`,
-        text:
-          `A LymphAware ID member has now saved the two mandatory details needed for ID card production.\n\n` +
-          `Order: ${orderReference(order.order_number)}\n` +
-          `LymphAware ID: ${profile.lymphaware_id || 'Pending'}\n` +
-          `Display name: ${profile.display_name}\n` +
-          `Customer email: ${order.customer_email || user.email || ''}\n\n` +
-          `Order contents:\n${itemLines || 'Membership order'}\n\n` +
-          `The order will now appear at the appropriate stage in LymphAware ID Administration. If the order includes an additional language, that language version may still be preparing before the complete order is ready to print.\n\n` +
-          `Open LymphAware ID Administration:\nhttps://lymphawareid.com/admin/orders/`
+        subject,
+        text: emailText,
+        html: brandedEmailHtml({ title: subject, text: emailText })
       })
     });
 
