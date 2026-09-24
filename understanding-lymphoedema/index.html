@@ -138,6 +138,55 @@
       line-height: 1.5;
     }
 
+    .lymph-organ-explainer {
+      margin-top: 22px;
+      padding: 22px;
+      border: 1px solid #dbe8ed;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 8px 25px rgba(31, 47, 66, .05);
+    }
+
+    .lymph-organ-explainer h3 {
+      margin: 0 0 8px;
+      color: #17283d;
+      font-size: 1.3rem;
+      line-height: 1.35;
+    }
+
+    .lymph-organ-explainer > p {
+      margin: 0;
+      max-width: 900px;
+      color: #536273;
+      line-height: 1.6;
+    }
+
+    .lymph-organ-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 16px 0 0;
+    }
+
+    .lymph-organ-list > div {
+      padding: 12px 14px;
+      border-left: 4px solid #168645;
+      border-radius: 9px;
+      background: #f2f8f4;
+    }
+
+    .lymph-organ-list dt {
+      color: #0757b8;
+      font-weight: 800;
+    }
+
+    .lymph-organ-list dd {
+      margin: 3px 0 0;
+      color: #465c6a;
+      font-size: 0.96rem;
+      line-height: 1.5;
+    }
+
     .lymph-system-card .image-credit a {
       color: #0053b7;
       text-decoration: underline;
@@ -166,6 +215,10 @@
       .self-care-grid {
         grid-template-rows: none;
       }
+
+      .lymph-organ-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 600px) {
@@ -176,6 +229,14 @@
       .self-care-card,
       .lymph-system-card {
         padding: 20px;
+      }
+
+      .lymph-organ-explainer {
+        padding: 20px;
+      }
+
+      .lymph-organ-list {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -487,6 +548,29 @@
             <p class="image-credit">Illustration: <a href="https://commons.wikimedia.org/wiki/File:Diagram_of_the_lymphatic_system_CRUK_041.svg" target="_blank" rel="noopener noreferrer">Cancer Research UK / Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. PNG rendering of the original SVG.</p>
           </aside>
         </div>
+
+        <aside class="lymph-organ-explainer" aria-labelledby="lymph-organ-title">
+          <h3 id="lymph-organ-title">What the highlighted organs do</h3>
+          <p>These organs mainly support immune defence and lymph formation. The vessels and nodes are the parts most directly involved in collecting, filtering and returning excess tissue fluid to the bloodstream.</p>
+          <dl class="lymph-organ-list">
+            <div>
+              <dt>Tonsils</dt>
+              <dd>Lymph tissue at the back of the throat helps recognise germs entering through the nose and mouth and supports the body's immune response.</dd>
+            </div>
+            <div>
+              <dt>Thymus</dt>
+              <dd>This gland helps T cells, a type of infection-fighting white blood cell, mature and learn how to support the immune system. It is most active during childhood.</dd>
+            </div>
+            <div>
+              <dt>Spleen</dt>
+              <dd>The spleen filters the blood, removes old or damaged blood cells and helps immune cells respond to germs carried in the bloodstream.</dd>
+            </div>
+            <div>
+              <dt>Liver</dt>
+              <dd>A large amount of lymph is formed in the liver as fluid is exchanged with the blood. Its lymphatic vessels carry this fluid towards nearby lymph nodes.</dd>
+            </div>
+          </dl>
+        </aside>
 
         <p class="self-care-note">The best combination varies from person to person. Follow advice from your lymphoedema team about compression, activity and massage. <a href="https://www.nhs.uk/conditions/lymphoedema/treatment/" target="_blank" rel="noopener noreferrer">Read the NHS guide to lymphoedema treatment</a>.</p>
       </div>
