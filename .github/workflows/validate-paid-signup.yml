@@ -1,0 +1,22 @@
+name: Validate paid signup refactor
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/validate-paid-signup.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check serverless function syntax
+        run: |
+          node --check netlify/functions/start-membership-checkout.mjs
+          node --check netlify/functions/_shared/initial-membership-checkout.mjs
+          node --check netlify/functions/stripe-webhook.mjs
+          node --check netlify/functions/delete-member-account.mjs
