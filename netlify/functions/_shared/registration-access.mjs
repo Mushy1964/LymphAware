@@ -12,7 +12,7 @@ export function normaliseInviteCode(value) {
   return String(value || '').trim().toUpperCase();
 }
 
-async function registrationMode() {
+export async function getRegistrationMode() {
   const response = await fetch(
     `${Netlify.env.get('SUPABASE_URL')}/rest/v1/system_settings?setting_key=eq.registration_mode&select=setting_value&limit=1`,
     { headers: serviceHeaders() }
@@ -35,9 +35,10 @@ async function pilotInvitationExists(inviteCode, email) {
   return !restrictedEmail || restrictedEmail === String(email || '').trim().toLowerCase();
 }
 
-async function activeTrialPromotion(inviteCode) {
+async function activeInitialPromotion(code, { requireTrial = false } = {}) {
+  if (!code) return null;
   const parameters = new URLSearchParams({
-    code: inviteCode,
+    code,
     active: 'true',
     limit: '1'
   });
@@ -49,34 +50,88 @@ async function activeTrialPromotion(inviteCode) {
     }
   });
   const result = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error('The trial discount could not be checked.');
+  if (!response.ok) throw new Error('The discount code could not be checked.');
+
   const promotionCode = result?.data?.[0];
   const coupon = promotionCode?.promotion?.coupon || promotionCode?.coupon;
+  const oneTimeOnly = coupon?.duration === 'once';
+  const trialEligible = Number(coupon?.percent_off) === 100;
+
   if (
     !promotionCode?.id ||
     promotionCode.active !== true ||
     coupon?.valid === false ||
-    Number(coupon?.percent_off) !== 100 ||
-    coupon?.duration !== 'once'
+    !oneTimeOnly ||
+    (requireTrial && !trialEligible)
   ) {
-    return '';
+    return null;
   }
-  return promotionCode.id;
+
+  return {
+    id: promotionCode.id,
+    code: String(promotionCode.code || code).trim().toUpperCase(),
+    percentOff: coupon?.percent_off == null ? null : Number(coupon.percent_off),
+    amountOff: coupon?.amount_off == null ? null : Number(coupon.amount_off),
+    currency: coupon?.currency || null
+  };
 }
 
-export async function authoriseRegistration(inviteCodeValue, email = '') {
-  const mode = await registrationMode();
-  const inviteCode = normaliseInviteCode(inviteCodeValue);
-  if (mode === 'OPEN') return { allowed: true, mode, inviteCode: '', promotionCodeId: '' };
-  if (mode === 'INVITE_ONLY' && await pilotInvitationExists(inviteCode, email)) {
-    const promotionCodeId = await activeTrialPromotion(inviteCode);
-    if (promotionCodeId) return { allowed: true, mode, inviteCode, promotionCodeId };
+export async function authoriseRegistration(codeValue, email = '') {
+  const mode = await getRegistrationMode();
+  const code = normaliseInviteCode(codeValue);
+
+  if (mode === 'CLOSED') {
+    return { allowed: false, mode, code: '', promotionCodeId: '', isTrial: false, codeInvalid: false };
   }
-  return { allowed: false, mode, inviteCode: '', promotionCodeId: '' };
+
+  if (mode === 'INVITE_ONLY') {
+    if (!code || !(await pilotInvitationExists(code, email))) {
+      return { allowed: false, mode, code: '', promotionCodeId: '', isTrial: false, codeInvalid: Boolean(code) };
+    }
+    const promotion = await activeInitialPromotion(code, { requireTrial: true });
+    if (!promotion) {
+      return { allowed: false, mode, code: '', promotionCodeId: '', isTrial: false, codeInvalid: true };
+    }
+    return {
+      allowed: true,
+      mode,
+      code: promotion.code,
+      promotionCodeId: promotion.id,
+      isTrial: true,
+      codeInvalid: false
+    };
+  }
+
+  if (!code) {
+    return { allowed: true, mode, code: '', promotionCodeId: '', isTrial: false, codeInvalid: false };
+  }
+
+  const promotion = await activeInitialPromotion(code);
+  if (!promotion) {
+    return { allowed: false, mode, code, promotionCodeId: '', isTrial: false, codeInvalid: true };
+  }
+
+  return {
+    allowed: true,
+    mode,
+    code: promotion.code,
+    promotionCodeId: promotion.id,
+    isTrial: false,
+    codeInvalid: false
+  };
 }
 
-export function registrationUnavailableMessage(mode) {
-  return mode === 'INVITE_ONLY'
-    ? 'LymphAware ID is currently available by invitation for testing. Please enter the valid trial code supplied with your invitation.'
-    : 'New LymphAware ID membership registration is currently closed.';
+export function registrationUnavailableMessage(access) {
+  const mode = typeof access === 'string' ? access : access?.mode;
+  const codeInvalid = typeof access === 'object' && access?.codeInvalid === true;
+
+  if (mode === 'INVITE_ONLY') {
+    return codeInvalid
+      ? 'The LymphAware ID trial code is invalid or unavailable.'
+      : 'LymphAware ID is currently available by invitation for testing. Please enter the valid trial code supplied with your invitation.';
+  }
+  if (mode === 'OPEN' && codeInvalid) {
+    return 'That discount code is invalid, expired or not available for this initial membership order.';
+  }
+  return 'New LymphAware ID membership registration is currently closed.';
 }
