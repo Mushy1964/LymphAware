@@ -374,7 +374,15 @@
         const result = await response.json();
 
         if (!response.ok) {
-          loading.textContent = result?.error || 'Orders could not be loaded.';
+          if (response.status === 401 || response.status === 403) {
+            loading.innerHTML = '<strong>Administrator sign-in required.</strong><p>This account cannot view orders. Sign out, then sign in with admin@lymphawareid.com.</p><button type="button" id="admin-switch-account" class="button button-secondary">Switch to administrator account</button>';
+            document.getElementById('admin-switch-account').addEventListener('click', async () => {
+              await supabaseClient.auth.signOut();
+              window.location.href = '/sign-in/';
+            });
+          } else {
+            loading.textContent = result?.error || 'Orders could not be loaded.';
+          }
           return;
         }
 
