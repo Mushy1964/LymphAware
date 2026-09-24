@@ -41,7 +41,7 @@ export default async (request) => {
     if (!/^\S+@\S+\.\S+$/.test(email)) return json({ error: 'Please enter a valid email address.' }, 400);
 
     const suppliedCode = body.discountCode ?? body.inviteCode ?? '';
-    const registrationAccess = await authoriseRegistration(suppliedCode, email);
+    const registrationAccess = await authoriseRegistration(suppliedCode, email, body.packageType);
     if (!registrationAccess.allowed) {
       return json({ error: registrationUnavailableMessage(registrationAccess) }, 403);
     }
