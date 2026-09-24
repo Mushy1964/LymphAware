@@ -66,6 +66,8 @@
     .next-action{margin:16px 0 0;padding:14px 15px;border-left:4px solid #2878b8;border-radius:8px;background:#f4f9fc;color:#253c4f;line-height:1.5}
     .order-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
     .order-actions .button{font-size:16px}
+    .button-danger{border:1px solid #b53b3b;background:#fff;color:#9a2f2f}
+    .button-danger:hover{background:#fff1f1}
     .order-details{margin-top:17px;border-top:1px solid #e0e8ec;padding-top:14px}
     .order-details summary{display:inline-flex;align-items:center;min-height:44px;color:var(--blue-dark);font-weight:800;cursor:pointer}
     .order-details summary::marker{color:var(--blue-dark)}
@@ -202,7 +204,17 @@
       }
       return '';
     }
-    function renderOrder(order){const profile=order.profile||{},stage=order.workflow_stage,items=physicalItems(order),notificationFailed=String(order.notification_status||'').toUpperCase()==='FAILED',completed=stage==='COMPLETED',isTrial=String(order.membership?.membership_status||'').toUpperCase()==='PILOT',action=primaryAction(order);return `<article class="order-card ${completed?'completed-card':''}" id="order-${esc(order.id)}"><div class="order-card-head"><div><span class="order-reference">${esc(orderRef(order.order_number))}${isTrial?' · PRIVATE TRIAL':''}</span><h3>${esc(profile.display_name||order.delivery_name||'LymphAware ID member')}</h3><p class="order-meta">${esc(profile.lymphaware_id||'LymphAware ID pending')} · ${completed?'Completed':'Paid'} ${esc(paidDate(completed?(order.completed_at||order.updated_at):order.paid_at))}${isTrial?' · £0 trial order':''}</p></div></div>${completed?'':`<div class="fulfilment-summary">${items.map(item=>`<span class="fulfilment-item">${esc(item)}</span>`).join('')}</div>${orderProgress(order)}<p class="next-action"><strong>Next:</strong> ${esc(order.workflow_reason||'Review this order.')}</p>`}${notificationFailed?'<div class="notification-warning">The administrator order email was not sent. Open the order details to retry it.</div>':''}${action?`<div class="order-actions">${action}</div>`:''}<details class="order-details"><summary>${completed?'View completed order details':'View order details'}</summary><div class="details-grid"><div><h4>Order contents</h4>${detailItems(order)}</div><div><h4>Delivery address</h4><p>${delivery(order)}</p></div><div><h4>Payment</h4><p>${esc(order.payment_status||'Not recorded')} · ${esc(orderRef(order.order_number))}${isTrial?' · Private trial':''}</p></div><div><h4>Customer</h4><p>${esc(order.customer_email||order.email||'Email not available')}</p></div>${completed&&order.order_type==='INITIAL_MEMBERSHIP'?`<div><h4>Welcome letter</h4><p><a class="button button-secondary" href="/admin/welcome-letter/?order=${encodeURIComponent(order.id)}" target="_blank" rel="noopener">Print welcome letter again</a></p></div>`:''}</div></details></article>`}
+    function renderOrder(order){
+      const profile=order.profile||{};
+      const stage=order.workflow_stage;
+      const items=physicalItems(order);
+      const notificationFailed=String(order.notification_status||'').toUpperCase()==='FAILED';
+      const completed=stage==='COMPLETED';
+      const isTrial=String(order.membership?.membership_status||'').toUpperCase()==='PILOT';
+      const canCancelTrial=isTrial&&Number(order.total_pence||0)===0&&['WAITING','READY_TO_PRINT'].includes(stage);
+      const action=primaryAction(order);
+      return `<article class="order-card ${completed?'completed-card':''}" id="order-${esc(order.id)}"><div class="order-card-head"><div><span class="order-reference">${esc(orderRef(order.order_number))}${isTrial?' · PRIVATE TRIAL':''}</span><h3>${esc(profile.display_name||order.delivery_name||'LymphAware ID member')}</h3><p class="order-meta">${esc(profile.lymphaware_id||'LymphAware ID pending')} · ${completed?'Completed':'Paid'} ${esc(paidDate(completed?(order.completed_at||order.updated_at):order.paid_at))}${isTrial?' · £0 trial order':''}</p></div></div>${completed?'':`<div class="fulfilment-summary">${items.map(item=>`<span class="fulfilment-item">${esc(item)}</span>`).join('')}</div>${orderProgress(order)}<p class="next-action"><strong>Next:</strong> ${esc(order.workflow_reason||'Review this order.')}</p>`}${notificationFailed?'<div class="notification-warning">The administrator order email was not sent. Open the order details to retry it.</div>':''}${action?`<div class="order-actions">${action}</div>`:''}<details class="order-details"><summary>${completed?'View completed order details':'View order details'}</summary><div class="details-grid"><div><h4>Order contents</h4>${detailItems(order)}</div><div><h4>Delivery address</h4><p>${delivery(order)}</p></div><div><h4>Payment</h4><p>${esc(order.payment_status||'Not recorded')} · ${esc(orderRef(order.order_number))}${isTrial?' · Private trial':''}</p></div><div><h4>Customer</h4><p>${esc(order.customer_email||order.email||'Email not available')}</p></div>${completed&&order.order_type==='INITIAL_MEMBERSHIP'?`<div><h4>Welcome letter</h4><p><a class="button button-secondary" href="/admin/welcome-letter/?order=${encodeURIComponent(order.id)}" target="_blank" rel="noopener">Print welcome letter again</a></p></div>`:''}${canCancelTrial?`<div><h4>Test order</h4><p>This private-trial order can be closed without deleting the member account.</p><p><button type="button" class="button button-danger cancel-test-order" data-order-id="${esc(order.id)}" data-order-ref="${esc(orderRef(order.order_number))}">Cancel test order</button></p></div>`:''}</div></details></article>`;
+    }
     function groupForOrder(order){if(order.workflow_stage==='COMPLETED')return'COMPLETED';if(['PRINTING','READY_TO_DISPATCH'].includes(order.workflow_stage))return'FULFILMENT';return'PROCESS'}
     function stageOrders(stage){return orders.filter(order=>groupForOrder(order)===stage)}
     function filteredCompletedOrders(){const query=completedSearch.value.trim().toLowerCase();const completed=stageOrders('COMPLETED');if(!query)return completed;return completed.filter(order=>{const profile=order.profile||{};const searchable=[orderRef(order.order_number),profile.display_name,order.delivery_name,profile.lymphaware_id,order.customer_email,order.email,...physicalItems(order)].filter(Boolean).join(' ').toLowerCase();return searchable.includes(query)})}
@@ -259,6 +271,37 @@
     completedSearch.addEventListener('input',()=>{completedPage=1;renderStage()});
     completedPrevious.addEventListener('click',()=>{if(completedPage>1){completedPage-=1;renderStage();document.querySelector('.stage-tabs')?.scrollIntoView({behavior:'smooth',block:'start'})}});
     completedNext.addEventListener('click',()=>{const pageCount=Math.max(1,Math.ceil(filteredCompletedOrders().length/completedPageSize));if(completedPage<pageCount){completedPage+=1;renderStage();document.querySelector('.stage-tabs')?.scrollIntoView({behavior:'smooth',block:'start'})}});
+    async function handleOrderListClick(event){
+      const button=event.target.closest('.cancel-test-order');
+      if(!button)return;
+      const orderId=button.dataset.orderId;
+      const reference=button.dataset.orderRef||'this order';
+      if(!window.confirm(`Cancel ${reference}?\n\nThis will close the private-trial order and remove it from active processing. No cards will be produced. The member account and membership will not be deleted.`))return;
+      const accessToken=await token();
+      if(!accessToken)return;
+      const original=button.textContent;
+      button.disabled=true;
+      button.textContent='Cancelling…';
+      try{
+        const response=await fetch('/.netlify/functions/admin-cancel-test-order',{
+          method:'POST',
+          headers:{Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'},
+          body:JSON.stringify({order_id:orderId})
+        });
+        const result=await response.json().catch(()=>({}));
+        if(!response.ok)throw new Error(result?.error||'The test order could not be cancelled.');
+        orders=orders.filter(order=>order.id!==orderId);
+        updateCounts();
+        if(!stageOrders(activeStage).length)selectInitialStage();
+        renderStage();
+      }catch(error){
+        console.error(error);
+        window.alert(error.message||'The test order could not be cancelled.');
+        button.disabled=false;
+        button.textContent=original;
+      }
+    }
+    orderList.addEventListener('click',handleOrderListClick);
     downloadReadyBatch.addEventListener('click',async()=>{
       const accessToken=await token();if(!accessToken)return;
       const originalText=downloadReadyBatch.textContent;
