@@ -82,24 +82,6 @@ function appendInlinePrice(stripeForm, index, name, amountPence, description = '
   stripeForm.append(`line_items[${index}][quantity]`, String(quantity));
 }
 
-async function activeSavedTrialPromotionCodeId(code) {
-  if (!code) return '';
-  const parameters = new URLSearchParams({ code: String(code).trim().toUpperCase(), active: 'true', limit: '1' });
-  parameters.append('expand[]', 'data.promotion.coupon');
-  const response = await fetch(`https://api.stripe.com/v1/promotion_codes?${parameters}`, {
-    headers: {
-      Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
-      'Stripe-Version': '2026-07-29.dahlia'
-    }
-  });
-  const result = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error('The saved private-trial discount could not be checked.');
-  const promotionCode = result?.data?.[0];
-  const coupon = promotionCode?.promotion?.coupon || promotionCode?.coupon;
-  return promotionCode?.active === true && coupon?.valid !== false && Number(coupon?.percent_off) === 100
-    ? String(promotionCode.id || '')
-    : '';
-}
 function parseQuantity(value) {
   const quantity = Number(value);
   return Number.isInteger(quantity) && quantity >= 0 && quantity <= 10 ? quantity : null;
@@ -213,7 +195,8 @@ export default async (request) => {
     let trialPromotionCodeId = '';
     if (isTrialParticipant && savedInviteCode) {
       try {
-        trialPromotionCodeId = await activeSavedTrialPromotionCodeId(savedInviteCode);
+        const trialAccess = await authoriseExistingTrialParticipant(savedInviteCode, user.email || '');
+        trialPromotionCodeId = trialAccess?.allowed ? trialAccess.promotionCodeId : '';
       } catch (error) {
         console.error('Unable to check the existing member trial discount:', error instanceof Error ? error.message : error);
       }
