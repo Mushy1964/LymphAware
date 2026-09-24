@@ -105,3 +105,5 @@ export default async (request) => {
     return json({ error: error instanceof Error ? error.message : 'Migration failed.' }, 500);
   }
 };
+
+export const config = { path: '/api/one-time-stripe-branding-migration' };
