@@ -27,9 +27,10 @@
     let printResetTimer;
     function setPrintStatus(message,type='info'){printStatus.textContent=message;printStatus.className=`print-status ${type==='info'?'':type}`.trim();printStatus.hidden=false}
     function resetPrintButton(){printButton.disabled=false;printButton.textContent='Print Welcome Letter'}
+    async function recordWelcomeLetterPrinted(){const {data:{session},error}=await supabaseClient.auth.getSession();if(error||!session?.access_token)throw new Error('Administrator session unavailable.');const response=await fetch('/.netlify/functions/mark-welcome-letter-printed',{method:'POST',headers:{Authorization:`Bearer ${session.access_token}`,'Content-Type':'application/json'},body:JSON.stringify({order_id:orderId})});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result?.error||'The welcome-letter status could not be saved.');return result}
     backLink.addEventListener('click',event=>{event.preventDefault();const destination=backLink.href;window.close();setTimeout(()=>{location.href=destination},180)});
     window.addEventListener('beforeprint',()=>setPrintStatus('Print options are opening. Choose your connected printer and check that it is ready.','info'));
-    window.addEventListener('afterprint',()=>{clearTimeout(printResetTimer);resetPrintButton();setPrintStatus('The print window has closed. Check that the welcome letter printed correctly before marking the order as completed.','info')});
+    window.addEventListener('afterprint',async()=>{clearTimeout(printResetTimer);resetPrintButton();if(!window.confirm('Did the Welcome Letter print correctly?')){setPrintStatus('The Welcome Letter has not been marked as printed. You can try again when ready.','warning');return}try{await recordWelcomeLetterPrinted();setPrintStatus('Welcome Letter recorded as printed. Return to Fulfilment in Progress to continue packing and dispatch.','info')}catch(error){console.error(error);setPrintStatus('The letter printed, but its completion status could not be saved. Please try again before dispatching.','error')}});
     printButton.addEventListener('click',()=>{
       if(!window.confirm('Before continuing, check that your printer is connected, switched on and ready. Open print options now?'))return;
       printButton.disabled=true;
