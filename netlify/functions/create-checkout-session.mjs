@@ -202,7 +202,6 @@ export default async (request) => {
 
     const membership = await getMembership(user.id);
     if (!membership) return json({ error: 'Unable to verify your membership.' }, 403);
-    const trialParticipant = Boolean(trialPromotionCodeId || user?.user_metadata?.trial_participant);
 
     const deliveryCountry = normaliseCountry(body?.deliveryCountry);
     if (!CHECKOUT_COUNTRIES.has(deliveryCountry)) return json({ error: 'Please select a supported delivery country.' }, 400);
@@ -253,7 +252,7 @@ export default async (request) => {
           ? `${membershipTermYears}-year membership with 2 English ID cards and 2 lanyards & holders.`
           : `${membershipTermYears}-year membership with 1 English ID card and 1 lanyard & holder.`;
       amountPence = packageDefinition.prices[membershipTermYears];
-      autoRenew = !trialParticipant && body?.autoRenew === true;
+      autoRenew = body?.autoRenew === true;
       if (autoRenew && body?.autoRenewAcknowledged !== true) {
         return json({ error: 'Please confirm the automatic-renewal amount and frequency.' }, 400);
       }
