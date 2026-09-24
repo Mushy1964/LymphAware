@@ -35,6 +35,16 @@ async function pilotInvitationExists(inviteCode, email) {
   return !restrictedEmail || restrictedEmail === String(email || '').trim().toLowerCase();
 }
 
+async function isActivePilotCode(code) {
+  if (!code) return false;
+  const response = await fetch(
+    `${Netlify.env.get('SUPABASE_URL')}/rest/v1/pilot_invites?invite_code=eq.${encodeURIComponent(code)}&active=eq.true&select=id&limit=1`,
+    { headers: serviceHeaders() }
+  );
+  if (!response.ok) throw new Error('The trial code could not be checked.');
+  return Boolean((await response.json())?.[0]?.id);
+}
+
 async function activeInitialPromotion(code, { requireTrial = false } = {}) {
   if (!code) return null;
   const parameters = new URLSearchParams({
@@ -104,6 +114,10 @@ export async function authoriseRegistration(codeValue, email = '') {
 
   if (!code) {
     return { allowed: true, mode, code: '', promotionCodeId: '', isTrial: false, codeInvalid: false };
+  }
+
+  if (await isActivePilotCode(code)) {
+    return { allowed: false, mode, code, promotionCodeId: '', isTrial: false, codeInvalid: true };
   }
 
   const promotion = await activeInitialPromotion(code);
