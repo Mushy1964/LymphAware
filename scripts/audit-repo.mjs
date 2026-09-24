@@ -185,27 +185,45 @@ function checkProjectConsistency() {
   if (!home.includes('Choose one, two or three years of membership')) {
     errors.push('Homepage membership wording does not offer the agreed one-, two- and three-year terms.');
   }
-  if (!register.includes('id="trial-invite-code"') || !register.includes('inviteCode:trialInviteInput.value.trim().toUpperCase()')) {
-    errors.push('Registration page does not require and submit a trial invitation code.');
+  if (
+    !register.includes('id="trial-invite-code"') ||
+    !register.includes("registrationMode==='INVITE_ONLY'&&!trialInviteInput.value.trim()") ||
+    !register.includes('discountCode:trialInviteInput.value.trim().toUpperCase()')
+  ) {
+    errors.push('Registration page does not enforce the trial code in invite-only mode and submit the optional code field.');
   }
   if (!registrationAccess.includes("mode === 'INVITE_ONLY'") || !registrationAccess.includes('pilot_invites?invite_code=eq.')) {
     errors.push('Server registration access does not enforce the invite-only trial-code gate.');
   }
-  if (!registrationAccess.includes("Number(coupon?.percent_off) !== 100") || !registrationAccess.includes("coupon?.duration !== 'once'")) {
-    errors.push('Server registration access does not verify the trial code maps to the active 100%-off Stripe promotion.');
+  if (
+    !registrationAccess.includes("const trialEligible = Number(coupon?.percent_off) === 100") ||
+    !registrationAccess.includes("const oneTimeOnly = coupon?.duration === 'once'")
+  ) {
+    errors.push('Server registration access does not constrain trial/public promotions to the agreed initial-checkout rules.');
   }
   if (
-    !startMembershipCheckout.includes('authoriseRegistration(body.inviteCode, email)') ||
-    !startMembershipCheckout.includes('inviteCode: registrationAccess.inviteCode') ||
-    !initialMembershipCheckout.includes('registration_invite_code: inviteCode')
+    !registrationAccess.includes("if (!code)") ||
+    !registrationAccess.includes("mode, code: '', promotionCodeId: '', isTrial: false") ||
+    !registrationAccess.includes("const promotion = await activeInitialPromotion(code)")
   ) {
-    errors.push('Initial membership checkout does not pass and validate the trial code.');
+    errors.push('Open registration does not support an empty optional discount code and validated one-time promotional codes.');
+  }
+  if (
+    !startMembershipCheckout.includes("const suppliedCode = body.discountCode ?? body.inviteCode ?? ''") ||
+    !startMembershipCheckout.includes('authoriseRegistration(suppliedCode, email)') ||
+    !startMembershipCheckout.includes('promotionCodeId: registrationAccess.promotionCodeId') ||
+    !initialMembershipCheckout.includes("registration_invite_code: isTrial ? promotionCode : ''")
+  ) {
+    errors.push('Initial membership checkout does not pass and validate trial/public discount codes.');
   }
   if (startMembershipCheckout.includes('/auth/v1/signup') || startMembershipCheckout.includes('password.length < 8')) {
     errors.push('Registration still creates a Supabase account before Stripe Checkout completes.');
   }
-  if (!startMembershipCheckout.includes('trialPromotionCodeId: registrationAccess.promotionCodeId') || !initialMembershipCheckout.includes("discounts[0][promotion_code]")) {
-    errors.push('The validated trial code is not applied automatically at Stripe Checkout.');
+  if (
+    !initialMembershipCheckout.includes("if (promotionCodeId) form.append('discounts[0][promotion_code]', promotionCodeId)") ||
+    initialMembershipCheckout.includes("allow_promotion_codes")
+  ) {
+    errors.push('Initial discounts can bypass server validation or are not applied automatically at Stripe Checkout.');
   }
   if (!register.includes('id="auto-renew-acknowledgement" disabled') || !register.includes("acknowledgement.disabled=!enabled")) {
     errors.push('Registration renewal acknowledgement is not visibly disabled until automatic renewal is selected.');
