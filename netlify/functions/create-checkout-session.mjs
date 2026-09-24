@@ -190,8 +190,13 @@ export default async (request) => {
     const user = await userResponse.json();
     if (!user?.id) return json({ error: 'Unable to verify your LymphAware ID account.' }, 401);
 
+    const membership = await getMembership(user.id);
+    if (!membership) return json({ error: 'Unable to verify your membership.' }, 403);
+
     const savedInviteCode = String(user?.user_metadata?.registration_invite_code || '').trim();
-    const isTrialParticipant = user?.user_metadata?.trial_participant === true;
+    const isTrialParticipant =
+      user?.user_metadata?.trial_participant === true ||
+      membership.membership_status === 'PILOT';
     let trialPromotionCodeId = '';
     if (isTrialParticipant && savedInviteCode) {
       try {
@@ -201,9 +206,11 @@ export default async (request) => {
         console.error('Unable to check the existing member trial discount:', error instanceof Error ? error.message : error);
       }
     }
-
-    const membership = await getMembership(user.id);
-    if (!membership) return json({ error: 'Unable to verify your membership.' }, 403);
+    if (isTrialParticipant && !trialPromotionCodeId) {
+      return json({
+        error: 'Your private-trial discount could not be verified. No charge has been created. Please contact admin@lymphawareid.com.'
+      }, 503);
+    }
 
     const deliveryCountry = normaliseCountry(body?.deliveryCountry);
     if (!CHECKOUT_COUNTRIES.has(deliveryCountry)) return json({ error: 'Please select a supported delivery country.' }, 400);
