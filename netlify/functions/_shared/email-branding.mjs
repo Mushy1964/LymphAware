@@ -24,10 +24,13 @@ function linkify(value) {
   return html;
 }
 
-function bodyHtml(text) {
+function bodyHtml(text, actionUrl = '', actionLabel = '') {
   return String(text || '')
     .split(/\n{2,}/)
     .map((block) => {
+      if (actionUrl && block.trim() === actionUrl) {
+        return '<p style="margin:20px 0 24px;"><a href="' + escapeHtml(actionUrl) + '" style="display:inline-block;padding:13px 22px;border-radius:8px;background:#0053b7;color:#ffffff;text-decoration:none;font:700 16px/1.3 Arial,sans-serif;">' + escapeHtml(actionLabel || 'Confirm email') + '</a></p>';
+      }
       const content = linkify(block).replace(/\n/g, '<br>');
       const isHeading = /^[A-Z0-9 £&–—'’.,:()/-]{4,}$/.test(block.trim()) && !block.includes('\n');
       if (isHeading) {
@@ -38,7 +41,7 @@ function bodyHtml(text) {
     .join('');
 }
 
-export function brandedEmailHtml({ title, text, preheader = '' }) {
+export function brandedEmailHtml({ title, text, preheader = '', actionUrl = '', actionLabel = '' }) {
   const safeTitle = escapeHtml(title || 'LymphAware ID');
   const safePreheader = escapeHtml(preheader || title || 'LymphAware ID');
   return `<!doctype html>
@@ -58,7 +61,7 @@ export function brandedEmailHtml({ title, text, preheader = '' }) {
           <tr>
             <td style="padding:0 32px 28px;">
               <h1 style="margin:0 0 18px;font:700 24px/1.3 Arial,sans-serif;color:#0053b7;">${safeTitle}</h1>
-              ${bodyHtml(text)}
+              ${bodyHtml(text, actionUrl, actionLabel)}
               <div style="margin-top:26px;padding-top:18px;border-top:1px solid #dbe6ec;font:400 13px/1.6 Arial,sans-serif;color:#667684;">
                 <strong style="color:#17283d;">LymphAware ID</strong><br>
                 <a href="${SITE_URL}" style="color:#0053b7;text-decoration:underline;">lymphawareid.com</a><br>
