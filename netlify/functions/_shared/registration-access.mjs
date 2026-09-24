@@ -1,3 +1,4 @@
+import { PACKAGE_DEFINITIONS } from './initial-membership-checkout.mjs';
 const VALID_REGISTRATION_MODES = new Set(['OPEN', 'INVITE_ONLY', 'CLOSED']);
 
 function serviceHeaders() {
@@ -45,7 +46,7 @@ async function isActivePilotCode(code) {
   return Boolean((await response.json())?.[0]?.id);
 }
 
-async function activeInitialPromotion(code, { requireTrial = false } = {}) {
+async function activeInitialPromotion(code, { requireTrial = false, packageType = '' } = {}) {
   if (!code) return null;
   const parameters = new URLSearchParams({
     code,
@@ -66,13 +67,21 @@ async function activeInitialPromotion(code, { requireTrial = false } = {}) {
   const coupon = promotionCode?.promotion?.coupon || promotionCode?.coupon;
   const oneTimeOnly = coupon?.duration === 'once';
   const trialEligible = Number(coupon?.percent_off) === 100;
+  const selectedPackage = PACKAGE_DEFINITIONS[String(packageType || '').trim().toUpperCase()] || null;
+  const appliesToProducts = Array.isArray(coupon?.applies_to?.products) ? coupon.applies_to.products : [];
+  const publicMembershipOnly = requireTrial || (
+    selectedPackage &&
+    appliesToProducts.includes(selectedPackage.initialProductId) &&
+    appliesToProducts.includes(selectedPackage.renewalProductId)
+  );
 
   if (
     !promotionCode?.id ||
     promotionCode.active !== true ||
     coupon?.valid === false ||
     !oneTimeOnly ||
-    (requireTrial && !trialEligible)
+    (requireTrial && !trialEligible) ||
+    !publicMembershipOnly
   ) {
     return null;
   }
@@ -86,7 +95,7 @@ async function activeInitialPromotion(code, { requireTrial = false } = {}) {
   };
 }
 
-export async function authoriseRegistration(codeValue, email = '') {
+export async function authoriseRegistration(codeValue, email = '', packageType = '') {
   const mode = await getRegistrationMode();
   const code = normaliseInviteCode(codeValue);
 
@@ -98,7 +107,7 @@ export async function authoriseRegistration(codeValue, email = '') {
     if (!code || !(await pilotInvitationExists(code, email))) {
       return { allowed: false, mode, code: '', promotionCodeId: '', isTrial: false, codeInvalid: Boolean(code) };
     }
-    const promotion = await activeInitialPromotion(code, { requireTrial: true });
+    const promotion = await activeInitialPromotion(code, { requireTrial: true, packageType });
     if (!promotion) {
       return { allowed: false, mode, code: '', promotionCodeId: '', isTrial: false, codeInvalid: true };
     }
@@ -120,7 +129,7 @@ export async function authoriseRegistration(codeValue, email = '') {
     return { allowed: false, mode, code, promotionCodeId: '', isTrial: false, codeInvalid: true };
   }
 
-  const promotion = await activeInitialPromotion(code);
+  const promotion = await activeInitialPromotion(code, { packageType });
   if (!promotion) {
     return { allowed: false, mode, code, promotionCodeId: '', isTrial: false, codeInvalid: true };
   }
