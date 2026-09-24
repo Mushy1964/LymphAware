@@ -91,6 +91,8 @@ export default async (request) => {
     if (!registrationAccess.allowed) return json({ error: registrationUnavailableMessage(registrationAccess.mode) }, 403);
     inviteCode = registrationAccess.inviteCode;
     const selection = normaliseInitialSelection(body);
+    const trialParticipant = Boolean(registrationAccess.promotionCodeId);
+    if (trialParticipant) selection.autoRenew = false;
 
     const supabaseUrl = String(Netlify.env.get('SUPABASE_URL') || '').trim();
     const publishableKey = String(Netlify.env.get('SUPABASE_PUBLISHABLE_KEY') || '').trim();
@@ -112,7 +114,8 @@ export default async (request) => {
           selected_package: selection.packageType,
           selected_membership_term_years: selection.membershipTermYears,
           membership_contract_version: MEMBERSHIP_CONTRACT_VERSION,
-          registration_invite_code: inviteCode
+          registration_invite_code: inviteCode,
+          trial_participant: trialParticipant
         }
       })
     });
