@@ -69,12 +69,13 @@
       display: grid;
       grid-template-columns: minmax(0, 1.7fr) minmax(290px, 0.85fr);
       gap: 24px;
-      align-items: start;
+      align-items: stretch;
     }
 
     .self-care-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(2, minmax(0, 1fr));
       gap: 16px;
     }
 
@@ -87,34 +88,19 @@
     }
 
     .self-care-card {
-      padding: 23px;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
       min-width: 0;
     }
 
-    .self-care-icon {
-      display: grid;
-      place-items: center;
-      width: 56px;
-      height: 56px;
-      margin-bottom: 16px;
-      border-radius: 16px;
-      background: #eaf5ee;
-      color: #13804b;
-    }
-
-    .self-care-card:nth-child(even) .self-care-icon {
-      background: #e9f2fc;
-      color: #0053b7;
-    }
-
-    .self-care-icon svg {
-      width: 32px;
-      height: 32px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+    .self-care-photo {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 18px;
     }
 
     .self-care-card h3,
@@ -142,7 +128,19 @@
       width: 100%;
       max-width: 360px;
       height: auto;
-      margin: 8px auto 14px;
+      margin: 8px auto 12px;
+    }
+
+    .lymph-system-card .image-credit {
+      margin-top: 12px;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    .lymph-system-card .image-credit a {
+      color: #0053b7;
+      text-decoration: underline;
+      text-underline-offset: 2px;
     }
 
     .self-care-note {
@@ -162,6 +160,10 @@
     @media (max-width: 980px) {
       .self-care-layout {
         grid-template-columns: 1fr;
+      }
+
+      .self-care-grid {
+        grid-template-rows: none;
       }
     }
 
@@ -451,33 +453,25 @@
         <div class="self-care-layout">
           <div class="self-care-grid">
             <article class="self-care-card">
-              <span class="self-care-icon" aria-hidden="true">
-                <svg viewBox="0 0 32 32"><path d="M16 3 27 8v8c0 7-5 11-11 13C10 27 5 23 5 16V8z"/><path d="M16 9c-2.2 3-4.5 5.5-4.5 8a4.5 4.5 0 0 0 9 0c0-2.5-2.3-5-4.5-8Z"/></svg>
-              </span>
+              <img class="self-care-photo" src="/assets/understanding/skin-care.jpg" width="1200" height="800" loading="lazy" alt="Person applying moisturiser to the skin of their lower leg.">
               <h3>Skin care</h3>
               <p>Keep skin clean and moisturised, and check for cuts or changes. Healthy skin helps reduce the risk of infection, including cellulitis.</p>
             </article>
 
             <article class="self-care-card">
-              <span class="self-care-icon" aria-hidden="true">
-                <svg viewBox="0 0 32 32"><path d="M11 3h12v14c0 3 2 5 5 6v5H9c-3 0-5-2-5-5v-3h7z"/><path d="M11 9h12M11 14h12M11 19h13"/></svg>
-              </span>
+              <img class="self-care-photo" src="/assets/understanding/compression-care.jpg" width="1200" height="800" loading="lazy" alt="Person adjusting a compression stocking on their lower leg.">
               <h3>Compression</h3>
               <p>Professionally fitted garments or wraps can help limit fluid build-up. Your specialist can advise on the right type and how to wear it.</p>
             </article>
 
             <article class="self-care-card">
-              <span class="self-care-icon" aria-hidden="true">
-                <svg viewBox="0 0 32 32"><circle cx="19" cy="5" r="2.5"/><path d="m13 28 4-8-4-5-5 3-4 1m13 1 7 2 4 6M13 15l5-5 5 3 4-1m-10-2-4 5"/></svg>
-              </span>
+              <img class="self-care-photo" src="/assets/understanding/gentle-movement.jpg" width="1200" height="800" loading="lazy" alt="Woman walking gently along a garden path.">
               <h3>Movement and exercise</h3>
               <p>Gentle, regular movement uses your muscles to support lymph flow and mobility. Activities can be adapted to your ability and affected area.</p>
             </article>
 
             <article class="self-care-card">
-              <span class="self-care-icon" aria-hidden="true">
-                <svg viewBox="0 0 32 32"><path d="M6 15a10 10 0 0 1 19-3m1 5a10 10 0 0 1-19 3"/><path d="m24 6 1 6-6-1M8 26l-1-6 6 1"/><path d="M16 11c-2.1 2.6-4 5-4 7a4 4 0 0 0 8 0c0-2-1.9-4.4-4-7Z"/></svg>
-              </span>
+              <img class="self-care-photo" src="/assets/understanding/lymphatic-drainage.jpg" width="1200" height="800" loading="lazy" alt="Therapist using gentle hand contact on a patient's lower leg.">
               <h3>Lymphatic drainage</h3>
               <p>Manual lymphatic drainage (MLD) is a gentle technique provided by a trained therapist. They may teach you simpler self-massage, called simple lymphatic drainage (SLD).</p>
             </article>
@@ -485,8 +479,11 @@
 
           <aside class="lymph-system-card" aria-labelledby="lymph-system-title">
             <h3 id="lymph-system-title">How the lymphatic system helps</h3>
-            <img src="/assets/illustrations/lymphatic-system-simple.svg" width="480" height="520" loading="lazy" alt="Simplified body diagram showing lymph vessels and groups of lymph nodes at the neck, armpits and groin.">
-            <p>A network of vessels and nodes helps move excess fluid away from body tissues. When that drainage is disrupted, fluid can build up and cause swelling. The diagram shows the idea rather than exact anatomy.</p>
+            <a href="/assets/understanding/lymphatic-system-cruk.png" target="_blank" rel="noopener noreferrer" aria-label="Open a larger illustration of the lymphatic system">
+              <img src="/assets/understanding/lymphatic-system-cruk.png" width="960" height="1098" loading="lazy" alt="Cancer Research UK diagram of the human lymphatic system, showing branching lymph vessels and groups of lymph nodes through the body.">
+            </a>
+            <p>A network of vessels and nodes helps move excess fluid away from body tissues. When that drainage is disrupted, fluid can build up and cause swelling.</p>
+            <p class="image-credit">Illustration: <a href="https://commons.wikimedia.org/wiki/File:Diagram_of_the_lymphatic_system_CRUK_041.svg" target="_blank" rel="noopener noreferrer">Cancer Research UK / Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. PNG rendering of the original SVG.</p>
           </aside>
         </div>
 
