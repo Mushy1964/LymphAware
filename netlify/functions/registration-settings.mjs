@@ -17,7 +17,7 @@ export default async (request) => {
       codeLabel: mode === 'INVITE_ONLY' ? 'Trial code' : 'Discount code (optional)',
       codeHelp: mode === 'INVITE_ONLY'
         ? 'Enter the code provided in your LymphAware ID trial invitation. It is applied automatically at secure checkout.'
-        : 'If you have an active LymphAware ID promotional code, enter it here. Leave this blank if you do not have one. Any discount applies only to the initial checkout and never reduces automatic-renewal prices.'
+        : 'If you have an active LymphAware ID promotional code, enter it here. Leave this blank if you do not have one. Any discount applies only to the initial membership price. Postage & packing is not discounted, and automatic-renewal prices are never reduced by the code.'
     });
   } catch (error) {
     console.error('Unable to read registration settings:', error instanceof Error ? error.message : error);
