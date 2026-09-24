@@ -384,9 +384,9 @@ export default async (request) => {
       nextLineItemIndex = 1;
     }
 
-    // Postage is a normal Checkout line item so percentage promotion codes can reduce the complete
-    // order, including P&P. Stripe still collects the delivery address even when a 100% trial code
-    // makes the final amount £0 and no payment method is required.
+    // Postage is a normal Checkout line item. Private-trial orders receive the saved 100% trial
+    // promotion automatically, so later trial purchases are also £0 including P&P. Public launch
+    // promotion codes are intentionally not accepted on later member purchases.
     appendInlinePrice(
       stripeForm,
       nextLineItemIndex,
@@ -397,7 +397,6 @@ export default async (request) => {
     );
 
     if (trialPromotionCodeId) stripeForm.append('discounts[0][promotion_code]', trialPromotionCodeId);
-    else stripeForm.append('allow_promotion_codes', 'true');
     stripeForm.append('metadata[trial_discount_applied]', trialPromotionCodeId ? '1' : '0');
     if (autoRenew) stripeForm.append('payment_method_collection', 'always');
     stripeForm.append('billing_address_collection', 'required');
