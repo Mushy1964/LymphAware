@@ -40,9 +40,10 @@ export default async (request) => {
     const email = String(body.email || '').trim().toLowerCase();
     if (!/^\S+@\S+\.\S+$/.test(email)) return json({ error: 'Please enter a valid email address.' }, 400);
 
-    const registrationAccess = await authoriseRegistration(body.inviteCode, email);
+    const suppliedCode = body.discountCode ?? body.inviteCode ?? '';
+    const registrationAccess = await authoriseRegistration(suppliedCode, email);
     if (!registrationAccess.allowed) {
-      return json({ error: registrationUnavailableMessage(registrationAccess.mode) }, 403);
+      return json({ error: registrationUnavailableMessage(registrationAccess) }, 403);
     }
 
     if (await registrationEmailExists(email)) {
@@ -57,8 +58,9 @@ export default async (request) => {
     const checkout = await createInitialMembershipCheckout({
       email,
       selection,
-      trialPromotionCodeId: registrationAccess.promotionCodeId,
-      inviteCode: registrationAccess.inviteCode,
+      promotionCodeId: registrationAccess.promotionCodeId,
+      promotionCode: registrationAccess.code,
+      isTrial: registrationAccess.isTrial,
       acceptedAt
     });
 
