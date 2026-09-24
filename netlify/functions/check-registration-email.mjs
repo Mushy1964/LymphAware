@@ -12,8 +12,8 @@ function json(body, status = 200) {
 
 function serviceHeaders() {
   return {
-    apikey: process.env.SUPABASE_SECRET_KEY,
-    Authorization: `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
+    apikey: Netlify.env.get('SUPABASE_SECRET_KEY'),
+    Authorization: `Bearer ${Netlify.env.get('SUPABASE_SECRET_KEY')}`,
     'Content-Type': 'application/json'
   };
 }
@@ -41,7 +41,7 @@ export default async request => {
       return json({ error: registrationUnavailableMessage(registrationAccess.mode) }, 403);
     }
 
-    const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/rpc/registration_email_exists`, {
+    const response = await fetch(`${Netlify.env.get('SUPABASE_URL')}/rest/v1/rpc/registration_email_exists`, {
       method: 'POST',
       headers: serviceHeaders(),
       body: JSON.stringify({ p_email: email })

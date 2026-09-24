@@ -19,8 +19,8 @@ function json(body, status = 200) {
 
 function serviceHeaders(prefer = '') {
   const headers = {
-    apikey: process.env.SUPABASE_SECRET_KEY,
-    Authorization: `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
+    apikey: Netlify.env.get('SUPABASE_SECRET_KEY'),
+    Authorization: `Bearer ${Netlify.env.get('SUPABASE_SECRET_KEY')}`,
     'Content-Type': 'application/json'
   };
   if (prefer) headers.Prefer = prefer;
@@ -29,7 +29,7 @@ function serviceHeaders(prefer = '') {
 
 async function waitForMembership(userId) {
   for (let attempt = 0; attempt < 4; attempt += 1) {
-    const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${encodeURIComponent(userId)}&select=id,membership_status,payment_status&limit=1`, {
+    const response = await fetch(`${Netlify.env.get('SUPABASE_URL')}/rest/v1/memberships?user_id=eq.${encodeURIComponent(userId)}&select=id,membership_status,payment_status&limit=1`, {
       headers: serviceHeaders()
     });
     if (response.ok) {
@@ -43,7 +43,7 @@ async function waitForMembership(userId) {
 
 async function recordPendingSelection(membership, userId, selection) {
   const now = new Date().toISOString();
-  const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/memberships?id=eq.${encodeURIComponent(membership.id)}`, {
+  const response = await fetch(`${Netlify.env.get('SUPABASE_URL')}/rest/v1/memberships?id=eq.${encodeURIComponent(membership.id)}`, {
     method: 'PATCH',
     headers: serviceHeaders('return=minimal'),
     body: JSON.stringify({
@@ -70,7 +70,7 @@ async function recordPendingSelection(membership, userId, selection) {
 
 async function removeIncompleteSignup(userId) {
   if (!userId) return;
-  await fetch(`${process.env.SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(userId)}`, {
+  await fetch(`${Netlify.env.get('SUPABASE_URL')}/auth/v1/admin/users/${encodeURIComponent(userId)}`, {
     method: 'DELETE',
     headers: serviceHeaders()
   }).catch(() => {});
@@ -92,11 +92,11 @@ export default async (request) => {
     inviteCode = registrationAccess.inviteCode;
     const selection = normaliseInitialSelection(body);
 
-    const signupResponse = await fetch(`${process.env.SUPABASE_URL}/auth/v1/signup?redirect_to=${encodeURIComponent('https://lymphawareid.com/portal/?email=confirmed')}`, {
+    const signupResponse = await fetch(`${Netlify.env.get('SUPABASE_URL')}/auth/v1/signup?redirect_to=${encodeURIComponent('https://lymphawareid.com/portal/?email=confirmed')}`, {
       method: 'POST',
       headers: {
-        apikey: process.env.SUPABASE_PUBLISHABLE_KEY,
-        Authorization: `Bearer ${process.env.SUPABASE_PUBLISHABLE_KEY}`,
+        apikey: Netlify.env.get('SUPABASE_PUBLISHABLE_KEY'),
+        Authorization: `Bearer ${Netlify.env.get('SUPABASE_PUBLISHABLE_KEY')}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({

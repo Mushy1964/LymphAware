@@ -162,7 +162,7 @@ export async function createInitialMembershipCheckout({ userId, email, membershi
   const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+      Authorization: `Bearer ${Netlify.env.get('STRIPE_SECRET_KEY')}`,
       'Content-Type': 'application/x-www-form-urlencoded',
       'Stripe-Version': '2026-07-29.dahlia'
     },
