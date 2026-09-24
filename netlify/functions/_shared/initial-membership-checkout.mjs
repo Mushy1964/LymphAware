@@ -12,19 +12,25 @@ export const PACKAGE_DEFINITIONS = {
     name: 'LymphAware ID Standard',
     prices: { 1: 2499, 2: 3499, 3: 4499 },
     renewals: { 1: 1899, 2: 2599, 3: 3399 },
-    stripePrices: { 1: 'price_1UFGECPMYhQKb2OTxec6KcE8', 2: 'price_1UFGERPMYhQKb2OTLU8gqlJ0', 3: 'price_1UFGETPMYhQKb2OTGS496BLh' }
+    stripePrices: { 1: 'price_1UFGECPMYhQKb2OTxec6KcE8', 2: 'price_1UFGERPMYhQKb2OTLU8gqlJ0', 3: 'price_1UFGETPMYhQKb2OTGS496BLh' },
+    initialProductId: 'prod_VJoj1Jx9jjanuP',
+    renewalProductId: 'prod_VFJ4HtlMHhiQZE'
   },
   PLUS: {
     name: 'LymphAware ID Plus',
     prices: { 1: 3499, 2: 4499, 3: 5499 },
     renewals: { 1: 2599, 2: 3399, 3: 4099 },
-    stripePrices: { 1: 'price_1UFIpVPMYhQKb2OTycEm07OF', 2: 'price_1UFIpgPMYhQKb2OTwLhaQcjU', 3: 'price_1UFIpgPMYhQKb2OTKfOwgqx8' }
+    stripePrices: { 1: 'price_1UFIpVPMYhQKb2OTycEm07OF', 2: 'price_1UFIpgPMYhQKb2OTwLhaQcjU', 3: 'price_1UFIpgPMYhQKb2OTKfOwgqx8' },
+    initialProductId: 'prod_VJojHiFSBQfKEg',
+    renewalProductId: 'prod_VFJ4Wpeq0QMpAX'
   },
   MULTILINGUAL: {
     name: 'LymphAware ID Multilingual',
     prices: { 1: 5499, 2: 6999, 3: 8499 },
     renewals: { 1: 4099, 2: 5299, 3: 6399 },
-    stripePrices: { 1: 'price_1UFGEVPMYhQKb2OT4B45XA28', 2: 'price_1UFGEWPMYhQKb2OTbVjZEvW4', 3: 'price_1UFGEWPMYhQKb2OTD1iA0xNU' }
+    stripePrices: { 1: 'price_1UFGEVPMYhQKb2OT4B45XA28', 2: 'price_1UFGEWPMYhQKb2OTbVjZEvW4', 3: 'price_1UFGEWPMYhQKb2OTD1iA0xNU' },
+    initialProductId: 'prod_VJojYNBtO0HSc2',
+    renewalProductId: 'prod_VFJ4xSalNV5KEi'
   }
 };
 
@@ -78,11 +84,15 @@ export function normaliseInitialSelection(body = {}) {
   };
 }
 
-function appendInlinePrice(form, index, name, amountPence, description = '') {
+function appendInlinePrice(form, index, name, amountPence, description = '', productId = '') {
   form.append(`line_items[${index}][price_data][currency]`, 'gbp');
   form.append(`line_items[${index}][price_data][unit_amount]`, String(amountPence));
-  form.append(`line_items[${index}][price_data][product_data][name]`, name);
-  if (description) form.append(`line_items[${index}][price_data][product_data][description]`, description);
+  if (productId) {
+    form.append(`line_items[${index}][price_data][product]`, productId);
+  } else {
+    form.append(`line_items[${index}][price_data][product_data][name]`, name);
+    if (description) form.append(`line_items[${index}][price_data][product_data][description]`, description);
+  }
   form.append(`line_items[${index}][quantity]`, '1');
 }
 
@@ -104,12 +114,12 @@ export async function createInitialMembershipCheckout({ email, selection, promot
     form.append('line_items[0][quantity]', '1');
     const joiningPence = selection.packagePricePence - selection.renewalPricePence;
     if (joiningPence > 0) {
-      appendInlinePrice(form, 1, `${checkoutName} – joining and card fulfilment`, joiningPence, 'One-time joining, card and lanyard fulfilment charge.');
+      appendInlinePrice(form, 1, `${checkoutName} – joining and card fulfilment`, joiningPence, 'One-time joining, card and lanyard fulfilment charge.', selection.packageDefinition.initialProductId);
       shippingIndex = 2;
     }
     form.append('payment_method_collection', 'always');
   } else {
-    appendInlinePrice(form, 0, checkoutName, selection.packagePricePence, packageDescription(selection));
+    appendInlinePrice(form, 0, checkoutName, selection.packagePricePence, packageDescription(selection), selection.packageDefinition.initialProductId);
   }
 
   const shippingLabel = selection.shippingBand === 'UK' ? 'UK postage & packing' : selection.shippingBand === 'EUROPE' ? 'Europe postage & packing' : 'Rest of World postage & packing';
