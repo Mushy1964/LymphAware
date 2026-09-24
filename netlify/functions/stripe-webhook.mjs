@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { brandedEmailHtml } from './_shared/email-branding.mjs';
 import {
   MEMBERSHIP_CONTRACT_VERSION,
   dateUK,
@@ -252,6 +253,12 @@ async function sendOrderNotification(order, session, items) {
   const totalPaid = `£${((session.amount_total || 0) / 100).toFixed(2)}`;
   const postageChargePence = Number(session.metadata?.shipping_pence || session.total_details?.amount_shipping || 0);
   const postagePaid = `£${(postageChargePence / 100).toFixed(2)}`;
+  const subject = `New LymphAware ID order – ${orderRef}`;
+  const emailText =
+    `A new LymphAware ID order has been paid and requires attention.\n\n` +
+    `Order: ${orderRef}\nCustomer: ${customerName}\nEmail: ${customerEmail}\nPostage & packing (before any promotion discount): ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
+    `Items:\n${itemLines || 'No item detail recorded'}\n\n` +
+    `Open LymphAware ID Administration to manage fulfilment:\nhttps://lymphawareid.com/admin/orders/`;
 
   try {
     const response = await fetch('https://api.resend.com/emails', {
@@ -261,12 +268,9 @@ async function sendOrderNotification(order, session, items) {
         from,
         to: [to],
         reply_to: ['admin@lymphawareid.com'],
-        subject: `New LymphAware ID order – ${orderRef}`,
-        text:
-          `A new LymphAware ID order has been paid and requires attention.\n\n` +
-          `Order: ${orderRef}\nCustomer: ${customerName}\nEmail: ${customerEmail}\nPostage & packing (before any promotion discount): ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
-          `Items:\n${itemLines || 'No item detail recorded'}\n\n` +
-          `Open LymphAware ID Administration to manage fulfilment:\nhttps://lymphawareid.com/admin/orders/`
+        subject,
+        text: emailText,
+        html: brandedEmailHtml({ title: subject, text: emailText })
       })
     });
     if (!response.ok) {
@@ -340,6 +344,10 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
       `Review your main profile:\nhttps://lymphawareid.com/profile/`;
   }
 
+  const emailText =
+    `Thank you for your LymphAware ID purchase.\n\nOrder: ${orderRef}\n\nItems:\n${itemLines || 'Your selected LymphAware ID package'}\n\nPostage & packing (before any promotion discount): ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
+    `${nextSteps}\n\nIf you need help, contact admin@lymphawareid.com.\n\nThe LymphAware ID Team`;
+
   try {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -353,9 +361,8 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
         to: [customerEmail],
         reply_to: ['admin@lymphawareid.com'],
         subject,
-        text:
-          `Thank you for your LymphAware ID purchase.\n\nOrder: ${orderRef}\n\nItems:\n${itemLines || 'Your selected LymphAware ID package'}\n\nPostage & packing (before any promotion discount): ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
-          `${nextSteps}\n\nIf you need help, contact admin@lymphawareid.com.\n\nThe LymphAware ID Team`
+        text: emailText,
+        html: brandedEmailHtml({ title: subject, text: emailText })
       })
     });
     if (!response.ok) return { ok: false, error: await response.text() };
