@@ -315,6 +315,22 @@
   color:#247a24;
   text-align:center;
 }
+.public-mobile-sign-out {
+  width:100%;
+  min-height:46px;
+  margin:0;
+  padding:0 22px;
+  border:0;
+  background:#eef6fb;
+  color:#0053b7;
+  font:inherit;
+  font-weight:800;
+  text-align:center;
+  cursor:pointer;
+}
+.public-mobile-sign-out[hidden] { display:none !important; }
+.public-mobile-sign-out:hover,
+.public-mobile-sign-out:focus { background:#e2f0f8; }
 
 /* Footer */
 .public-site-footer {
