@@ -8,18 +8,30 @@ function decodeJson(segment) {
   return JSON.parse(Buffer.from(segment, 'base64url').toString('utf8'));
 }
 
+let cachedJwks = null;
+let cachedJwksAt = 0;
+const JWKS_CACHE_MS = 15 * 60 * 1000;
+
 async function fetchJwks(baseUrl) {
+  const now = Date.now();
+  if (cachedJwks && now - cachedJwksAt < JWKS_CACHE_MS) return cachedJwks;
+
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 4000);
+  const timeout = setTimeout(() => controller.abort(), 8000);
   try {
     const response = await fetch(
       `${baseUrl.replace(/\/$/, '')}/auth/v1/.well-known/jwks.json`,
       { signal: controller.signal }
     );
-    if (!response.ok) return null;
-    return await response.json();
+    if (!response.ok) return cachedJwks;
+    const jwks = await response.json();
+    if (Array.isArray(jwks?.keys) && jwks.keys.length) {
+      cachedJwks = jwks;
+      cachedJwksAt = now;
+    }
+    return cachedJwks;
   } catch {
-    return null;
+    return cachedJwks;
   } finally {
     clearTimeout(timeout);
   }
