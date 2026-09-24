@@ -29,6 +29,7 @@ const RENEWAL_STRIPE_PRICES = {
 const ADDITIONAL_CARD_PRICE_PENCE = 699;
 const LANYARD_HOLDER_PRICE_PENCE = 799;
 const ADDITIONAL_LANGUAGE_PRICE_PENCE = 2499;
+const TRIAL_RENEWAL_PROTECTION_COUPON = 'LYMPHAWARE_TRIAL_RENEWAL_FREE_V1';
 
 function verifyStripeSignature(payload, signatureHeader, secret) {
   if (!signatureHeader || !secret) return false;
@@ -109,6 +110,7 @@ async function handleRecurringEvent(event) {
     const upcomingSubscriptionId = invoiceSubscriptionId(object);
     const membership = await membershipBySubscription(upcomingSubscriptionId);
     if (membership) {
+      if (membership.membership_status === 'PILOT') return true;
       const email = String(object?.customer_email || '').trim() || await memberEmail(membership.user_id);
       const result = await sendMembershipEmail({
         to: email,
@@ -138,6 +140,14 @@ async function handleRecurringEvent(event) {
     if (!subscriptionId || object.billing_reason !== 'subscription_cycle') return true;
     const membership = await membershipBySubscription(subscriptionId);
     if (!membership) return true;
+    if (membership.membership_status === 'PILOT') {
+      const periodEnd = object.lines?.data?.map(line => line.period?.end).filter(Boolean).sort((a, b) => b - a)[0];
+      await patchMembershipBySubscription(subscriptionId, {
+        stripe_subscription_status: 'active',
+        ...(periodEnd ? { membership_end: new Date(periodEnd * 1000).toISOString(), next_renewal_at: new Date(periodEnd * 1000).toISOString() } : {})
+      });
+      return true;
+    }
     const periodEnd = object.lines?.data?.map(line => line.period?.end).filter(Boolean).sort((a, b) => b - a)[0];
     const renewalPaidAt = new Date((object.status_transitions?.paid_at || event.created) * 1000);
     const renewalCoolingEnds = new Date(renewalPaidAt.getTime() + (14 * 86400000));
@@ -667,6 +677,7 @@ export default async (request) => {
     const lanyardQuantity = Number.isInteger(metadataLanyardQuantity) && metadataLanyardQuantity >= 0 ? metadataLanyardQuantity : (replacementLanyard ? 1 : 0);
     const translationConsent = String(session.metadata?.translation_consent || '') === '1';
     const autoRenew = String(session.metadata?.auto_renew || '') === '1' && typeof session.subscription === 'string';
+    const isTrial = String(session.metadata?.trial_discount_applied || '') === '1';
     const renewalPricePence = autoRenew ? Number(session.metadata?.renewal_price_pence || RENEWAL_PRICES[packageType]?.[membershipTermYears] || 0) : null;
 
     if (paymentType === 'initial_membership') {
@@ -683,14 +694,23 @@ export default async (request) => {
       const membershipEnd = new Date(paidAt);
       membershipEnd.setUTCFullYear(membershipEnd.getUTCFullYear() + membershipTermYears);
       let subscription = null;
-      if (autoRenew) subscription = await stripeRequest(`subscriptions/${encodeURIComponent(session.subscription)}`);
+      if (autoRenew) {
+        if (isTrial) {
+          await stripeRequest(`subscriptions/${encodeURIComponent(session.subscription)}`, 'POST', {
+            'discounts[0][coupon]': TRIAL_RENEWAL_PROTECTION_COUPON,
+            'metadata[trial_no_charge]': '1',
+            proration_behavior: 'none'
+          });
+        }
+        subscription = await stripeRequest(`subscriptions/${encodeURIComponent(session.subscription)}`);
+      }
       const membershipResponse = await fetch(
         `${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${encodeURIComponent(userId)}`,
         {
           method: 'PATCH',
           headers: supabaseHeaders('return=minimal'),
           body: JSON.stringify({
-            membership_status: 'ACTIVE', payment_status: 'PAID', payment_provider: 'STRIPE', payment_reference: session.id,
+            membership_status: isTrial ? 'PILOT' : 'ACTIVE', payment_status: 'PAID', payment_provider: 'STRIPE', payment_reference: session.id,
             paid_at: paidAt.toISOString(), membership_start: paidAt.toISOString(), membership_end: membershipEnd.toISOString(), initial_fee_pence: packagePricePence,
             package_type: packageType, membership_term_years: membershipTermYears, auto_renew_enabled: autoRenew,
             auto_renew_requested: autoRenew,
