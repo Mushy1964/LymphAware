@@ -95,6 +95,23 @@ async function activeInitialPromotion(code, { requireTrial = false, packageType 
   };
 }
 
+export async function authoriseExistingTrialParticipant(codeValue, email = '') {
+  const code = normaliseInviteCode(codeValue);
+  if (!code || !(await pilotInvitationExists(code, email))) {
+    return { allowed: false, code: '', promotionCodeId: '', isTrial: true };
+  }
+  const promotion = await activeInitialPromotion(code, { requireTrial: true });
+  if (!promotion) {
+    return { allowed: false, code: '', promotionCodeId: '', isTrial: true };
+  }
+  return {
+    allowed: true,
+    code: promotion.code,
+    promotionCodeId: promotion.id,
+    isTrial: true
+  };
+}
+
 export async function authoriseRegistration(codeValue, email = '', packageType = '') {
   const mode = await getRegistrationMode();
   const code = normaliseInviteCode(codeValue);
