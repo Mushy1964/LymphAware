@@ -98,6 +98,9 @@ function checkProjectConsistency() {
   const startMembershipCheckoutPath = path.join(root, 'netlify/functions/start-membership-checkout.mjs');
   const initialMembershipCheckoutPath = path.join(root, 'netlify/functions/_shared/initial-membership-checkout.mjs');
   const adminOrdersPath = path.join(root, 'netlify/functions/admin-orders-list.mjs');
+  const adminDashboardPath = path.join(root, 'admin/index.html');
+  const adminOrderDetailPath = path.join(root, 'admin/orders/index.html');
+  const signInPath = path.join(root, 'sign-in/index.html');
   const stylesPath = path.join(root, 'css/styles.css');
   const homeStylesPath = path.join(root, 'css/home.css');
   const publicChromePath = path.join(root, 'css/public-chrome.css');
@@ -115,6 +118,9 @@ function checkProjectConsistency() {
   const startMembershipCheckout = fs.readFileSync(startMembershipCheckoutPath, 'utf8');
   const initialMembershipCheckout = fs.readFileSync(initialMembershipCheckoutPath, 'utf8');
   const adminOrders = fs.readFileSync(adminOrdersPath, 'utf8');
+  const adminDashboard = fs.readFileSync(adminDashboardPath, 'utf8');
+  const adminOrderDetail = fs.readFileSync(adminOrderDetailPath, 'utf8');
+  const signIn = fs.readFileSync(signInPath, 'utf8');
   const styles = fs.readFileSync(stylesPath, 'utf8');
   const homeStyles = fs.readFileSync(homeStylesPath, 'utf8');
   const publicChrome = fs.readFileSync(publicChromePath, 'utf8');
@@ -231,6 +237,34 @@ function checkProjectConsistency() {
     !initialMembershipCheckout.includes('selection.packageDefinition.initialProductId')
   ) {
     errors.push('Public promotional discounts are not restricted to membership products and could affect postage.');
+  }
+  if (
+    checkout.includes("allow_promotion_codes") ||
+    !checkout.includes("if (trialPromotionCodeId) stripeForm.append('discounts[0][promotion_code]', trialPromotionCodeId)")
+  ) {
+    errors.push('Later member purchases can accept public promotion codes or fail to reapply the private-trial discount.');
+  }
+  if (
+    !webhook.includes("const TRIAL_RENEWAL_PROTECTION_COUPON = 'LYMPHAWARE_TRIAL_RENEWAL_FREE_V1'") ||
+    !webhook.includes("'discounts[0][coupon]': TRIAL_RENEWAL_PROTECTION_COUPON") ||
+    !webhook.includes("membership_status: isTrial ? 'PILOT' : 'ACTIVE'")
+  ) {
+    errors.push('Private-trial automatic renewals are not protected from future charges or trial memberships are not marked as PILOT.');
+  }
+  if (
+    !portal.includes("membershipStatus.textContent='Trial Member'") ||
+    !portal.includes("Private trial: your trial code is applied automatically to this entire order, including postage & packing.") ||
+    !portal.includes("Continue to Secure Checkout – £0.00 today")
+  ) {
+    errors.push('Patient Portal does not clearly show the zero-cost private-trial status and later trial purchases.');
+  }
+  if (
+    !adminDashboard.includes("order.membership?.membership_status||'').toUpperCase()==='PILOT'") ||
+    !adminOrderDetail.includes("order.membership?.membership_status || '').toUpperCase() === 'PILOT'") ||
+    !adminDashboard.includes("completed&&order.order_type==='INITIAL_MEMBERSHIP'") ||
+    !signIn.includes("window.location.href = '/admin/';")
+  ) {
+    errors.push('Administration does not clearly identify trial orders, restrict welcome letters to initial memberships, or route the administrator to the main order dashboard.');
   }
   if (!register.includes('id="auto-renew-acknowledgement" disabled') || !register.includes("acknowledgement.disabled=!enabled")) {
     errors.push('Registration renewal acknowledgement is not visibly disabled until automatic renewal is selected.');
