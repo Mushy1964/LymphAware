@@ -40,6 +40,22 @@ async function supabaseRequest(path, options = {}) {
   return response;
 }
 
+async function cancelStripeSubscription(subscriptionId) {
+  if (!subscriptionId) return;
+  const stripeKey = env('STRIPE_SECRET_KEY');
+  if (!stripeKey) throw new Error('Stripe is not configured for account deletion.');
+  const response = await fetch(`https://api.stripe.com/v1/subscriptions/${encodeURIComponent(subscriptionId)}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${stripeKey}`,
+      'Stripe-Version': '2026-07-29.dahlia'
+    }
+  });
+  if (!response.ok && response.status !== 404) {
+    throw new Error('Automatic renewal could not be cancelled before account deletion.');
+  }
+}
+
 async function sendDeletionEmails(email, lymphawareId) {
   const apiKey = env('RESEND_API_KEY');
   if (!apiKey) return;
@@ -49,7 +65,7 @@ async function sendDeletionEmails(email, lymphawareId) {
   const customerSubject = 'Your LymphAware ID account has been deleted';
   const customerText = 'Your LymphAware ID account, QR profile, additional-language profiles and stored photograph have been permanently deleted. Completed transaction records are retained only where required for financial and legal record keeping.\n\nIf you did not expect this email, contact admin@lymphawareid.com.';
   const adminSubject = `LymphAware ID account deleted${reference}`;
-  const adminText = `A member completed the self-service account deletion process${reference}. Their profile, translated profiles, photograph and login were removed. Identifying delivery and email details were removed from retained completed order records.`;
+  const adminText = `A member completed the self-service account deletion process${reference}. Any Stripe subscription/automatic renewal was cancelled before deletion. Their profile, translated profiles, photograph and login were removed. Identifying delivery and email details were removed from retained completed order records.`;
   await Promise.allSettled([
     fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -119,6 +135,16 @@ export default async (request) => {
       return json({
         error: `Your account cannot be deleted while order ORD-${String(openOrder.order_number || 0).padStart(6, '0')} is still being processed. Please contact admin@lymphawareid.com if you need help.`
       }, 409);
+    }
+
+    const membershipResponse = await fetch(
+      `${base}/rest/v1/memberships?user_id=eq.${encodeURIComponent(user.id)}&select=id,stripe_subscription_id,auto_renew_enabled&limit=1`,
+      { headers }
+    );
+    if (!membershipResponse.ok) throw new Error('Unable to load the member membership.');
+    const membership = (await membershipResponse.json())?.[0] || null;
+    if (membership?.stripe_subscription_id) {
+      await cancelStripeSubscription(membership.stripe_subscription_id);
     }
 
     const profileResponse = await fetch(
