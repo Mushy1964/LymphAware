@@ -240,12 +240,11 @@ function checkProjectConsistency() {
   }
   if (
     checkout.includes("allow_promotion_codes") ||
-    !checkout.includes("if (trialPromotionCodeId) stripeForm.append('discounts[0][promotion_code]', trialPromotionCodeId)") ||
-    !checkout.includes("authoriseExistingTrialParticipant(savedInviteCode, user.email || '')") ||
+    !checkout.includes("const trialLaterOrderCouponId = isTrialParticipant ? 'LYMPHAWARE_TRIAL_LATER_100_V1' : ''") ||
     !checkout.includes("membership.membership_status === 'PILOT'") ||
-    !registrationAccess.includes('export async function authoriseExistingTrialParticipant')
+    !checkout.includes("if (trialLaterOrderCouponId) stripeForm.append('discounts[0][coupon]', trialLaterOrderCouponId)")
   ) {
-    errors.push('Later member purchases can accept public promotion codes or fail to preserve the private-trial discount after registration mode changes.');
+    errors.push('Later member purchases can accept public promotion codes or fail to keep established pilot orders at £0.');
   }
   if (
     !webhook.includes("const TRIAL_RENEWAL_PROTECTION_COUPON = 'LYMPHAWARE_TRIAL_RENEWAL_FREE_V1'") ||
