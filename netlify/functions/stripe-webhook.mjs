@@ -305,6 +305,7 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
   if (!apiKey || !customerEmail) return { ok: false, error: 'Customer email notification is not configured.' };
 
   const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphawareid.com>').trim();
+  const isTrial = String(session.metadata?.trial_discount_applied || '') === '1';
   const orderRef = `ORD-${String(order.order_number).padStart(6, '0')}`;
   const itemLines = items.map((item) => `• ${item.quantity} × ${item.description}${item.language_name ? ` – ${item.language_name}` : ''}`).join('\n');
   const postageChargePence = Number(session.metadata?.shipping_pence || session.total_details?.amount_shipping || 0);
@@ -324,7 +325,7 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
       ? `YOUR SECURE ACCOUNT\n\nYour checkout is complete, so your LymphAware ID account and membership have now been created. Confirm your email address and choose your password using this secure link:\n${accountSetupLink}\n\nAfter choosing your password, you can sign in to your Patient Portal at:\nhttps://lymphawareid.com/sign-in/\n\n`
       : `YOUR SECURE ACCOUNT\n\nYour checkout is complete and your LymphAware ID account has been created. If you need a new account-setup link, please contact admin@lymphawareid.com.\n\n`;
     nextSteps =
-      `Your ${membershipTermYears}-year LymphAware ID membership is now active.\n\n` +
+      `${isTrial ? 'Your private-trial membership' : `Your ${membershipTermYears}-year LymphAware ID membership`} is now active.\n\n` +
       setupSection +
       `WHAT YOU NEED TO DO NEXT\n\n` +
       `Once your password is set, please complete these two mandatory details in your Patient Portal before your LymphAware ID card can be produced:\n\n` +
@@ -342,7 +343,9 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
     }
     if (String(session.metadata?.auto_renew || '') === '1') {
       const renewalPence = Number(session.metadata?.renewal_price_pence || 0);
-      nextSteps += `\n\nAUTOMATIC RENEWAL\n\nYou chose automatic renewal. At the end of this ${membershipTermYears}-year term, your digital membership will renew for £${(renewalPence / 100).toFixed(2)} for another ${membershipTermYears} year${membershipTermYears === 1 ? '' : 's'}. No new cards, lanyards or postage are included. You can cancel automatic renewal from your Patient Portal before the renewal date.`;
+      nextSteps += isTrial
+        ? `\n\nAUTOMATIC RENEWAL\n\nYou chose to test automatic renewal. The normal renewal price is £${(renewalPence / 100).toFixed(2)} every ${membershipTermYears} year${membershipTermYears === 1 ? '' : 's'}. Your private-trial membership has a 100% renewal discount, so no renewal payment will be taken while it remains a private-trial account. No new cards, lanyards or postage are included. You can turn off automatic renewal from your Patient Portal.`
+        : `\n\nAUTOMATIC RENEWAL\n\nYou chose automatic renewal. At the end of this ${membershipTermYears}-year term, your digital membership will renew for £${(renewalPence / 100).toFixed(2)} for another ${membershipTermYears} year${membershipTermYears === 1 ? '' : 's'}. No new cards, lanyards or postage are included. You can cancel automatic renewal from your Patient Portal before the renewal date.`;
     }
   } else if (paymentType === 'additional_items') {
     subject = `Your LymphAware ID additional order is confirmed – ${orderRef}`;
@@ -359,7 +362,7 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
   }
 
   const emailText =
-    `Thank you for your LymphAware ID purchase.\n\nOrder: ${orderRef}\n\nItems:\n${itemLines || 'Your selected LymphAware ID package'}\n\nPostage & packing (before any promotion discount): ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
+    `${isTrial && paymentType === 'initial_membership' ? 'Thank you for joining the LymphAware ID private trial.' : 'Thank you for your LymphAware ID purchase.'}\n\nOrder: ${orderRef}\n\nItems:\n${itemLines || 'Your selected LymphAware ID package'}\n\nPostage & packing (before any promotion discount): ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
     `${nextSteps}\n\nIf you need help, contact admin@lymphawareid.com.\n\nThe LymphAware ID Team`;
 
   try {
