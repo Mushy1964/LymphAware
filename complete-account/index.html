@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete your LymphAware ID account</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/secondary-header.css">
+  <link rel="stylesheet" href="/css/card-system.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+  <style>
+    .portal-page{min-height:calc(100vh - 84px);display:flex;align-items:center;justify-content:center;padding:var(--space-account-top) var(--space-page-gutter) var(--space-account-bottom);background:linear-gradient(135deg,rgba(36,122,36,.06),rgba(0,83,183,.05))}
+    .portal-card{width:100%;max-width:560px;padding:38px;border-radius:22px;background:#fff;box-shadow:var(--content-shadow)}
+    .portal-card h1{margin:0 0 12px;font-size:2.3rem;line-height:1.15}
+    .portal-intro{margin:0 0 28px;color:var(--muted);font-size:1.05rem;line-height:1.55}
+    .form-group{margin-bottom:20px}.form-group label{display:block;margin-bottom:7px;font-weight:700}
+    .form-group input{width:100%;min-height:48px;padding:11px 13px;border:1px solid #bfcbd2;border-radius:9px;font:inherit;background:#fff}
+    .form-group input:focus{outline:3px solid rgba(0,83,183,.18);border-color:var(--blue)}
+    .password-help{margin:7px 0 0;color:var(--muted);font-size:.9rem;line-height:1.45}
+    .portal-button{width:100%;margin-top:4px}
+    #account-message{margin:16px 0 0;line-height:1.5}
+    .portal-links{margin-top:22px;padding-top:18px;border-top:1px solid var(--border);text-align:center}
+    .portal-links a{color:var(--blue);font-weight:700}
+    @media(max-width:680px){.portal-page{padding:var(--space-account-mobile-top) var(--space-page-gutter-mobile) var(--space-account-mobile-bottom)}.portal-card{padding:26px 20px}.portal-card h1{font-size:2rem}}
+  </style>
+  <link rel="stylesheet" href="/css/brand-header.css?v=20260921-7">
+</head>
+<body>
+  <header class="site-header secondary-header">
+    <div class="container header-inner">
+      <a href="/" class="header-brand" aria-label="Back to LymphAware ID website">
+        <img class="header-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood">
+      </a>
+      <div class="header-actions"><a href="/" class="button button-secondary back-to-website-button">Back to Website</a></div>
+    </div>
+  </header>
+
+  <main class="portal-page">
+    <section class="portal-card" aria-labelledby="account-heading">
+      <p class="eyebrow">Patient Portal</p>
+      <h1 id="account-heading">Complete your secure account</h1>
+      <p class="portal-intro">Your checkout has already been completed. Confirming this secure link proves that you can access the email address used for your LymphAware ID membership. Choose your password below to finish setting up your Patient Portal.</p>
+
+      <form id="account-form">
+        <div class="form-group">
+          <label for="password">Create a password</label>
+          <input type="password" id="password" autocomplete="new-password" minlength="8" required>
+          <p class="password-help">Use at least 8 characters.</p>
+        </div>
+        <div class="form-group">
+          <label for="confirm-password">Confirm password</label>
+          <input type="password" id="confirm-password" autocomplete="new-password" minlength="8" required>
+        </div>
+        <button type="submit" class="button button-primary portal-button" disabled>Complete account setup</button>
+        <p id="account-message" role="status" aria-live="polite">Checking your secure account-setup link...</p>
+      </form>
+
+      <div class="portal-links"><a href="/sign-in/">Already completed setup? Sign in</a></div>
+    </section>
+  </main>
+
+  <script>
+    const SUPABASE_URL='https://thbhsktcenhrnxzkbjus.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY='sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+    const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+    const form=document.getElementById('account-form');
+    const message=document.getElementById('account-message');
+    const submitButton=form.querySelector('button[type="submit"]');
+    let setupReady=false;
+
+    function enableForm(){
+      setupReady=true;
+      submitButton.disabled=false;
+      message.textContent='';
+    }
+
+    supabaseClient.auth.onAuthStateChange((event,session)=>{
+      if((event==='SIGNED_IN'||event==='PASSWORD_RECOVERY'||event==='INITIAL_SESSION')&&session) enableForm();
+    });
+
+    async function checkSession(){
+      const {data:{session}}=await supabaseClient.auth.getSession();
+      if(session){enableForm();return}
+      window.setTimeout(()=>{
+        if(!setupReady) message.textContent='This account-setup link is invalid or has expired. Please contact admin@lymphawareid.com for a new secure setup link.';
+      },1800);
+    }
+
+    form.addEventListener('submit',async event=>{
+      event.preventDefault();
+      if(!setupReady){message.textContent='Please open the latest secure account-setup link sent to your email address.';return}
+      const password=document.getElementById('password').value;
+      const confirmPassword=document.getElementById('confirm-password').value;
+      if(password.length<8){message.textContent='Please choose a password containing at least 8 characters.';return}
+      if(password!==confirmPassword){message.textContent='The passwords do not match. Please try again.';return}
+      submitButton.disabled=true;
+      message.textContent='Finishing your secure account setup...';
+      const {error}=await supabaseClient.auth.updateUser({password});
+      if(error){console.error(error);message.textContent='Your account could not be completed. Please contact admin@lymphawareid.com for assistance.';submitButton.disabled=false;return}
+      message.textContent='Your account is ready. Opening your Patient Portal...';
+      window.location.href='/portal/?account=ready';
+    });
+
+    checkSession();
+  </script>
+</body>
+</html>
