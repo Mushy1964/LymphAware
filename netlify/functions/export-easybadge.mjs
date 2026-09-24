@@ -312,7 +312,7 @@ export default async (request) => {
         'Content-Type': 'text/csv; charset=utf-8',
         'Content-Disposition': 'attachment; filename="LymphAware_EasyBadge.csv"',
         'Cache-Control': 'no-store',
-        'X-LymphAware ID-Card-Count': String(Math.max(1, Number(job.quantity || 1)))
+        'X-LymphAware-ID-Card-Count': String(Math.max(1, Number(job.quantity || 1)))
       }
     });
   } catch (error) {

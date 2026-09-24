@@ -1080,14 +1080,14 @@
         : '';
 
       const prepareButton =
-        status === 'READY'
+        status === 'READY' || status === 'PREPARED'
           ? `
             <button
               type="button"
               class="button button-primary easybadge-export"
               data-profile-id="${escapeHtml(profile.id)}"
               data-record-type="${escapeHtml(profile.record_type || 'PRIMARY')}">
-              Prepare for EasyBadge
+              ${status === 'PREPARED' ? 'Download EasyBadge file again' : 'Prepare for EasyBadge'}
             </button>
           `
           : '';
