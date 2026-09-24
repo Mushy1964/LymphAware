@@ -1536,7 +1536,7 @@ async function exportAllEasyBadge() {
     const readyToPackOrders = Array.isArray(result.ready_to_pack_orders) ? result.ready_to_pack_orders : [];
     if (readyToPackOrders.length) {
       const readyOrder = readyToPackOrders[0];
-      window.location.href = `/admin/orders/?order=${encodeURIComponent(readyOrder.id)}#order-${encodeURIComponent(readyOrder.id)}`;
+      window.location.href = '/admin/?stage=FULFILMENT';
       return;
     }
 
@@ -1548,7 +1548,7 @@ async function exportAllEasyBadge() {
       if (ordersResponse.ok) {
         const readyOrder = (ordersResult.orders || []).find(order => orderIds.includes(order.id) && order.ready_to_complete);
         if (readyOrder) {
-          window.location.href = `/admin/orders/?order=${encodeURIComponent(readyOrder.id)}#order-${encodeURIComponent(readyOrder.id)}`;
+          window.location.href = '/admin/?stage=FULFILMENT';
           return;
         }
       }
