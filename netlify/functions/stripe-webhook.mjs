@@ -263,10 +263,11 @@ async function sendOrderNotification(order, session, items) {
   const totalPaid = `£${((session.amount_total || 0) / 100).toFixed(2)}`;
   const postageChargePence = Number(session.metadata?.shipping_pence || session.total_details?.amount_shipping || 0);
   const postagePaid = `£${(postageChargePence / 100).toFixed(2)}`;
-  const subject = `New LymphAware ID order – ${orderRef}`;
+  const isTrial = String(session.metadata?.trial_discount_applied || '') === '1';
+  const subject = isTrial ? `New LymphAware ID PRIVATE TRIAL order – ${orderRef}` : `New LymphAware ID order – ${orderRef}`;
   const emailText =
-    `A new LymphAware ID order has been paid and requires attention.\n\n` +
-    `Order: ${orderRef}\nCustomer: ${customerName}\nEmail: ${customerEmail}\nPostage & packing (before any promotion discount): ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
+    `${isTrial ? 'A new LymphAware ID private-trial order' : 'A new LymphAware ID order'} has been paid and requires attention.\n\n` +
+    `Order: ${orderRef}\nCustomer: ${customerName}\nEmail: ${customerEmail}\n${isTrial ? 'Private trial: Yes – customer charge £0.00\n' : ''}Postage & packing (before any promotion discount): ${postagePaid}\nTotal paid: ${totalPaid}\n\n` +
     `Items:\n${itemLines || 'No item detail recorded'}\n\n` +
     `Open LymphAware ID Administration to manage fulfilment:\nhttps://lymphawareid.com/admin/orders/`;
 
