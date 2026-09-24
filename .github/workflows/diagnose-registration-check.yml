@@ -1,0 +1,20 @@
+name: Diagnose registration check
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/diagnose-registration-check.yml'
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call live registration email check
+        shell: bash
+        run: |
+          set -x
+          curl -i -sS -X POST 'https://lymphawareid.com/.netlify/functions/check-registration-email' \
+            -H 'Content-Type: application/json' \
+            --data '{"email":"diagnostic+registration@example.com","inviteCode":"LYMPHAWAREIDTRIAL"}'
