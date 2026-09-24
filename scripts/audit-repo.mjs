@@ -204,13 +204,13 @@ function checkProjectConsistency() {
   if (
     !registrationAccess.includes("if (!code)") ||
     !registrationAccess.includes("mode, code: '', promotionCodeId: '', isTrial: false") ||
-    !registrationAccess.includes("const promotion = await activeInitialPromotion(code)")
+    !registrationAccess.includes("const promotion = await activeInitialPromotion(code, { packageType })")
   ) {
     errors.push('Open registration does not support an empty optional discount code and validated one-time promotional codes.');
   }
   if (
     !startMembershipCheckout.includes("const suppliedCode = body.discountCode ?? body.inviteCode ?? ''") ||
-    !startMembershipCheckout.includes('authoriseRegistration(suppliedCode, email)') ||
+    !startMembershipCheckout.includes('authoriseRegistration(suppliedCode, email, body.packageType)') ||
     !startMembershipCheckout.includes('promotionCodeId: registrationAccess.promotionCodeId') ||
     !initialMembershipCheckout.includes("registration_invite_code: isTrial ? promotionCode : ''")
   ) {
@@ -224,6 +224,13 @@ function checkProjectConsistency() {
     initialMembershipCheckout.includes("allow_promotion_codes")
   ) {
     errors.push('Initial discounts can bypass server validation or are not applied automatically at Stripe Checkout.');
+  }
+  if (
+    !registrationAccess.includes('appliesToProducts.includes(selectedPackage.initialProductId)') ||
+    !registrationAccess.includes('appliesToProducts.includes(selectedPackage.renewalProductId)') ||
+    !initialMembershipCheckout.includes('selection.packageDefinition.initialProductId')
+  ) {
+    errors.push('Public promotional discounts are not restricted to membership products and could affect postage.');
   }
   if (!register.includes('id="auto-renew-acknowledgement" disabled') || !register.includes("acknowledgement.disabled=!enabled")) {
     errors.push('Registration renewal acknowledgement is not visibly disabled until automatic renewal is selected.');
