@@ -1,3 +1,4 @@
+import { verifyAdminRequest as verifyAdmin } from './_shared/admin-auth.mjs';
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -16,22 +17,6 @@ function serviceHeaders(range) {
     Accept: 'application/json',
     ...(range ? { Range: range } : {})
   };
-}
-
-async function verifyAdmin(request) {
-  const authHeader = request.headers.get('authorization') || '';
-  if (!authHeader.startsWith('Bearer ')) return null;
-  const accessToken = authHeader.slice(7).trim();
-  const response = await fetch(`${env('SUPABASE_URL')}/auth/v1/user`, {
-    headers: {
-      apikey: env('SUPABASE_PUBLISHABLE_KEY'),
-      Authorization: `Bearer ${accessToken}`
-    }
-  });
-  if (!response.ok) return null;
-  const user = await response.json();
-  const adminEmail = env('LYMPHAWARE_ADMIN_EMAIL').toLowerCase();
-  return user?.email && user.email.toLowerCase() === adminEmail ? user : null;
 }
 
 async function fetchAll(path) {
