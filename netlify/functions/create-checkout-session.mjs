@@ -81,6 +81,25 @@ function appendInlinePrice(stripeForm, index, name, amountPence, description = '
   if (description) stripeForm.append(`line_items[${index}][price_data][product_data][description]`, description);
   stripeForm.append(`line_items[${index}][quantity]`, String(quantity));
 }
+
+async function activeSavedTrialPromotionCodeId(code) {
+  if (!code) return '';
+  const parameters = new URLSearchParams({ code: String(code).trim().toUpperCase(), active: 'true', limit: '1' });
+  parameters.append('expand[]', 'data.promotion.coupon');
+  const response = await fetch(`https://api.stripe.com/v1/promotion_codes?${parameters}`, {
+    headers: {
+      Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+      'Stripe-Version': '2026-07-29.dahlia'
+    }
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error('The saved private-trial discount could not be checked.');
+  const promotionCode = result?.data?.[0];
+  const coupon = promotionCode?.promotion?.coupon || promotionCode?.coupon;
+  return promotionCode?.active === true && coupon?.valid !== false && Number(coupon?.percent_off) === 100
+    ? String(promotionCode.id || '')
+    : '';
+}
 function parseQuantity(value) {
   const quantity = Number(value);
   return Number.isInteger(quantity) && quantity >= 0 && quantity <= 10 ? quantity : null;
@@ -190,11 +209,11 @@ export default async (request) => {
     if (!user?.id) return json({ error: 'Unable to verify your LymphAware ID account.' }, 401);
 
     const savedInviteCode = String(user?.user_metadata?.registration_invite_code || '').trim();
+    const isTrialParticipant = user?.user_metadata?.trial_participant === true;
     let trialPromotionCodeId = '';
-    if (savedInviteCode) {
+    if (isTrialParticipant && savedInviteCode) {
       try {
-        const trialAccess = await authoriseRegistration(savedInviteCode, user.email || '');
-        trialPromotionCodeId = trialAccess?.promotionCodeId || '';
+        trialPromotionCodeId = await activeSavedTrialPromotionCodeId(savedInviteCode);
       } catch (error) {
         console.error('Unable to check the existing member trial discount:', error instanceof Error ? error.message : error);
       }
@@ -480,4 +499,3 @@ export default async (request) => {
   }
 };
 import { MEMBERSHIP_CONTRACT_VERSION, recordContractEvent } from './_shared/membership-contract.mjs';
-import { authoriseRegistration } from './_shared/registration-access.mjs';
