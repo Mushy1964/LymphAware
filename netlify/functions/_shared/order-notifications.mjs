@@ -1,3 +1,4 @@
+import { brandedEmailHtml } from './email-branding.mjs';
 function env(name) {
   return String(Netlify.env.get(name) || '').trim();
 }
@@ -39,7 +40,8 @@ async function sendEmail({ to, subject, text }) {
       from: env('ORDER_NOTIFICATION_FROM') || 'LymphAware ID <notifications@lymphawareid.com>',
       to: [to],
       subject,
-      text
+      text,
+      html: brandedEmailHtml({ title: subject, text })
     })
   });
   if (!response.ok) return { ok: false, error: await response.text() };

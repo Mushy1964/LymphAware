@@ -1,3 +1,4 @@
+import { brandedEmailHtml } from './email-branding.mjs';
 export const MEMBERSHIP_CONTRACT_VERSION = 'DMCCA-READY-2026-09-12';
 export const FIRST_REMINDER_WINDOW = '60 to 45 days before renewal';
 export const FINAL_REMINDER_WINDOW = '14 to 7 days before renewal';
@@ -59,7 +60,8 @@ export async function sendMembershipEmail({ to, subject, text, idempotencyKey = 
       to: [to],
       reply_to: ['admin@lymphawareid.com'],
       subject,
-      text
+      text,
+      html: brandedEmailHtml({ title: subject, text })
     })
   });
   return response.ok ? { ok: true } : { ok: false, error: await response.text() };
