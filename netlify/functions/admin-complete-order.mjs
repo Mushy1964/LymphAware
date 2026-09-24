@@ -1,3 +1,4 @@
+import { verifyAdminRequest } from './_shared/admin-auth.mjs';
 import { notifyOrderCompleted } from './_shared/order-notifications.mjs';
 
 function json(body, status = 200) {
@@ -22,15 +23,7 @@ function serviceHeaders(prefer) {
 }
 
 async function requireAdmin(request) {
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader?.startsWith('Bearer ')) return false;
-  const accessToken = authHeader.slice(7).trim();
-  const response = await fetch(`${env('SUPABASE_URL')}/auth/v1/user`, {
-    headers: { apikey: env('SUPABASE_PUBLISHABLE_KEY'), Authorization: `Bearer ${accessToken}` }
-  });
-  if (!response.ok) return false;
-  const user = await response.json();
-  return Boolean(user?.email && user.email.toLowerCase() === String(env('LYMPHAWARE_ADMIN_EMAIL') || '').trim().toLowerCase());
+  return Boolean(await verifyAdminRequest(request));
 }
 
 export default async (request) => {
