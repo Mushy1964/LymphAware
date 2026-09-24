@@ -234,6 +234,44 @@
       border-radius: 10px;
     }
 
+    .lymph-depth-legend {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin: 16px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .lymph-depth-legend li {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      padding: 9px 11px;
+      border-radius: 8px;
+      background: #f5faf8;
+      color: #465c6a;
+      font-size: .9rem;
+      line-height: 1.45;
+    }
+
+    .lymph-depth-legend-number {
+      display: inline-grid;
+      flex: 0 0 24px;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: #168645;
+      font-size: .78rem;
+      font-weight: 800;
+    }
+
+    .lymph-depth-legend strong {
+      color: #17283d;
+    }
+
     .lymph-depth-figure figcaption {
       margin-top: 14px;
       color: #536273;
@@ -430,6 +468,10 @@
       .lymph-flow-panel {
         padding: 20px;
       }
+
+      .lymph-depth-legend {
+        grid-template-columns: 1fr;
+      }
     }
 
     .lymph-stage-section {
@@ -579,12 +621,19 @@
 
         <div class="lymph-depth-layout">
           <figure class="lymph-depth-figure">
-            <a href="/assets/understanding/superficial-deep-lymphatics-suami.webp" target="_blank" rel="noopener noreferrer" aria-label="Open a larger cross-sectional diagram of superficial and deep lymphatic vessels">
-              <img src="/assets/understanding/superficial-deep-lymphatics-suami.webp" width="1800" height="1053" loading="lazy" alt="Cross-sectional medical diagram showing lymph capillaries in the skin, precollectors in the dermis, superficial collecting vessels in subcutaneous tissue above the deep fascia, and a deep collecting vessel below the fascia.">
+            <a href="/assets/understanding/superficial-deep-lymphatics-3d.webp" target="_blank" rel="noopener noreferrer" aria-label="Open a larger 3D illustration of superficial and deep lymphatic vessels">
+              <img src="/assets/understanding/superficial-deep-lymphatics-3d.webp" width="1672" height="941" loading="lazy" alt="Three-dimensional cutaway illustration of skin, fatty tissue, fascia and muscle. Green superficial lymphatic vessels are shown above the fascia, while a separate green deep lymphatic vessel runs beside an artery and vein below the fascia.">
             </a>
+            <ol class="lymph-depth-legend" aria-label="Illustration key">
+              <li><span class="lymph-depth-legend-number">1</span><span><strong>Skin and dermis:</strong> the upper peach and pink layers.</span></li>
+              <li><span class="lymph-depth-legend-number">2</span><span><strong>Subcutaneous tissue:</strong> the yellow fatty layer beneath the skin.</span></li>
+              <li><span class="lymph-depth-legend-number">3</span><span><strong>Deep fascia:</strong> the pale band separating superficial and deep tissues.</span></li>
+              <li><span class="lymph-depth-legend-number">4</span><span><strong>Superficial lymphatics:</strong> the green network and collecting vessel above the fascia.</span></li>
+              <li><span class="lymph-depth-legend-number">5</span><span><strong>Deep lymphatics:</strong> the separate green vessel below the fascia, beside the red artery and blue vein.</span></li>
+            </ol>
             <figcaption>
-              The diagram uses the deep fascia as the dividing line: superficial collecting vessels sit above it in the subcutaneous tissue; deep collecting vessels sit below it.
-              <span class="image-credit">Figure 1 from <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7281515/" target="_blank" rel="noopener noreferrer">Suami H, <em>Anatomical Theories of the Pathophysiology of Cancer-Related Lymphoedema</em> (2020)</a>, reproduced under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>.</span>
+              The deep fascia is the dividing line: superficial collecting vessels sit above it in the subcutaneous tissue; deep collecting vessels sit below it.
+              <span class="image-credit">Original LymphAware ID 3D illustration, based on the anatomical arrangement described by <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7281515/" target="_blank" rel="noopener noreferrer">Suami H, <em>Anatomical Theories of the Pathophysiology of Cancer-Related Lymphoedema</em> (2020)</a>. Simplified for explanation and not to scale.</span>
             </figcaption>
           </figure>
 
