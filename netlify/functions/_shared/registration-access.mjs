@@ -133,6 +133,7 @@ export async function authoriseRegistration(codeValue, email = '', packageType =
       mode,
       code: promotion.code,
       promotionCodeId: promotion.id,
+      discount: { percentOff: promotion.percentOff, amountOff: promotion.amountOff, currency: promotion.currency },
       isTrial: true,
       codeInvalid: false
     };
@@ -156,6 +157,7 @@ export async function authoriseRegistration(codeValue, email = '', packageType =
     mode,
     code: promotion.code,
     promotionCodeId: promotion.id,
+    discount: { percentOff: promotion.percentOff, amountOff: promotion.amountOff, currency: promotion.currency },
     isTrial: false,
     codeInvalid: false
   };

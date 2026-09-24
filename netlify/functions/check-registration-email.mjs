@@ -56,7 +56,11 @@ export default async request => {
         error: 'An account may already exist for this email address. Please sign in to continue, or use Forgotten password.'
       }, 409);
     }
-    return json({ available: true });
+    return json({
+      available: true,
+      discount: registrationAccess.discount || null,
+      isTrial: registrationAccess.isTrial
+    });
   } catch (error) {
     console.error('Registration email check failed:', error instanceof Error ? error.message : error);
     await finishAfter(startedAt);
