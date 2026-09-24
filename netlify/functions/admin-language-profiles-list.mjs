@@ -1,3 +1,4 @@
+import { verifyAdminRequest } from './_shared/admin-auth.mjs';
 const FETCH_TIMEOUT_MS = 10000;
 
 async function fetchWithTimeout(url, options = {}) {
@@ -20,35 +21,8 @@ export default async (request) => {
   }
 
   try {
-    const authHeader = request.headers.get('authorization');
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ error: 'Authentication required.' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    const accessToken = authHeader.replace('Bearer ', '').trim();
-
-    const userResponse = await fetchWithTimeout(`${process.env.SUPABASE_URL}/auth/v1/user`, {
-      headers: {
-        apikey: process.env.SUPABASE_PUBLISHABLE_KEY,
-        Authorization: `Bearer ${accessToken}`
-      }
-    });
-
-    if (!userResponse.ok) {
-      return new Response(JSON.stringify({ error: 'Unable to verify your account.' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    const user = await userResponse.json();
-    const adminEmail = String(process.env.LYMPHAWARE_ADMIN_EMAIL || '').trim().toLowerCase();
-
-    if (!user?.email || user.email.toLowerCase() !== adminEmail) {
+    const user = await verifyAdminRequest(request);
+    if (!user) {
       return new Response(JSON.stringify({ error: 'Administrator access required.' }), {
         status: 403,
         headers: { 'Content-Type': 'application/json' }
