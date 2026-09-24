@@ -12,6 +12,45 @@
   <script src="/js/public-chrome.js" defer></script>
   <link rel="stylesheet" href="/css/brand-header.css?v=20260921-7">
   <style>
+    .lymph-hero-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+      align-items: center;
+      gap: clamp(28px, 4vw, 58px);
+    }
+
+    .lymph-hero-layout .page-hero-inner,
+    .lymph-hero-layout .page-hero p {
+      max-width: none;
+    }
+
+    .lymph-hero-photo {
+      margin: 0;
+      overflow: hidden;
+      aspect-ratio: 4 / 5;
+      border-radius: 22px;
+      box-shadow: 0 16px 34px rgba(31, 47, 66, .12);
+    }
+
+    .lymph-hero-photo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 58%;
+    }
+
+    @media (max-width: 900px) {
+      .lymph-hero-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .lymph-hero-photo {
+        width: min(100%, 460px);
+        margin-inline: auto;
+      }
+    }
+
     .lymph-stage-section {
       background: linear-gradient(180deg, #ffffff 0%, #f7fbfd 100%);
     }
@@ -130,7 +169,7 @@
   <main>
 
     <section class="page-hero">
-      <div class="container">
+      <div class="container lymph-hero-layout">
         <div class="page-hero-inner">
 
           <p class="eyebrow">Understanding Lymphoedema</p>
@@ -142,6 +181,9 @@
           </p>
 
         </div>
+        <figure class="lymph-hero-photo">
+          <img src="/assets/understanding/lymphoedema-daily-life.jpg" width="900" height="1350" alt="Woman at home resting her hands on a leg covered by a compression stocking, showing one way people manage lymphoedema in daily life." fetchpriority="high">
+        </figure>
       </div>
     </section>
 
