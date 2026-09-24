@@ -499,3 +499,4 @@ export default async (request) => {
   }
 };
 import { MEMBERSHIP_CONTRACT_VERSION, recordContractEvent } from './_shared/membership-contract.mjs';
+import { authoriseExistingTrialParticipant } from './_shared/registration-access.mjs';
