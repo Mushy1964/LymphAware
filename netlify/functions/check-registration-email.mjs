@@ -36,7 +36,7 @@ export default async request => {
     }
 
     const suppliedCode = body.discountCode ?? body.inviteCode ?? '';
-    const registrationAccess = await authoriseRegistration(suppliedCode, email);
+    const registrationAccess = await authoriseRegistration(suppliedCode, email, body.packageType);
     if (!registrationAccess.allowed) {
       await finishAfter(startedAt);
       return json({ error: registrationUnavailableMessage(registrationAccess) }, 403);
