@@ -66,6 +66,7 @@
     .notification-warning{margin-top:14px;padding:12px;border:1px solid #e7c981;border-radius:10px;background:#fff9ea;color:#624b14;font-weight:700}
     .empty{padding:26px;border:1px solid #cde2d1;border-radius:15px;background:var(--green-light);color:var(--green-dark);font-weight:700;text-align:center}
     #admin-loading{padding:46px 15px;text-align:center;color:var(--muted)}
+    #admin-loading[hidden]{display:none!important}
     #admin-error{padding:20px;border:1px solid #efcaca;border-radius:14px;background:#fff4f4;color:#7b2929}
     #admin-error .button{margin-top:12px}
     @media(max-width:760px){
@@ -106,7 +107,7 @@
       <div class="completed-search-group"><label for="completed-search">Search completed orders</label><input type="search" id="completed-search" placeholder="Name, order number or LymphAware ID" autocomplete="off"></div>
       <span id="completed-results" class="completed-results" aria-live="polite"></span>
     </div>
-    <div id="admin-loading">Loading orders…</div>
+    <div id="admin-loading" hidden>Loading orders…</div>
     <div id="admin-error" hidden></div>
     <div id="order-list" class="order-list" role="tabpanel" aria-live="polite" hidden></div>
     <nav id="completed-pagination" class="completed-pagination" aria-label="Completed orders pages" hidden>
@@ -167,15 +168,15 @@
     function filteredCompletedOrders(){const query=completedSearch.value.trim().toLowerCase();const completed=stageOrders('COMPLETED');if(!query)return completed;return completed.filter(order=>{const profile=order.profile||{};const searchable=[orderRef(order.order_number),profile.display_name,order.delivery_name,profile.lymphaware_id,order.customer_email,order.email,...physicalItems(order)].filter(Boolean).join(' ').toLowerCase();return searchable.includes(query)})}
     function updateCounts(){document.getElementById('count-process').textContent=stageOrders('PROCESS').length;document.getElementById('count-fulfilment').textContent=stageOrders('FULFILMENT').length;document.getElementById('count-completed').textContent=stageOrders('COMPLETED').length}
     function selectInitialStage(){const requested=new URLSearchParams(location.search).get('stage');if(requested){if(groupLabels[requested]){activeStage=requested;return}if(stageLabels[requested]){activeStage=requested==='COMPLETED'?'COMPLETED':['PRINTING','READY_TO_DISPATCH'].includes(requested)?'FULFILMENT':'PROCESS';return}}const preferred=['PROCESS','FULFILMENT','COMPLETED'];activeStage=preferred.find(stage=>stageOrders(stage).length)||'PROCESS'}
-    function renderStageHeader(){tabs.forEach(tab=>{const selected=tab.dataset.stage===activeStage;tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1});stageTitle.textContent=groupLabels[activeStage]||'Orders';stageDescription.textContent=groupDescriptions[activeStage]||''} function renderStage(){renderStageHeader();const completed=activeStage==='COMPLETED';const allVisible=completed?filteredCompletedOrders():stageOrders(activeStage);const pageCount=completed?Math.max(1,Math.ceil(allVisible.length/completedPageSize)):1;if(completedPage>pageCount)completedPage=pageCount;const visible=completed?allVisible.slice((completedPage-1)*completedPageSize,completedPage*completedPageSize):allVisible;completedTools.hidden=!completed;if(completed){completedResults.textContent=`${allVisible.length} completed order${allVisible.length===1?'':'s'}`;completedPagination.hidden=allVisible.length<=completedPageSize;completedPrevious.disabled=completedPage<=1;completedNext.disabled=completedPage>=pageCount;completedPageStatus.textContent=`Page ${completedPage} of ${pageCount}`}else{completedPagination.hidden=true}const readyCardCount=activeStage==='PROCESS'?visible.filter(order=>order.workflow_stage==='READY_TO_PRINT').reduce((sum,order)=>sum+(order.production_jobs||[]).reduce((jobSum,job)=>jobSum+Math.max(1,Number(job.quantity||1)),0),0):0;downloadReadyBatch.hidden=readyCardCount===0;downloadReadyBatch.textContent=readyCardCount===1?'Download ready card for EasyBadge':`Download all ${readyCardCount} ready cards for EasyBadge`;const emptyMessage=completed&&completedSearch.value.trim()?'No completed orders match your search.':`There are no orders in ${esc((groupLabels[activeStage]||'this section').toLowerCase())}.`;orderList.innerHTML=visible.length?visible.map(renderOrder).join(''):`<div class="empty">${emptyMessage}</div>`;orderList.hidden=false}
+    function renderStageHeader(){tabs.forEach(tab=>{const selected=tab.dataset.stage===activeStage;tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1});stageTitle.textContent=groupLabels[activeStage]||'Orders';stageDescription.textContent=groupDescriptions[activeStage]||''} function renderStage(){loading.hidden=true;renderStageHeader();const completed=activeStage==='COMPLETED';const allVisible=completed?filteredCompletedOrders():stageOrders(activeStage);const pageCount=completed?Math.max(1,Math.ceil(allVisible.length/completedPageSize)):1;if(completedPage>pageCount)completedPage=pageCount;const visible=completed?allVisible.slice((completedPage-1)*completedPageSize,completedPage*completedPageSize):allVisible;completedTools.hidden=!completed;if(completed){completedResults.textContent=`${allVisible.length} completed order${allVisible.length===1?'':'s'}`;completedPagination.hidden=allVisible.length<=completedPageSize;completedPrevious.disabled=completedPage<=1;completedNext.disabled=completedPage>=pageCount;completedPageStatus.textContent=`Page ${completedPage} of ${pageCount}`}else{completedPagination.hidden=true}const readyCardCount=activeStage==='PROCESS'?visible.filter(order=>order.workflow_stage==='READY_TO_PRINT').reduce((sum,order)=>sum+(order.production_jobs||[]).reduce((jobSum,job)=>jobSum+Math.max(1,Number(job.quantity||1)),0),0):0;downloadReadyBatch.hidden=readyCardCount===0;downloadReadyBatch.textContent=readyCardCount===1?'Download ready card for EasyBadge':`Download all ${readyCardCount} ready cards for EasyBadge`;const emptyMessage=completed&&completedSearch.value.trim()?'No completed orders match your search.':`There are no orders in ${esc((groupLabels[activeStage]||'this section').toLowerCase())}.`;orderList.innerHTML=visible.length?visible.map(renderOrder).join(''):`<div class="empty">${emptyMessage}</div>`;orderList.hidden=false}
     function chooseStage(stage,focus=true){if(activeStage!==stage)completedPage=1;activeStage=stage;renderStage();if(focus)tabs.find(tab=>tab.dataset.stage===stage)?.focus()}
     async function loadMembershipSummary(){if(membershipLoaded)return;const accessToken=await token();if(!accessToken)return;const result=await request('/.netlify/functions/admin-dashboard-summary',accessToken);const summary=result?.summary||{};document.getElementById('active-members-count').textContent=Number(summary.active_members||0);document.getElementById('paid-members-count').textContent=Number(summary.paid_members||0);document.getElementById('pilot-sponsored-count').textContent=Number(summary.pilot_sponsored_members||0);document.getElementById('visible-profiles-count').textContent=Number(summary.visible_profiles||0);document.getElementById('incomplete-profiles-count').textContent=Number(summary.profiles_needing_details||0);document.getElementById('approved-languages-count').textContent=Number(summary.approved_language_profiles||0);membershipLoaded=true}
     async function load(preserveStage=false,silent=false){
       renderStageHeader();
       if(orderLoadPromise)return orderLoadPromise;
       const background=silent||hasSuccessfulOrderLoad;
-      if(!background){loading.style.display='block';loading.textContent='Loading orders…'}
-      else{loading.style.display='none'}
+      if(!background){loading.hidden=false;loading.textContent='Loading orders…'}
+      else{loading.hidden=true}
       orderLoadPromise=(async()=>{
         try{
           const accessToken=await token();if(!accessToken)return;
@@ -191,12 +192,12 @@
           hasSuccessfulOrderLoad=true;
           updateCounts();
           if(!preserveStage||!stageOrders(activeStage).length)selectInitialStage();
-          loading.style.display='none';
+          loading.hidden=true;
           errorBox.hidden=true;
           renderStage();
         }catch(error){
           console.error(error);
-          loading.style.display='none';
+          loading.hidden=true;
           if(hasSuccessfulOrderLoad||silent){
             errorBox.hidden=true;
             return;
