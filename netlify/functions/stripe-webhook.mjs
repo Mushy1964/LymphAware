@@ -322,7 +322,7 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
   if (paymentType === 'initial_membership') {
     subject = `Welcome to LymphAware ID – complete your secure account`;
     const setupSection = accountSetupLink
-      ? `YOUR SECURE ACCOUNT\n\nYour checkout is complete, so your LymphAware ID account and membership have now been created. Confirm your email address and choose your password using this secure link:\n${accountSetupLink}\n\nAfter choosing your password, you can sign in to your Patient Portal at:\nhttps://lymphawareid.com/sign-in/\n\n`
+      ? `YOUR SECURE ACCOUNT\n\nYour checkout is complete, so your LymphAware ID account and membership have now been created. Confirm your email address and choose your password using this secure link:\n\n${accountSetupLink}\n\nAfter choosing your password, you can sign in to your Patient Portal at:\nhttps://lymphawareid.com/sign-in/\n\n`
       : `YOUR SECURE ACCOUNT\n\nYour checkout is complete and your LymphAware ID account has been created. If you need a new account-setup link, please contact admin@lymphawareid.com.\n\n`;
     nextSteps =
       `${isTrial ? 'Your private-trial membership' : `Your ${membershipTermYears}-year LymphAware ID membership`} is now active.\n\n` +
@@ -379,7 +379,7 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
         reply_to: ['admin@lymphawareid.com'],
         subject,
         text: emailText,
-        html: brandedEmailHtml({ title: subject, text: emailText })
+        html: brandedEmailHtml({ title: subject, text: emailText, actionUrl: accountSetupLink, actionLabel: 'Confirm email' })
       })
     });
     if (!response.ok) return { ok: false, error: await response.text() };
