@@ -207,24 +207,50 @@
 
   const desktopAccountLink = document.getElementById('desktop-account-link');
   const mobileAccountLink = document.getElementById('mobile-account-link');
+  let publicAuthClient = null;
+
   const updateAccountLink = session => {
     const signedIn = Boolean(session?.user);
-    [desktopAccountLink, mobileAccountLink].forEach(link => {
-      if (!link) return;
-      link.href = signedIn ? '/portal/' : '/sign-in/';
-      const textTarget = link.querySelector('span') || link;
-      textTarget.textContent = signedIn ? 'Patient Portal' : 'Sign In';
-    });
+
+    if (desktopAccountLink) {
+      desktopAccountLink.href = signedIn ? '#' : '/sign-in/';
+      desktopAccountLink.dataset.authAction = signedIn ? 'sign-out' : 'sign-in';
+      const textTarget = desktopAccountLink.querySelector('span') || desktopAccountLink;
+      textTarget.textContent = signedIn ? 'Sign Out' : 'Sign In';
+      desktopAccountLink.setAttribute('aria-label', signedIn ? 'Sign out of LymphAware ID' : 'Sign in to LymphAware ID');
+    }
+
+    if (mobileAccountLink) {
+      mobileAccountLink.href = signedIn ? '/portal/' : '/sign-in/';
+      mobileAccountLink.textContent = signedIn ? 'Patient Portal' : 'Sign In';
+    }
   };
+
+  desktopAccountLink?.addEventListener('click', async event => {
+    if (desktopAccountLink.dataset.authAction !== 'sign-out' || !publicAuthClient) return;
+    event.preventDefault();
+    const textTarget = desktopAccountLink.querySelector('span') || desktopAccountLink;
+    desktopAccountLink.setAttribute('aria-busy', 'true');
+    textTarget.textContent = 'Signing Out…';
+    const { error } = await publicAuthClient.auth.signOut();
+    desktopAccountLink.removeAttribute('aria-busy');
+    if (error) {
+      console.error('Unable to sign out:', error);
+      textTarget.textContent = 'Sign Out';
+      return;
+    }
+    updateAccountLink(null);
+    window.location.href = '/';
+  });
 
   if (window.supabase?.createClient) {
     try {
-      const client = window.supabase.createClient(
+      publicAuthClient = window.supabase.createClient(
         'https://thbhsktcenhrnxzkbjus.supabase.co',
         'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi'
       );
-      client.auth.getSession().then(({ data }) => updateAccountLink(data?.session)).catch(() => {});
-      client.auth.onAuthStateChange((_event, session) => updateAccountLink(session));
+      publicAuthClient.auth.getSession().then(({ data }) => updateAccountLink(data?.session)).catch(() => {});
+      publicAuthClient.auth.onAuthStateChange((_event, session) => updateAccountLink(session));
     } catch (_error) {
       updateAccountLink(null);
     }
