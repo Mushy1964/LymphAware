@@ -295,12 +295,13 @@
 
         const profile = order.profile || {};
         const packageInfo = packageSummary(order);
+        const isTrial = String(order.membership?.membership_status || '').toUpperCase() === 'PILOT';
 
         card.innerHTML = `
           <div class="order-head">
             <div>
-              <h2>${escapeHtml(orderRef(order.order_number))}</h2>
-              <div class="order-meta">Paid ${escapeHtml(paidDate)}</div>
+              <h2>${escapeHtml(orderRef(order.order_number))}${isTrial ? ' · PRIVATE TRIAL' : ''}</h2>
+              <div class="order-meta">Paid ${escapeHtml(paidDate)}${isTrial ? ' · £0 trial order' : ''}</div>
               <div class="package-name">${escapeHtml(packageInfo.name)}</div>
             </div>
             <span class="status ${statusClass}">${escapeHtml(label)}</span>
