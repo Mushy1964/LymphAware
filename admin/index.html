@@ -53,6 +53,15 @@
     .stage-badge.completed{background:#edf1f3;color:#43525c}
     .fulfilment-summary{display:flex;flex-wrap:wrap;gap:8px;margin-top:17px}
     .fulfilment-item{padding:7px 10px;border-radius:9px;background:#f1f5f7;color:#314658;font-weight:700}
+    .order-progress{margin-top:16px;padding:14px;border:1px solid #dbe5ea;border-radius:12px;background:#fbfcfd}
+    .order-progress-title{margin:0 0 10px;font-weight:800;color:var(--text)}
+    .order-progress-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px}
+    .progress-step{min-height:68px;padding:10px;border:1px solid #d7e1e6;border-radius:10px;background:#fff}
+    .progress-step-state{display:block;margin-bottom:4px;font-size:.76rem;font-weight:800;letter-spacing:.02em;text-transform:uppercase}
+    .progress-step-label{display:block;font-size:.92rem;font-weight:800;line-height:1.3}
+    .progress-step.done{border-color:#c8e2d0;background:#eff8f2}.progress-step.done .progress-step-state{color:#176b32}
+    .progress-step.current{border-color:#9ec8e4;background:#eef6fb}.progress-step.current .progress-step-state{color:#0b5fa5}
+    .progress-step.remaining .progress-step-state{color:#6d7880}
     .next-action{margin:16px 0 0;padding:14px 15px;border-left:4px solid #2878b8;border-radius:8px;background:#f4f9fc;color:#253c4f;line-height:1.5}
     .order-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
     .order-actions .button{font-size:16px}
@@ -65,8 +74,7 @@
     .details-grid ul{padding-left:20px}
     .notification-warning{margin-top:14px;padding:12px;border:1px solid #e7c981;border-radius:10px;background:#fff9ea;color:#624b14;font-weight:700}
     .empty{padding:26px;border:1px solid #cde2d1;border-radius:15px;background:var(--green-light);color:var(--green-dark);font-weight:700;text-align:center}
-    #admin-loading{padding:46px 15px;text-align:center;color:var(--muted)}
-    #admin-loading[hidden]{display:none!important}
+    #admin-loading{display:none!important}
     #admin-error{padding:20px;border:1px solid #efcaca;border-radius:14px;background:#fff4f4;color:#7b2929}
     #admin-error .button{margin-top:12px}
     @media(max-width:760px){
@@ -107,7 +115,7 @@
       <div class="completed-search-group"><label for="completed-search">Search completed orders</label><input type="search" id="completed-search" placeholder="Name, order number or LymphAware ID" autocomplete="off"></div>
       <span id="completed-results" class="completed-results" aria-live="polite"></span>
     </div>
-    <div id="admin-loading" hidden>Loading orders…</div>
+    <div id="admin-loading" hidden aria-hidden="true"></div>
     <div id="admin-error" hidden></div>
     <div id="order-list" class="order-list" role="tabpanel" aria-live="polite" hidden></div>
     <nav id="completed-pagination" class="completed-pagination" aria-label="Completed orders pages" hidden>
@@ -161,8 +169,38 @@
     function physicalItems(order){const jobs=Array.isArray(order.production_jobs)?order.production_jobs:[];const items=jobs.map(job=>`${Number(job.quantity||1)} × ${job.language_name||'ID'} card`);const lanyards=Number(order.lanyard_quantity||0);if(lanyards)items.push(`${lanyards} × lanyard & holder`);return items.length?items:['No physical items recorded']}
     function detailItems(order){return (order.items||[]).map(item=>`<li>${Number(item.quantity||0)} × ${esc(item.description||'Order item')}${item.language_name?` — ${esc(item.language_name)}`:''}</li>`).join('')||'<li>No item details recorded.</li>'}
     function delivery(order){return [order.delivery_name,order.delivery_line1,order.delivery_line2,order.delivery_city,order.delivery_county,order.delivery_postcode,order.delivery_country].filter(Boolean).map(esc).join('<br>')||'No delivery address recorded.'}
-    function primaryAction(order){const id=encodeURIComponent(order.id);if(order.workflow_stage==='READY_TO_PRINT')return `<a class="button button-secondary" href="/admin/card-production/?order=${id}">Process this order only</a>`;if(order.workflow_stage==='PRINTING')return `<a class="button button-primary" href="/admin/card-production/?order=${id}">Continue printing</a>`;if(order.workflow_stage==='READY_TO_DISPATCH'){const welcome=order.order_type==='INITIAL_MEMBERSHIP'?`<a class="button button-secondary" href="/admin/welcome-letter/?order=${id}" target="_blank" rel="noopener">Print Welcome Letter</a>`:'';return `${welcome}<a class="button button-primary" href="/admin/orders/?order=${id}#order-${id}">Pack and dispatch</a>`}return ''}
-    function renderOrder(order){const profile=order.profile||{},stage=order.workflow_stage,items=physicalItems(order),notificationFailed=String(order.notification_status||'').toUpperCase()==='FAILED',completed=stage==='COMPLETED',isTrial=String(order.membership?.membership_status||'').toUpperCase()==='PILOT',action=primaryAction(order);return `<article class="order-card ${completed?'completed-card':''}" id="order-${esc(order.id)}"><div class="order-card-head"><div><span class="order-reference">${esc(orderRef(order.order_number))}${isTrial?' · PRIVATE TRIAL':''}</span><h3>${esc(profile.display_name||order.delivery_name||'LymphAware ID member')}</h3><p class="order-meta">${esc(profile.lymphaware_id||'LymphAware ID pending')} · ${completed?'Completed':'Paid'} ${esc(paidDate(completed?(order.completed_at||order.updated_at):order.paid_at))}${isTrial?' · £0 trial order':''}</p></div><span class="stage-badge ${stageClasses[stage]||''}">${esc(stageLabels[stage]||'Order')}</span></div>${completed?'':`<div class="fulfilment-summary">${items.map(item=>`<span class="fulfilment-item">${esc(item)}</span>`).join('')}</div><p class="next-action"><strong>Next:</strong> ${esc(order.workflow_reason||'Review this order.')}</p>`}${notificationFailed?'<div class="notification-warning">The administrator order email was not sent. Open the order details to retry it.</div>':''}${action?`<div class="order-actions">${action}</div>`:''}<details class="order-details"><summary>${completed?'View completed order details':'View order details'}</summary><div class="details-grid"><div><h4>Items ordered</h4><ul>${detailItems(order)}</ul></div><div><h4>Delivery address</h4><p>${delivery(order)}</p></div><div><h4>Payment</h4><p>${esc(order.payment_status||'Not recorded')} · ${esc(orderRef(order.order_number))}${isTrial?' · Private trial':''}</p></div><div><h4>Customer</h4><p>${esc(order.customer_email||order.email||'Email not available')}</p></div>${completed&&order.order_type==='INITIAL_MEMBERSHIP'?`<div><h4>Welcome letter</h4><p><a class="button button-secondary" href="/admin/welcome-letter/?order=${encodeURIComponent(order.id)}" target="_blank" rel="noopener">Print welcome letter again</a></p></div>`:''}</div></details></article>`}
+    function orderProgress(order){
+      const jobs=Array.isArray(order.production_jobs)?order.production_jobs:[];
+      const completed=order.workflow_stage==='COMPLETED'||order.order_status==='COMPLETED';
+      const paymentDone=String(order.payment_status||'').toUpperCase()==='PAID';
+      const profileDone=Boolean(order.profile_ready);
+      const easyBadgeDone=completed||['IN_PRODUCTION','PRINTED'].includes(String(order.order_status||'').toUpperCase())||jobs.some(job=>['PREPARED','PRINTED'].includes(String(job.status||'').toUpperCase()));
+      const cardsPrintedDone=completed||String(order.order_status||'').toUpperCase()==='PRINTED'||(jobs.length>0&&jobs.every(job=>String(job.status||'').toUpperCase()==='PRINTED'));
+      const welcomeRequired=order.order_type==='INITIAL_MEMBERSHIP';
+      const welcomeDone=completed||Boolean(order.welcome_letter_printed_at);
+      const dispatchDone=completed;
+      const steps=[
+        {label:'Payment received',done:paymentDone},
+        {label:'Profile details complete',done:profileDone},
+        {label:'EasyBadge downloaded',done:easyBadgeDone},
+        {label:'Cards printed',done:cardsPrintedDone},
+        ...(welcomeRequired?[{label:'Welcome Letter printed',done:welcomeDone}]:[]),
+        {label:'Packed & dispatched',done:dispatchDone}
+      ];
+      const current=steps.findIndex(step=>!step.done);
+      return `<div class="order-progress"><p class="order-progress-title">Order progress</p><div class="order-progress-steps">${steps.map((step,index)=>{const state=step.done?'done':index===current?'current':'remaining';const stateLabel=step.done?'Completed':index===current?'Next':'Remaining';return `<div class="progress-step ${state}"><span class="progress-step-state">${stateLabel}</span><span class="progress-step-label">${esc(step.label)}</span></div>`}).join('')}</div></div>`;
+    }
+    function primaryAction(order){
+      const id=encodeURIComponent(order.id);
+      if(order.workflow_stage==='READY_TO_PRINT')return `<a class="button button-secondary" href="/admin/card-production/?order=${id}">Process this order only</a>`;
+      if(order.workflow_stage==='PRINTING')return `<a class="button button-primary" href="/admin/card-production/?order=${id}">Continue printing</a>`;
+      if(order.workflow_stage==='READY_TO_DISPATCH'){
+        const welcome=order.order_type==='INITIAL_MEMBERSHIP'?`<a class="button button-secondary" href="/admin/welcome-letter/?order=${id}" target="_blank" rel="noopener">${order.welcome_letter_printed_at?'Reprint Welcome Letter':'Print Welcome Letter'}</a>`:'';
+        return `${welcome}<a class="button button-primary" href="/admin/orders/?order=${id}#order-${id}">Pack and dispatch</a>`;
+      }
+      return '';
+    }
+    function renderOrder(order){const profile=order.profile||{},stage=order.workflow_stage,items=physicalItems(order),notificationFailed=String(order.notification_status||'').toUpperCase()==='FAILED',completed=stage==='COMPLETED',isTrial=String(order.membership?.membership_status||'').toUpperCase()==='PILOT',action=primaryAction(order);return `<article class="order-card ${completed?'completed-card':''}" id="order-${esc(order.id)}"><div class="order-card-head"><div><span class="order-reference">${esc(orderRef(order.order_number))}${isTrial?' · PRIVATE TRIAL':''}</span><h3>${esc(profile.display_name||order.delivery_name||'LymphAware ID member')}</h3><p class="order-meta">${esc(profile.lymphaware_id||'LymphAware ID pending')} · ${completed?'Completed':'Paid'} ${esc(paidDate(completed?(order.completed_at||order.updated_at):order.paid_at))}${isTrial?' · £0 trial order':''}</p></div><span class="stage-badge ${stageClasses[stage]||''}">${esc(stageLabels[stage]||'Order')}</span></div>${completed?'':`<div class="fulfilment-summary">${items.map(item=>`<span class="fulfilment-item">${esc(item)}</span>`).join('')}</div>${orderProgress(order)}<p class="next-action"><strong>Next:</strong> ${esc(order.workflow_reason||'Review this order.')}</p>`}${notificationFailed?'<div class="notification-warning">The administrator order email was not sent. Open the order details to retry it.</div>':''}${action?`<div class="order-actions">${action}</div>`:''}<details class="order-details"><summary>${completed?'View completed order details':'View order details'}</summary><div class="details-grid"><div><h4>Items ordered</h4><ul>${detailItems(order)}</ul></div><div><h4>Delivery address</h4><p>${delivery(order)}</p></div><div><h4>Payment</h4><p>${esc(order.payment_status||'Not recorded')} · ${esc(orderRef(order.order_number))}${isTrial?' · Private trial':''}</p></div><div><h4>Customer</h4><p>${esc(order.customer_email||order.email||'Email not available')}</p></div>${completed&&order.order_type==='INITIAL_MEMBERSHIP'?`<div><h4>Welcome letter</h4><p><a class="button button-secondary" href="/admin/welcome-letter/?order=${encodeURIComponent(order.id)}" target="_blank" rel="noopener">Print welcome letter again</a></p></div>`:''}</div></details></article>`}
     function groupForOrder(order){if(order.workflow_stage==='COMPLETED')return'COMPLETED';if(['PRINTING','READY_TO_DISPATCH'].includes(order.workflow_stage))return'FULFILMENT';return'PROCESS'}
     function stageOrders(stage){return orders.filter(order=>groupForOrder(order)===stage)}
     function filteredCompletedOrders(){const query=completedSearch.value.trim().toLowerCase();const completed=stageOrders('COMPLETED');if(!query)return completed;return completed.filter(order=>{const profile=order.profile||{};const searchable=[orderRef(order.order_number),profile.display_name,order.delivery_name,profile.lymphaware_id,order.customer_email,order.email,...physicalItems(order)].filter(Boolean).join(' ').toLowerCase();return searchable.includes(query)})}
@@ -175,8 +213,7 @@
       renderStageHeader();
       if(orderLoadPromise)return orderLoadPromise;
       const background=silent||hasSuccessfulOrderLoad;
-      if(!background){loading.hidden=false;loading.textContent='Loading orders…'}
-      else{loading.hidden=true}
+      loading.hidden=true
       orderLoadPromise=(async()=>{
         try{
           const accessToken=await token();if(!accessToken)return;
