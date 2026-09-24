@@ -571,7 +571,16 @@ export default async (request) => {
     const cardSelections = parseCardSelectionsMetadata(session.metadata?.card_selections, cardQuantity);
     const lanyardQuantity = Number.isInteger(metadataLanyardQuantity) && metadataLanyardQuantity >= 0 ? metadataLanyardQuantity : (replacementLanyard ? 1 : 0);
     const translationConsent = String(session.metadata?.translation_consent || '') === '1';
-    const autoRenew = String(session.metadata?.auto_renew || '') === '1' && typeof session.subscription === 'string';
+    const trialDiscountApplied = String(session.metadata?.trial_discount_applied || '') === '1';
+    if (trialDiscountApplied && typeof session.subscription === 'string') {
+      try {
+        await stripeRequest(`subscriptions/${encodeURIComponent(session.subscription)}`, 'DELETE');
+      } catch (error) {
+        console.error('Unable to cancel trial-created Stripe subscription:', error instanceof Error ? error.message : error);
+        return new Response('Trial subscription cancellation failed', { status: 500 });
+      }
+    }
+    const autoRenew = !trialDiscountApplied && String(session.metadata?.auto_renew || '') === '1' && typeof session.subscription === 'string';
     const renewalPricePence = autoRenew ? Number(session.metadata?.renewal_price_pence || RENEWAL_PRICES[packageType]?.[membershipTermYears] || 0) : null;
 
     if (paymentType === 'initial_membership') {
