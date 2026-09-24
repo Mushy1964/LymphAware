@@ -240,9 +240,12 @@ function checkProjectConsistency() {
   }
   if (
     checkout.includes("allow_promotion_codes") ||
-    !checkout.includes("if (trialPromotionCodeId) stripeForm.append('discounts[0][promotion_code]', trialPromotionCodeId)")
+    !checkout.includes("if (trialPromotionCodeId) stripeForm.append('discounts[0][promotion_code]', trialPromotionCodeId)") ||
+    !checkout.includes("authoriseExistingTrialParticipant(savedInviteCode, user.email || '')") ||
+    !checkout.includes("membership.membership_status === 'PILOT'") ||
+    !registrationAccess.includes('export async function authoriseExistingTrialParticipant')
   ) {
-    errors.push('Later member purchases can accept public promotion codes or fail to reapply the private-trial discount.');
+    errors.push('Later member purchases can accept public promotion codes or fail to preserve the private-trial discount after registration mode changes.');
   }
   if (
     !webhook.includes("const TRIAL_RENEWAL_PROTECTION_COUPON = 'LYMPHAWARE_TRIAL_RENEWAL_FREE_V1'") ||
@@ -262,9 +265,13 @@ function checkProjectConsistency() {
     !adminDashboard.includes("order.membership?.membership_status||'').toUpperCase()==='PILOT'") ||
     !adminOrderDetail.includes("order.membership?.membership_status || '').toUpperCase() === 'PILOT'") ||
     !adminDashboard.includes("completed&&order.order_type==='INITIAL_MEMBERSHIP'") ||
+    !adminDashboard.includes('Orders to Process') ||
+    !adminDashboard.includes('Printing in Progress') ||
+    !adminDashboard.includes('Completed Orders') ||
+    !adminDashboard.includes('admin@lymphawareid.com') ||
     !signIn.includes("window.location.href = '/admin/';")
   ) {
-    errors.push('Administration does not clearly identify trial orders, restrict welcome letters to initial memberships, or route the administrator to the main order dashboard.');
+    errors.push('Administration does not match the agreed order workflow, identify trial orders, restrict welcome letters, show the admin notification address, or route the administrator correctly.');
   }
   if (!register.includes('id="auto-renew-acknowledgement" disabled') || !register.includes("acknowledgement.disabled=!enabled")) {
     errors.push('Registration renewal acknowledgement is not visibly disabled until automatic renewal is selected.');
