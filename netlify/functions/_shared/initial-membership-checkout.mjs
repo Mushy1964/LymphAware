@@ -93,7 +93,7 @@ function packageDescription(selection) {
   return `${membershipTermYears}-year membership with 1 English ID card and 1 lanyard & holder.`;
 }
 
-export async function createInitialMembershipCheckout({ userId, email, membershipId, selection, trialPromotionCodeId = '' }) {
+export async function createInitialMembershipCheckout({ email, selection, trialPromotionCodeId = '', inviteCode = '', acceptedAt = '' }) {
   const form = new URLSearchParams();
   const checkoutName = `${selection.packageDefinition.name} – ${selection.membershipTermYears}-Year`;
   form.append('mode', selection.autoRenew ? 'subscription' : 'payment');
@@ -119,7 +119,6 @@ export async function createInitialMembershipCheckout({ userId, email, membershi
   else form.append('allow_promotion_codes', 'true');
   form.append('billing_address_collection', 'required');
   form.append('shipping_address_collection[allowed_countries][0]', selection.deliveryCountry);
-  form.append('client_reference_id', userId);
   form.append('customer_email', email);
   form.append('success_url', 'https://lymphawareid.com/register/confirmation/?payment=success');
   const cancelParams = new URLSearchParams({
@@ -129,9 +128,10 @@ export async function createInitialMembershipCheckout({ userId, email, membershi
   form.append('cancel_url', `https://lymphawareid.com/register/payment-not-completed/?${cancelParams.toString()}`);
 
   const metadata = {
-    lymphaware_user_id: userId,
-    membership_id: membershipId,
     payment_type: 'initial_membership',
+    registration_email: email,
+    registration_invite_code: inviteCode,
+    precontract_accepted_at: acceptedAt || new Date().toISOString(),
     package_type: selection.packageType,
     membership_term_years: String(selection.membershipTermYears),
     package_price_pence: String(selection.packagePricePence),
@@ -158,7 +158,7 @@ export async function createInitialMembershipCheckout({ userId, email, membershi
   };
   for (const [key, value] of Object.entries(metadata)) form.append(`metadata[${key}]`, value);
   if (selection.autoRenew) {
-    for (const key of ['lymphaware_user_id','membership_id','package_type','membership_term_years','renewal_price_pence','contract_version']) {
+    for (const key of ['package_type','membership_term_years','renewal_price_pence','contract_version','trial_discount_applied']) {
       form.append(`subscription_data[metadata][${key}]`, metadata[key]);
     }
   }
