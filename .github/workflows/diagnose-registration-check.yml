@@ -11,10 +11,8 @@ jobs:
   diagnose:
     runs-on: ubuntu-latest
     steps:
-      - name: Call live registration email check
+      - name: Call registration diagnostic
         shell: bash
         run: |
           set -x
-          curl -i -sS -X POST 'https://lymphawareid.com/.netlify/functions/check-registration-email' \
-            -H 'Content-Type: application/json' \
-            --data '{"email":"diagnostic+registration@example.com","inviteCode":"LYMPHAWAREIDTRIAL"}'
+          curl -i -sS 'https://lymphawareid.com/api/registration-diagnostic-240926'
