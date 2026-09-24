@@ -199,7 +199,9 @@ export default async (request) => {
         workflowReason = 'The Stripe delivery country does not match the country used to calculate postage. Review the address before printing.';
       } else if (readyToPack) {
         workflowStage = 'READY_TO_DISPATCH';
-        workflowReason = 'All required cards are printed. Pack the order and confirm dispatch.';
+        workflowReason = order.order_type === 'INITIAL_MEMBERSHIP'
+          ? 'All required cards are printed. Print the welcome letter, then pack the order and confirm dispatch.'
+          : 'All required cards are printed. Pack the order and confirm dispatch.';
       } else if (waitingForDetails) {
         workflowStage = 'WAITING';
         workflowReason = 'Waiting for the customer to add their display name and photograph.';
