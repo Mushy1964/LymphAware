@@ -122,7 +122,11 @@ export async function createInitialMembershipCheckout({ userId, email, membershi
   form.append('client_reference_id', userId);
   form.append('customer_email', email);
   form.append('success_url', 'https://lymphawareid.com/register/confirmation/?payment=success');
-  form.append('cancel_url', 'https://lymphawareid.com/register/payment-not-completed/');
+  const cancelParams = new URLSearchParams({
+    package: selection.packageType,
+    term: String(selection.membershipTermYears)
+  });
+  form.append('cancel_url', `https://lymphawareid.com/register/payment-not-completed/?${cancelParams.toString()}`);
 
   const metadata = {
     lymphaware_user_id: userId,

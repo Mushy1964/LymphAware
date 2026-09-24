@@ -141,7 +141,7 @@
     const signInParams = new URLSearchParams(location.search);
     const requestedPackage = String(signInParams.get('package') || '').toUpperCase();
     const selectedPackage = ['STANDARD', 'PLUS', 'MULTILINGUAL'].includes(requestedPackage) ? requestedPackage : '';
-    const requestedTerm = [1, 2, 3].includes(Number(signInParams.get('term'))) ? Number(signInParams.get('term')) : 3;
+    const requestedTerm = [1, 2, 3].includes(Number(signInParams.get('term'))) ? Number(signInParams.get('term')) : 0;
     const loginForm = document.getElementById('login-form');
     const loginMessage = document.getElementById('login-message');
 
@@ -165,7 +165,10 @@
       if (signedInEmail === 'admin@lymphawareid.com') {
         window.location.href = '/admin/orders/';
       } else {
-        window.location.href = selectedPackage ? '/portal/?package=' + encodeURIComponent(selectedPackage) + '&term=' + encodeURIComponent(requestedTerm) : '/';
+        const portalParams = new URLSearchParams();
+        if (selectedPackage) portalParams.set('package', selectedPackage);
+        if (requestedTerm) portalParams.set('term', String(requestedTerm));
+        window.location.href = '/portal/' + (portalParams.toString() ? '?' + portalParams.toString() : '');
       }
     });
   </script>
