@@ -174,7 +174,7 @@
       const signedInEmail = data?.user?.email?.toLowerCase() || '';
 
       if (signedInEmail === 'admin@lymphawareid.com') {
-        window.location.href = '/admin/orders/';
+        window.location.href = '/admin/';
       } else {
         const portalParams = new URLSearchParams();
         if (selectedPackage) portalParams.set('package', selectedPackage);
