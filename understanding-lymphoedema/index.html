@@ -187,6 +187,175 @@
       line-height: 1.5;
     }
 
+    .lymph-depth-section {
+      background: #eef7f4;
+    }
+
+    .lymph-depth-intro {
+      max-width: 900px;
+      margin-bottom: 28px;
+    }
+
+    .lymph-depth-intro p:last-child {
+      color: #536273;
+      line-height: 1.65;
+    }
+
+    .lymph-depth-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .lymph-depth-figure,
+    .lymph-depth-summary,
+    .lymph-depth-card,
+    .lymph-flow-panel {
+      border: 1px solid #d7e6e2;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 8px 25px rgba(31, 47, 66, .05);
+    }
+
+    .lymph-depth-figure {
+      margin: 0;
+      padding: 20px;
+    }
+
+    .lymph-depth-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+    }
+
+    .lymph-depth-figure figcaption {
+      margin-top: 14px;
+      color: #536273;
+      font-size: .94rem;
+      line-height: 1.55;
+    }
+
+    .lymph-depth-figure .image-credit {
+      display: block;
+      margin-top: 8px;
+      color: #657487;
+      font-size: .86rem;
+    }
+
+    .lymph-depth-figure a,
+    .lymph-depth-summary a,
+    .lymph-depth-advice a {
+      color: #0053b7;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .lymph-depth-summary {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(22px, 3vw, 34px);
+    }
+
+    .lymph-depth-summary h3,
+    .lymph-depth-card h3,
+    .lymph-flow-panel h3 {
+      margin: 0 0 10px;
+      color: #17283d;
+      font-size: 1.3rem;
+      line-height: 1.35;
+    }
+
+    .lymph-depth-summary p,
+    .lymph-depth-card p,
+    .lymph-flow-panel p,
+    .lymph-flow-panel li {
+      color: #465c6a;
+      line-height: 1.62;
+    }
+
+    .lymph-depth-summary p {
+      margin: 0 0 14px;
+    }
+
+    .lymph-depth-summary p:last-child {
+      margin-bottom: 0;
+    }
+
+    .lymph-depth-callout {
+      padding: 14px 16px;
+      border-left: 4px solid #168645;
+      border-radius: 8px;
+      background: #f2f8f4;
+    }
+
+    .lymph-depth-cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .lymph-depth-card {
+      padding: 24px;
+    }
+
+    .lymph-depth-label {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      color: #0757b8;
+      background: #edf5ff;
+      font-size: .88rem;
+      font-weight: 800;
+    }
+
+    .lymph-depth-card p {
+      margin: 0 0 12px;
+    }
+
+    .lymph-depth-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .lymph-flow-panel {
+      margin-top: 20px;
+      padding: 24px;
+    }
+
+    .lymph-flow-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .lymph-flow-list li {
+      padding: 14px 16px;
+      border-left: 4px solid #168645;
+      border-radius: 8px;
+      background: #f5faf8;
+    }
+
+    .lymph-flow-list strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #17283d;
+    }
+
+    .lymph-depth-advice {
+      margin: 18px 0 0;
+      padding-top: 16px;
+      border-top: 1px solid #dbe8ed;
+      color: #465c6a;
+      line-height: 1.6;
+    }
+
     .lymph-system-card .image-credit a {
       color: #0053b7;
       text-decoration: underline;
@@ -219,6 +388,14 @@
       .lymph-organ-list {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
+
+      .lymph-depth-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .lymph-flow-list {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 600px) {
@@ -237,6 +414,17 @@
 
       .lymph-organ-list {
         grid-template-columns: 1fr;
+      }
+
+      .lymph-depth-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .lymph-depth-figure,
+      .lymph-depth-summary,
+      .lymph-depth-card,
+      .lymph-flow-panel {
+        padding: 20px;
       }
     }
 
@@ -373,6 +561,66 @@
         <figure class="lymph-hero-photo">
           <img src="/assets/understanding/lymphoedema-daily-life.jpg" width="900" height="1350" alt="Woman at home resting her hands on a leg covered by a compression stocking, showing one way people manage lymphoedema in daily life." fetchpriority="high">
         </figure>
+      </div>
+    </section>
+
+
+    <section class="content-section lymph-depth-section" aria-labelledby="lymph-depth-title">
+      <div class="container">
+        <div class="section-heading lymph-depth-intro">
+          <p class="eyebrow">Understanding lymph flow</p>
+          <h2 id="lymph-depth-title">Superficial and deep lymphatics</h2>
+          <p>What is sometimes called the “shallow” system is usually described clinically as the <strong>superficial lymphatic system</strong>. The deep fascia—the strong sheet of connective tissue around muscles—is the landmark that separates it from the deep system.</p>
+        </div>
+
+        <div class="lymph-depth-layout">
+          <figure class="lymph-depth-figure">
+            <a href="/assets/understanding/superficial-deep-lymphatics-suami.webp" target="_blank" rel="noopener noreferrer" aria-label="Open a larger cross-sectional diagram of superficial and deep lymphatic vessels">
+              <img src="/assets/understanding/superficial-deep-lymphatics-suami.webp" width="1800" height="1053" loading="lazy" alt="Cross-sectional medical diagram showing lymph capillaries in the skin, precollectors in the dermis, superficial collecting vessels in subcutaneous tissue above the deep fascia, and a deep collecting vessel below the fascia.">
+            </a>
+            <figcaption>
+              The diagram uses the deep fascia as the dividing line: superficial collecting vessels sit above it in the subcutaneous tissue; deep collecting vessels sit below it.
+              <span class="image-credit">Figure 1 from <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7281515/" target="_blank" rel="noopener noreferrer">Suami H, <em>Anatomical Theories of the Pathophysiology of Cancer-Related Lymphoedema</em> (2020)</a>, reproduced under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>.</span>
+            </figcaption>
+          </figure>
+
+          <aside class="lymph-depth-summary" aria-labelledby="lymph-depth-key-title">
+            <h3 id="lymph-depth-key-title">The key difference</h3>
+            <p><strong>Superficial vessels</strong> collect fluid from the skin and the tissue just beneath it. <strong>Deep vessels</strong> drain muscles, joints and other deeper structures.</p>
+            <p>The two systems have separate routes through much of a limb, then connect or converge nearer the centre of the body. Both ultimately return lymph to the bloodstream.</p>
+            <p class="lymph-depth-callout"><strong>More pressure is not better.</strong> Pressing harder through the skin does not provide direct access to the deep lymphatics. Manual lymphatic drainage uses light, precise skin movement because it is intended mainly to influence superficial tissues and vessels.</p>
+          </aside>
+        </div>
+
+        <div class="lymph-depth-cards">
+          <article class="lymph-depth-card">
+            <span class="lymph-depth-label">Above the deep fascia</span>
+            <h3>Superficial lymphatics</h3>
+            <p>Tiny lymph capillaries begin in the skin. They take up excess tissue fluid, proteins and immune cells, then pass the lymph into precollectors and larger collecting vessels in the subcutaneous tissue.</p>
+            <p>This is the system most closely associated with the swelling seen in peripheral lymphoedema. Its collecting vessels contain one-way valves and muscle in their walls, helping lymph move forwards in small sections.</p>
+            <p>Gentle skin movement used in manual or simple lymphatic drainage is designed to support this superficial system. The direction and suitability should be assessed and taught by a lymphoedema specialist.</p>
+          </article>
+
+          <article class="lymph-depth-card">
+            <span class="lymph-depth-label">Below the deep fascia</span>
+            <h3>Deep lymphatics</h3>
+            <p>Deep lymphatic vessels drain structures such as muscles and joints. They commonly travel beside the deeper arteries and veins rather than immediately beneath the skin.</p>
+            <p>Movement of muscles and joints changes pressure around these vessels. Breathing also changes pressure within the chest and abdomen, while pulsation from nearby arteries and the vessels’ own contractions can help propel lymph.</p>
+            <p>Deep lymph flow is therefore supported chiefly by normal body movement and changing internal pressures—not by applying forceful massage from the outside.</p>
+          </article>
+        </div>
+
+        <aside class="lymph-flow-panel" aria-labelledby="lymph-flow-title">
+          <h3 id="lymph-flow-title">How lymph keeps moving</h3>
+          <p>Unlike blood circulation, the lymphatic system has no single central pump. Flow comes from several mechanisms working together:</p>
+          <ul class="lymph-flow-list">
+            <li><strong>Vessel contractions and valves</strong>Collecting vessels rhythmically contract, while one-way valves help prevent backward flow.</li>
+            <li><strong>Movement and muscle activity</strong>Walking, joint movement and muscle contraction create changing pressure around lymphatic vessels.</li>
+            <li><strong>Breathing and nearby pulsation</strong>Pressure changes during breathing and movement from neighbouring blood vessels can support lymph propulsion.</li>
+            <li><strong>Correctly fitted compression</strong>Compression changes pressure in the tissues and can work with movement to help control fluid build-up when prescribed for the individual.</li>
+          </ul>
+          <p class="lymph-depth-advice"><strong>For safety:</strong> manual lymphatic drainage (MLD) is a specialist treatment, and simple lymphatic drainage (SLD) should be taught for the individual area and circumstances. This explanation describes the principles; it is not a set of massage instructions. Medical sources: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7281515/" target="_blank" rel="noopener noreferrer">lymphatic anatomy</a>, <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5922450/" target="_blank" rel="noopener noreferrer">lymphatic flow and pumping</a>, and <a href="https://www.nhs.uk/conditions/lymphoedema/treatment/" target="_blank" rel="noopener noreferrer">NHS lymphoedema treatment guidance</a>.</p>
+        </aside>
       </div>
     </section>
 
