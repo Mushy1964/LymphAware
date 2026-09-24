@@ -76,8 +76,7 @@
       gap: 16px;
     }
 
-    .self-care-card,
-    .lymph-system-card {
+    .self-care-card {
       background: #fff;
       border: 1px solid #dbe8ed;
       border-radius: 18px;
@@ -101,48 +100,18 @@
       margin-bottom: 18px;
     }
 
-    .self-care-card h3,
-    .lymph-system-card h2,
-    .lymph-system-card h3 {
+    .self-care-card h3 {
       margin: 0 0 9px;
       color: #17283d;
       font-size: 1.3rem;
       line-height: 1.3;
     }
 
-    .self-care-card p,
-    .lymph-system-card p {
+    .self-care-card p {
       margin: 0;
       color: #536273;
       line-height: 1.6;
       font-size: 1rem;
-    }
-
-    .lymph-system-card {
-      padding: 22px;
-    }
-
-    .lymph-anatomy-section {
-      background: #f5fafb;
-    }
-
-    .lymph-anatomy-section .lymph-system-card {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .lymph-system-card img {
-      display: block;
-      width: 100%;
-      max-width: 360px;
-      height: auto;
-      margin: 8px auto 12px;
-    }
-
-    .lymph-system-card .image-credit {
-      margin-top: 12px;
-      font-size: 0.875rem;
-      line-height: 1.5;
     }
 
     .lymph-depth-section {
@@ -356,12 +325,6 @@
       line-height: 1.6;
     }
 
-    .lymph-system-card .image-credit a {
-      color: #0053b7;
-      text-decoration: underline;
-      text-underline-offset: 2px;
-    }
-
     .self-care-note {
       max-width: 900px;
       margin: 22px 0 0;
@@ -385,10 +348,6 @@
         grid-template-rows: none;
       }
 
-      .lymph-organ-list {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
       .lymph-depth-layout {
         grid-template-columns: 1fr;
       }
@@ -403,17 +362,8 @@
         grid-template-columns: 1fr;
       }
 
-      .self-care-card,
-      .lymph-system-card {
+      .self-care-card {
         padding: 20px;
-      }
-
-      .lymph-organ-explainer {
-        padding: 20px;
-      }
-
-      .lymph-organ-list {
-        grid-template-columns: 1fr;
       }
 
       .lymph-depth-cards {
@@ -565,20 +515,6 @@
         <figure class="lymph-hero-photo">
           <img src="/assets/understanding/lymphoedema-daily-life.jpg" width="900" height="1350" alt="Woman at home resting her hands on a leg covered by a compression stocking, showing one way people manage lymphoedema in daily life." fetchpriority="high">
         </figure>
-      </div>
-    </section>
-
-
-    <section class="content-section lymph-anatomy-section" aria-labelledby="lymph-system-title">
-      <div class="container">
-        <article class="lymph-system-card">
-          <h2 id="lymph-system-title">How the lymphatic system helps</h2>
-          <a href="/assets/understanding/lymphatic-system-cruk.png" target="_blank" rel="noopener noreferrer" aria-label="Open a larger illustration of the lymphatic system">
-            <img src="/assets/understanding/lymphatic-system-cruk.png" width="960" height="1098" loading="lazy" alt="Cancer Research UK diagram of the human lymphatic system, showing branching lymph vessels and groups of lymph nodes through the body.">
-          </a>
-          <p>A network of vessels and nodes helps move excess fluid away from body tissues. When that drainage is disrupted, fluid can build up and cause swelling.</p>
-          <p class="image-credit">Illustration: <a href="https://commons.wikimedia.org/wiki/File:Diagram_of_the_lymphatic_system_CRUK_041.svg" target="_blank" rel="noopener noreferrer">Cancer Research UK / Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. PNG rendering of the original SVG.</p>
-        </article>
       </div>
     </section>
 
