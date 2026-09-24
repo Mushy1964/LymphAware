@@ -524,6 +524,94 @@ async function reopenLanguageCardsForReplacement(userId, cardSelections) {
   }
 }
 
+
+async function lookupAuthUserByEmail(email) {
+  const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/rpc/lookup_auth_user_by_email`, {
+    method: 'POST',
+    headers: supabaseHeaders(),
+    body: JSON.stringify({ p_email: email })
+  });
+  if (!response.ok) throw new Error(`Unable to look up paid signup account: ${await response.text()}`);
+  const rows = await response.json();
+  return Array.isArray(rows) ? (rows[0] || null) : null;
+}
+
+async function waitForMembership(userId) {
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const response = await fetch(
+      `${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${encodeURIComponent(userId)}&select=*&limit=1`,
+      { headers: supabaseHeaders() }
+    );
+    if (response.ok) {
+      const membership = (await response.json())?.[0];
+      if (membership) return membership;
+    }
+    await new Promise(resolve => setTimeout(resolve, 200));
+  }
+  return null;
+}
+
+async function generateAccountActionLink({ email, session, existingUser = false }) {
+  const data = {
+    selected_package: String(session.metadata?.package_type || 'STANDARD').trim().toUpperCase(),
+    selected_membership_term_years: Number(session.metadata?.membership_term_years || 0),
+    membership_contract_version: String(session.metadata?.contract_version || MEMBERSHIP_CONTRACT_VERSION),
+    registration_invite_code: String(session.metadata?.registration_invite_code || '').trim().toUpperCase(),
+    trial_participant: String(session.metadata?.trial_discount_applied || '') === '1',
+    stripe_checkout_session_id: session.id
+  };
+  const body = existingUser
+    ? { type: 'recovery', email, redirect_to: 'https://lymphawareid.com/complete-account/' }
+    : { type: 'invite', email, data, redirect_to: 'https://lymphawareid.com/complete-account/' };
+
+  const response = await fetch(`${process.env.SUPABASE_URL}/auth/v1/admin/generate_link`, {
+    method: 'POST',
+    headers: supabaseHeaders(),
+    body: JSON.stringify(body)
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result?.msg || result?.message || result?.error_description || 'Unable to prepare the account setup link.');
+
+  const actionLink = String(result?.properties?.action_link || result?.action_link || '').trim();
+  const generatedUser = result?.user || result?.properties?.user || null;
+  return { actionLink, generatedUser };
+}
+
+async function provisionPaidSignup(session) {
+  const email = String(
+    session.metadata?.registration_email ||
+    session.customer_details?.email ||
+    session.customer_email ||
+    ''
+  ).trim().toLowerCase();
+  if (!/^\S+@\S+\.\S+$/.test(email)) throw new Error('Paid signup email is missing or invalid.');
+
+  let existing = await lookupAuthUserByEmail(email);
+  let actionLink = '';
+
+  if (!existing?.user_id) {
+    const generated = await generateAccountActionLink({ email, session, existingUser: false });
+    actionLink = generated.actionLink;
+    existing = generated.generatedUser?.id
+      ? { user_id: generated.generatedUser.id, email: generated.generatedUser.email || email, email_confirmed_at: generated.generatedUser.email_confirmed_at || null }
+      : await lookupAuthUserByEmail(email);
+  } else if (!existing.email_confirmed_at) {
+    const generated = await generateAccountActionLink({ email, session, existingUser: true });
+    actionLink = generated.actionLink;
+  }
+
+  if (!existing?.user_id) throw new Error('The paid member account could not be created.');
+  const membership = await waitForMembership(existing.user_id);
+  if (!membership?.id) throw new Error('The paid member membership record could not be created.');
+
+  return {
+    userId: existing.user_id,
+    membershipId: membership.id,
+    email,
+    accountSetupLink: actionLink
+  };
+}
+
 export default async (request) => {
   if (request.method !== 'POST') return new Response('Method not allowed', { status: 405 });
 
