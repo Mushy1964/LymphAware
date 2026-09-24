@@ -1,3 +1,4 @@
+import { verifyAdminRequest } from './_shared/admin-auth.mjs';
 import { markLinkedOrdersInProduction } from './_shared/order-notifications.mjs';
 
 function json(body, status = 200) {
@@ -21,29 +22,10 @@ function serviceHeaders(prefer = '') {
 }
 
 async function requireAdmin(request) {
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return { error: json({ error: 'Authentication required.' }, 401) };
-  }
-
-  const accessToken = authHeader.replace('Bearer ', '').trim();
-  const userResponse = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
-    headers: {
-      apikey: process.env.SUPABASE_PUBLISHABLE_KEY,
-      Authorization: `Bearer ${accessToken}`
-    }
-  });
-
-  if (!userResponse.ok) {
-    return { error: json({ error: 'Unable to verify your LymphAware ID account.' }, 401) };
-  }
-
-  const user = await userResponse.json();
-  const adminEmail = String(process.env.LYMPHAWARE_ADMIN_EMAIL || '').trim().toLowerCase();
-  if (!user?.email || user.email.toLowerCase() !== adminEmail) {
+  const user = await verifyAdminRequest(request);
+  if (!user) {
     return { error: json({ error: 'Administrator access required.' }, 403) };
   }
-
   return { user };
 }
 
