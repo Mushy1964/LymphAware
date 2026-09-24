@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 520" role="img" aria-labelledby="title desc">
+  <title id="title">Simplified lymphatic system</title>
+  <desc id="desc">A human outline with green branching lymph vessels and groups of lymph nodes at the neck, armpits and groin. This is a simplified illustration, not an anatomical map.</desc>
+  <rect width="480" height="520" rx="24" fill="#f5fafc"/>
+  <circle cx="226" cy="65" r="29" fill="#e8f1f7" stroke="#abc9d7" stroke-width="3"/>
+  <path d="M215 93v22m22-22v22M183 119q-23 2-34 32l-22 104q-2 14 8 18 11 5 16-9l30-85-5 73 18 47-11 140q-2 18 11 20 14 2 17-17l17-125h11l17 125q3 19 17 17 13-2 11-20l-11-140 18-47-5-73 30 85q5 14 16 9 10-4 8-18l-22-104q-11-30-34-32z" fill="#e8f1f7" stroke="#abc9d7" stroke-width="3" stroke-linejoin="round"/>
+  <g fill="none" stroke="#2b9962" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M227 285v-148m0 75q-36-38-58-70m58 70q36-38 58-70M227 258q-26 17-39 29m39-29q26 17 39 29M187 288l14 58-10 91m75-149-14 58 10 91" stroke-width="4"/>
+    <path d="M171 151l-27 104m141-104 27 104M201 345l-9 46m60-46 9 46M226 169l-18-31m19 31 18-31" stroke-width="2.6"/>
+  </g>
+  <g fill="#178250" stroke="#fff" stroke-width="2">
+    <circle cx="207" cy="130" r="7"/><circle cx="246" cy="130" r="7"/>
+    <circle cx="170" cy="159" r="8"/><circle cx="181" cy="172" r="6"/>
+    <circle cx="283" cy="159" r="8"/><circle cx="273" cy="172" r="6"/>
+    <circle cx="191" cy="285" r="8"/><circle cx="204" cy="296" r="6"/>
+    <circle cx="262" cy="285" r="8"/><circle cx="250" cy="296" r="6"/>
+    <circle cx="192" cy="392" r="5"/><circle cx="261" cy="392" r="5"/>
+  </g>
+  <path d="M292 160h46m-68 95h68" fill="none" stroke="#8199aa" stroke-width="1.5"/>
+  <g font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#24445a">
+    <text x="345" y="165">Lymph</text><text x="345" y="187">nodes</text>
+    <text x="345" y="260">Lymph</text><text x="345" y="282">vessels</text>
+  </g>
+  <text x="240" y="494" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#536b79">Simplified illustration</text>
+</svg>
