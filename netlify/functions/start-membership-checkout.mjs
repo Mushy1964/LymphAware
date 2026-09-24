@@ -92,11 +92,17 @@ export default async (request) => {
     inviteCode = registrationAccess.inviteCode;
     const selection = normaliseInitialSelection(body);
 
-    const signupResponse = await fetch(`${Netlify.env.get('SUPABASE_URL')}/auth/v1/signup?redirect_to=${encodeURIComponent('https://lymphawareid.com/portal/?email=confirmed')}`, {
+    const supabaseUrl = String(Netlify.env.get('SUPABASE_URL') || '').trim();
+    const publishableKey = String(Netlify.env.get('SUPABASE_PUBLISHABLE_KEY') || '').trim();
+    if (!supabaseUrl || !publishableKey) {
+      return json({ error: 'Account registration is temporarily unavailable. Please try again shortly.' }, 500);
+    }
+
+    const signupResponse = await fetch(`${supabaseUrl}/auth/v1/signup?redirect_to=${encodeURIComponent('https://lymphawareid.com/portal/?email=confirmed')}`, {
       method: 'POST',
       headers: {
-        apikey: Netlify.env.get('SUPABASE_PUBLISHABLE_KEY'),
-        Authorization: `Bearer ${Netlify.env.get('SUPABASE_PUBLISHABLE_KEY')}`,
+        apikey: publishableKey,
+        Authorization: `Bearer ${publishableKey}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -114,7 +120,12 @@ export default async (request) => {
     const signupUser = signup?.user || signup;
     const identities = signupUser?.identities;
     if (!signupResponse.ok || !signupUser?.id || (Array.isArray(identities) && identities.length === 0)) {
-      return json({ error: 'An account may already exist for this email address. Please sign in to continue, or use Forgotten password.' }, 409);
+      const signupMessage = String(signup?.msg || signup?.message || signup?.error_description || '').toLowerCase();
+      const duplicate = signupResponse.status === 422 || signupMessage.includes('already registered') || signupMessage.includes('already exists');
+      console.error('Supabase signup failed:', signupResponse.status, signup?.code || '', signup?.msg || signup?.message || signup?.error_description || 'Unknown auth error');
+      return duplicate
+        ? json({ error: 'An account already exists for this email address. Please sign in to continue, or use Forgotten password.' }, 409)
+        : json({ error: 'We could not create your account just now. Please try again.' }, 500);
     }
     createdUserId = signupUser.id;
 
