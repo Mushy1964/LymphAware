@@ -19,7 +19,7 @@ jobs:
       - name: Build revised Quick Guide image
         run: |
           mkdir -p assets/guides
-          cat .quickguide-assets/chunk-* | base64 --decode > assets/guides/LymphAwareID_Quick_Guide_20260925.webp
+          cat .quickguide-assets/qg-* | base64 --decode > assets/guides/LymphAwareID_Quick_Guide_20260925.webp
           python - <<'PY'
           from pathlib import Path
 
@@ -41,7 +41,7 @@ jobs:
           text = text.replace(old, new)
           text = text.replace('download="LymphAwareID_Quick_Guide.jpg">Download guide (JPG)</a>',
                               'download="LymphAwareID_Quick_Guide.webp">Download guide</a>')
-          text = text.replace('width="1122" height="1402" alt="LymphAware ID Quick Guide: five steps to setting up and using your card. The full text follows below."',
+          text = text.replace('width="1122" height="1402" alt="LymphAware ID Quick Guide showing five steps to set up, preview and use your QR-linked ID card and profile."',
                               'width="800" height="1131" alt="LymphAware ID Quick Guide: five steps to setting up and using your card. The full text follows below."')
           guide.write_text(text, encoding='utf-8')
           PY
