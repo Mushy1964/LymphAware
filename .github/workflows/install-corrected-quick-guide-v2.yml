@@ -1,0 +1,36 @@
+name: Install corrected Quick Guide v2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.quickguide-v2-assets/ready'
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build corrected Quick Guide image
+        run: |
+          set -euo pipefail
+          mkdir -p assets/guides
+          cat .quickguide-v2-assets/chunk-* | base64 --decode > assets/guides/LymphAwareID_Quick_Guide_20260925_v2.webp
+          echo "daed0a8c178f1e9cdc775cc1e4add7287e22bc9324329b0202f37dc261994379  assets/guides/LymphAwareID_Quick_Guide_20260925_v2.webp" | sha256sum -c -
+          test "$(stat -c%s assets/guides/LymphAwareID_Quick_Guide_20260925_v2.webp)" -eq 355816
+
+      - name: Commit corrected guide
+        run: |
+          rm -rf .quickguide-v2-assets
+          rm -f .github/workflows/install-corrected-quick-guide-v2.yml
+          git config user.name "Mushy1964"
+          git config user.email "graham.rooms@gmail.com"
+          git add -A
+          git commit -m "Repair corrected LymphAware ID Quick Guide asset"
+          git push
