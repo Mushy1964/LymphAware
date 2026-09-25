@@ -168,6 +168,10 @@ export default async (request) => {
         !isClosed &&
         !addressReviewRequired &&
         (order.order_status === 'PRINTED' || allCardsPrinted);
+      const welcomePackRequired = order.order_type === 'INITIAL_MEMBERSHIP';
+      const welcomePackComplete = !welcomePackRequired ||
+        Boolean(order.welcome_letter_printed_at && order.welcome_envelope_printed_at);
+      const readyToComplete = readyToPack && welcomePackComplete;
       let workflowStage = 'WAITING';
       let workflowReason = 'Waiting for the information needed to prepare this order.';
       if (order.order_status === 'COMPLETED') {
@@ -181,9 +185,15 @@ export default async (request) => {
         workflowReason = 'The Stripe delivery country does not match the country used to calculate postage. Review the address before printing.';
       } else if (readyToPack) {
         workflowStage = 'READY_TO_DISPATCH';
-        workflowReason = order.order_type === 'INITIAL_MEMBERSHIP'
-          ? 'All required cards are printed. Print the welcome letter, then pack the order and confirm dispatch.'
-          : 'All required cards are printed. Pack the order and confirm dispatch.';
+        if (welcomePackRequired && !order.welcome_letter_printed_at && !order.welcome_envelope_printed_at) {
+          workflowReason = 'All required cards are printed. Print the Welcome Pack (A4 letter and addressed envelope), then pack the order and confirm dispatch.';
+        } else if (welcomePackRequired && !order.welcome_letter_printed_at) {
+          workflowReason = 'The addressed envelope is printed. Print the A4 Welcome Letter to complete the Welcome Pack.';
+        } else if (welcomePackRequired && !order.welcome_envelope_printed_at) {
+          workflowReason = 'The Welcome Letter is printed. Print the addressed envelope to complete the Welcome Pack.';
+        } else {
+          workflowReason = 'All required items are printed. Pack the complete order and confirm dispatch.';
+        }
       } else if (waitingForDetails) {
         workflowStage = 'WAITING';
         workflowReason = 'Waiting for the customer to add their display name and photograph.';
@@ -214,8 +224,10 @@ export default async (request) => {
         lanyard_quantity: lanyardQuantity,
         workflow_stage: workflowStage,
         workflow_reason: workflowReason,
-        ready_to_complete: readyToPack,
+        ready_to_complete: readyToComplete,
         ready_to_pack: readyToPack,
+        welcome_pack_required: welcomePackRequired,
+        welcome_pack_complete: welcomePackComplete,
         completion_stage: workflowStage
       };
     });
