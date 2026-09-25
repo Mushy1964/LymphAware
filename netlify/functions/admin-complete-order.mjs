@@ -36,7 +36,7 @@ export default async (request) => {
 
     const base = env('SUPABASE_URL');
     const headers = serviceHeaders();
-    const orderResponse = await fetch(`${base}/rest/v1/orders?id=eq.${encodeURIComponent(orderId)}&select=id,user_id,order_status,payment_status&limit=1`, { headers });
+    const orderResponse = await fetch(`${base}/rest/v1/orders?id=eq.${encodeURIComponent(orderId)}&select=id,user_id,order_type,order_status,payment_status,welcome_letter_printed_at,welcome_envelope_printed_at&limit=1`, { headers });
     if (!orderResponse.ok) return json({ error: 'The order could not be checked.' }, 500);
     const order = (await orderResponse.json())?.[0];
     if (!order) return json({ error: 'Order not found.' }, 404);
@@ -62,6 +62,9 @@ export default async (request) => {
       return (linkedItem || sameLanguage) && profile.card_production_status === 'PRINTED';
     }));
     if (!primaryPrinted || !languagesPrinted) return json({ error: 'All required cards must be marked as printed before completing this order.' }, 400);
+    if (order.order_type === 'INITIAL_MEMBERSHIP' && (!order.welcome_letter_printed_at || !order.welcome_envelope_printed_at)) {
+      return json({ error: 'Print and confirm both the Welcome Letter and addressed envelope before completing this order.' }, 400);
+    }
 
     const now = new Date().toISOString();
     const updateResponse = await fetch(`${base}/rest/v1/orders?id=eq.${encodeURIComponent(orderId)}`, {
