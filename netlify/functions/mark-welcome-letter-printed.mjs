@@ -8,7 +8,7 @@ function json(body, status = 200) {
 }
 
 function env(name) {
-  return String(globalThis.Netlify?.env?.get?.(name) || process.env[name] || '').trim();
+  return String(Netlify.env.get(name) || '').trim();
 }
 
 function serviceHeaders(prefer = '') {
