@@ -32,16 +32,16 @@
     .print-tip{margin:0 0 16px;padding:12px 14px;border-left:4px solid #0053b7;border-radius:8px;background:#f7fbfd;color:#314658;line-height:1.45}
     .paper{position:relative;box-sizing:border-box;width:210mm;height:297mm;min-height:297mm;margin:0 auto;padding:20mm 19mm 28mm;background:#fff;box-shadow:0 10px 35px rgba(31,41,51,.12);color:#172536;font:15.5px/1.5 Arial,sans-serif;overflow:hidden}
     .letter-content{position:relative;z-index:2}
-    .paper.letter-compact{font-size:15px;line-height:1.45}
-    .paper.letter-compact .letter-head{min-height:30mm;margin-bottom:5mm}
-    .paper.letter-compact .letter-meta{margin-bottom:10mm}
-    .paper.letter-compact h1{font-size:27px;margin-bottom:14px}
-    .paper.letter-compact h2{margin:18px 0 5px;font-size:16.5px}
-    .paper.letter-compact p{margin-bottom:11px}
-    .paper.letter-compact ul{margin:5px 0 12px}
-    .paper.letter-compact .letter-greeting{margin-bottom:16px!important}
-    .paper.letter-compact .letter-signature{margin-top:20px!important}
-    .paper.letter-compact .letter-footer{margin-top:21px;padding-top:9px}
+    .paper.letter-compact{font-size:15.5px;line-height:1.5}
+    .paper.letter-compact .letter-head{min-height:31mm;margin-bottom:6mm}
+    .paper.letter-compact .letter-meta{margin-bottom:12mm}
+    .paper.letter-compact h1{font-size:27px;margin-bottom:17px}
+    .paper.letter-compact h2{margin:23px 0 7px;font-size:16.5px}
+    .paper.letter-compact p{margin-bottom:14px}
+    .paper.letter-compact ul{margin:7px 0 16px}
+    .paper.letter-compact .letter-greeting{margin-bottom:20px!important}
+    .paper.letter-compact .letter-signature{margin-top:26px!important}
+    .paper.letter-compact .letter-footer{margin-top:25px;padding-top:10px}
     .paper.letter-tight{font-size:14.3px;line-height:1.4;padding-top:19mm}
     .paper.letter-tight .letter-head{min-height:28mm;margin-bottom:4mm}
     .paper.letter-tight .letter-meta{margin-bottom:8mm}
@@ -54,11 +54,11 @@
     .paper.letter-tight .letter-footer{margin-top:15px;padding-top:7px;font-size:10.2px}
     .letter-head{display:flex;align-items:flex-start;min-height:31mm;margin-bottom:6mm}
     .letter-brand{width:112mm;min-width:0}.letter-logo{display:block;width:100%;height:auto;margin:0}
-    .letter-meta{display:grid;grid-template-columns:minmax(0,1fr) 70mm;gap:12mm;align-items:start;margin-bottom:12mm}
+    .letter-meta{display:grid;grid-template-columns:minmax(0,1fr) 70mm;gap:12mm;align-items:start;margin-bottom:16mm}
     .letter-address-block{margin:0;color:#263849;font-size:14px;line-height:1.42}.letter-address-block address{margin:0;font-style:normal}
     .letter-date-block{text-align:right;color:#263849;font-size:13.5px;line-height:1.5}.letter-date{font-weight:700;color:#172536}.letter-id-line{margin-top:3px}.letter-id-line strong{color:#0053b7}
-    .paper h1{margin:0 0 17px;color:#0053b7;font-size:27px;line-height:1.15}.paper h2{margin:23px 0 7px;color:#247a24;font-size:16.5px}.paper p{margin:0 0 14px}.letter-greeting{margin:0 0 20px!important}.paper ul{margin:7px 0 16px;padding-left:22px}
-    .letter-signature{margin-top:26px!important}.letter-contact{display:grid;gap:3px;margin-top:3px}.letter-contact-row{display:flex;align-items:center;gap:7px;font-weight:400}.letter-contact-row svg{width:14px;height:14px;flex:0 0 14px;stroke:#0053b7;fill:none;stroke-width:1.8}.letter-contact-row span{font-weight:400}.letter-footer{position:relative;margin-top:25px;padding-top:10px;border-top:1px solid #d5dfe5;color:#526273;font-size:10.5px;z-index:2}
+    .paper h1{margin:0 0 22px;color:#0053b7;font-size:27px;line-height:1.15}.paper h2{margin:31px 0 9px;color:#247a24;font-size:16.5px}.paper p{margin:0 0 18px}.letter-greeting{margin:0 0 27px!important}.paper ul{margin:9px 0 22px;padding-left:22px}
+    .letter-signature{margin-top:36px!important}.letter-contact{display:grid;gap:3px;margin-top:3px}.letter-contact-row{display:flex;align-items:center;gap:7px;font-weight:400}.letter-contact-row svg{width:14px;height:14px;flex:0 0 14px;stroke:#0053b7;fill:none;stroke-width:1.8}.letter-contact-row span{font-weight:400}.letter-footer{position:relative;margin-top:32px;padding-top:11px;border-top:1px solid #d5dfe5;color:#526273;font-size:10.5px;z-index:2}
     .stationery-art{position:absolute;z-index:1;pointer-events:none;display:block;-webkit-print-color-adjust:exact;print-color-adjust:exact}
     .letter-art-top{top:0;right:0;width:112mm;height:auto}
     .letter-art-bottom{left:0;bottom:0;width:210mm;height:auto}
@@ -179,7 +179,7 @@
       if(!footer)return false;
       const paperRect=letter.getBoundingClientRect();
       const footerRect=footer.getBoundingClientRect();
-      const protectedWaveZone=paperRect.height*0.18;
+      const protectedWaveZone=paperRect.height*0.155;
       const safeGap=Math.max(12,paperRect.height*0.012);
       const safeBoundary=paperRect.bottom-protectedWaveZone-safeGap;
       return footerRect.bottom>safeBoundary;
