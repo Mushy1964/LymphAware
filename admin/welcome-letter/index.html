@@ -30,8 +30,28 @@
     .envelope-options label{font-weight:800}
     .envelope-options select{min-height:40px;padding:7px 32px 7px 10px;border:1px solid #bdccd4;border-radius:8px;background:#fff;font:inherit}
     .print-tip{margin:0 0 16px;padding:12px 14px;border-left:4px solid #0053b7;border-radius:8px;background:#f7fbfd;color:#314658;line-height:1.45}
-    .paper{position:relative;box-sizing:border-box;width:210mm;min-height:297mm;margin:0 auto;padding:20mm 19mm 28mm;background:#fff;box-shadow:0 10px 35px rgba(31,41,51,.12);color:#172536;font:15px/1.45 Arial,sans-serif;overflow:hidden}
+    .paper{position:relative;box-sizing:border-box;width:210mm;height:297mm;min-height:297mm;margin:0 auto;padding:20mm 19mm 50mm;background:#fff;box-shadow:0 10px 35px rgba(31,41,51,.12);color:#172536;font:15px/1.45 Arial,sans-serif;overflow:hidden}
     .letter-content{position:relative;z-index:2}
+    .paper.letter-compact{font-size:14px;line-height:1.38}
+    .paper.letter-compact .letter-head{min-height:28mm;margin-bottom:4mm}
+    .paper.letter-compact .letter-meta{margin-bottom:7mm}
+    .paper.letter-compact h1{font-size:25px;margin-bottom:10px}
+    .paper.letter-compact h2{margin:13px 0 4px;font-size:16px}
+    .paper.letter-compact p{margin-bottom:8px}
+    .paper.letter-compact ul{margin-top:3px;margin-bottom:8px}
+    .paper.letter-compact .letter-greeting{margin-bottom:11px!important}
+    .paper.letter-compact .letter-signature{margin-top:14px!important}
+    .paper.letter-compact .letter-footer{margin-top:14px;padding-top:7px}
+    .paper.letter-tight{font-size:13px;line-height:1.32;padding-top:17mm}
+    .paper.letter-tight .letter-head{min-height:25mm;margin-bottom:3mm}
+    .paper.letter-tight .letter-meta{margin-bottom:5mm}
+    .paper.letter-tight h1{font-size:23px;margin-bottom:8px}
+    .paper.letter-tight h2{margin:10px 0 3px;font-size:15px}
+    .paper.letter-tight p{margin-bottom:6px}
+    .paper.letter-tight ul{margin-top:2px;margin-bottom:6px}
+    .paper.letter-tight .letter-greeting{margin-bottom:8px!important}
+    .paper.letter-tight .letter-signature{margin-top:10px!important}
+    .paper.letter-tight .letter-footer{margin-top:10px;padding-top:6px;font-size:10px}
     .letter-head{display:flex;align-items:flex-start;min-height:31mm;margin-bottom:6mm}
     .letter-brand{width:112mm;min-width:0}.letter-logo{display:block;width:100%;height:auto;margin:0}
     .letter-meta{display:grid;grid-template-columns:minmax(0,1fr) 70mm;gap:12mm;align-items:start;margin-bottom:10mm}
@@ -58,7 +78,7 @@
       .pack-tools{align-items:stretch;flex-direction:column}.pack-tools .button{width:100%}.pack-actions{display:grid}
       .pack-steps{grid-template-columns:1fr}.preview-controls{align-items:stretch;flex-direction:column}.preview-tabs{display:grid;grid-template-columns:1fr 1fr}
       .envelope-options{justify-content:space-between}
-      .paper{width:100%;min-height:0;padding:25px 20px 74px}.letter-head{min-height:86px;margin-bottom:18px}.letter-brand{width:78%}.letter-logo{max-width:100%}.letter-meta{grid-template-columns:minmax(0,1fr) minmax(145px,43%);gap:12px;margin-bottom:24px}.letter-address-block{font-size:13px;line-height:1.35}.letter-date-block{font-size:12.5px}.letter-art-top{width:55%}.letter-art-bottom{width:100%}
+      .paper{width:100%;height:auto;min-height:0;padding:25px 20px 118px}.letter-head{min-height:86px;margin-bottom:18px}.letter-brand{width:78%}.letter-logo{max-width:100%}.letter-meta{grid-template-columns:minmax(0,1fr) minmax(145px,43%);gap:12px;margin-bottom:24px}.letter-address-block{font-size:13px;line-height:1.35}.letter-date-block{font-size:12.5px}.letter-art-top{width:55%}.letter-art-bottom{width:100%}
       .envelope-wrap{justify-content:flex-start}.envelope-paper{transform-origin:top left;zoom:.62}
     }
     @media print{
@@ -67,7 +87,7 @@
       .pack-shell{width:auto;margin:0!important}
       body.printing-letter .preview-envelope,body.printing-envelope .preview-letter{display:none!important}
       body.printing-letter .preview-letter,body.printing-envelope .preview-envelope{display:block!important}
-      body.printing-letter .paper{box-sizing:border-box;width:210mm;height:297mm;min-height:0;max-height:297mm;margin:0!important;padding:18mm 18mm 25mm;overflow:hidden;box-shadow:none;font-size:11.3pt;line-height:1.4;break-after:avoid;page-break-after:avoid;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+      body.printing-letter .paper{box-sizing:border-box;width:210mm;height:297mm;min-height:0;max-height:297mm;margin:0!important;padding:18mm 18mm 49mm;overflow:hidden;box-shadow:none;font-size:11.3pt;line-height:1.4;break-after:avoid;page-break-after:avoid;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
       body.printing-letter .letter-head{min-height:29mm;margin-bottom:5mm}body.printing-letter .letter-meta{margin-bottom:8mm}
       body.printing-envelope .envelope-paper{background:#fff!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
       body.printing-envelope .envelope-wrap{display:block!important;padding:0!important;overflow:visible!important}
@@ -154,6 +174,19 @@
       letterPreview.hidden=!isLetter;envelopePreview.hidden=isLetter;
       showLetter.setAttribute('aria-selected',String(isLetter));showEnvelope.setAttribute('aria-selected',String(!isLetter));
     }
+    function fitLetterLayout(){
+      if(!letter.querySelector('.letter-content'))return;
+      letter.classList.remove('letter-compact','letter-tight');
+      void letter.offsetHeight;
+      if(letter.scrollHeight>letter.clientHeight+2){
+        letter.classList.add('letter-compact');
+        void letter.offsetHeight;
+      }
+      if(letter.scrollHeight>letter.clientHeight+2){
+        letter.classList.add('letter-tight');
+        void letter.offsetHeight;
+      }
+    }
     function render(order){
       currentOrder=order;
       const profile=order.profile||{},name=profile.display_name||order.delivery_name||'LymphAware ID Member',patientId=profile.lymphaware_id||'Not yet assigned',items=fulfilmentLines(order).map(item=>`<li>${esc(item)}</li>`).join(''),membershipName=membershipPackage(order),membershipEnd=longDate(order.membership?.membership_end),letterAddress=deliveryLines(order,true).map(line=>esc(line)).join('<br>');
@@ -162,6 +195,7 @@
       backLink.textContent=order.order_status==='COMPLETED'?'Back to Completed':'Back to Order';
       letter.innerHTML=`<img class="stationery-art letter-art-top" src="/assets/brand/LymphAwareID_Approved_Top_Corner.svg" alt=""><img class="stationery-art letter-art-bottom" src="/assets/brand/LymphAwareID_Approved_Bottom_Wave.svg" alt=""><div class="letter-content"><div class="letter-head"><div class="letter-brand"><img class="letter-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood."></div></div><div class="letter-meta"><div class="letter-address-block">${letterAddress?`<address>${letterAddress}</address>`:''}</div><div class="letter-date-block"><div class="letter-date">${esc(new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}))}</div><div class="letter-id-line"><strong>LymphAware ID:</strong> ${esc(patientId)}</div>${membershipName?`<div class="letter-id-line"><strong>Membership:</strong> ${esc(membershipName)}</div>`:''}${membershipEnd?`<div class="letter-id-line"><strong>Valid until:</strong> ${esc(membershipEnd)}</div>`:''}<div class="letter-id-line">${esc(orderRef(order.order_number))}</div></div></div><p class="letter-greeting">Dear ${esc(name)},</p><h1>Welcome to LymphAware ID</h1><p>Thank you for becoming a LymphAware ID member. Your card links to the QR profile you control, helping you share important information clearly when it may be difficult to explain it yourself.</p><h2>Enclosed with this letter</h2><ul>${items||'<li>No physical items recorded</li>'}</ul><h2>Using your LymphAware ID card</h2><p>The QR code links to your profile. No app or sign-in is required to view the information you have chosen to share. You remain in control and can update your profile whenever your information or needs change.</p><h2>Managing your profile</h2><p>Visit <strong>lymphawareid.com/sign-in</strong> and sign in using the email address you registered with. For your security, passwords are never included in printed correspondence. If you forget your password, use the password-reset option on the sign-in page.</p><div class="letter-signature"><p>With best wishes,<br><strong>The LymphAware ID Team</strong></p><div class="letter-contact"><div class="letter-contact-row"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5h18v13H3z"/><path d="m4 7 8 6 8-6"/></svg><span>admin@lymphawareid.com</span></div><div class="letter-contact-row"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3.5 12h17M12 3c2.3 2.4 3.5 5.4 3.5 9S14.3 18.6 12 21M12 3C9.7 5.4 8.5 8.4 8.5 12s1.2 6.6 3.5 9"/></svg><span>lymphawareid.com</span></div></div></div><div class="letter-footer">LymphAware ID supports communication and awareness. It does not provide medical diagnosis or replace professional medical advice.</div></div>`
       envelopeAddress.innerHTML=deliveryLines(order,true).map(line=>esc(line)).join('<br>')||'No delivery address recorded.';
+      fitLetterLayout();
       printLetterButton.disabled=false;printEnvelopeButton.disabled=false;
       refreshControls();
     }
@@ -210,6 +244,7 @@
       activePrintTarget=target;
       printLetterButton.disabled=true;printEnvelopeButton.disabled=true;
       configurePrintPage(target);
+      if(target==='letter')fitLetterLayout();
       setStatus(`Opening print options for the ${label}…`,'info');
       printResetTimer=setTimeout(()=>{resetPrintState();setStatus('Printing may not have started. Check the printer connection and try again. Nothing has been marked as printed.','warning')},20000);
       requestAnimationFrame(()=>{try{window.print()}catch(error){console.error(error);resetPrintState();setStatus('Print options could not be opened. Check the printer connection and try again.','error')}});
@@ -230,6 +265,7 @@
       }catch(error){console.error(error);setStatus(`The ${label} printed, but its completion status could not be saved. Please try recording it again before dispatching.`,'error')}
     });
     envelopeSize.addEventListener('change',()=>{envelope.dataset.size=envelopeSize.value});
+    window.addEventListener('resize',()=>{if(!document.body.classList.contains('printing-letter'))fitLetterLayout()});
     showLetter.addEventListener('click',()=>showPreview('letter'));showEnvelope.addEventListener('click',()=>showPreview('envelope'));
     printLetterButton.addEventListener('click',()=>{showPreview('letter');printTarget('letter')});
     printEnvelopeButton.addEventListener('click',()=>{showPreview('envelope');printTarget('envelope')});
