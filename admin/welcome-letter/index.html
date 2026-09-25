@@ -3,43 +3,225 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome Letter | LymphAware ID Administration</title>
+  <title>Welcome Pack | LymphAware ID Administration</title>
   <link rel="stylesheet" href="/css/styles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+  <style id="dynamic-page-style"></style>
   <style>
-    body{background:#eef3f5}.letter-tools{display:flex;justify-content:space-between;align-items:center;gap:14px;width:min(100% - 28px,850px);margin:22px auto}.letter-tools div{display:flex;gap:10px;flex-wrap:wrap}.paper{box-sizing:border-box;width:min(100% - 28px,210mm);min-height:297mm;margin:0 auto 35px;padding:20mm;background:#fff;box-shadow:0 10px 35px rgba(31,41,51,.12);color:#172536;font:15.5px/1.48 Arial,sans-serif}.letter-head{display:grid;grid-template-columns:minmax(0,1fr) 72mm;gap:10mm;align-items:start;margin-bottom:42px}.letter-brand{min-width:0}.letter-logo{display:block;width:100%;max-width:108mm;margin:0 0 26px}.letter-motto{margin:0!important;font-size:18px;font-weight:800;line-height:1.28}.letter-motto span{display:block}.letter-motto-dark{color:#17283d}.letter-motto-blue{color:#0053b7}.letter-motto-green{color:#247a24}.letter-address-block{margin:0;text-align:right;line-height:1.4}.letter-address-block address{margin:0;font-style:normal}.letter-date{margin-top:10px;font-weight:700}.paper h1{margin:0 0 14px;color:#247a24;font-size:27px}.paper h2{margin:20px 0 5px;font-size:17px}.paper p{margin:0 0 12px}.letter-greeting{padding-top:22px}.letter-reference{margin:18px 0;padding:11px 14px;border-left:5px solid #0053b7;background:#eef6fb}.paper ul{margin:5px 0 12px;padding-left:22px}.letter-signature{margin-top:23px!important}.letter-footer{margin-top:29px;padding-top:12px;border-top:1px solid #ccd8de;color:#526273;font-size:11px}.letter-message{padding:80px 20px;text-align:center;color:#526273}.print-status{box-sizing:border-box;width:min(100% - 28px,850px);margin:-8px auto 18px;padding:11px 13px;border-radius:10px;background:#eef6fb;color:#24445c;font-weight:700}.print-status.warning{background:#fff7e8;color:#725514}.print-status.error{background:#fff0f0;color:#8a2b2b}.print-status[hidden]{display:none}@media(max-width:620px){.letter-tools{align-items:stretch;flex-direction:column}.letter-tools .button{width:100%}.paper{padding:25px 20px;min-height:0}.letter-head{grid-template-columns:minmax(0,1fr) minmax(125px,42%);gap:12px;margin-bottom:34px}.letter-logo{max-width:100%;margin-bottom:22px}.letter-motto{font-size:16px}.letter-address-block{text-align:right;font-size:13px;line-height:1.35}}@page{size:A4;margin:0}@media print{html,body{width:210mm;height:297mm;margin:0!important;padding:0!important;background:#fff;overflow:hidden}.letter-tools,.print-status,.letter-message{display:none!important}.paper{box-sizing:border-box;width:210mm;height:297mm;min-height:0;max-height:297mm;margin:0!important;padding:14mm 16mm;overflow:hidden;box-shadow:none;font-size:12pt;line-height:1.45;break-after:avoid;page-break-after:avoid}.letter-head{margin-bottom:34px}.letter-greeting{padding-top:18px}.letter-reference{background:#eef6fb!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}
+    body{background:#eef3f5}
+    .pack-tools{display:flex;justify-content:space-between;align-items:center;gap:14px;width:min(100% - 28px,900px);margin:22px auto}
+    .pack-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .pack-shell{width:min(100% - 28px,900px);margin:0 auto 35px}
+    .pack-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:16px}
+    .pack-step{padding:15px 16px;border:1px solid #d8e3e8;border-radius:13px;background:#fff}
+    .pack-step strong{display:block;margin-bottom:4px}
+    .pack-step-state{display:inline-flex;margin-top:8px;padding:5px 9px;border-radius:999px;background:#fff6d8;color:#8a5a00;font-size:.82rem;font-weight:800}
+    .pack-step-state.done{background:#eaf7ee;color:#176b32}
+    .print-status{margin:0 0 16px;padding:11px 13px;border-radius:10px;background:#eef6fb;color:#24445c;font-weight:700}
+    .print-status.warning{background:#fff7e8;color:#725514}
+    .print-status.error{background:#fff0f0;color:#8a2b2b}
+    .print-status.success{background:#eaf7ee;color:#176b32}
+    .print-status[hidden]{display:none}
+    .preview-controls{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 12px;padding:12px 14px;border:1px solid #d8e3e8;border-radius:12px;background:#fff}
+    .preview-tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .preview-tab{min-height:40px;padding:8px 12px;border:1px solid #bdccd4;border-radius:9px;background:#fff;color:#24445c;font:inherit;font-weight:800;cursor:pointer}
+    .preview-tab[aria-selected="true"]{border-color:#0053b7;background:#eef6fb;color:#0053b7}
+    .envelope-options{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .envelope-options label{font-weight:800}
+    .envelope-options select{min-height:40px;padding:7px 32px 7px 10px;border:1px solid #bdccd4;border-radius:8px;background:#fff;font:inherit}
+    .print-tip{margin:0 0 16px;padding:12px 14px;border-left:4px solid #0053b7;border-radius:8px;background:#f7fbfd;color:#314658;line-height:1.45}
+    .paper{box-sizing:border-box;width:210mm;min-height:297mm;margin:0 auto;padding:20mm;background:#fff;box-shadow:0 10px 35px rgba(31,41,51,.12);color:#172536;font:15.5px/1.48 Arial,sans-serif}
+    .letter-head{display:grid;grid-template-columns:minmax(0,1fr) 72mm;gap:10mm;align-items:start;margin-bottom:42px}
+    .letter-brand{min-width:0}.letter-logo{display:block;width:100%;max-width:108mm;margin:0 0 26px}.letter-motto{margin:0!important;font-size:18px;font-weight:800;line-height:1.28}.letter-motto span{display:block}.letter-motto-dark{color:#17283d}.letter-motto-blue{color:#0053b7}.letter-motto-green{color:#247a24}
+    .letter-address-block{margin:0;text-align:right;line-height:1.4}.letter-address-block address{margin:0;font-style:normal}.letter-date{margin-top:10px;font-weight:700}
+    .paper h1{margin:0 0 14px;color:#247a24;font-size:27px}.paper h2{margin:20px 0 5px;font-size:17px}.paper p{margin:0 0 12px}.letter-greeting{padding-top:22px}.letter-reference{margin:18px 0;padding:11px 14px;border-left:5px solid #0053b7;background:#eef6fb}.paper ul{margin:5px 0 12px;padding-left:22px}.letter-signature{margin-top:23px!important}.letter-footer{margin-top:29px;padding-top:12px;border-top:1px solid #ccd8de;color:#526273;font-size:11px}
+    .envelope-wrap{display:flex;justify-content:center;overflow:auto;padding:10px 0 28px}
+    .envelope-paper{position:relative;box-sizing:border-box;width:229mm;height:162mm;background:#fff;box-shadow:0 10px 35px rgba(31,41,51,.12);color:#111;font-family:Arial,sans-serif}
+    .envelope-paper[data-size="DL"]{width:220mm;height:110mm}
+    .envelope-address{position:absolute;left:43%;top:39%;width:50%;font-size:15pt;line-height:1.38;text-align:left}
+    .envelope-paper[data-size="DL"] .envelope-address{left:42%;top:34%;width:52%;font-size:13.5pt}
+    .envelope-address address{margin:0;font-style:normal}
+    .preview-panel[hidden]{display:none}
+    .letter-message{padding:80px 20px;text-align:center;color:#526273}
+    @media(max-width:760px){
+      .pack-tools{align-items:stretch;flex-direction:column}.pack-tools .button{width:100%}.pack-actions{display:grid}
+      .pack-steps{grid-template-columns:1fr}.preview-controls{align-items:stretch;flex-direction:column}.preview-tabs{display:grid;grid-template-columns:1fr 1fr}
+      .envelope-options{justify-content:space-between}
+      .paper{width:100%;min-height:0;padding:25px 20px}.letter-head{grid-template-columns:minmax(0,1fr) minmax(125px,42%);gap:12px;margin-bottom:34px}.letter-logo{max-width:100%;margin-bottom:22px}.letter-motto{font-size:16px}.letter-address-block{text-align:right;font-size:13px;line-height:1.35}
+      .envelope-wrap{justify-content:flex-start}.envelope-paper{transform-origin:top left;zoom:.62}
+    }
+    @media print{
+      .pack-tools,.pack-steps,.print-status,.preview-controls,.print-tip,.letter-message{display:none!important}
+      body{margin:0!important;padding:0!important;background:#fff!important}
+      .pack-shell{width:auto;margin:0!important}
+      body.printing-letter .preview-envelope,body.printing-envelope .preview-letter{display:none!important}
+      body.printing-letter .preview-letter,body.printing-envelope .preview-envelope{display:block!important}
+      body.printing-letter .paper{box-sizing:border-box;width:210mm;height:297mm;min-height:0;max-height:297mm;margin:0!important;padding:14mm 16mm;overflow:hidden;box-shadow:none;font-size:12pt;line-height:1.45;break-after:avoid;page-break-after:avoid}
+      body.printing-letter .letter-head{margin-bottom:34px}body.printing-letter .letter-greeting{padding-top:18px}body.printing-letter .letter-reference{background:#eef6fb!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+      body.printing-envelope .envelope-wrap{display:block!important;padding:0!important;overflow:visible!important}
+      body.printing-envelope .envelope-paper{margin:0!important;box-shadow:none!important;transform:none!important;zoom:1!important}
+    }
   </style>
   <link rel="stylesheet" href="/css/brand-header.css?v=20260921">
 </head>
 <body>
-  <div class="letter-tools"><a id="back-link" class="button button-secondary" href="/admin/?stage=FULFILMENT">Back to Fulfilment in Progress</a><div><button type="button" id="print-letter" class="button button-primary" disabled>Print Welcome Letter</button></div></div>
-  <div id="print-status" class="print-status" role="status" aria-live="polite" hidden></div>
-  <main id="letter" class="paper"><div id="loading" class="letter-message">Preparing welcome letter...</div></main>
+  <div class="pack-tools">
+    <a id="back-link" class="button button-secondary" href="/admin/?stage=FULFILMENT">Back to Fulfilment in Progress</a>
+    <div class="pack-actions">
+      <button type="button" id="print-letter" class="button button-secondary" disabled>Print A4 Welcome Letter</button>
+      <button type="button" id="print-envelope" class="button button-primary" disabled>Print Addressed Envelope</button>
+    </div>
+  </div>
+  <main class="pack-shell">
+    <section class="pack-steps" aria-label="Welcome pack printing progress">
+      <div class="pack-step"><strong>1. Welcome letter</strong><span>A4 letter from the main paper tray.</span><span id="letter-state" class="pack-step-state">Not printed</span></div>
+      <div class="pack-step"><strong>2. Addressed envelope</strong><span>Envelope from the Brother MP tray.</span><span id="envelope-state" class="pack-step-state">Not printed</span></div>
+    </section>
+    <div id="print-status" class="print-status" role="status" aria-live="polite">Preparing welcome pack…</div>
+    <div class="preview-controls">
+      <div class="preview-tabs" role="tablist" aria-label="Welcome pack preview">
+        <button type="button" class="preview-tab" id="show-letter" role="tab" aria-selected="true">Letter preview</button>
+        <button type="button" class="preview-tab" id="show-envelope" role="tab" aria-selected="false">Envelope preview</button>
+      </div>
+      <div class="envelope-options">
+        <label for="envelope-size">Envelope size</label>
+        <select id="envelope-size"><option value="C5" selected>C5 (229 × 162 mm)</option><option value="DL">DL (220 × 110 mm)</option></select>
+      </div>
+    </div>
+    <p class="print-tip"><strong>Brother MFC-J5740DW:</strong> keep A4 paper in a main tray and envelopes in the MP tray. For the first envelope print, check that the Brother print dialogue is using the selected envelope size, <strong>MP Tray</strong> and <strong>Envelope</strong> media. Once saved in the printer/driver settings, subsequent packs should require much less intervention.</p>
+    <section id="letter-preview" class="preview-panel preview-letter"><div id="letter" class="paper"><div class="letter-message">Preparing welcome letter…</div></div></section>
+    <section id="envelope-preview" class="preview-panel preview-envelope" hidden><div class="envelope-wrap"><div id="envelope" class="envelope-paper" data-size="C5"><div class="envelope-address"><address id="envelope-address">Preparing address…</address></div></div></div></section>
+  </main>
   <script>
-    const SUPABASE_URL='https://thbhsktcenhrnxzkbjus.supabase.co',SUPABASE_PUBLISHABLE_KEY='sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi',supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY),letter=document.getElementById('letter'),printButton=document.getElementById('print-letter'),printStatus=document.getElementById('print-status'),backLink=document.getElementById('back-link'),orderId=new URLSearchParams(location.search).get('order');
+    const SUPABASE_URL='https://thbhsktcenhrnxzkbjus.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY='sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+    const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+    const letter=document.getElementById('letter');
+    const envelope=document.getElementById('envelope');
+    const envelopeAddress=document.getElementById('envelope-address');
+    const printLetterButton=document.getElementById('print-letter');
+    const printEnvelopeButton=document.getElementById('print-envelope');
+    const printStatus=document.getElementById('print-status');
+    const backLink=document.getElementById('back-link');
+    const letterState=document.getElementById('letter-state');
+    const envelopeState=document.getElementById('envelope-state');
+    const envelopeSize=document.getElementById('envelope-size');
+    const dynamicPageStyle=document.getElementById('dynamic-page-style');
+    const letterPreview=document.getElementById('letter-preview');
+    const envelopePreview=document.getElementById('envelope-preview');
+    const showLetter=document.getElementById('show-letter');
+    const showEnvelope=document.getElementById('show-envelope');
+    const orderId=new URLSearchParams(location.search).get('order');
+    let currentOrder=null;
+    let activePrintTarget='';
+    let printResetTimer=null;
+
     function esc(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
     function orderRef(number){return `ORD-${String(number||0).padStart(6,'0')}`}
     function fulfilmentLines(order){const items=order.items||[],hasMembership=items.some(item=>item.item_type==='MEMBERSHIP'),english=(hasMembership?1:0)+items.filter(item=>item.item_type==='EXTRA_CARD'&&(!item.language_name||String(item.language_name).toLowerCase()==='english')).reduce((sum,item)=>sum+Number(item.quantity||0),0),lanyards=(hasMembership?1:0)+items.filter(item=>item.item_type==='LANYARD_HOLDER').reduce((sum,item)=>sum+Number(item.quantity||0),0),languages=[];for(const item of items.filter(item=>item.item_type==='LANGUAGE_PACKAGE'||(item.item_type==='EXTRA_CARD'&&item.language_name&&String(item.language_name).toLowerCase()!=='english'))){const name=item.language_name||'Additional-language',existing=languages.find(entry=>entry.name.toLowerCase()===name.toLowerCase());if(existing)existing.quantity+=Number(item.quantity||0);else languages.push({name,quantity:Number(item.quantity||0)})}const lines=[];if(english)lines.push(`${english} English ID card${english===1?'':'s'}`);languages.forEach(entry=>lines.push(`${entry.quantity} ${entry.name} ID card${entry.quantity===1?'':'s'}`));if(lanyards)lines.push(`${lanyards} lanyard${lanyards===1?'':'s'} & holder${lanyards===1?'':'s'}`);return lines}
     function membershipPackage(order){const item=(order.items||[]).find(item=>item.item_type==='MEMBERSHIP');return item?.description||''}
     function longDate(value){if(!value)return'';const date=new Date(value);return Number.isNaN(date.getTime())?'':date.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}
-    function render(order){const profile=order.profile||{},name=profile.display_name||order.delivery_name||'LymphAware ID Member',patientId=profile.lymphaware_id||'Not yet assigned',items=fulfilmentLines(order).map(item=>`<li>${esc(item)}</li>`).join(''),membershipName=membershipPackage(order),membershipEnd=longDate(order.membership?.membership_end),addressLines=[order.delivery_line1,order.delivery_line2,order.delivery_city,order.delivery_county,order.delivery_postcode,order.delivery_country==='GB'?'United Kingdom':order.delivery_country].filter(Boolean),address=addressLines.map(line=>esc(line)).join('<br>');document.title=`Welcome Letter – ${orderRef(order.order_number)} | LymphAware ID`;backLink.href=order.order_status==='COMPLETED'?'/admin/?stage=COMPLETED':`/admin/orders/?order=${encodeURIComponent(order.id)}#order-${encodeURIComponent(order.id)}`;backLink.textContent=order.order_status==='COMPLETED'?'Back to Completed':'Back to Order';letter.innerHTML=`<div class="letter-head"><div class="letter-brand"><img class="letter-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood."><p class="letter-motto"><span class="letter-motto-dark">Your lymphoedema</span><span class="letter-motto-blue">Your information</span><span class="letter-motto-green">Your choice</span></p></div><div class="letter-address-block">${address?`<address>${address}</address>`:'' }<div class="letter-date">${esc(new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}))}</div></div></div><p class="letter-greeting">Dear ${esc(name)},</p><h1>Welcome to LymphAware ID</h1><p>Thank you for becoming a LymphAware ID member. Your card links to the QR profile you control, helping you share important information clearly when it may be difficult to explain it yourself.</p><div class="letter-reference"><strong>Your LymphAware ID:</strong> ${esc(patientId)}<br><strong>Order:</strong> ${esc(orderRef(order.order_number))}${membershipName?`<br><strong>Membership:</strong> ${esc(membershipName)}`:``}${membershipEnd?`<br><strong>Membership valid until:</strong> ${esc(membershipEnd)}`:``}</div><h2>Enclosed with this letter</h2><ul>${items||'<li>No physical items recorded</li>'}</ul><h2>Using your LymphAware ID card</h2><p>The QR code links to your profile. No app or sign-in is required to view the information you have chosen to share. You remain in control and can update your profile whenever your information or needs change.</p><h2>Managing your profile</h2><p>Visit <strong>lymphawareid.com/sign-in</strong> and sign in using the email address you registered with. For your security, passwords are never included in printed correspondence. If you forget your password, use the password-reset option on the sign-in page.</p><p class="letter-signature">With best wishes,<br><strong>The LymphAware ID Team</strong><br>admin@lymphawareid.com</p><div class="letter-footer">LymphAware ID supports communication and awareness. It does not provide medical diagnosis or replace professional medical advice.</div>`;printButton.disabled=false}
-    async function load(){if(!orderId){letter.innerHTML='<div class="letter-message">No order was selected.</div>';return}const {data:{session},error}=await supabaseClient.auth.getSession();if(error||!session?.access_token){location.href='/sign-in/';return}try{const response=await fetch('/.netlify/functions/admin-orders-list',{headers:{Authorization:`Bearer ${session.access_token}`}}),result=await response.json();if(!response.ok)throw new Error(result?.error||'The order could not be loaded.');const order=(result.orders||[]).find(item=>item.id===orderId);if(!order)throw new Error('The selected order could not be found.');render(order)}catch(error){console.error(error);letter.innerHTML=`<div class="letter-message">${esc(error.message||'The welcome letter could not be prepared.')}</div>`}}
-    let printResetTimer;
-    function setPrintStatus(message,type='info'){printStatus.textContent=message;printStatus.className=`print-status ${type==='info'?'':type}`.trim();printStatus.hidden=false}
-    function resetPrintButton(){printButton.disabled=false;printButton.textContent='Print Welcome Letter'}
-    async function recordWelcomeLetterPrinted(){const {data:{session},error}=await supabaseClient.auth.getSession();if(error||!session?.access_token)throw new Error('Administrator session unavailable.');const response=await fetch('/.netlify/functions/mark-welcome-letter-printed',{method:'POST',headers:{Authorization:`Bearer ${session.access_token}`,'Content-Type':'application/json'},body:JSON.stringify({order_id:orderId})});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result?.error||'The welcome-letter status could not be saved.');return result}
-    backLink.addEventListener('click',event=>{event.preventDefault();const destination=backLink.href;window.close();setTimeout(()=>{location.href=destination},180)});
-    window.addEventListener('beforeprint',()=>setPrintStatus('Print options are opening. Choose your connected printer and check that it is ready.','info'));
-    window.addEventListener('afterprint',async()=>{clearTimeout(printResetTimer);resetPrintButton();if(!window.confirm('Did the Welcome Letter print correctly?')){setPrintStatus('The Welcome Letter has not been marked as printed. You can try again when ready.','warning');return}try{await recordWelcomeLetterPrinted();setPrintStatus('Welcome Letter recorded as printed. Return to Fulfilment in Progress to continue packing and dispatch.','info')}catch(error){console.error(error);setPrintStatus('The letter printed, but its completion status could not be saved. Please try again before dispatching.','error')}});
-    printButton.addEventListener('click',()=>{
-      if(!window.confirm('Before continuing, check that your printer is connected, switched on and ready. Open print options now?'))return;
-      printButton.disabled=true;
-      printButton.textContent='Opening print options…';
-      setPrintStatus('Opening print options…','info');
+    function countryName(value){if(value==='GB')return'United Kingdom';return value||''}
+    function deliveryLines(order,includeName=false){return [includeName?(order.delivery_name||order.profile?.display_name):'',order.delivery_line1,order.delivery_line2,order.delivery_city,order.delivery_county,order.delivery_postcode,countryName(order.delivery_country)].filter(Boolean)}
+    function setStatus(message,type='info'){printStatus.textContent=message;printStatus.className=`print-status ${type==='info'?'':type}`.trim();printStatus.hidden=false}
+    function setStepState(element,done){element.textContent=done?'Printed':'Not printed';element.classList.toggle('done',done)}
+    function packComplete(){return Boolean(currentOrder?.welcome_letter_printed_at&&currentOrder?.welcome_envelope_printed_at)}
+    function refreshControls(){
+      if(!currentOrder)return;
+      const letterDone=Boolean(currentOrder.welcome_letter_printed_at),envelopeDone=Boolean(currentOrder.welcome_envelope_printed_at);
+      setStepState(letterState,letterDone);setStepState(envelopeState,envelopeDone);
+      printLetterButton.textContent=letterDone?'Reprint A4 Welcome Letter':'Print A4 Welcome Letter';
+      printEnvelopeButton.textContent=envelopeDone?'Reprint Addressed Envelope':'Print Addressed Envelope';
+      if(packComplete())setStatus('Welcome Pack complete: the letter and addressed envelope are both recorded as printed. You can return to the order, pack it and dispatch it.','success');
+      else if(letterDone)setStatus('Welcome letter recorded as printed. Next, print the addressed envelope from the MP tray.','info');
+      else if(envelopeDone)setStatus('Addressed envelope recorded as printed. Print the A4 welcome letter to complete the Welcome Pack.','info');
+      else setStatus('Print the A4 welcome letter first, then print the addressed envelope.','info');
+    }
+    function showPreview(kind){
+      const isLetter=kind==='letter';
+      letterPreview.hidden=!isLetter;envelopePreview.hidden=isLetter;
+      showLetter.setAttribute('aria-selected',String(isLetter));showEnvelope.setAttribute('aria-selected',String(!isLetter));
+    }
+    function render(order){
+      currentOrder=order;
+      const profile=order.profile||{},name=profile.display_name||order.delivery_name||'LymphAware ID Member',patientId=profile.lymphaware_id||'Not yet assigned',items=fulfilmentLines(order).map(item=>`<li>${esc(item)}</li>`).join(''),membershipName=membershipPackage(order),membershipEnd=longDate(order.membership?.membership_end),address=deliveryLines(order,false).map(line=>esc(line)).join('<br>');
+      document.title=`Welcome Pack – ${orderRef(order.order_number)} | LymphAware ID`;
+      backLink.href=order.order_status==='COMPLETED'?'/admin/?stage=COMPLETED':`/admin/orders/?order=${encodeURIComponent(order.id)}#order-${encodeURIComponent(order.id)}`;
+      backLink.textContent=order.order_status==='COMPLETED'?'Back to Completed':'Back to Order';
+      letter.innerHTML=`<div class="letter-head"><div class="letter-brand"><img class="letter-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood."><p class="letter-motto"><span class="letter-motto-dark">Your lymphoedema</span><span class="letter-motto-blue">Your information</span><span class="letter-motto-green">Your choice</span></p></div><div class="letter-address-block">${address?`<address>${address}</address>`:''}<div class="letter-date">${esc(new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}))}</div></div></div><p class="letter-greeting">Dear ${esc(name)},</p><h1>Welcome to LymphAware ID</h1><p>Thank you for becoming a LymphAware ID member. Your card links to the QR profile you control, helping you share important information clearly when it may be difficult to explain it yourself.</p><div class="letter-reference"><strong>Your LymphAware ID:</strong> ${esc(patientId)}<br><strong>Order:</strong> ${esc(orderRef(order.order_number))}${membershipName?`<br><strong>Membership:</strong> ${esc(membershipName)}`:''}${membershipEnd?`<br><strong>Membership valid until:</strong> ${esc(membershipEnd)}`:''}</div><h2>Enclosed with this letter</h2><ul>${items||'<li>No physical items recorded</li>'}</ul><h2>Using your LymphAware ID card</h2><p>The QR code links to your profile. No app or sign-in is required to view the information you have chosen to share. You remain in control and can update your profile whenever your information or needs change.</p><h2>Managing your profile</h2><p>Visit <strong>lymphawareid.com/sign-in</strong> and sign in using the email address you registered with. For your security, passwords are never included in printed correspondence. If you forget your password, use the password-reset option on the sign-in page.</p><p class="letter-signature">With best wishes,<br><strong>The LymphAware ID Team</strong><br>admin@lymphawareid.com</p><div class="letter-footer">LymphAware ID supports communication and awareness. It does not provide medical diagnosis or replace professional medical advice.</div>`;
+      envelopeAddress.innerHTML=deliveryLines(order,true).map(line=>esc(line)).join('<br>')||'No delivery address recorded.';
+      printLetterButton.disabled=false;printEnvelopeButton.disabled=false;
+      refreshControls();
+    }
+    async function load(){
+      if(!orderId){letter.innerHTML='<div class="letter-message">No order was selected.</div>';setStatus('No order was selected.','error');return}
+      const {data:{session},error}=await supabaseClient.auth.getSession();if(error||!session?.access_token){location.href='/sign-in/';return}
+      try{
+        const response=await fetch('/.netlify/functions/admin-orders-list',{headers:{Authorization:`Bearer ${session.access_token}`}});
+        const result=await response.json();
+        if(!response.ok)throw new Error(result?.error||'The order could not be loaded.');
+        const order=(result.orders||[]).find(item=>item.id===orderId);
+        if(!order)throw new Error('The selected order could not be found.');
+        if(order.order_type!=='INITIAL_MEMBERSHIP')throw new Error('A Welcome Pack is only produced for an initial membership order.');
+        render(order);
+      }catch(error){console.error(error);letter.innerHTML=`<div class="letter-message">${esc(error.message||'The Welcome Pack could not be prepared.')}</div>`;setStatus(error.message||'The Welcome Pack could not be prepared.','error')}
+    }
+    async function recordPrinted(component){
+      const {data:{session},error}=await supabaseClient.auth.getSession();if(error||!session?.access_token)throw new Error('Administrator session unavailable.');
+      const response=await fetch('/.netlify/functions/mark-welcome-letter-printed',{method:'POST',headers:{Authorization:`Bearer ${session.access_token}`,'Content-Type':'application/json'},body:JSON.stringify({order_id:orderId,component})});
+      const result=await response.json().catch(()=>({}));
+      if(!response.ok)throw new Error(result?.error||'The Welcome Pack status could not be saved.');
+      if(component==='letter')currentOrder.welcome_letter_printed_at=result.welcome_letter_printed_at||new Date().toISOString();
+      if(component==='envelope')currentOrder.welcome_envelope_printed_at=result.welcome_envelope_printed_at||new Date().toISOString();
+      refreshControls();
+    }
+    function resetPrintState(){
+      clearTimeout(printResetTimer);printLetterButton.disabled=false;printEnvelopeButton.disabled=false;
+      document.body.classList.remove('printing-letter','printing-envelope');dynamicPageStyle.textContent='';
+      activePrintTarget='';
+    }
+    function configurePrintPage(target){
+      if(target==='letter'){
+        dynamicPageStyle.textContent='@page{size:A4;margin:0}';
+        document.body.classList.add('printing-letter');
+      }else{
+        const size=envelopeSize.value==='DL'?'DL':'C5';
+        const dimensions=size==='DL'?{w:220,h:110}:{w:229,h:162};
+        dynamicPageStyle.textContent=`@page{size:${dimensions.w}mm ${dimensions.h}mm;margin:0}html,body{width:${dimensions.w}mm!important;height:${dimensions.h}mm!important}`;
+        document.body.classList.add('printing-envelope');
+      }
+    }
+    function printTarget(target){
+      if(!currentOrder)return;
+      const label=target==='letter'?'A4 welcome letter':`${envelopeSize.value} addressed envelope`;
+      if(!window.confirm(`Ready to print the ${label}?\n\nCheck that the correct paper is loaded and your Brother printer is switched on.`))return;
+      activePrintTarget=target;
+      printLetterButton.disabled=true;printEnvelopeButton.disabled=true;
+      configurePrintPage(target);
+      setStatus(`Opening print options for the ${label}…`,'info');
+      printResetTimer=setTimeout(()=>{resetPrintState();setStatus('Printing may not have started. Check the printer connection and try again. Nothing has been marked as printed.','warning')},20000);
+      requestAnimationFrame(()=>{try{window.print()}catch(error){console.error(error);resetPrintState();setStatus('Print options could not be opened. Check the printer connection and try again.','error')}});
+    }
+    window.addEventListener('afterprint',async()=>{
       clearTimeout(printResetTimer);
-      printResetTimer=setTimeout(()=>{resetPrintButton();setPrintStatus('Printing may not have started. Check the printer connection, then try again. The order has not been marked as completed.','warning')},15000);
-      try{window.print()}catch(error){console.error('Unable to open print options:',error);clearTimeout(printResetTimer);resetPrintButton();setPrintStatus('Print options could not be opened. Check the printer connection or close this tab and try again. The order has not been marked as completed.','error')}
+      const target=activePrintTarget;
+      document.body.classList.remove('printing-letter','printing-envelope');dynamicPageStyle.textContent='';
+      printLetterButton.disabled=false;printEnvelopeButton.disabled=false;
+      activePrintTarget='';
+      if(!target)return;
+      const label=target==='letter'?'Welcome Letter':'addressed envelope';
+      if(!window.confirm(`Did the ${label} print correctly?`)){setStatus(`The ${label} has not been marked as printed. You can try again when ready.`,'warning');return}
+      try{
+        await recordPrinted(target);
+        if(target==='letter'&&!currentOrder.welcome_envelope_printed_at){showPreview('envelope');setStatus('Welcome Letter recorded as printed. Now print the addressed envelope from the MP tray.','info')}
+        else if(packComplete())setStatus('Welcome Pack complete. Both the letter and addressed envelope are recorded as printed. Return to the order to pack and dispatch it.','success');
+      }catch(error){console.error(error);setStatus(`The ${label} printed, but its completion status could not be saved. Please try recording it again before dispatching.`,'error')}
     });
+    envelopeSize.addEventListener('change',()=>{envelope.dataset.size=envelopeSize.value});
+    showLetter.addEventListener('click',()=>showPreview('letter'));showEnvelope.addEventListener('click',()=>showPreview('envelope'));
+    printLetterButton.addEventListener('click',()=>{showPreview('letter');printTarget('letter')});
+    printEnvelopeButton.addEventListener('click',()=>{showPreview('envelope');printTarget('envelope')});
+    backLink.addEventListener('click',event=>{event.preventDefault();const destination=backLink.href;window.close();setTimeout(()=>{location.href=destination},180)});
     load();
   </script>
 </body>
