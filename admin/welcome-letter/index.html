@@ -39,9 +39,9 @@
     .letter-date-block{text-align:right;color:#263849;font-size:13.5px;line-height:1.5}.letter-date{font-weight:700;color:#172536}.letter-id-line{margin-top:3px}.letter-id-line strong{color:#0053b7}
     .paper h1{margin:0 0 14px;color:#0053b7;font-size:27px;line-height:1.15}.paper h2{margin:18px 0 5px;color:#247a24;font-size:16.5px}.paper p{margin:0 0 11px}.letter-greeting{margin:0 0 16px!important}.paper ul{margin:5px 0 12px;padding-left:22px}
     .letter-signature{margin-top:20px!important}.letter-footer{position:relative;margin-top:21px;padding-top:9px;border-top:1px solid #d5dfe5;color:#526273;font-size:10.5px;z-index:2}
-    .stationery-wave{position:absolute;z-index:1;pointer-events:none;overflow:visible;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .letter-wave-top{top:-5mm;right:-5mm;width:101mm;height:49mm}
-    .letter-wave-bottom{left:-7mm;bottom:-2mm;width:225mm;height:42mm}
+    .stationery-art{position:absolute;z-index:1;pointer-events:none;display:block;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .letter-art-top{top:0;right:0;width:108mm;height:auto}
+    .letter-art-bottom{left:0;bottom:0;width:210mm;height:auto}
     .envelope-wrap{display:flex;justify-content:center;overflow:auto;padding:10px 0 28px}
     .envelope-paper{position:relative;box-sizing:border-box;width:229mm;height:162mm;background:#fff;box-shadow:0 10px 35px rgba(31,41,51,.12);color:#111;font-family:Arial,sans-serif;overflow:hidden}
     .envelope-paper[data-size="DL"]{width:220mm;height:110mm}
@@ -50,15 +50,15 @@
     .envelope-paper[data-size="DL"] .envelope-logo{top:11mm;left:16mm;width:82mm}
     .envelope-paper[data-size="DL"] .envelope-address{left:49%;top:36%;width:44%;font-size:13pt}
     .envelope-address address{margin:0;font-style:normal}
-    .envelope-wave-bottom{left:-7mm;bottom:-2mm;width:242mm;height:39mm}
-    .envelope-paper[data-size="DL"] .envelope-wave-bottom{left:-6mm;bottom:-1mm;width:232mm;height:31mm}
+    .envelope-art-bottom{left:0;bottom:0;width:100%;height:auto}
+    .envelope-paper[data-size="DL"] .envelope-art-bottom{left:0;bottom:0;width:100%;height:auto}
     .preview-panel[hidden]{display:none}
     .letter-message{padding:80px 20px;text-align:center;color:#526273}
     @media(max-width:760px){
       .pack-tools{align-items:stretch;flex-direction:column}.pack-tools .button{width:100%}.pack-actions{display:grid}
       .pack-steps{grid-template-columns:1fr}.preview-controls{align-items:stretch;flex-direction:column}.preview-tabs{display:grid;grid-template-columns:1fr 1fr}
       .envelope-options{justify-content:space-between}
-      .paper{width:100%;min-height:0;padding:25px 20px 74px}.letter-head{min-height:86px;margin-bottom:18px}.letter-brand{width:78%}.letter-logo{max-width:100%}.letter-meta{grid-template-columns:minmax(0,1fr) minmax(145px,43%);gap:12px;margin-bottom:24px}.letter-address-block{font-size:13px;line-height:1.35}.letter-date-block{font-size:12.5px}.letter-wave-top{width:56%;height:auto}.letter-wave-bottom{width:108%;height:auto}
+      .paper{width:100%;min-height:0;padding:25px 20px 74px}.letter-head{min-height:86px;margin-bottom:18px}.letter-brand{width:78%}.letter-logo{max-width:100%}.letter-meta{grid-template-columns:minmax(0,1fr) minmax(145px,43%);gap:12px;margin-bottom:24px}.letter-address-block{font-size:13px;line-height:1.35}.letter-date-block{font-size:12.5px}.letter-art-top{width:55%}.letter-art-bottom{width:100%}
       .envelope-wrap{justify-content:flex-start}.envelope-paper{transform-origin:top left;zoom:.62}
     }
     @media print{
@@ -102,13 +102,7 @@
     </div>
     <p class="print-tip"><strong>Brother MFC-J5740DW:</strong> keep A4 paper in a main tray and envelopes in the MP tray. For the first envelope print, check that the Brother print dialogue is using the selected envelope size, <strong>MP Tray</strong> and <strong>Envelope</strong> media. Once saved in the printer/driver settings, subsequent packs should require much less intervention.</p>
     <section id="letter-preview" class="preview-panel preview-letter"><div id="letter" class="paper"><div class="letter-message">Preparing welcome letter…</div></div></section>
-    <section id="envelope-preview" class="preview-panel preview-envelope" hidden><div class="envelope-wrap"><div id="envelope" class="envelope-paper" data-size="C5"><img class="envelope-logo" src="/assets/brand/LymphAwareID_Logo_No_Tagline_20260921.svg" alt="LymphAware ID"><svg class="stationery-wave envelope-wave-bottom" viewBox="0 0 1200 220" aria-hidden="true" focusable="false">
-  <path d="M-30 170 C170 102 310 205 500 142 C690 78 845 156 1010 116 C1085 98 1150 89 1230 92" fill="none" stroke="#cfe8cf" stroke-width="18" stroke-linecap="round"/>
-  <path d="M-30 184 C170 118 324 216 515 154 C705 92 854 169 1020 130 C1092 113 1158 104 1230 107" fill="none" stroke="#247a24" stroke-width="15" stroke-linecap="round"/>
-  <path d="M-30 198 C160 137 329 226 529 168 C716 114 868 183 1032 146 C1103 130 1163 122 1230 123" fill="none" stroke="#d8ebf8" stroke-width="20" stroke-linecap="round"/>
-  <path d="M-30 211 C160 154 336 237 542 182 C727 132 883 197 1044 162 C1115 146 1172 139 1230 140" fill="none" stroke="#8ec4e8" stroke-width="18" stroke-linecap="round"/>
-  <path d="M-30 225 C150 171 342 247 556 197 C738 154 895 213 1057 179 C1128 164 1178 158 1230 158" fill="none" stroke="#0053b7" stroke-width="22" stroke-linecap="round"/>
-</svg><div class="envelope-address"><address id="envelope-address">Preparing address…</address></div></div></div></section>
+    <section id="envelope-preview" class="preview-panel preview-envelope" hidden><div class="envelope-wrap"><div id="envelope" class="envelope-paper" data-size="C5"><img class="envelope-logo" src="/assets/brand/LymphAwareID_Logo_No_Tagline_20260921.svg" alt="LymphAware ID"><img class="stationery-art envelope-art-bottom" src="/assets/brand/LymphAwareID_Stationery_Bottom.svg" alt=""><div class="envelope-address"><address id="envelope-address">Preparing address…</address></div></div></div></section>
   </main>
   <script>
     const SUPABASE_URL='https://thbhsktcenhrnxzkbjus.supabase.co';
@@ -166,19 +160,7 @@
       document.title=`Welcome Pack – ${orderRef(order.order_number)} | LymphAware ID`;
       backLink.href=order.order_status==='COMPLETED'?'/admin/?stage=COMPLETED':`/admin/orders/?order=${encodeURIComponent(order.id)}#order-${encodeURIComponent(order.id)}`;
       backLink.textContent=order.order_status==='COMPLETED'?'Back to Completed':'Back to Order';
-      letter.innerHTML=`<svg class="stationery-wave letter-wave-top" viewBox="0 0 700 300" aria-hidden="true" focusable="false">
-  <path d="M55 -10 C210 5 350 96 720 74" fill="none" stroke="#dcecf8" stroke-width="26" stroke-linecap="round"/>
-  <path d="M120 -8 C270 13 402 101 724 93" fill="none" stroke="#9dcbe9" stroke-width="18" stroke-linecap="round"/>
-  <path d="M205 -6 C340 20 460 103 727 112" fill="none" stroke="#0053b7" stroke-width="15" stroke-linecap="round"/>
-  <path d="M310 -4 C420 28 520 102 730 130" fill="none" stroke="#b9ddb9" stroke-width="15" stroke-linecap="round"/>
-  <path d="M395 -3 C490 31 568 98 733 145" fill="none" stroke="#247a24" stroke-width="13" stroke-linecap="round"/>
-</svg><svg class="stationery-wave letter-wave-bottom" viewBox="0 0 1200 220" aria-hidden="true" focusable="false">
-  <path d="M-30 164 C175 96 318 203 502 139 C688 75 843 153 1008 114 C1085 96 1154 87 1230 91" fill="none" stroke="#cfe8cf" stroke-width="17" stroke-linecap="round"/>
-  <path d="M-30 179 C175 113 327 216 516 153 C703 91 855 168 1021 130 C1095 113 1161 104 1230 108" fill="none" stroke="#247a24" stroke-width="14" stroke-linecap="round"/>
-  <path d="M-30 193 C166 132 335 226 530 168 C716 113 870 183 1035 146 C1107 130 1168 122 1230 123" fill="none" stroke="#d8ebf8" stroke-width="19" stroke-linecap="round"/>
-  <path d="M-30 207 C160 151 341 238 545 183 C729 133 884 198 1048 163 C1118 148 1175 140 1230 141" fill="none" stroke="#8ec4e8" stroke-width="17" stroke-linecap="round"/>
-  <path d="M-30 221 C151 169 347 250 559 198 C742 154 899 214 1061 180 C1130 165 1180 159 1230 159" fill="none" stroke="#0053b7" stroke-width="21" stroke-linecap="round"/>
-</svg><div class="letter-content"><div class="letter-head"><div class="letter-brand"><img class="letter-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood."></div></div><div class="letter-meta"><div class="letter-address-block">${letterAddress?`<address>${letterAddress}</address>`:''}</div><div class="letter-date-block"><div class="letter-date">${esc(new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}))}</div><div class="letter-id-line"><strong>LymphAware ID:</strong> ${esc(patientId)}</div>${membershipName?`<div class="letter-id-line"><strong>Membership:</strong> ${esc(membershipName)}</div>`:''}${membershipEnd?`<div class="letter-id-line"><strong>Valid until:</strong> ${esc(membershipEnd)}</div>`:''}<div class="letter-id-line">${esc(orderRef(order.order_number))}</div></div></div><p class="letter-greeting">Dear ${esc(name)},</p><h1>Welcome to LymphAware ID</h1><p>Thank you for becoming a LymphAware ID member. Your card links to the QR profile you control, helping you share important information clearly when it may be difficult to explain it yourself.</p><h2>Enclosed with this letter</h2><ul>${items||'<li>No physical items recorded</li>'}</ul><h2>Using your LymphAware ID card</h2><p>The QR code links to your profile. No app or sign-in is required to view the information you have chosen to share. You remain in control and can update your profile whenever your information or needs change.</p><h2>Managing your profile</h2><p>Visit <strong>lymphawareid.com/sign-in</strong> and sign in using the email address you registered with. For your security, passwords are never included in printed correspondence. If you forget your password, use the password-reset option on the sign-in page.</p><p class="letter-signature">With best wishes,<br><strong>The LymphAware ID Team</strong><br>admin@lymphawareid.com<br><strong>lymphawareid.com</strong></p><div class="letter-footer">LymphAware ID supports communication and awareness. It does not provide medical diagnosis or replace professional medical advice.</div></div>`
+      letter.innerHTML=`<img class="stationery-art letter-art-top" src="/assets/brand/LymphAwareID_Stationery_Top.svg" alt=""><img class="stationery-art letter-art-bottom" src="/assets/brand/LymphAwareID_Stationery_Bottom.svg" alt=""><div class="letter-content"><div class="letter-head"><div class="letter-brand"><img class="letter-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood."></div></div><div class="letter-meta"><div class="letter-address-block">${letterAddress?`<address>${letterAddress}</address>`:''}</div><div class="letter-date-block"><div class="letter-date">${esc(new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}))}</div><div class="letter-id-line"><strong>LymphAware ID:</strong> ${esc(patientId)}</div>${membershipName?`<div class="letter-id-line"><strong>Membership:</strong> ${esc(membershipName)}</div>`:''}${membershipEnd?`<div class="letter-id-line"><strong>Valid until:</strong> ${esc(membershipEnd)}</div>`:''}<div class="letter-id-line">${esc(orderRef(order.order_number))}</div></div></div><p class="letter-greeting">Dear ${esc(name)},</p><h1>Welcome to LymphAware ID</h1><p>Thank you for becoming a LymphAware ID member. Your card links to the QR profile you control, helping you share important information clearly when it may be difficult to explain it yourself.</p><h2>Enclosed with this letter</h2><ul>${items||'<li>No physical items recorded</li>'}</ul><h2>Using your LymphAware ID card</h2><p>The QR code links to your profile. No app or sign-in is required to view the information you have chosen to share. You remain in control and can update your profile whenever your information or needs change.</p><h2>Managing your profile</h2><p>Visit <strong>lymphawareid.com/sign-in</strong> and sign in using the email address you registered with. For your security, passwords are never included in printed correspondence. If you forget your password, use the password-reset option on the sign-in page.</p><p class="letter-signature">With best wishes,<br><strong>The LymphAware ID Team</strong><br>admin@lymphawareid.com<br><strong>lymphawareid.com</strong></p><div class="letter-footer">LymphAware ID supports communication and awareness. It does not provide medical diagnosis or replace professional medical advice.</div></div>`
       envelopeAddress.innerHTML=deliveryLines(order,true).map(line=>esc(line)).join('<br>')||'No delivery address recorded.';
       printLetterButton.disabled=false;printEnvelopeButton.disabled=false;
       refreshControls();
