@@ -35,34 +35,34 @@
     .paper.letter-compact{font-size:15px;line-height:1.45}
     .paper.letter-compact .letter-head{min-height:30mm;margin-bottom:5mm}
     .paper.letter-compact .letter-meta{margin-bottom:10mm}
-    .paper.letter-compact .letter-body{min-height:142mm}
+    .paper.letter-compact .letter-body{min-height:154mm}
     .paper.letter-compact .letter-block h1{font-size:27px;margin-bottom:14px}
     .paper.letter-compact .letter-block h2{margin-bottom:6px;font-size:16.5px}
     .paper.letter-compact .letter-block p{margin-bottom:8px}
     .paper.letter-compact .letter-greeting{margin-bottom:12px!important}
-    .paper.letter-compact .letter-footer{margin-top:18px;padding-top:9px}
+    .paper.letter-compact 
     .paper.letter-tight{font-size:14.3px;line-height:1.4;padding-top:19mm}
     .paper.letter-tight .letter-head{min-height:28mm;margin-bottom:4mm}
     .paper.letter-tight .letter-meta{margin-bottom:8mm}
-    .paper.letter-tight .letter-body{min-height:132mm}
+    .paper.letter-tight .letter-body{min-height:144mm}
     .paper.letter-tight .letter-block h1{font-size:25.5px;margin-bottom:10px}
     .paper.letter-tight .letter-block h2{margin-bottom:5px;font-size:16px}
     .paper.letter-tight .letter-block p{margin-bottom:7px}
     .paper.letter-tight .letter-greeting{margin-bottom:9px!important}
-    .paper.letter-tight .letter-footer{margin-top:14px;padding-top:7px;font-size:10.2px}
+    .paper.letter-tight 
     .letter-head{display:flex;align-items:flex-start;min-height:31mm;margin-bottom:6mm}
     .letter-brand{width:112mm;min-width:0}.letter-logo{display:block;width:100%;height:auto;margin:0}
     .letter-meta{display:grid;grid-template-columns:minmax(0,1fr) 70mm;gap:12mm;align-items:start;margin-bottom:20mm}
     .letter-address-block{margin:0;color:#263849;font-size:14px;line-height:1.42}.letter-address-block address{margin:0;font-style:normal}
     .letter-date-block{text-align:right;color:#263849;font-size:13.5px;line-height:1.5}.letter-date{font-weight:700;color:#172536}.letter-id-line{margin-top:3px}.letter-id-line strong{color:#0053b7}
-    .letter-body{display:flex;flex-direction:column;justify-content:space-between;min-height:154mm}
+    .letter-body{display:flex;flex-direction:column;justify-content:space-between;min-height:168mm}
     .letter-block{margin:0}
     .letter-block h1{margin:0 0 16px;color:#0053b7;font-size:27px;line-height:1.15}
     .letter-block h2{margin:0 0 8px;color:#247a24;font-size:16.5px}
     .letter-block p{margin:0 0 10px}
     .letter-greeting{margin:0 0 14px!important}
     .letter-block ul{margin:6px 0 0;padding-left:22px}
-    .letter-signature{margin:0!important}.letter-contact{display:grid;gap:3px;margin-top:3px}.letter-contact-row{display:flex;align-items:center;gap:7px;font-weight:400}.letter-contact-row svg{width:14px;height:14px;flex:0 0 14px;stroke:#0053b7;fill:none;stroke-width:1.8}.letter-contact-row span{font-weight:400}.letter-footer{position:relative;margin-top:22px;padding-top:10px;border-top:1px solid #d5dfe5;color:#526273;font-size:10.5px;z-index:2}
+    .letter-signature{margin:0!important}.letter-contact{display:grid;gap:3px;margin-top:3px}.letter-contact-row{display:flex;align-items:center;gap:7px;font-weight:400}.letter-contact-row svg{width:14px;height:14px;flex:0 0 14px;stroke:#0053b7;fill:none;stroke-width:1.8}.letter-contact-row span{font-weight:400}
     .stationery-art{position:absolute;z-index:1;pointer-events:none;display:block;-webkit-print-color-adjust:exact;print-color-adjust:exact}
     .letter-art-top{top:0;right:0;width:112mm;height:auto}
     .letter-art-bottom{left:0;bottom:0;width:210mm;height:auto}
@@ -179,14 +179,14 @@
       showLetter.setAttribute('aria-selected',String(isLetter));showEnvelope.setAttribute('aria-selected',String(!isLetter));
     }
     function letterNeedsTightening(){
-      const footer=letter.querySelector('.letter-footer');
-      if(!footer)return false;
+      const lowestContent=letter.querySelector('.letter-signature');
+      if(!lowestContent)return false;
       const paperRect=letter.getBoundingClientRect();
-      const footerRect=footer.getBoundingClientRect();
+      const contentRect=lowestContent.getBoundingClientRect();
       const protectedWaveZone=paperRect.height*0.13;
       const safeGap=Math.max(12,paperRect.height*0.012);
       const safeBoundary=paperRect.bottom-protectedWaveZone-safeGap;
-      return footerRect.bottom>safeBoundary;
+      return contentRect.bottom>safeBoundary;
     }
     function fitLetterLayout(){
       if(!letter.querySelector('.letter-content'))return;
@@ -207,7 +207,7 @@
       document.title=`Welcome Pack – ${orderRef(order.order_number)} | LymphAware ID`;
       backLink.href=order.order_status==='COMPLETED'?'/admin/?stage=COMPLETED':`/admin/orders/?order=${encodeURIComponent(order.id)}#order-${encodeURIComponent(order.id)}`;
       backLink.textContent=order.order_status==='COMPLETED'?'Back to Completed':'Back to Order';
-      letter.innerHTML=`<img class="stationery-art letter-art-top" src="/assets/brand/LymphAwareID_Approved_Top_Corner.svg" alt=""><img class="stationery-art letter-art-bottom" src="/assets/brand/LymphAwareID_Approved_Bottom_Wave.svg" alt=""><div class="letter-content"><div class="letter-head"><div class="letter-brand"><img class="letter-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood."></div></div><div class="letter-meta"><div class="letter-address-block">${letterAddress?`<address>${letterAddress}</address>`:''}</div><div class="letter-date-block"><div class="letter-date">${esc(new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}))}</div><div class="letter-id-line"><strong>LymphAware ID:</strong> ${esc(patientId)}</div>${membershipName?`<div class="letter-id-line"><strong>Membership:</strong> ${esc(membershipName)}</div>`:''}${membershipEnd?`<div class="letter-id-line"><strong>Valid until:</strong> ${esc(membershipEnd)}</div>`:''}<div class="letter-id-line">${esc(orderRef(order.order_number))}</div></div></div><div class="letter-body"><div class="letter-block"><p class="letter-greeting">Dear ${esc(name)},</p><h1>Welcome to LymphAware ID</h1><p>Thank you for becoming a LymphAware ID member. Your card links to the QR profile you control, helping you share important information clearly when it may be difficult to explain it yourself.</p></div><div class="letter-block"><h2>Enclosed with this letter</h2><ul>${items||'<li>No physical items recorded</li>'}</ul></div><div class="letter-block"><h2>Using your LymphAware ID card</h2><p>The QR code links to your profile. No app or sign-in is required to view the information you have chosen to share. You remain in control and can update your profile whenever your information or needs change.</p></div><div class="letter-block"><h2>Managing your profile</h2><p>Visit <strong>lymphawareid.com/sign-in</strong> and sign in using the email address you registered with. For your security, passwords are never included in printed correspondence. If you forget your password, use the password-reset option on the sign-in page.</p></div><div class="letter-block letter-signature"><p>With best wishes,<br><strong>The LymphAware ID Team</strong></p><div class="letter-contact"><div class="letter-contact-row"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5h18v13H3z"/><path d="m4 7 8 6 8-6"/></svg><span>admin@lymphawareid.com</span></div><div class="letter-contact-row"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3.5 12h17M12 3c2.3 2.4 3.5 5.4 3.5 9S14.3 18.6 12 21M12 3C9.7 5.4 8.5 8.4 8.5 12s1.2 6.6 3.5 9"/></svg><span>lymphawareid.com</span></div></div></div></div><div class="letter-footer">LymphAware ID supports communication and awareness. It does not provide medical diagnosis or replace professional medical advice.</div></div>`
+      letter.innerHTML=`<img class="stationery-art letter-art-top" src="/assets/brand/LymphAwareID_Approved_Top_Corner.svg" alt=""><img class="stationery-art letter-art-bottom" src="/assets/brand/LymphAwareID_Approved_Bottom_Wave.svg" alt=""><div class="letter-content"><div class="letter-head"><div class="letter-brand"><img class="letter-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood."></div></div><div class="letter-meta"><div class="letter-address-block">${letterAddress?`<address>${letterAddress}</address>`:''}</div><div class="letter-date-block"><div class="letter-date">${esc(new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}))}</div><div class="letter-id-line"><strong>LymphAware ID:</strong> ${esc(patientId)}</div>${membershipName?`<div class="letter-id-line"><strong>Membership:</strong> ${esc(membershipName)}</div>`:''}${membershipEnd?`<div class="letter-id-line"><strong>Valid until:</strong> ${esc(membershipEnd)}</div>`:''}<div class="letter-id-line">${esc(orderRef(order.order_number))}</div></div></div><div class="letter-body"><div class="letter-block"><p class="letter-greeting">Dear ${esc(name)},</p><h1>Welcome to LymphAware ID</h1><p>Thank you for becoming a LymphAware ID member. Your card links to the QR profile you control, helping you share important information clearly when it may be difficult to explain it yourself.</p></div><div class="letter-block"><h2>Enclosed with this letter</h2><ul>${items||'<li>No physical items recorded</li>'}</ul></div><div class="letter-block"><h2>Using your LymphAware ID card</h2><p>The QR code links to your profile. No app or sign-in is required to view the information you have chosen to share. You remain in control and can update your profile whenever your information or needs change.</p></div><div class="letter-block"><h2>Managing your profile</h2><p>Visit <strong>lymphawareid.com/sign-in</strong> and sign in using the email address you registered with. For your security, passwords are never included in printed correspondence. If you forget your password, use the password-reset option on the sign-in page.</p></div><div class="letter-block letter-signature"><p>With best wishes,<br><strong>The LymphAware ID Team</strong></p><div class="letter-contact"><div class="letter-contact-row"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5h18v13H3z"/><path d="m4 7 8 6 8-6"/></svg><span>admin@lymphawareid.com</span></div><div class="letter-contact-row"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3.5 12h17M12 3c2.3 2.4 3.5 5.4 3.5 9S14.3 18.6 12 21M12 3C9.7 5.4 8.5 8.4 8.5 12s1.2 6.6 3.5 9"/></svg><span>lymphawareid.com</span></div></div></div></div></div>`
       envelopeAddress.innerHTML=deliveryLines(order,true).map(line=>esc(line)).join('<br>')||'No delivery address recorded.';
       fitLetterLayout();
       const letterArtwork=letter.querySelector('.letter-art-bottom');
