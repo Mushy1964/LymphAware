@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 330" role="img" aria-label="LymphAware ID top stationery artwork">
+  <defs>
+    <linearGradient id="gBlueLight" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e8f2fb"/>
+      <stop offset="1" stop-color="#b9d8ef"/>
+    </linearGradient>
+    <linearGradient id="gBlue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2b8ed3"/>
+      <stop offset="1" stop-color="#0053b7"/>
+    </linearGradient>
+    <linearGradient id="gGreenLight" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e1f0df"/>
+      <stop offset="1" stop-color="#9dce97"/>
+    </linearGradient>
+    <linearGradient id="gGreen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#86c878"/>
+      <stop offset="1" stop-color="#247a24"/>
+    </linearGradient>
+  </defs>
+  <path d="M0 0H1000V330C900 310 835 271 770 225C663 149 560 71 401 33C256 -2 122 11 0 19Z" fill="#fff"/>
+  <path d="M0 0H1000V113C888 94 789 59 691 38C521 -1 337 5 179 20C103 27 47 25 0 18Z" fill="url(#gBlueLight)"/>
+  <path d="M312 0H1000V161C913 143 839 111 764 76C647 20 536 0 414 0Z" fill="#d9eaf7" opacity=".9"/>
+  <path d="M492 0H1000V205C924 178 861 141 802 102C711 43 641 13 560 0Z" fill="url(#gBlue)"/>
+  <path d="M688 0H1000V245C941 217 895 184 854 151C790 99 748 48 720 0Z" fill="#f5fbf4"/>
+  <path d="M744 0H1000V262C957 244 918 218 884 188C833 143 799 83 774 0Z" fill="url(#gGreenLight)"/>
+  <path d="M836 0H1000V277C966 263 938 242 912 219C873 184 853 139 839 94C828 61 823 29 823 0Z" fill="url(#gGreen)" opacity=".92"/>
+  <path d="M888 0H1000V290C973 276 950 259 930 239C900 208 884 171 877 133C869 91 871 45 888 0Z" fill="#b7ddb0" opacity=".82"/>
+</svg>
