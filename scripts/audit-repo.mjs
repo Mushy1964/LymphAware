@@ -265,12 +265,12 @@ function checkProjectConsistency() {
     !adminOrderDetail.includes("order.membership?.membership_status || '').toUpperCase() === 'PILOT'") ||
     !adminDashboard.includes("completed&&order.order_type==='INITIAL_MEMBERSHIP'") ||
     !adminDashboard.includes('Orders to Process') ||
-    !adminDashboard.includes('Printing in Progress') ||
+    !adminDashboard.includes('Fulfilment in Progress') ||
     !adminDashboard.includes('Completed Orders') ||
     !adminDashboard.includes('admin@lymphawareid.com') ||
     !signIn.includes("window.location.href = '/admin/';")
   ) {
-    errors.push('Administration does not match the agreed order workflow, identify trial orders, restrict welcome letters, show the admin notification address, or route the administrator correctly.');
+    errors.push('Administration does not match the agreed order/fulfilment workflow, identify trial orders, restrict welcome letters, show the admin notification address, or route the administrator correctly.');
   }
   if (!register.includes('id="auto-renew-acknowledgement" disabled') || !register.includes("acknowledgement.disabled=!enabled")) {
     errors.push('Registration renewal acknowledgement is not visibly disabled until automatic renewal is selected.');
