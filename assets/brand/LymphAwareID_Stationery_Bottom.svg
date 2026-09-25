@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 320" role="img" aria-label="LymphAware ID bottom stationery artwork">
+  <defs>
+    <linearGradient id="bBlue" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2c8fd4"/>
+      <stop offset="1" stop-color="#0053b7"/>
+    </linearGradient>
+    <linearGradient id="bBlueLight" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#dcecf8"/>
+      <stop offset="1" stop-color="#a6cfea"/>
+    </linearGradient>
+    <linearGradient id="bGreen" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7fc36f"/>
+      <stop offset="1" stop-color="#247a24"/>
+    </linearGradient>
+    <linearGradient id="bGreenLight" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b7dcae"/>
+      <stop offset="1" stop-color="#89c77c"/>
+    </linearGradient>
+  </defs>
+  <path d="M0 320V214C160 187 287 224 407 250C547 281 661 271 788 214C938 146 1062 124 1203 143C1345 162 1455 122 1600 76V320Z" fill="url(#bBlue)"/>
+  <path d="M0 247C143 220 278 251 399 273C535 297 653 283 783 226C925 164 1048 142 1193 160C1342 179 1467 142 1600 99V127C1465 169 1344 204 1194 187C1049 170 931 192 792 249C653 306 525 318 389 294C267 273 143 246 0 273Z" fill="#fff"/>
+  <path d="M0 224C148 195 282 230 406 252C545 277 660 267 787 211C932 147 1059 127 1200 145C1349 163 1469 129 1600 88V112C1470 152 1346 186 1200 169C1058 153 938 173 795 232C660 288 537 300 399 274C277 252 146 220 0 249Z" fill="url(#bBlueLight)"/>
+  <path d="M0 183C132 153 272 171 398 206C548 248 672 251 805 201C948 147 1074 122 1208 129C1361 137 1483 91 1600 45V76C1478 121 1363 163 1212 155C1079 148 956 171 815 224C676 277 540 271 390 228C266 193 132 177 0 206Z" fill="#fff"/>
+  <path d="M0 163C131 132 272 148 405 187C555 232 678 235 811 186C953 134 1078 108 1212 116C1361 124 1486 79 1600 35V58C1480 103 1361 146 1214 139C1081 132 960 156 819 208C679 260 548 255 399 211C271 173 130 158 0 186Z" fill="url(#bGreen)"/>
+  <path d="M0 127C139 92 278 108 410 147C558 191 683 200 814 157C957 111 1086 85 1224 94C1362 103 1489 65 1600 21V44C1484 88 1361 127 1222 119C1086 111 963 136 822 182C681 228 550 218 401 174C276 137 138 123 0 153Z" fill="#fff"/>
+  <path d="M0 108C143 72 279 87 414 127C557 169 683 181 820 141C963 99 1093 73 1231 83C1368 93 1491 56 1600 13V35C1485 79 1368 115 1229 106C1094 98 970 121 828 164C683 207 551 194 407 153C278 116 141 103 0 132Z" fill="url(#bGreenLight)"/>
+</svg>
