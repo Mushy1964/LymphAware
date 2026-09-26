@@ -59,6 +59,27 @@ export default async (request) => {
     }
 
     if (body.visible) {
+      const serviceKey = env('SUPABASE_SECRET_KEY');
+      if (!serviceKey) return json({ error: 'The service is not configured.' }, 500);
+      const membershipResponse = await fetch(
+        `${supabaseUrl}/rest/v1/memberships?user_id=eq.${encodeURIComponent(user.id)}&select=initial_cooling_off_cancellation_requested_at,initial_cooling_off_cancellation_status&limit=1`,
+        {
+          headers: {
+            apikey: serviceKey,
+            Authorization: `Bearer ${serviceKey}`,
+            Accept: 'application/json'
+          }
+        }
+      );
+      if (!membershipResponse.ok) return json({ error: 'Your membership status could not be checked. Please try again.' }, 500);
+      const membership = (await membershipResponse.json().catch(() => []))?.[0] || null;
+      if (membership?.initial_cooling_off_cancellation_requested_at && String(membership.initial_cooling_off_cancellation_status || 'REQUESTED').toUpperCase() !== 'DECLINED') {
+        return json({
+          error: 'Your QR profile cannot be switched back on while an initial cooling-off cancellation request is being reviewed.',
+          code: 'CANCELLATION_PENDING'
+        }, 423);
+      }
+
       if (currentProfile.is_archived === true) {
         return json({
           error: 'This test record has been archived and its QR profile cannot be made available.',
