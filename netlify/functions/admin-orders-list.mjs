@@ -157,6 +157,7 @@ export default async (request) => {
       }, 0);
       const isClosed = ['COMPLETED', 'CANCELLED', 'REFUNDED'].includes(order.order_status);
       const addressReviewRequired = order.order_status === 'ADDRESS_REVIEW_REQUIRED';
+      const cancellationReviewRequired = order.order_status === 'CANCELLATION_REQUESTED';
       const waitingForDetails = productionJobs.some(job => job.status === 'WAITING_DETAILS');
       const waitingForLanguage = productionJobs.some(job => job.status === 'WAITING_LANGUAGE');
       const allCardsPrinted = productionJobs.length === 0 ||
@@ -167,6 +168,7 @@ export default async (request) => {
       const readyToPack = order.payment_status === 'PAID' &&
         !isClosed &&
         !addressReviewRequired &&
+        !cancellationReviewRequired &&
         (order.order_status === 'PRINTED' || allCardsPrinted);
       const welcomePackRequired = order.order_type === 'INITIAL_MEMBERSHIP';
       const welcomePackComplete = !welcomePackRequired ||
@@ -180,6 +182,9 @@ export default async (request) => {
       } else if (['CANCELLED', 'REFUNDED'].includes(order.order_status)) {
         workflowStage = 'CLOSED';
         workflowReason = 'This order is closed.';
+      } else if (cancellationReviewRequired) {
+        workflowStage = 'WAITING';
+        workflowReason = 'Cooling-off cancellation requested. Fulfilment is paused. Review the request, any personalised items/services already supplied and the refund due before closing the order.';
       } else if (addressReviewRequired) {
         workflowStage = 'WAITING';
         workflowReason = 'The Stripe delivery country does not match the country used to calculate postage. Review the address before printing.';
