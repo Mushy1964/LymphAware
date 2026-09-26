@@ -94,6 +94,26 @@ export default async (request) => {
     const now = new Date().toISOString();
     await stopFutureRenewal(membership.stripe_subscription_id);
 
+    const profileDisable = await fetch(
+      `${base}/rest/v1/profiles?user_id=eq.${encodeURIComponent(user.id)}`,
+      {
+        method: 'PATCH',
+        headers: serviceHeaders('return=minimal'),
+        body: JSON.stringify({ qr_profile_active: false, updated_at: now })
+      }
+    );
+    if (!profileDisable.ok) throw new Error('Your cancellation request could not safely disable the QR profile.');
+
+    const languageDisable = await fetch(
+      `${base}/rest/v1/language_profiles?user_id=eq.${encodeURIComponent(user.id)}`,
+      {
+        method: 'PATCH',
+        headers: serviceHeaders('return=minimal'),
+        body: JSON.stringify({ qr_profile_active: false, updated_at: now })
+      }
+    );
+    if (!languageDisable.ok) throw new Error('Your cancellation request could not safely disable additional-language QR profiles.');
+
     const membershipUpdate = await fetch(
       `${base}/rest/v1/memberships?id=eq.${encodeURIComponent(membership.id)}`,
       {
@@ -127,7 +147,7 @@ export default async (request) => {
     const customerText =
       `We have received your request to cancel your LymphAware ID membership during the initial cooling-off period.\n\n` +
       `Order: ${orderRef}\nRequest received: ${new Date(now).toLocaleString('en-GB')}\nCooling-off deadline: ${deadlineText}\n\n` +
-      `We have stopped any future automatic renewal. ${orderWasPaused ? 'The initial order has also been paused from further fulfilment while the request is reviewed.' : 'If your initial order has already been fulfilled, we will take that into account when reviewing the request.'} Because LymphAware ID may include personalised physical items and services already supplied, the refund due can depend on what has already been prepared or provided. We will confirm the cancellation outcome and any refund separately.\n\n` +
+      `We have stopped any future automatic renewal and switched off your public QR profiles while the request is being reviewed. ${orderWasPaused ? 'The initial order has also been paused from further fulfilment.' : 'If your initial order has already been fulfilled, we will take that into account when reviewing the request.'} Because LymphAware ID may include personalised physical items and services already supplied, the refund due can depend on what has already been prepared or provided. We will confirm the cancellation outcome and any refund separately.\n\n` +
       `If you need help, contact admin@lymphawareid.com.\n\nThe LymphAware ID Team`;
 
     const adminText =
