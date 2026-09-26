@@ -376,6 +376,36 @@
   gap:7px 14px;
 }
 .public-footer-utility a { font-size:.82rem; }
+.public-footer-social {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:14px;
+}
+.public-footer-social a {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:36px;
+  height:36px;
+  border:1px solid #cbd8e0;
+  border-radius:50%;
+  background:#fff;
+  color:#0053b7;
+  transition:background .15s ease,border-color .15s ease,transform .15s ease;
+}
+.public-footer-social a:hover,
+.public-footer-social a:focus {
+  background:#eef6fb;
+  border-color:#0053b7;
+  transform:translateY(-1px);
+  outline:0;
+}
+.public-footer-social svg {
+  width:19px;
+  height:19px;
+  fill:currentColor;
+}
 .public-footer-note {
   margin-top: 22px;
   padding-top: 18px;
