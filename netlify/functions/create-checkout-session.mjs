@@ -16,8 +16,8 @@ const RENEWAL_DEFINITIONS = {
     stripePrices: { 1: 'price_1UFGECPMYhQKb2OTxec6KcE8', 2: 'price_1UFGERPMYhQKb2OTLU8gqlJ0', 3: 'price_1UFGETPMYhQKb2OTGS496BLh' }
   },
   PLUS: {
-    prices: { 1: 2599, 2: 3399, 3: 4099 },
-    stripePrices: { 1: 'price_1UFIpVPMYhQKb2OTycEm07OF', 2: 'price_1UFIpgPMYhQKb2OTwLhaQcjU', 3: 'price_1UFIpgPMYhQKb2OTKfOwgqx8' }
+    prices: { 1: 1899, 2: 2599, 3: 3399 },
+    stripePrices: { 1: 'price_1UJrXSPMYhQKb2OTVotqXy8R', 2: 'price_1UJrXZPMYhQKb2OTO9U5RlEE', 3: 'price_1UJrXaPMYhQKb2OT4xcauEkG' }
   },
   MULTILINGUAL: {
     prices: { 1: 4099, 2: 5299, 3: 6399 },
