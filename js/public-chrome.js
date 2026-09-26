@@ -145,14 +145,17 @@
               </nav>
               <p class="public-footer-social-title">Follow LymphAware ID</p>
               <nav class="public-footer-social" aria-label="LymphAware ID social media">
-                <a href="https://www.facebook.com/LymphAwareID" target="_blank" rel="noopener noreferrer" aria-label="LymphAware ID on Facebook" title="Facebook">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.8 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.6 1.7-1.6h1.8V4.2c-.3 0-1.4-.2-2.6-.2-2.6 0-4.4 1.6-4.4 4.5v2.3H7.4V14h2.9v8h3.5Z"/></svg>
+                <a class="public-social-link facebook" href="https://www.facebook.com/LymphAwareID" target="_blank" rel="noopener noreferrer" aria-label="LymphAware ID on Facebook" title="Facebook">
+                  <svg class="public-social-mark" viewBox="0 0 320 512" aria-hidden="true" focusable="false"><path fill="#1877F2" d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06H297V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/></svg>
                 </a>
-                <a href="https://www.instagram.com/lymphaware.id/" target="_blank" rel="noopener noreferrer" aria-label="LymphAware ID on Instagram" title="Instagram">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.4 2h9.2A5.4 5.4 0 0 1 22 7.4v9.2a5.4 5.4 0 0 1-5.4 5.4H7.4A5.4 5.4 0 0 1 2 16.6V7.4A5.4 5.4 0 0 1 7.4 2Zm0 2A3.4 3.4 0 0 0 4 7.4v9.2A3.4 3.4 0 0 0 7.4 20h9.2a3.4 3.4 0 0 0 3.4-3.4V7.4A3.4 3.4 0 0 0 16.6 4H7.4Zm9.35 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>
+                <a class="public-social-link instagram" href="https://www.instagram.com/lymphaware.id/" target="_blank" rel="noopener noreferrer" aria-label="LymphAware ID on Instagram" title="Instagram">
+                  <svg class="public-social-mark" viewBox="0 0 448 512" aria-hidden="true" focusable="false">
+                    <defs><linearGradient id="lymphaware-instagram-gradient" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#F58529"/><stop offset="38%" stop-color="#DD2A7B"/><stop offset="68%" stop-color="#8134AF"/><stop offset="100%" stop-color="#515BD4"/></linearGradient></defs>
+                    <path fill="url(#lymphaware-instagram-gradient)" d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9S160.5 370.8 224.1 370.8 339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/>
+                  </svg>
                 </a>
-                <a href="https://www.tiktok.com/@lymphawareid" target="_blank" rel="noopener noreferrer" aria-label="LymphAware ID on TikTok" title="TikTok">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 2h3.1c.2 1.6 1.1 3 2.4 3.9.8.5 1.7.8 2.8.9v3.2c-1.6 0-3.1-.4-4.4-1.2v6.4A6.8 6.8 0 1 1 12 8.4v3.3a3.6 3.6 0 1 0 3.4 3.6V2h-.7Z"/></svg>
+                <a class="public-social-link tiktok" href="https://www.tiktok.com/@lymphawareid" target="_blank" rel="noopener noreferrer" aria-label="LymphAware ID on TikTok" title="TikTok">
+                  <svg class="public-social-mark" viewBox="0 0 448 512" aria-hidden="true" focusable="false"><path fill="#111111" d="M448 209.91a210.06 210.06 0 0 1-122.77-39.25v178.72A162.55 162.55 0 1 1 185 188.31v89.89a74.62 74.62 0 1 0 52.23 71.18V0h88A121.18 121.18 0 0 0 448 121.18z"/></svg>
                 </a>
               </nav>
             </div>

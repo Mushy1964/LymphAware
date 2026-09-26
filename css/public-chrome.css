@@ -377,7 +377,7 @@
 }
 .public-footer-utility a { font-size:.82rem; }
 .public-footer-social-title {
-  margin:14px 0 7px;
+  margin:14px 0 9px;
   color:#42546a;
   font-size:.82rem;
   font-weight:800;
@@ -385,33 +385,38 @@
 .public-footer-social {
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:11px;
   margin-top:0;
 }
 .public-footer-social a {
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  width:36px;
-  height:36px;
-  border:1px solid #cbd8e0;
+  width:42px;
+  height:42px;
+  border:1px solid #d7e0e7;
   border-radius:50%;
   background:#fff;
-  color:#0053b7;
-  transition:background .15s ease,border-color .15s ease,transform .15s ease;
+  box-shadow:0 1px 3px rgba(31,47,66,.08);
+  text-decoration:none;
+  transition:background .15s ease,border-color .15s ease,box-shadow .15s ease,transform .15s ease;
 }
 .public-footer-social a:hover,
-.public-footer-social a:focus {
-  background:#eef6fb;
-  border-color:#0053b7;
+.public-footer-social a:focus-visible {
+  background:#f8fbfd;
+  border-color:#aebfcb;
+  box-shadow:0 4px 10px rgba(31,47,66,.12);
   transform:translateY(-1px);
   outline:0;
 }
-.public-footer-social svg {
-  width:19px;
-  height:19px;
-  fill:currentColor;
+.public-social-mark {
+  display:block;
+  width:21px;
+  height:21px;
 }
+.public-social-link.facebook .public-social-mark { width:18px; height:22px; }
+.public-social-link.instagram .public-social-mark { width:22px; height:22px; }
+.public-social-link.tiktok .public-social-mark { width:20px; height:22px; }
 .public-footer-note {
   margin-top: 22px;
   padding-top: 18px;
