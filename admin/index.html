@@ -120,8 +120,7 @@
       </div>
     </section>
     <div class="stage-tabs" role="tablist" aria-label="Order stages">
-      <button type="button" class="stage-tab" role="tab" data-stage="NEW" aria-selected="false">New / Awaiting Details <span class="stage-count" id="count-new">0</span></button>
-      <button type="button" class="stage-tab" role="tab" data-stage="READY" aria-selected="false">Ready for Printing <span class="stage-count" id="count-ready">0</span></button>
+      <button type="button" class="stage-tab" role="tab" data-stage="PROCESS" aria-selected="false">Orders to Process <span class="stage-count" id="count-process">0</span></button>
       <button type="button" class="stage-tab" role="tab" data-stage="FULFILMENT" aria-selected="false">Fulfilment in Progress <span class="stage-count" id="count-fulfilment">0</span></button>
       <button type="button" class="stage-tab" role="tab" data-stage="CANCELLATIONS" aria-selected="false">Cancellation Requests <span class="stage-count" id="count-cancellations">0</span></button>
       <button type="button" class="stage-tab" role="tab" data-stage="COMPLETED" aria-selected="false">Completed Orders <span class="stage-count" id="count-completed">0</span></button>
@@ -146,7 +145,7 @@
     const SUPABASE_PUBLISHABLE_KEY='sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
     const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
     const stageLabels={WAITING:'New / awaiting details',READY_TO_PRINT:'Ready for printing',PRINTING:'Printing in progress',READY_TO_DISPATCH:'Ready to pack',CANCELLATION_REQUESTED:'Cancellation review',COMPLETED:'Completed',CLOSED:'Closed'};
-    const groupLabels={NEW:'New / Awaiting Details',READY:'Ready for Printing',FULFILMENT:'Fulfilment in Progress',CANCELLATIONS:'Cancellation Requests',COMPLETED:'Completed Orders'};
+    const groupLabels={PROCESS:'Orders to Process',FULFILMENT:'Fulfilment in Progress',CANCELLATIONS:'Cancellation Requests',COMPLETED:'Completed Orders'};
     const stageClasses={WAITING:'',READY_TO_PRINT:'ready',PRINTING:'printing',READY_TO_DISPATCH:'dispatch',COMPLETED:'completed'};
     const loading=document.getElementById('admin-loading');
     const errorBox=document.getElementById('admin-error');
@@ -164,7 +163,7 @@
     const completedNext=document.getElementById('completed-next');
     const completedPageStatus=document.getElementById('completed-page-status');
     let orders=[];
-    let activeStage='NEW';
+    let activeStage='PROCESS';
     let membershipLoaded=false;
     let completedPage=1;
     let hasSuccessfulOrderLoad=false;
@@ -244,15 +243,14 @@
       const cancellationRequested=String(order.membership?.initial_cooling_off_cancellation_status||'').toUpperCase()==='REQUESTED'||order.workflow_stage==='CANCELLATION_REQUESTED';
       if(cancellationRequested)return'CANCELLATIONS';
       if(['COMPLETED','CLOSED'].includes(order.workflow_stage))return'COMPLETED';
-      if(order.workflow_stage==='READY_TO_PRINT')return'READY';
       if(['PRINTING','READY_TO_DISPATCH'].includes(order.workflow_stage))return'FULFILMENT';
-      return'NEW';
+      return'PROCESS';
     }
     function stageOrders(stage){return orders.filter(order=>groupForOrder(order)===stage)}
     function filteredCompletedOrders(){const query=completedSearch.value.trim().toLowerCase();const completed=stageOrders('COMPLETED');if(!query)return completed;return completed.filter(order=>{const profile=order.profile||{};const searchable=[orderRef(order.order_number),profile.display_name,order.delivery_name,profile.lymphaware_id,order.customer_email,order.email,...physicalItems(order)].filter(Boolean).join(' ').toLowerCase();return searchable.includes(query)})}
-    function updateCounts(){document.getElementById('count-new').textContent=stageOrders('NEW').length;document.getElementById('count-ready').textContent=stageOrders('READY').length;document.getElementById('count-fulfilment').textContent=stageOrders('FULFILMENT').length;document.getElementById('count-cancellations').textContent=stageOrders('CANCELLATIONS').length;document.getElementById('count-completed').textContent=stageOrders('COMPLETED').length}
-    function selectInitialStage(){const requested=new URLSearchParams(location.search).get('stage');if(requested){if(groupLabels[requested]){activeStage=requested;return}if(stageLabels[requested]){activeStage=requested==='CANCELLATION_REQUESTED'?'CANCELLATIONS':requested==='READY_TO_PRINT'?'READY':requested==='COMPLETED'||requested==='CLOSED'?'COMPLETED':['PRINTING','READY_TO_DISPATCH'].includes(requested)?'FULFILMENT':'NEW';return}}const preferred=['CANCELLATIONS','NEW','READY','FULFILMENT','COMPLETED'];activeStage=preferred.find(stage=>stageOrders(stage).length)||'NEW'}
-    function renderStageHeader(){tabs.forEach(tab=>{const selected=tab.dataset.stage===activeStage;tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1})} function renderStage(){loading.hidden=true;renderStageHeader();const completed=activeStage==='COMPLETED';const allVisible=completed?filteredCompletedOrders():stageOrders(activeStage);const pageCount=completed?Math.max(1,Math.ceil(allVisible.length/completedPageSize)):1;if(completedPage>pageCount)completedPage=pageCount;const visible=completed?allVisible.slice((completedPage-1)*completedPageSize,completedPage*completedPageSize):allVisible;completedTools.hidden=!completed;if(completed){completedResults.textContent=`${allVisible.length} completed order${allVisible.length===1?'':'s'}`;completedPagination.hidden=allVisible.length<=completedPageSize;completedPrevious.disabled=completedPage<=1;completedNext.disabled=completedPage>=pageCount;completedPageStatus.textContent=`Page ${completedPage} of ${pageCount}`}else{completedPagination.hidden=true}const readyCardCount=activeStage==='READY'?visible.filter(order=>order.workflow_stage==='READY_TO_PRINT').reduce((sum,order)=>sum+(order.production_jobs||[]).reduce((jobSum,job)=>jobSum+Math.max(1,Number(job.quantity||1)),0),0):0;downloadReadyBatch.hidden=readyCardCount===0;downloadReadyBatch.textContent=readyCardCount===1?'Download ready card for EasyBadge':`Download all ${readyCardCount} ready cards for EasyBadge`;const emptyMessage=completed&&completedSearch.value.trim()?'No completed orders match your search.':`There are no orders in ${esc((groupLabels[activeStage]||'this section').toLowerCase())}.`;orderList.innerHTML=visible.length?visible.map(renderOrder).join(''):`<div class="empty">${emptyMessage}</div>`;orderList.hidden=false}
+    function updateCounts(){document.getElementById('count-process').textContent=stageOrders('PROCESS').length;document.getElementById('count-fulfilment').textContent=stageOrders('FULFILMENT').length;document.getElementById('count-cancellations').textContent=stageOrders('CANCELLATIONS').length;document.getElementById('count-completed').textContent=stageOrders('COMPLETED').length}
+    function selectInitialStage(){const requested=new URLSearchParams(location.search).get('stage');if(requested){if(groupLabels[requested]){activeStage=requested;return}if(stageLabels[requested]){activeStage=requested==='CANCELLATION_REQUESTED'?'CANCELLATIONS':requested==='COMPLETED'||requested==='CLOSED'?'COMPLETED':['PRINTING','READY_TO_DISPATCH'].includes(requested)?'FULFILMENT':'PROCESS';return}}const preferred=['CANCELLATIONS','PROCESS','FULFILMENT','COMPLETED'];activeStage=preferred.find(stage=>stageOrders(stage).length)||'PROCESS'}
+    function renderStageHeader(){tabs.forEach(tab=>{const selected=tab.dataset.stage===activeStage;tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1})} function renderStage(){loading.hidden=true;renderStageHeader();const completed=activeStage==='COMPLETED';const allVisible=completed?filteredCompletedOrders():stageOrders(activeStage);const pageCount=completed?Math.max(1,Math.ceil(allVisible.length/completedPageSize)):1;if(completedPage>pageCount)completedPage=pageCount;const visible=completed?allVisible.slice((completedPage-1)*completedPageSize,completedPage*completedPageSize):allVisible;completedTools.hidden=!completed;if(completed){completedResults.textContent=`${allVisible.length} completed order${allVisible.length===1?'':'s'}`;completedPagination.hidden=allVisible.length<=completedPageSize;completedPrevious.disabled=completedPage<=1;completedNext.disabled=completedPage>=pageCount;completedPageStatus.textContent=`Page ${completedPage} of ${pageCount}`}else{completedPagination.hidden=true}const readyCardCount=activeStage==='PROCESS'?visible.filter(order=>order.workflow_stage==='READY_TO_PRINT').reduce((sum,order)=>sum+(order.production_jobs||[]).reduce((jobSum,job)=>jobSum+Math.max(1,Number(job.quantity||1)),0),0):0;downloadReadyBatch.hidden=readyCardCount===0;downloadReadyBatch.textContent=readyCardCount===1?'Download ready card for EasyBadge':`Download all ${readyCardCount} ready cards for EasyBadge`;const emptyMessage=completed&&completedSearch.value.trim()?'No completed orders match your search.':`There are no orders in ${esc((groupLabels[activeStage]||'this section').toLowerCase())}.`;orderList.innerHTML=visible.length?visible.map(renderOrder).join(''):`<div class="empty">${emptyMessage}</div>`;orderList.hidden=false}
     function chooseStage(stage,focus=true){if(activeStage!==stage)completedPage=1;activeStage=stage;renderStage();if(focus)tabs.find(tab=>tab.dataset.stage===stage)?.focus()}
     async function loadMembershipSummary(){if(membershipLoaded)return;const accessToken=await token();if(!accessToken)return;const result=await request('/.netlify/functions/admin-dashboard-summary',accessToken);const summary=result?.summary||{};document.getElementById('active-members-count').textContent=Number(summary.active_members||0);document.getElementById('paid-members-count').textContent=Number(summary.paid_members||0);document.getElementById('pilot-sponsored-count').textContent=Number(summary.pilot_sponsored_members||0);document.getElementById('visible-profiles-count').textContent=Number(summary.visible_profiles||0);document.getElementById('incomplete-profiles-count').textContent=Number(summary.profiles_needing_details||0);document.getElementById('approved-languages-count').textContent=Number(summary.approved_language_profiles||0);membershipLoaded=true}
     async function load(preserveStage=false,silent=false){
@@ -384,7 +382,7 @@
       batchMessage.hidden=false;
       batchMessage.textContent='Preparing all ready cards…';
       try{
-        const readyOrderIds=stageOrders('READY').filter(order=>order.workflow_stage==='READY_TO_PRINT').map(order=>order.id).filter(Boolean);
+        const readyOrderIds=stageOrders('PROCESS').filter(order=>order.workflow_stage==='READY_TO_PRINT').map(order=>order.id).filter(Boolean);
         const response=await fetch('/.netlify/functions/export-easybadge-batch',{method:'POST',headers:{Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'},body:JSON.stringify({order_ids:readyOrderIds})});
         if(!response.ok){let message='The EasyBadge file could not be prepared.';try{const result=await response.json();if(result?.error)message=result.error}catch{}throw new Error(message)}
         const cardCount=Number(response.headers.get('X-LymphAware ID-Card-Count')||0);
