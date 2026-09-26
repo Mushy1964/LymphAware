@@ -18,7 +18,7 @@ const INITIAL_PACKAGE_PRICES = {
 
 const RENEWAL_PRICES = {
   STANDARD: { 1: 1899, 2: 2599, 3: 3399 },
-  PLUS: { 1: 2599, 2: 3399, 3: 4099 },
+  PLUS: { 1: 1899, 2: 2599, 3: 3399 },
   MULTILINGUAL: { 1: 4099, 2: 5299, 3: 6399 }
 };
 
