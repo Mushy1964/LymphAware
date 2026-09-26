@@ -261,11 +261,13 @@ function checkProjectConsistency() {
     errors.push('Patient Portal does not clearly show the zero-cost private-trial status and later trial purchases.');
   }
   if (
-    !adminDashboard.includes("order.membership?.membership_status||'').toUpperCase()==='PILOT'") ||
+    !adminDashboard.includes("String(membership.membership_status||'').toUpperCase()==='PILOT'") ||
     !adminOrderDetail.includes("order.membership?.membership_status || '').toUpperCase() === 'PILOT'") ||
     !adminDashboard.includes("completed&&order.order_type==='INITIAL_MEMBERSHIP'") ||
-    !adminDashboard.includes('Orders to Process') ||
+    !adminDashboard.includes('New / Awaiting Details') ||
+    !adminDashboard.includes('Ready for Printing') ||
     !adminDashboard.includes('Fulfilment in Progress') ||
+    !adminDashboard.includes('Cancellation Requests') ||
     !adminDashboard.includes('Completed Orders') ||
     !adminDashboard.includes('admin@lymphawareid.com') ||
     !signIn.includes("window.location.href = '/admin/';")
