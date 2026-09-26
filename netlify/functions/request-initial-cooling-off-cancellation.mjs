@@ -110,7 +110,9 @@ export default async (request) => {
     );
     if (!membershipUpdate.ok) throw new Error('Your cancellation request could not be recorded.');
 
-    if (order?.id && !['COMPLETED','CANCELLED','REFUNDED'].includes(String(order.order_status || '').toUpperCase())) {
+    const originalOrderStatus = String(order?.order_status || '').toUpperCase();
+    const orderWasPaused = Boolean(order?.id && !['COMPLETED','CANCELLED','REFUNDED'].includes(originalOrderStatus));
+    if (orderWasPaused) {
       const orderUpdate = await fetch(`${base}/rest/v1/orders?id=eq.${encodeURIComponent(order.id)}`, {
         method: 'PATCH',
         headers: serviceHeaders('return=minimal'),
@@ -125,13 +127,13 @@ export default async (request) => {
     const customerText =
       `We have received your request to cancel your LymphAware ID membership during the initial cooling-off period.\n\n` +
       `Order: ${orderRef}\nRequest received: ${new Date(now).toLocaleString('en-GB')}\nCooling-off deadline: ${deadlineText}\n\n` +
-      `We have stopped any future automatic renewal and paused the initial order from further fulfilment while the request is reviewed. Because LymphAware ID may include personalised physical items and services already supplied, the refund due can depend on what has already been prepared or provided. We will confirm the cancellation outcome and any refund separately.\n\n` +
+      `We have stopped any future automatic renewal. ${orderWasPaused ? 'The initial order has also been paused from further fulfilment while the request is reviewed.' : 'If your initial order has already been fulfilled, we will take that into account when reviewing the request.'} Because LymphAware ID may include personalised physical items and services already supplied, the refund due can depend on what has already been prepared or provided. We will confirm the cancellation outcome and any refund separately.\n\n` +
       `If you need help, contact admin@lymphawareid.com.\n\nThe LymphAware ID Team`;
 
     const adminText =
       `An initial cooling-off cancellation request has been submitted.\n\n` +
       `Member: ${user.email}\nOrder: ${orderRef}\nMembership: ${membership.id}\nOrder status before request: ${order?.order_status || 'Not recorded'}\nPaid total: £${(Number(order?.total_pence || 0) / 100).toFixed(2)}\nCooling-off deadline: ${deadlineText}\n\n` +
-      `The order has been placed on CANCELLATION_REQUESTED and future automatic renewal has been stopped. Review any personalised items/services already supplied before confirming the refund and closing the membership.`;
+      `${orderWasPaused ? 'The order has been placed on CANCELLATION_REQUESTED.' : 'The order was already closed/completed and has not been moved back into fulfilment.'} Future automatic renewal has been stopped. Review any personalised items/services already supplied before confirming the refund and closing the membership.`;
 
     const [customerEmail, adminEmail] = await Promise.all([
       sendEmail({ to: user.email, subject: 'Your LymphAware ID cooling-off cancellation request', text: customerText }),
