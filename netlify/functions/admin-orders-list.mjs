@@ -62,7 +62,7 @@ export default async (request) => {
         { headers: serviceHeaders() }
       ),
       fetch(
-        `${process.env.SUPABASE_URL}/rest/v1/memberships?select=user_id,membership_status,membership_start,membership_end&user_id=in.(${userIds})`,
+        `${process.env.SUPABASE_URL}/rest/v1/memberships?select=user_id,membership_status,membership_start,membership_end,initial_cooling_off_cancellation_requested_at,initial_cooling_off_cancellation_status,initial_cooling_off_refund_type,initial_cooling_off_refund_amount_pence,initial_cooling_off_refund_reference,initial_cooling_off_admin_note,initial_cooling_off_cancellation_completed_at&user_id=in.(${userIds})`,
         { headers: serviceHeaders() }
       )
     ]);
@@ -156,8 +156,12 @@ export default async (request) => {
         return sum;
       }, 0);
       const isClosed = ['COMPLETED', 'CANCELLED', 'REFUNDED'].includes(order.order_status);
+      const membership = membershipByUser.get(order.user_id) || null;
       const addressReviewRequired = order.order_status === 'ADDRESS_REVIEW_REQUIRED';
-      const cancellationReviewRequired = order.order_status === 'CANCELLATION_REQUESTED';
+      const cancellationReviewRequired =
+        order.order_status === 'CANCELLATION_REQUESTED' ||
+        (membership?.initial_cooling_off_cancellation_requested_at &&
+         String(membership?.initial_cooling_off_cancellation_status || 'REQUESTED').toUpperCase() === 'REQUESTED');
       const waitingForDetails = productionJobs.some(job => job.status === 'WAITING_DETAILS');
       const waitingForLanguage = productionJobs.some(job => job.status === 'WAITING_LANGUAGE');
       const allCardsPrinted = productionJobs.length === 0 ||
@@ -176,15 +180,17 @@ export default async (request) => {
       const readyToComplete = readyToPack && welcomePackComplete;
       let workflowStage = 'WAITING';
       let workflowReason = 'Waiting for the information needed to prepare this order.';
-      if (order.order_status === 'COMPLETED') {
+      if (cancellationReviewRequired) {
+        workflowStage = 'CANCELLATION_REQUESTED';
+        workflowReason = order.order_status === 'COMPLETED'
+          ? 'Cooling-off cancellation requested after dispatch. The QR profile is off. Review the refund and complete the cancellation.'
+          : 'Cooling-off cancellation requested. Fulfilment is paused. Review the refund and complete the cancellation.';
+      } else if (order.order_status === 'COMPLETED') {
         workflowStage = 'COMPLETED';
         workflowReason = 'This order has been dispatched and completed.';
       } else if (['CANCELLED', 'REFUNDED'].includes(order.order_status)) {
         workflowStage = 'CLOSED';
         workflowReason = 'This order is closed.';
-      } else if (cancellationReviewRequired) {
-        workflowStage = 'WAITING';
-        workflowReason = 'Cooling-off cancellation requested. Fulfilment is paused. Review the request, any personalised items/services already supplied and the refund due before closing the order.';
       } else if (addressReviewRequired) {
         workflowStage = 'WAITING';
         workflowReason = 'The Stripe delivery country does not match the country used to calculate postage. Review the address before printing.';
@@ -217,7 +223,7 @@ export default async (request) => {
         ...order,
         items: orderItems,
         profile,
-        membership: membershipByUser.get(order.user_id) || null,
+        membership,
         profile_ready: profileReady,
         language_profiles: productionJobs
           .filter(job => job.record_type === 'LANGUAGE')
