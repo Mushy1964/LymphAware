@@ -376,11 +376,17 @@
   gap:7px 14px;
 }
 .public-footer-utility a { font-size:.82rem; }
+.public-footer-social-title {
+  margin:14px 0 7px;
+  color:#42546a;
+  font-size:.82rem;
+  font-weight:800;
+}
 .public-footer-social {
   display:flex;
   align-items:center;
   gap:10px;
-  margin-top:14px;
+  margin-top:0;
 }
 .public-footer-social a {
   display:inline-flex;
