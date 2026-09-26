@@ -143,6 +143,7 @@
                 <a href="/terms/">Terms</a>
                 <a href="/privacy/">Privacy</a>
               </nav>
+              <p class="public-footer-social-title">Follow LymphAware ID</p>
               <nav class="public-footer-social" aria-label="LymphAware ID social media">
                 <a href="https://www.facebook.com/LymphAwareID" target="_blank" rel="noopener noreferrer" aria-label="LymphAware ID on Facebook" title="Facebook">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.8 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.6 1.7-1.6h1.8V4.2c-.3 0-1.4-.2-2.6-.2-2.6 0-4.4 1.6-4.4 4.5v2.3H7.4V14h2.9v8h3.5Z"/></svg>
