@@ -264,8 +264,7 @@ function checkProjectConsistency() {
     !adminDashboard.includes("String(membership.membership_status||'').toUpperCase()==='PILOT'") ||
     !adminOrderDetail.includes("order.membership?.membership_status || '').toUpperCase() === 'PILOT'") ||
     !adminDashboard.includes("completed&&order.order_type==='INITIAL_MEMBERSHIP'") ||
-    !adminDashboard.includes('New / Awaiting Details') ||
-    !adminDashboard.includes('Ready for Printing') ||
+    !adminDashboard.includes('Orders to Process') ||
     !adminDashboard.includes('Fulfilment in Progress') ||
     !adminDashboard.includes('Cancellation Requests') ||
     !adminDashboard.includes('Completed Orders') ||
