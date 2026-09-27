@@ -1,56 +1,56 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 180" preserveAspectRatio="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 170" preserveAspectRatio="none">
   <defs>
-    <linearGradient id="blueMain" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#0b78b7"/>
-      <stop offset="0.5" stop-color="#159bd0"/>
+    <linearGradient id="b1" x1="0" y1="0" x2="1200" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0577b5"/>
+      <stop offset="0.55" stop-color="#1398cf"/>
       <stop offset="1" stop-color="#0053b7"/>
     </linearGradient>
-    <linearGradient id="blueLight" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#69c3e8"/>
-      <stop offset="0.55" stop-color="#8fd4ef"/>
-      <stop offset="1" stop-color="#2e9bd1"/>
+    <linearGradient id="b2" x1="0" y1="0" x2="1200" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#66bee5"/>
+      <stop offset="0.6" stop-color="#91d3ef"/>
+      <stop offset="1" stop-color="#3aa4d8"/>
     </linearGradient>
-    <linearGradient id="green" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#5eb64b"/>
-      <stop offset="0.55" stop-color="#2e9b3b"/>
-      <stop offset="1" stop-color="#86c97c"/>
+    <linearGradient id="g1" x1="0" y1="0" x2="1200" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#68bb55"/>
+      <stop offset="0.55" stop-color="#29963b"/>
+      <stop offset="1" stop-color="#8dcc83"/>
     </linearGradient>
   </defs>
 
-  <!-- Broad blue ribbon -->
-  <path d="M0 98
-           C155 18 310 44 470 90
-           C655 145 865 165 1045 116
-           C1115 97 1160 76 1200 46
-           C1160 90 1110 120 1040 141
-           C850 197 625 177 445 124
-           C285 78 140 49 0 98Z"
-        fill="url(#blueMain)"/>
+  <!-- deep blue ribbon, tapered to points -->
+  <path d="M0,103
+           C150,40 290,48 455,88
+           C625,129 805,145 965,121
+           C1065,106 1135,83 1200,55
+           C1136,94 1060,122 960,140
+           C792,169 604,150 438,108
+           C282,69 146,59 0,103 Z"
+        fill="url(#b1)"/>
 
-  <!-- Light blue ribbon -->
-  <path d="M0 87
-           C150 30 300 40 472 82
-           C655 127 850 147 1038 107
-           C1110 92 1162 71 1200 48
-           C1158 82 1105 108 1034 125
-           C845 170 640 151 458 106
-           C300 67 150 51 0 87Z"
-        fill="url(#blueLight)"/>
+  <!-- light blue ribbon -->
+  <path d="M0,91
+           C153,39 300,45 466,82
+           C636,120 816,132 975,108
+           C1073,93 1141,73 1200,50
+           C1140,83 1069,106 970,123
+           C807,150 625,136 456,98
+           C294,62 150,56 0,91 Z"
+        fill="url(#b2)"/>
 
-  <!-- Green upper ribbon -->
-  <path d="M0 74
-           C155 14 315 34 488 76
-           C670 121 860 134 1045 91
-           C1115 75 1163 58 1200 40
-           C1162 66 1112 88 1042 105
-           C855 151 652 137 474 94
-           C300 52 150 39 0 74Z"
-        fill="url(#green)"/>
+  <!-- green ribbon -->
+  <path d="M0,80
+           C155,27 305,36 475,74
+           C645,111 823,122 985,96
+           C1080,81 1148,62 1200,44
+           C1145,70 1076,91 980,108
+           C816,137 634,124 465,88
+           C300,53 153,48 0,80 Z"
+        fill="url(#g1)"/>
 
-  <!-- Fine pale blue highlight -->
-  <path d="M0 68
-           C155 18 312 28 484 67
-           C670 110 860 122 1045 82
-           C1116 67 1166 51 1200 35"
-        fill="none" stroke="#a8def2" stroke-width="5" stroke-linecap="round"/>
+  <!-- pale highlight -->
+  <path d="M0,72
+           C157,30 308,32 480,68
+           C650,103 826,112 988,88
+           C1085,74 1151,56 1200,40"
+        fill="none" stroke="#afe2f3" stroke-width="5" stroke-linecap="round"/>
 </svg>
