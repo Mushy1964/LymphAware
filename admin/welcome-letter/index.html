@@ -291,12 +291,17 @@
       </style></head><body>${markup}</body></html>`);
       printWindow.document.close();
       let finished=false;
+      let childPrintStartedAt=0;
       const finish=()=>{if(finished)return;finished=true;try{printWindow.close()}catch{}handlePrintResult('envelope')};
       printWindow.addEventListener('afterprint',finish,{once:true});
+      printWindow.addEventListener('focus',()=>{
+        if(!childPrintStartedAt||Date.now()-childPrintStartedAt<1200)return;
+        setTimeout(()=>{if(!finished)finish()},450);
+      });
       const images=Array.from(printWindow.document.images);
       Promise.all(images.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.addEventListener('load',resolve,{once:true});img.addEventListener('error',resolve,{once:true})})))
         .then(()=>new Promise(resolve=>setTimeout(resolve,500)))
-        .then(()=>{try{printWindow.focus();printWindow.print()}catch(error){console.error(error);try{printWindow.close()}catch{}resetPrintState();setStatus('Envelope print options could not be opened. Check the printer connection and try again.','error')}}); 
+        .then(()=>{try{childPrintStartedAt=Date.now();printWindow.focus();printWindow.print()}catch(error){console.error(error);try{printWindow.close()}catch{}resetPrintState();setStatus('Envelope print options could not be opened. Check the printer connection and try again.','error')}}); 
     }
     function printTarget(target){
       if(!currentOrder)return;
