@@ -149,6 +149,8 @@
     let currentOrder=null;
     let activePrintTarget='';
     let printResetTimer=null;
+    let printResultPending=false;
+    let printDialogOpenedAt=0;
 
     function esc(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
     function orderRef(number){return `ORD-${String(number||0).padStart(6,'0')}`}
@@ -238,7 +240,7 @@
     function resetPrintState(){
       clearTimeout(printResetTimer);printLetterButton.disabled=false;printEnvelopeButton.disabled=false;
       document.body.classList.remove('printing-letter','printing-envelope');dynamicPageStyle.textContent='';
-      activePrintTarget='';
+      activePrintTarget='';printResultPending=false;printDialogOpenedAt=0;
     }
     function configurePrintPage(target){
       if(target==='letter'){
@@ -247,10 +249,12 @@
       }
     }
     async function handlePrintResult(target){
+      if(!printResultPending)return;
+      printResultPending=false;
       clearTimeout(printResetTimer);
       document.body.classList.remove('printing-letter','printing-envelope');dynamicPageStyle.textContent='';
       printLetterButton.disabled=false;printEnvelopeButton.disabled=false;
-      activePrintTarget='';
+      activePrintTarget='';printDialogOpenedAt=0;
       const label=target==='letter'?'Welcome Letter':'addressed envelope';
       if(!window.confirm(`Did the ${label} print correctly?`)){setStatus(`The ${label} has not been marked as printed. You can try again when ready.`,'warning');return}
       try{
@@ -299,9 +303,11 @@
       const label=target==='letter'?'A4 welcome letter':`${envelopeSize.value} addressed envelope`;
       if(!window.confirm(`Ready to print the ${label}?\n\nCheck that the correct paper is loaded and your Brother printer is switched on.`))return;
       activePrintTarget=target;
+      printResultPending=true;
+      printDialogOpenedAt=Date.now();
       printLetterButton.disabled=true;printEnvelopeButton.disabled=true;
       setStatus(`Opening print options for the ${label}…`,'info');
-      printResetTimer=setTimeout(()=>{resetPrintState();setStatus('Printing may not have started. Check the printer connection and try again. Nothing has been marked as printed.','warning')},30000);
+      printResetTimer=setTimeout(()=>{resetPrintState();setStatus('The print confirmation timed out. If the item printed successfully, print it again or record it on the next attempt.','warning')},300000);
       if(target==='envelope'){printEnvelopeDocument();return}
       configurePrintPage(target);
       fitLetterLayout();
@@ -311,6 +317,14 @@
       const target=activePrintTarget;
       if(target!=='letter')return;
       handlePrintResult('letter');
+    });
+    window.addEventListener('focus',()=>{
+      if(!printResultPending||!activePrintTarget||!printDialogOpenedAt)return;
+      if(Date.now()-printDialogOpenedAt<1200)return;
+      const target=activePrintTarget;
+      setTimeout(()=>{
+        if(printResultPending&&activePrintTarget===target)handlePrintResult(target);
+      },450);
     });
     envelopeSize.addEventListener('change',()=>{envelope.dataset.size=envelopeSize.value});
     window.addEventListener('resize',()=>{if(!document.body.classList.contains('printing-letter'))fitLetterLayout()});
