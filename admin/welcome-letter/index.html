@@ -244,32 +244,13 @@
       if(target==='letter'){
         dynamicPageStyle.textContent='@page{size:A4;margin:0}';
         document.body.classList.add('printing-letter');
-      }else{
-        const size=envelopeSize.value==='DL'?'DL':'C5';
-        const dimensions=size==='DL'?{w:220,h:110}:{w:229,h:162};
-        dynamicPageStyle.textContent=`@page{size:${dimensions.w}mm ${dimensions.h}mm;margin:0}html,body{width:${dimensions.w}mm!important;height:${dimensions.h}mm!important}`;
-        document.body.classList.add('printing-envelope');
       }
     }
-    function printTarget(target){
-      if(!currentOrder)return;
-      const label=target==='letter'?'A4 welcome letter':`${envelopeSize.value} addressed envelope`;
-      if(!window.confirm(`Ready to print the ${label}?\n\nCheck that the correct paper is loaded and your Brother printer is switched on.`))return;
-      activePrintTarget=target;
-      printLetterButton.disabled=true;printEnvelopeButton.disabled=true;
-      configurePrintPage(target);
-      if(target==='letter')fitLetterLayout();
-      setStatus(`Opening print options for the ${label}…`,'info');
-      printResetTimer=setTimeout(()=>{resetPrintState();setStatus('Printing may not have started. Check the printer connection and try again. Nothing has been marked as printed.','warning')},20000);
-      requestAnimationFrame(()=>{try{window.print()}catch(error){console.error(error);resetPrintState();setStatus('Print options could not be opened. Check the printer connection and try again.','error')}});
-    }
-    window.addEventListener('afterprint',async()=>{
+    async function handlePrintResult(target){
       clearTimeout(printResetTimer);
-      const target=activePrintTarget;
       document.body.classList.remove('printing-letter','printing-envelope');dynamicPageStyle.textContent='';
       printLetterButton.disabled=false;printEnvelopeButton.disabled=false;
       activePrintTarget='';
-      if(!target)return;
       const label=target==='letter'?'Welcome Letter':'addressed envelope';
       if(!window.confirm(`Did the ${label} print correctly?`)){setStatus(`The ${label} has not been marked as printed. You can try again when ready.`,'warning');return}
       try{
@@ -277,6 +258,59 @@
         if(target==='letter'&&!currentOrder.welcome_envelope_printed_at){showPreview('envelope');setStatus('Welcome Letter recorded as printed. Now print the addressed envelope from the MP tray.','info')}
         else if(packComplete())setStatus('Welcome Pack complete. Both the letter and addressed envelope are recorded as printed. Return to the order to pack and dispatch it.','success');
       }catch(error){console.error(error);setStatus(`The ${label} printed, but its completion status could not be saved. Please try recording it again before dispatching.`,'error')}
+    }
+    function printEnvelopeDocument(){
+      const size=envelopeSize.value==='DL'?'DL':'C5';
+      const dimensions=size==='DL'?{w:220,h:110}:{w:229,h:162};
+      const printWindow=window.open('','lymphaware-envelope-print','width=1100,height=760');
+      if(!printWindow){
+        resetPrintState();
+        setStatus('The envelope print window was blocked. Allow pop-ups for lymphawareid.com and try again.','error');
+        return;
+      }
+      const markup=envelope.outerHTML;
+      printWindow.document.open();
+      printWindow.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${size} addressed envelope</title><base href="${location.origin}/"><style>
+        @page{size:${dimensions.w}mm ${dimensions.h}mm;margin:0}
+        html,body{margin:0!important;padding:0!important;width:${dimensions.w}mm!important;height:${dimensions.h}mm!important;background:#fff!important;overflow:hidden!important}
+        *{box-sizing:border-box}
+        .envelope-paper{position:relative;width:${dimensions.w}mm!important;height:${dimensions.h}mm!important;margin:0!important;background:#fff!important;color:#111;font-family:Arial,sans-serif;overflow:hidden;box-shadow:none!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+        .envelope-logo{position:absolute;z-index:3;top:17mm;left:19mm;width:92mm;height:auto}
+        .envelope-address{position:absolute;z-index:3;left:37%;top:40%;width:54%;font-size:14.5pt;line-height:1.36;text-align:left}
+        .envelope-address address{margin:0;font-style:normal}
+        .stationery-art{position:absolute;z-index:1;pointer-events:none;display:block;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+        .envelope-art-bottom{left:15mm;bottom:4mm;width:calc(100% - 30mm);height:auto;object-fit:contain}
+        .envelope-paper[data-size="DL"] .envelope-logo{top:11mm;left:16mm;width:82mm}
+        .envelope-paper[data-size="DL"] .envelope-address{left:38%;top:36%;width:55%;font-size:13pt}
+        .envelope-paper[data-size="DL"] .envelope-art-bottom{left:15mm;bottom:-7mm;width:calc(100% - 30mm);height:auto;object-fit:contain}
+        @media print{html,body{width:${dimensions.w}mm!important;height:${dimensions.h}mm!important}.envelope-paper{width:${dimensions.w}mm!important;height:${dimensions.h}mm!important}}
+      </style></head><body>${markup}</body></html>`);
+      printWindow.document.close();
+      let finished=false;
+      const finish=()=>{if(finished)return;finished=true;try{printWindow.close()}catch{}handlePrintResult('envelope')};
+      printWindow.addEventListener('afterprint',finish,{once:true});
+      const images=Array.from(printWindow.document.images);
+      Promise.all(images.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.addEventListener('load',resolve,{once:true});img.addEventListener('error',resolve,{once:true})})))
+        .then(()=>new Promise(resolve=>setTimeout(resolve,500)))
+        .then(()=>{try{printWindow.focus();printWindow.print()}catch(error){console.error(error);try{printWindow.close()}catch{}resetPrintState();setStatus('Envelope print options could not be opened. Check the printer connection and try again.','error')}}); 
+    }
+    function printTarget(target){
+      if(!currentOrder)return;
+      const label=target==='letter'?'A4 welcome letter':`${envelopeSize.value} addressed envelope`;
+      if(!window.confirm(`Ready to print the ${label}?\n\nCheck that the correct paper is loaded and your Brother printer is switched on.`))return;
+      activePrintTarget=target;
+      printLetterButton.disabled=true;printEnvelopeButton.disabled=true;
+      setStatus(`Opening print options for the ${label}…`,'info');
+      printResetTimer=setTimeout(()=>{resetPrintState();setStatus('Printing may not have started. Check the printer connection and try again. Nothing has been marked as printed.','warning')},30000);
+      if(target==='envelope'){printEnvelopeDocument();return}
+      configurePrintPage(target);
+      fitLetterLayout();
+      requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(()=>{try{window.print()}catch(error){console.error(error);resetPrintState();setStatus('Print options could not be opened. Check the printer connection and try again.','error')}},250)));
+    }
+    window.addEventListener('afterprint',()=>{
+      const target=activePrintTarget;
+      if(target!=='letter')return;
+      handlePrintResult('letter');
     });
     envelopeSize.addEventListener('change',()=>{envelope.dataset.size=envelopeSize.value});
     window.addEventListener('resize',()=>{if(!document.body.classList.contains('printing-letter'))fitLetterLayout()});
