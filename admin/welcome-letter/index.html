@@ -257,9 +257,16 @@
       if(!printResultPending)return;
       printResultPending=false;
       clearTimeout(printResetTimer);
-      document.body.classList.remove('printing-letter','printing-envelope');dynamicPageStyle.textContent='';
+      document.body.classList.remove('printing-letter','printing-envelope');
+      dynamicPageStyle.textContent='';
       printLetterButton.disabled=false;printEnvelopeButton.disabled=false;
       activePrintTarget='';printDialogOpenedAt=0;
+
+      // Let the browser restore the normal admin-page layout before showing
+      // the confirmation. This prevents the DL/C5 print dimensions from
+      // briefly affecting the visible page when the print dialog closes.
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(resolve,120))));
+
       const label=target==='letter'?'Welcome Letter':'addressed envelope';
       if(!window.confirm(`Did the ${label} print correctly?`)){setStatus(`The ${label} has not been marked as printed. You can try again when ready.`,'warning');return}
       try{
