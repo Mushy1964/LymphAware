@@ -1417,7 +1417,7 @@
 .home-page .home-demo-dynamic-card-condition {
   margin: 0 0 17%;
   color: #247a24;
-  font-size: clamp(.92rem, 1.78vw, 1.62rem);
+  font-size: clamp(1rem, 1.92vw, 1.74rem);
   font-weight: 900;
   line-height: 1.02;
   letter-spacing: .01em;
@@ -1427,7 +1427,7 @@
 .home-page .home-demo-dynamic-card-name {
   margin: 0 0 14%;
   color: #111;
-  font-size: clamp(.9rem, 1.72vw, 1.58rem);
+  font-size: clamp(.98rem, 1.86vw, 1.7rem);
   font-weight: 900;
   line-height: 1.05;
 }
@@ -1435,7 +1435,7 @@
 .home-page .home-demo-dynamic-card-id {
   margin: 0;
   color: #355d68;
-  font-size: clamp(.58rem, .95vw, .88rem);
+  font-size: clamp(.64rem, 1.05vw, .96rem);
   font-weight: 800;
   white-space: nowrap;
 }
