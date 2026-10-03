@@ -143,7 +143,9 @@ Deno.serve(async (req) => {
           icon_key: option.icon_key
         }
       }).filter(Boolean)
-      publicProfile.resources = await selectedResources(source.id)
+      publicProfile.resources = isDemo && languageProfile.language_code !== 'EN'
+        ? []
+        : await selectedResources(source.id)
 
       return Response.json(publicProfile, { headers: { ...corsHeaders, 'Cache-Control': 'no-store' } })
     }
