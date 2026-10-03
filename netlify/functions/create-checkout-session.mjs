@@ -1,3 +1,5 @@
+import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
+
 const APPROVED_LANGUAGES = {
   FR: 'French',
   ES: 'Spanish',
@@ -24,10 +26,6 @@ const RENEWAL_DEFINITIONS = {
     stripePrices: { 1: 'price_1UFGEVPMYhQKb2OT4B45XA28', 2: 'price_1UFGEWPMYhQKb2OTbVjZEvW4', 3: 'price_1UFGEWPMYhQKb2OTD1iA0xNU' }
   }
 };
-
-const ADDITIONAL_CARD_PRICE_PENCE = 699;
-const LANYARD_HOLDER_PRICE_PENCE = 799;
-const ADDITIONAL_LANGUAGE_PRICE_PENCE = 2499;
 
 const EUROPE_COUNTRIES = new Set([
   'AL','AD','AT','BE','BA','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IS','IE','IT',
@@ -195,11 +193,13 @@ export default async (request) => {
 
     const isTrialParticipant = membership.membership_status === 'PILOT';
     const trialLaterOrderCouponId = isTrialParticipant ? 'LYMPHAWARE_TRIAL_LATER_100_V1' : '';
+    const businessSettings = await getBusinessSettings({ strict: true });
+    const livePricing = publicPricing(businessSettings);
 
     const deliveryCountry = normaliseCountry(body?.deliveryCountry);
     if (!CHECKOUT_COUNTRIES.has(deliveryCountry)) return json({ error: 'Please select a supported delivery country.' }, 400);
     const band = shippingBand(deliveryCountry);
-    const shippingPence = shippingPriceForBand(band);
+    const shippingPence = livePricing.shipping[band];
 
     let checkoutName = '';
     let checkoutDescription = '';
@@ -244,13 +244,16 @@ export default async (request) => {
         : packageType === 'PLUS'
           ? `${membershipTermYears}-year membership with 2 English ID cards and 2 lanyards & holders.`
           : `${membershipTermYears}-year membership with 1 English ID card and 1 lanyard & holder.`;
-      amountPence = packageDefinition.prices[membershipTermYears];
+      amountPence = livePricing.packages[packageType][membershipTermYears];
       autoRenew = body?.autoRenew === true;
       if (autoRenew && body?.autoRenewAcknowledged !== true) {
         return json({ error: 'Please confirm the automatic-renewal amount and frequency.' }, 400);
       }
       renewalPricePence = RENEWAL_DEFINITIONS[packageType].prices[membershipTermYears];
       renewalStripePrice = RENEWAL_DEFINITIONS[packageType].stripePrices[membershipTermYears];
+      if (autoRenew && amountPence < renewalPricePence) {
+        return json({ error: 'This membership price cannot currently be used with automatic renewal. Please contact LymphAware ID.' }, 400);
+      }
 
       const acceptedAt = new Date().toISOString();
       const complianceUpdate = await fetch(`${process.env.SUPABASE_URL}/rest/v1/memberships?id=eq.${encodeURIComponent(membership.id)}`, {
@@ -300,13 +303,13 @@ export default async (request) => {
       for (const selection of cardSelections) {
         checkoutItems.push({
           name: `${selection.languageName} LymphAware ID Card`,
-          amountPence: ADDITIONAL_CARD_PRICE_PENCE,
+          amountPence: livePricing.additionalItems.CARD,
           description: `Additional or replacement card for the existing ${selection.languageName} profile.`,
           quantity: selection.quantity
         });
       }
-      if (lanyardQuantity) checkoutItems.push({ name: 'LymphAware ID Lanyard & Holder', amountPence: LANYARD_HOLDER_PRICE_PENCE, description: 'Additional or replacement lanyard and holder.', quantity: lanyardQuantity });
-      if (languageName) checkoutItems.push({ name: `LymphAware ID Additional Language Package – ${languageName}`, amountPence: ADDITIONAL_LANGUAGE_PRICE_PENCE, description: `One ${languageName} QR profile, one ${languageName} ID card and one lanyard & holder.`, quantity: 1 });
+      if (lanyardQuantity) checkoutItems.push({ name: 'LymphAware ID Lanyard & Holder', amountPence: livePricing.additionalItems.LANYARD, description: 'Additional or replacement lanyard and holder.', quantity: lanyardQuantity });
+      if (languageName) checkoutItems.push({ name: `LymphAware ID Additional Language Package – ${languageName}`, amountPence: livePricing.additionalItems.LANGUAGE, description: `One ${languageName} QR profile, one ${languageName} ID card and one lanyard & holder.`, quantity: 1 });
 
       amountPence = checkoutItems.reduce((sum, item) => sum + (item.amountPence * item.quantity), 0);
       checkoutName = 'LymphAware ID Additional Items';
@@ -328,7 +331,7 @@ export default async (request) => {
 
       checkoutName = `LymphAware ID Additional Language Package – ${languageName}`;
       checkoutDescription = `One ${languageName} QR profile, one ${languageName} ID card and one lanyard & holder.`;
-      amountPence = ADDITIONAL_LANGUAGE_PRICE_PENCE;
+      amountPence = livePricing.additionalItems.LANGUAGE;
       packageType = 'ADDITIONAL_LANGUAGE';
     } else if (paymentType === 'replacement_items') {
       if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware ID membership is required.' }, 403);
@@ -339,7 +342,7 @@ export default async (request) => {
         return json({ error: 'Please select at least one item.' }, 400);
       }
 
-      amountPence = (replacementCard ? ADDITIONAL_CARD_PRICE_PENCE : 0) + (replacementLanyard ? LANYARD_HOLDER_PRICE_PENCE : 0);
+      amountPence = (replacementCard ? livePricing.additionalItems.CARD : 0) + (replacementLanyard ? livePricing.additionalItems.LANYARD : 0);
       checkoutName = replacementCard && replacementLanyard
         ? 'LymphAware ID Replacement Card + Lanyard & Holder'
         : replacementCard
@@ -412,6 +415,9 @@ export default async (request) => {
     stripeForm.append('metadata[card_quantity]', String(cardQuantity));
     stripeForm.append('metadata[card_selections]', JSON.stringify(cardSelections.map(item => [item.languageCode, item.languageName, item.quantity])));
     stripeForm.append('metadata[lanyard_quantity]', String(lanyardQuantity));
+    stripeForm.append('metadata[card_unit_price_pence]', String(livePricing.additionalItems.CARD));
+    stripeForm.append('metadata[lanyard_unit_price_pence]', String(livePricing.additionalItems.LANYARD));
+    stripeForm.append('metadata[language_price_pence]', String(livePricing.additionalItems.LANGUAGE));
     stripeForm.append('metadata[delivery_country_selected]', deliveryCountry);
     stripeForm.append('metadata[shipping_band]', band);
     stripeForm.append('metadata[shipping_pence]', String(shippingPence));
