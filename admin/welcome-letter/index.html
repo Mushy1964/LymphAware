@@ -145,7 +145,9 @@
     const envelopePreview=document.getElementById('envelope-preview');
     const showLetter=document.getElementById('show-letter');
     const showEnvelope=document.getElementById('show-envelope');
-    const orderId=new URLSearchParams(location.search).get('order');
+    const pageParams=new URLSearchParams(location.search);
+    const orderId=pageParams.get('order');
+    const requestedPreview=pageParams.get('show')==='envelope'?'envelope':'letter';
     let currentOrder=null;
     let activePrintTarget='';
     let printResetTimer=null;
@@ -205,8 +207,8 @@
       currentOrder=order;
       const profile=order.profile||{},name=profile.display_name||order.delivery_name||'LymphAware ID Member',patientId=profile.lymphaware_id||'Not yet assigned',items=fulfilmentLines(order).map(item=>`<li>${esc(item)}</li>`).join(''),membershipName=membershipPackage(order),membershipEnd=longDate(order.membership?.membership_end),letterAddress=deliveryLines(order,true).map(line=>esc(line)).join('<br>');
       document.title=`Welcome Pack – ${orderRef(order.order_number)} | LymphAware ID`;
-      backLink.href=order.order_status==='COMPLETED'?'/admin/?stage=COMPLETED':`/admin/orders/?order=${encodeURIComponent(order.id)}#order-${encodeURIComponent(order.id)}`;
-      backLink.textContent=order.order_status==='COMPLETED'?'Back to Completed':'Back to Order';
+      backLink.href=order.is_archived===true?'/admin/?stage=ARCHIVED':order.order_status==='COMPLETED'?'/admin/?stage=COMPLETED':`/admin/orders/?order=${encodeURIComponent(order.id)}#order-${encodeURIComponent(order.id)}`;
+      backLink.textContent=order.is_archived===true?'Back to Archived Orders':order.order_status==='COMPLETED'?'Back to Completed':'Back to Order';
       letter.innerHTML=`<img class="stationery-art letter-art-top" src="/assets/brand/LymphAwareID_Approved_Top_Corner.svg" alt=""><img class="stationery-art letter-art-bottom" src="/assets/brand/LymphAwareID_Approved_Bottom_Wave.svg" alt=""><div class="letter-content"><div class="letter-head"><div class="letter-brand"><img class="letter-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood."></div></div><div class="letter-meta"><div class="letter-address-block">${letterAddress?`<address>${letterAddress}</address>`:''}</div><div class="letter-date-block"><div class="letter-date">${esc(new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}))}</div><div class="letter-id-line"><strong>LymphAware ID:</strong> ${esc(patientId)}</div>${membershipName?`<div class="letter-id-line"><strong>Membership:</strong> ${esc(membershipName)}</div>`:''}${membershipEnd?`<div class="letter-id-line"><strong>Valid until:</strong> ${esc(membershipEnd)}</div>`:''}<div class="letter-id-line">${esc(orderRef(order.order_number))}</div></div></div><div class="letter-body"><div class="letter-block"><p class="letter-greeting">Dear ${esc(name)},</p><h1>Welcome to LymphAware ID</h1><p>Thank you for becoming a LymphAware ID member. Your card links to the QR profile you control, helping you share important information clearly when it may be difficult to explain it yourself.</p></div><div class="letter-block"><h2>Enclosed with this letter</h2><ul>${items||'<li>No physical items recorded</li>'}</ul></div><div class="letter-block"><h2>Using your LymphAware ID card</h2><p>The QR code links to your profile. No app or sign-in is required to view the information you have chosen to share. You remain in control and can update your profile whenever your information or needs change.</p></div><div class="letter-block"><h2>Managing your profile</h2><p>Visit <strong>lymphawareid.com/sign-in</strong> and sign in using the email address you registered with. For your security, passwords are never included in printed correspondence. If you forget your password, use the password-reset option on the sign-in page.</p></div><div class="letter-block letter-signature"><p>With best wishes,<br><strong>The LymphAware ID Team</strong></p><div class="letter-contact"><div class="letter-contact-row"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5h18v13H3z"/><path d="m4 7 8 6 8-6"/></svg><span>admin@lymphawareid.com</span></div><div class="letter-contact-row"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3.5 12h17M12 3c2.3 2.4 3.5 5.4 3.5 9S14.3 18.6 12 21M12 3C9.7 5.4 8.5 8.4 8.5 12s1.2 6.6 3.5 9"/></svg><span>lymphawareid.com</span></div></div></div></div></div>`
       envelopeAddress.innerHTML=deliveryLines(order,true).map(line=>esc(line)).join('<br>')||'No delivery address recorded.';
       fitLetterLayout();
@@ -219,13 +221,21 @@
       if(!orderId){letter.innerHTML='<div class="letter-message">No order was selected.</div>';setStatus('No order was selected.','error');return}
       const {data:{session},error}=await supabaseClient.auth.getSession();if(error||!session?.access_token){location.href='/sign-in/';return}
       try{
-        const response=await fetch('/.netlify/functions/admin-orders-list',{headers:{Authorization:`Bearer ${session.access_token}`}});
-        const result=await response.json();
-        if(!response.ok)throw new Error(result?.error||'The order could not be loaded.');
-        const order=(result.orders||[]).find(item=>item.id===orderId);
+        const headers={Authorization:`Bearer ${session.access_token}`};
+        const activeResponse=await fetch('/.netlify/functions/admin-orders-list?scope=ACTIVE',{headers});
+        const activeResult=await activeResponse.json();
+        if(!activeResponse.ok)throw new Error(activeResult?.error||'The order could not be loaded.');
+        let order=(activeResult.orders||[]).find(item=>item.id===orderId);
+        if(!order){
+          const archivedResponse=await fetch('/.netlify/functions/admin-orders-list?scope=ARCHIVED',{headers});
+          const archivedResult=await archivedResponse.json();
+          if(!archivedResponse.ok)throw new Error(archivedResult?.error||'The archived order could not be loaded.');
+          order=(archivedResult.orders||[]).find(item=>item.id===orderId);
+        }
         if(!order)throw new Error('The selected order could not be found.');
         if(order.order_type!=='INITIAL_MEMBERSHIP')throw new Error('A Welcome Pack is only produced for an initial membership order.');
         render(order);
+        showPreview(requestedPreview);
       }catch(error){console.error(error);letter.innerHTML=`<div class="letter-message">${esc(error.message||'The Welcome Pack could not be prepared.')}</div>`;setStatus(error.message||'The Welcome Pack could not be prepared.','error')}
     }
     async function recordPrinted(component){
