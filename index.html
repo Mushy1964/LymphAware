@@ -1149,7 +1149,7 @@
         <p class="home-trial-notice home-trial-notice-membership" role="note"><strong>Trial access:</strong> membership is currently invitation-only. Use the trial code supplied with your invitation.</p>
         <a id="membership-join-link" href="/register/" class="button button-primary">Join LymphAware ID</a>
         <p class="home-membership-renewal">
-          Postage &amp; packing is £2.99 for the United Kingdom, £4.99 for Europe and £9.99 for the Rest of World.
+          <span id="home-postage-prices">Postage &amp; packing is £2.99 for the United Kingdom, £4.99 for Europe and £9.99 for the Rest of World.</span>
           Postage &amp; packing is applied once per order. At checkout you can optionally choose automatic renewal at the lower price shown for your package and term. Renewal continues your membership, secure Patient Portal and QR profile access only; it does not include new or replacement cards, lanyards, holders or postage. Automatic renewal is never selected without your agreement.
           International orders may be subject to import VAT, customs duties or local handling charges. Unless LymphAware ID expressly states that these are included, they are payable by the customer.
         </p>
@@ -1472,5 +1472,28 @@
   checkAccountSession();
 </script>
 
+
+<script>
+(async function loadLiveBusinessPricing(){
+  try{
+    const response=await fetch('/api/registration-settings',{cache:'no-store'}),settings=await response.json();
+    if(!response.ok||!settings?.pricing)return;
+    const money=p=>`£${(Number(p||0)/100).toFixed(2)}`;
+    const cards={STANDARD:document.querySelector('.home-membership-package-standard'),PLUS:document.querySelector('.home-membership-package-plus'),MULTILINGUAL:document.querySelector('.home-membership-package-multilingual')};
+    for(const [code,card] of Object.entries(cards)){
+      if(!card)continue;
+      const prices=settings.pricing.packages?.[code],renewals=settings.pricing.renewals?.[code];
+      if(prices){
+        const from=card.querySelector('.home-membership-price');if(from)from.innerHTML=`<span class="home-membership-price-from">From</span>${money(prices[1])}`;
+        const rows=[...card.querySelectorAll('.home-membership-term-options li')];
+        rows.forEach((row,index)=>{const years=index+1,price=prices[years],priceSpan=row.querySelector('.home-membership-term-price > span:first-child'),annual=row.querySelector('.home-membership-annual');if(priceSpan){priceSpan.textContent=money(price);if(years===3){const badge=document.createElement('span');badge.className='home-membership-best-value';badge.textContent='Best value';priceSpan.append(' ',badge)}}if(annual&&years>1)annual.textContent=`${money(Math.round(price/years))} per year`});
+      }
+      const renewalText=card.querySelector('.home-membership-renewal-values');if(renewalText&&renewals)renewalText.textContent=`1 year ${money(renewals[1])} · 2 years ${money(renewals[2])} · 3 years ${money(renewals[3])}`;
+    }
+    const shipping=settings.pricing.shipping,postage=document.getElementById('home-postage-prices');
+    if(shipping&&postage)postage.textContent=`Postage & packing is ${money(shipping.UK)} for the United Kingdom, ${money(shipping.EUROPE)} for Europe and ${money(shipping.REST_OF_WORLD)} for the Rest of World.`;
+  }catch(error){console.error('Unable to load live membership pricing:',error)}
+})();
+</script>
 </body>
 </html>

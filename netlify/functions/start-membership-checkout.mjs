@@ -52,7 +52,7 @@ export default async (request) => {
       }, 409);
     }
 
-    const selection = normaliseInitialSelection(body);
+    const selection = await normaliseInitialSelection(body);
     const acceptedAt = new Date().toISOString();
 
     const checkout = await createInitialMembershipCheckout({

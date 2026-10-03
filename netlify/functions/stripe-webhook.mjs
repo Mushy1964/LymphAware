@@ -441,41 +441,41 @@ function buildInitialItems(packageType, languageCode, languageName, membershipTe
   return [normaliseItem({ item_type: 'MEMBERSHIP', description: `LymphAware ID ${termLabel} Membership`, quantity: 1, unit_price_pence: packagePricePence, line_total_pence: packagePricePence })];
 }
 
-function buildAdditionalLanguageItems(languageCode, languageName) {
+function buildAdditionalLanguageItems(languageCode, languageName, languagePricePence = ADDITIONAL_LANGUAGE_PRICE_PENCE) {
   return [
-    normaliseItem({ item_type: 'LANGUAGE_PACKAGE', description: 'Additional Language Package', quantity: 1, unit_price_pence: ADDITIONAL_LANGUAGE_PRICE_PENCE, line_total_pence: ADDITIONAL_LANGUAGE_PRICE_PENCE, language_code: languageCode, language_name: languageName }),
+    normaliseItem({ item_type: 'LANGUAGE_PACKAGE', description: 'Additional Language Package', quantity: 1, unit_price_pence: languagePricePence, line_total_pence: languagePricePence, language_code: languageCode, language_name: languageName }),
     normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Lanyard & Holder – included in Additional Language Package', quantity: 1, unit_price_pence: 0, line_total_pence: 0, language_code: languageCode, language_name: languageName })
   ];
 }
 
-function buildReplacementItems(cardSelected, lanyardSelected) {
+function buildReplacementItems(cardSelected, lanyardSelected, cardPricePence = ADDITIONAL_CARD_PRICE_PENCE, lanyardPricePence = LANYARD_HOLDER_PRICE_PENCE) {
   const items = [];
   if (cardSelected) {
-    items.push(normaliseItem({ item_type: 'EXTRA_CARD', description: 'Replacement LymphAware ID Card', quantity: 1, unit_price_pence: ADDITIONAL_CARD_PRICE_PENCE, line_total_pence: ADDITIONAL_CARD_PRICE_PENCE }));
+    items.push(normaliseItem({ item_type: 'EXTRA_CARD', description: 'Replacement LymphAware ID Card', quantity: 1, unit_price_pence: cardPricePence, line_total_pence: cardPricePence }));
   }
   if (lanyardSelected) {
-    items.push(normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Replacement Lanyard & Holder', quantity: 1, unit_price_pence: LANYARD_HOLDER_PRICE_PENCE, line_total_pence: LANYARD_HOLDER_PRICE_PENCE }));
+    items.push(normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Replacement Lanyard & Holder', quantity: 1, unit_price_pence: lanyardPricePence, line_total_pence: lanyardPricePence }));
   }
   return items;
 }
 
-function buildAdditionalPurchaseItems(cardSelections, lanyardQuantity, languageCode, languageName) {
+function buildAdditionalPurchaseItems(cardSelections, lanyardQuantity, languageCode, languageName, cardPricePence = ADDITIONAL_CARD_PRICE_PENCE, lanyardPricePence = LANYARD_HOLDER_PRICE_PENCE, languagePricePence = ADDITIONAL_LANGUAGE_PRICE_PENCE) {
   const items = [];
   for (const selection of cardSelections) {
     items.push(normaliseItem({
       item_type: 'EXTRA_CARD',
       description: 'Additional or Replacement LymphAware ID Card',
       quantity: selection.quantity,
-      unit_price_pence: ADDITIONAL_CARD_PRICE_PENCE,
-      line_total_pence: selection.quantity * ADDITIONAL_CARD_PRICE_PENCE,
+      unit_price_pence: cardPricePence,
+      line_total_pence: selection.quantity * cardPricePence,
       language_code: selection.languageCode,
       language_name: selection.languageName
     }));
   }
   if (lanyardQuantity > 0) {
-    items.push(normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Additional or Replacement Lanyard & Holder', quantity: lanyardQuantity, unit_price_pence: LANYARD_HOLDER_PRICE_PENCE, line_total_pence: lanyardQuantity * LANYARD_HOLDER_PRICE_PENCE }));
+    items.push(normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Additional or Replacement Lanyard & Holder', quantity: lanyardQuantity, unit_price_pence: lanyardPricePence, line_total_pence: lanyardQuantity * lanyardPricePence }));
   }
-  if (languageName) items.push(...buildAdditionalLanguageItems(languageCode, languageName));
+  if (languageName) items.push(...buildAdditionalLanguageItems(languageCode, languageName, languagePricePence));
   return items;
 }
 
@@ -668,7 +668,10 @@ export default async (request) => {
     const membershipTermYears = [1, 2, 3, 5].includes(Number(session.metadata?.membership_term_years))
       ? Number(session.metadata.membership_term_years)
       : 5;
-    const packagePricePence = INITIAL_PACKAGE_PRICES[packageType]?.[membershipTermYears];
+    const metadataPackagePricePence = Number(session.metadata?.package_price_pence);
+    const packagePricePence = Number.isInteger(metadataPackagePricePence) && metadataPackagePricePence > 0
+      ? metadataPackagePricePence
+      : INITIAL_PACKAGE_PRICES[packageType]?.[membershipTermYears];
     if (paymentType === 'initial_membership' && !packagePricePence) return new Response('Invalid membership package metadata', { status: 400 });
     const languageName = String(session.metadata?.language_name || '').trim();
     const languageCode = String(session.metadata?.language_code || '').trim().toUpperCase();
@@ -679,6 +682,12 @@ export default async (request) => {
     const cardQuantity = Number.isInteger(metadataCardQuantity) && metadataCardQuantity >= 0 ? metadataCardQuantity : (replacementCard ? 1 : 0);
     const cardSelections = parseCardSelectionsMetadata(session.metadata?.card_selections, cardQuantity);
     const lanyardQuantity = Number.isInteger(metadataLanyardQuantity) && metadataLanyardQuantity >= 0 ? metadataLanyardQuantity : (replacementLanyard ? 1 : 0);
+    const metadataCardUnitPricePence = Number(session.metadata?.card_unit_price_pence);
+    const metadataLanyardUnitPricePence = Number(session.metadata?.lanyard_unit_price_pence);
+    const metadataLanguagePricePence = Number(session.metadata?.language_price_pence);
+    const cardUnitPricePence = Number.isInteger(metadataCardUnitPricePence) && metadataCardUnitPricePence >= 0 ? metadataCardUnitPricePence : ADDITIONAL_CARD_PRICE_PENCE;
+    const lanyardUnitPricePence = Number.isInteger(metadataLanyardUnitPricePence) && metadataLanyardUnitPricePence >= 0 ? metadataLanyardUnitPricePence : LANYARD_HOLDER_PRICE_PENCE;
+    const languagePricePence = Number.isInteger(metadataLanguagePricePence) && metadataLanguagePricePence >= 0 ? metadataLanguagePricePence : ADDITIONAL_LANGUAGE_PRICE_PENCE;
     const translationConsent = String(session.metadata?.translation_consent || '') === '1';
     const autoRenew = String(session.metadata?.auto_renew || '') === '1' && typeof session.subscription === 'string';
     const isTrial = String(session.metadata?.trial_discount_applied || '') === '1';
@@ -758,10 +767,10 @@ export default async (request) => {
     const items = paymentType === 'initial_membership'
       ? buildInitialItems(packageType, languageCode, languageName, membershipTermYears, packagePricePence)
       : paymentType === 'additional_language'
-        ? buildAdditionalLanguageItems(languageCode, languageName)
+        ? buildAdditionalLanguageItems(languageCode, languageName, languagePricePence)
         : paymentType === 'additional_items'
-          ? buildAdditionalPurchaseItems(cardSelections, lanyardQuantity, languageCode, languageName)
-          : buildReplacementItems(replacementCard, replacementLanyard);
+          ? buildAdditionalPurchaseItems(cardSelections, lanyardQuantity, languageCode, languageName, cardUnitPricePence, lanyardUnitPricePence, languagePricePence)
+          : buildReplacementItems(replacementCard, replacementLanyard, cardUnitPricePence, lanyardUnitPricePence);
 
     const expectedSubtotal = items.reduce((sum, item) => sum + item.line_total_pence, 0);
     const shipping = session.collected_information?.shipping_details || session.shipping_details || null;
