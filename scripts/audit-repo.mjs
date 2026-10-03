@@ -97,6 +97,10 @@ function checkProjectConsistency() {
   const registrationAccessPath = path.join(root, 'netlify/functions/_shared/registration-access.mjs');
   const startMembershipCheckoutPath = path.join(root, 'netlify/functions/start-membership-checkout.mjs');
   const initialMembershipCheckoutPath = path.join(root, 'netlify/functions/_shared/initial-membership-checkout.mjs');
+  const businessSettingsPath = path.join(root, 'netlify/functions/_shared/business-settings.mjs');
+  const adminBusinessSettingsPath = path.join(root, 'admin/business-settings/index.html');
+  const adminBusinessSettingsApiPath = path.join(root, 'netlify/functions/admin-business-settings.mjs');
+  const registrationSettingsPath = path.join(root, 'netlify/functions/registration-settings.mjs');
   const adminOrdersPath = path.join(root, 'netlify/functions/admin-orders-list.mjs');
   const adminDashboardPath = path.join(root, 'admin/index.html');
   const adminOrderDetailPath = path.join(root, 'admin/orders/index.html');
@@ -117,6 +121,10 @@ function checkProjectConsistency() {
   const registrationAccess = fs.readFileSync(registrationAccessPath, 'utf8');
   const startMembershipCheckout = fs.readFileSync(startMembershipCheckoutPath, 'utf8');
   const initialMembershipCheckout = fs.readFileSync(initialMembershipCheckoutPath, 'utf8');
+  const businessSettings = fs.readFileSync(businessSettingsPath, 'utf8');
+  const adminBusinessSettings = fs.readFileSync(adminBusinessSettingsPath, 'utf8');
+  const adminBusinessSettingsApi = fs.readFileSync(adminBusinessSettingsApiPath, 'utf8');
+  const registrationSettings = fs.readFileSync(registrationSettingsPath, 'utf8');
   const adminOrders = fs.readFileSync(adminOrdersPath, 'utf8');
   const adminDashboard = fs.readFileSync(adminDashboardPath, 'utf8');
   const adminOrderDetail = fs.readFileSync(adminOrderDetailPath, 'utf8');
@@ -134,18 +142,31 @@ function checkProjectConsistency() {
     if (!publicProfile.includes(`${code}:{`)) errors.push(`Public QR profile is missing fixed ${name} (${code}) wording.`);
   }
 
-  if (!checkout.includes("if (band === 'UK') return 299") || !checkout.includes("if (band === 'EUROPE') return 499") || !checkout.includes('return 999')) {
-    errors.push('Checkout postage rates do not match £2.99 UK / £4.99 Europe / £9.99 Rest of World.');
+  for (const expected of [
+    'price_additional_card_pence: 699',
+    'price_lanyard_holder_pence: 799',
+    'price_additional_language_pence: 2499',
+    'postage_uk_pence: 299',
+    'postage_europe_pence: 499',
+    'postage_rest_of_world_pence: 999'
+  ]) {
+    if (!businessSettings.includes(expected)) errors.push(`Business Settings default is missing: ${expected}.`);
   }
-  if (!portal.includes('SHIPPING_PRICES={UK:299,EUROPE:499,REST_OF_WORLD:999}')) {
-    errors.push('Portal postage rates do not match £2.99 UK / £4.99 Europe / £9.99 Rest of World.');
+  if (!checkout.includes("getBusinessSettings({ strict: true })") || !checkout.includes('livePricing.additionalItems.CARD') || !checkout.includes('livePricing.shipping[band]')) {
+    errors.push('Member checkout is not using protected Business Settings for live prices.');
   }
-  if (!checkout.includes('const ADDITIONAL_CARD_PRICE_PENCE = 699;')) errors.push('Checkout additional card price is not £6.99.');
-  if (!checkout.includes('const LANYARD_HOLDER_PRICE_PENCE = 799;')) errors.push('Checkout lanyard and holder price is not £7.99.');
-  if (!checkout.includes('const ADDITIONAL_LANGUAGE_PRICE_PENCE = 2499;')) errors.push('Checkout additional-language package price is not £24.99.');
-  if (!portal.includes('ADDITIONAL_ITEM_PRICES={CARD:699,LANYARD:799,LANGUAGE:2499}')) errors.push('Portal additional-item prices do not match checkout.');
-  if (!portal.includes('£6.99 each') || !portal.includes('£7.99 each') || !portal.includes('Add another language – £24.99')) errors.push('Portal does not display the agreed additional-item prices.');
-  if (!webhook.includes('const ADDITIONAL_CARD_PRICE_PENCE = 699;') || !webhook.includes('const LANYARD_HOLDER_PRICE_PENCE = 799;') || !webhook.includes('const ADDITIONAL_LANGUAGE_PRICE_PENCE = 2499;')) errors.push('Webhook additional-item prices do not match checkout.');
+  if (!initialMembershipCheckout.includes("getBusinessSettings({ strict: true })") || !initialMembershipCheckout.includes('pricing.packages[packageType][membershipTermYears]') || !initialMembershipCheckout.includes('pricing.shipping[shippingBand]')) {
+    errors.push('Initial membership checkout is not using protected Business Settings for live prices.');
+  }
+  if (!registrationSettings.includes('pricing = publicPricing(businessSettings)') || !register.includes('settings.pricing?.packages') || !portal.includes('async function loadBusinessPricing()') || !home.includes('async function loadLiveBusinessPricing()')) {
+    errors.push('Customer-facing pages are not loading the shared Business Settings prices.');
+  }
+  if (!adminDashboard.includes('href="/admin/business-settings/"') || !adminBusinessSettings.includes('Routine business prices and postage can be maintained here') || !adminBusinessSettingsApi.includes('verifyAdminRequest')) {
+    errors.push('Business Settings is not kept as a separate protected Admin destination.');
+  }
+  if (!webhook.includes('metadataCardUnitPricePence') || !webhook.includes('metadataPackagePricePence')) {
+    errors.push('Webhook is not preserving the price captured at the time of checkout.');
+  }
   if (!home.includes('.home-membership-packages .home-membership-package-badge') || !home.includes('font-size: 1.3rem;')) errors.push('Homepage membership headings are not enlarged for desktop and tablet.');
   if (!understanding.includes('privacy-grid trusted-resource-grid') || (understanding.match(/class="trusted-resource-action"/g) || []).length !== 6) errors.push('Trusted-resource link buttons are not grouped for consistent alignment.');
   if (!styles.includes('.trusted-resource-grid .trusted-resource-action .button') || !styles.includes('width: 100%;')) errors.push('Trusted-resource link buttons do not share a consistent width.');
