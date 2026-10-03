@@ -91,6 +91,7 @@ function checkProjectConsistency() {
   const portalPath = path.join(root, 'portal/index.html');
   const translationPath = path.join(root, 'netlify/functions/refresh-language-translations-background.mjs');
   const publicProfilePath = path.join(root, 'p-v3/index.html');
+  const publicProfileFunctionPath = path.join(root, 'supabase/functions/public-profile/index.ts');
   const homePath = path.join(root, 'index.html');
   const webhookPath = path.join(root, 'netlify/functions/stripe-webhook.mjs');
   const registerPath = path.join(root, 'register/index.html');
@@ -119,6 +120,7 @@ function checkProjectConsistency() {
   const portal = fs.readFileSync(portalPath, 'utf8');
   const translation = fs.readFileSync(translationPath, 'utf8');
   const publicProfile = fs.readFileSync(publicProfilePath, 'utf8');
+  const publicProfileFunction = fs.readFileSync(publicProfileFunctionPath, 'utf8');
   const home = fs.readFileSync(homePath, 'utf8');
   const webhook = fs.readFileSync(webhookPath, 'utf8');
   const register = fs.readFileSync(registerPath, 'utf8');
@@ -148,6 +150,22 @@ function checkProjectConsistency() {
     if (!portal.includes(`${code}:'${name}'`) && !portal.includes(`${code}: '${name}'`)) errors.push(`Portal language configuration is missing ${name} (${code}).`);
     if (!translation.includes(`${code}: '${name}'`)) errors.push(`Translation worker is missing ${name} (${code}).`);
     if (!publicProfile.includes(`${code}:{`)) errors.push(`Public QR profile is missing fixed ${name} (${code}) wording.`);
+    if (!publicProfileFunction.includes(`${code}: {`)) errors.push(`Public profile function is missing ${name} demo assistance translations.`);
+  }
+
+  for (const token of [
+    '1babe83a-9ad9-4999-a7c4-658b1400b044',
+    '1babe83a-9ad9-4999-a7c4-658b1400b045',
+    '1babe83a-9ad9-4999-a7c4-658b1400b046',
+    '1babe83a-9ad9-4999-a7c4-658b1400b047'
+  ]) {
+    if (!home.includes(token) || !publicProfile.includes(token)) errors.push(`Multilingual demo token is missing from the home/profile demo journey: ${token}.`);
+  }
+  if (!home.includes('home-demo-language-button') || !home.includes('initialiseMultilingualDemo')) {
+    errors.push('Homepage multilingual demonstration selector is missing.');
+  }
+  if (!publicProfile.includes('demo-language-links') || !publicProfile.includes('DEMO_TOKENS')) {
+    errors.push('Demo public profile language switcher is missing.');
   }
 
   for (const expected of [
