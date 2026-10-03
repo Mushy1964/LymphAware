@@ -54,14 +54,16 @@ function serialiseCode(control, promotions, registrationMode) {
   const promotion = candidates.find(item => item.active === true) || candidates[0] || null;
   const coupon = couponForPromotion(promotion);
   const website = discountCodeWebsiteStatus(control, control.codeType);
+  const stripeUsable = promotion?.active === true && coupon?.valid !== false;
   let websiteStatus = website.reason;
-  if (website.allowed && control.codeType === 'PUBLIC' && registrationMode !== 'OPEN') websiteStatus = 'WAITING_FOR_OPEN_REGISTRATION';
-  if (website.allowed && control.codeType === 'TRIAL' && registrationMode !== 'INVITE_ONLY') websiteStatus = 'TRIAL_MODE_NOT_ACTIVE';
+  if (website.allowed && !stripeUsable) websiteStatus = 'STRIPE_INACTIVE';
+  else if (website.allowed && control.codeType === 'PUBLIC' && registrationMode !== 'OPEN') websiteStatus = 'WAITING_FOR_OPEN_REGISTRATION';
+  else if (website.allowed && control.codeType === 'TRIAL' && registrationMode !== 'INVITE_ONLY') websiteStatus = 'TRIAL_MODE_NOT_ACTIVE';
 
   return {
     ...control,
     websiteStatus,
-    usableNow: website.allowed && (
+    usableNow: website.allowed && stripeUsable && (
       (control.codeType === 'PUBLIC' && registrationMode === 'OPEN') ||
       (control.codeType === 'TRIAL' && registrationMode === 'INVITE_ONLY')
     ),
