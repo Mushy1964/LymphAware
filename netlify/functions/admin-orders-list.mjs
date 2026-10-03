@@ -24,8 +24,10 @@ export default async (request) => {
       });
     }
 
+    const scope = String(new URL(request.url).searchParams.get('scope') || 'ACTIVE').trim().toUpperCase();
+    const archived = scope === 'ARCHIVED';
     const ordersResponse = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/orders?select=*&order=created_at.desc&limit=100`,
+      `${process.env.SUPABASE_URL}/rest/v1/orders?select=*&is_archived=eq.${archived ? 'true' : 'false'}&order=created_at.desc&limit=100`,
       { headers: serviceHeaders() }
     );
 
