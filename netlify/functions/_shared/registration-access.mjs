@@ -1,4 +1,5 @@
 import { PACKAGE_DEFINITIONS } from './initial-membership-checkout.mjs';
+import { discountCodeWebsiteStatus, getDiscountCodeControl } from './discount-code-controls.mjs';
 const VALID_REGISTRATION_MODES = new Set(['OPEN', 'INVITE_ONLY', 'CLOSED']);
 
 function serviceHeaders() {
@@ -97,7 +98,8 @@ async function activeInitialPromotion(code, { requireTrial = false, packageType 
 
 export async function authoriseExistingTrialParticipant(codeValue, email = '') {
   const code = normaliseInviteCode(codeValue);
-  if (!code || !(await pilotInvitationExists(code, email))) {
+  const control = code ? await getDiscountCodeControl(code) : null;
+  if (!code || !discountCodeWebsiteStatus(control, 'TRIAL').allowed || !(await pilotInvitationExists(code, email))) {
     return { allowed: false, code: '', promotionCodeId: '', isTrial: true };
   }
   const promotion = await activeInitialPromotion(code, { requireTrial: true });
@@ -121,7 +123,8 @@ export async function authoriseRegistration(codeValue, email = '', packageType =
   }
 
   if (mode === 'INVITE_ONLY') {
-    if (!code || !(await pilotInvitationExists(code, email))) {
+    const control = code ? await getDiscountCodeControl(code) : null;
+    if (!code || !discountCodeWebsiteStatus(control, 'TRIAL').allowed || !(await pilotInvitationExists(code, email))) {
       return { allowed: false, mode, code: '', promotionCodeId: '', isTrial: false, codeInvalid: Boolean(code) };
     }
     const promotion = await activeInitialPromotion(code, { requireTrial: true, packageType });
@@ -143,7 +146,8 @@ export async function authoriseRegistration(codeValue, email = '', packageType =
     return { allowed: true, mode, code: '', promotionCodeId: '', isTrial: false, codeInvalid: false };
   }
 
-  if (await isActivePilotCode(code)) {
+  const control = await getDiscountCodeControl(code);
+  if (!discountCodeWebsiteStatus(control, 'PUBLIC').allowed || await isActivePilotCode(code)) {
     return { allowed: false, mode, code, promotionCodeId: '', isTrial: false, codeInvalid: true };
   }
 

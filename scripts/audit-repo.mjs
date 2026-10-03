@@ -101,6 +101,8 @@ function checkProjectConsistency() {
   const adminBusinessSettingsPath = path.join(root, 'admin/business-settings/index.html');
   const adminBusinessSettingsApiPath = path.join(root, 'netlify/functions/admin-business-settings.mjs');
   const registrationSettingsPath = path.join(root, 'netlify/functions/registration-settings.mjs');
+  const discountControlsPath = path.join(root, 'netlify/functions/_shared/discount-code-controls.mjs');
+  const adminDiscountCodesPath = path.join(root, 'netlify/functions/admin-discount-codes.mjs');
   const adminOrdersPath = path.join(root, 'netlify/functions/admin-orders-list.mjs');
   const adminDashboardPath = path.join(root, 'admin/index.html');
   const adminOrderDetailPath = path.join(root, 'admin/orders/index.html');
@@ -125,6 +127,8 @@ function checkProjectConsistency() {
   const adminBusinessSettings = fs.readFileSync(adminBusinessSettingsPath, 'utf8');
   const adminBusinessSettingsApi = fs.readFileSync(adminBusinessSettingsApiPath, 'utf8');
   const registrationSettings = fs.readFileSync(registrationSettingsPath, 'utf8');
+  const discountControls = fs.readFileSync(discountControlsPath, 'utf8');
+  const adminDiscountCodes = fs.readFileSync(adminDiscountCodesPath, 'utf8');
   const adminOrders = fs.readFileSync(adminOrdersPath, 'utf8');
   const adminDashboard = fs.readFileSync(adminDashboardPath, 'utf8');
   const adminOrderDetail = fs.readFileSync(adminOrderDetailPath, 'utf8');
@@ -166,6 +170,18 @@ function checkProjectConsistency() {
   }
   if (!webhook.includes('metadataCardUnitPricePence') || !webhook.includes('metadataPackagePricePence')) {
     errors.push('Webhook is not preserving the price captured at the time of checkout.');
+  }
+  if (!adminBusinessSettings.includes('Discount &amp; trial codes') || !adminBusinessSettings.includes('/api/admin-discount-codes')) {
+    errors.push('Business Settings does not include the separate Discount & Trial Codes controls.');
+  }
+  if (!registrationAccess.includes("discountCodeWebsiteStatus(control, 'TRIAL')") || !registrationAccess.includes("discountCodeWebsiteStatus(control, 'PUBLIC')")) {
+    errors.push('Registration does not enforce Business Settings validity windows for trial and public discount codes.');
+  }
+  if (!discountControls.includes('discount_code_controls') || !discountControls.includes("reason: 'SCHEDULED'") || !discountControls.includes("reason: 'EXPIRED'")) {
+    errors.push('Shared discount-code controls do not enforce enabled, start and expiry states.');
+  }
+  if (!adminDiscountCodes.includes("duration', 'once'") || !adminDiscountCodes.includes('applies_to[products]') || !adminDiscountCodes.includes("code.includes('TRIAL')")) {
+    errors.push('Admin discount-code creation does not preserve one-time membership-only discount rules or trial-code protection.');
   }
   if (!home.includes('.home-membership-packages .home-membership-package-badge') || !home.includes('font-size: 1.3rem;')) errors.push('Homepage membership headings are not enlarged for desktop and tablet.');
   if (!understanding.includes('privacy-grid trusted-resource-grid') || (understanding.match(/class="trusted-resource-action"/g) || []).length !== 6) errors.push('Trusted-resource link buttons are not grouped for consistent alignment.');

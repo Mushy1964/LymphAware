@@ -36,13 +36,31 @@
     .renewal-card h3{margin:0 0 10px;font-size:1.05rem}
     .renewal-card dl{display:grid;gap:7px;margin:0}.renewal-card div{display:flex;justify-content:space-between;gap:12px}.renewal-card dt,.renewal-card dd{margin:0}.renewal-card dd{font-weight:800}
     .technical-note{margin-top:17px;padding:14px 16px;border-left:4px solid #a06a00;border-radius:8px;background:#fff8e6;color:#5f4a1c;line-height:1.5}
+    .discount-mode{margin:0 0 18px;padding:14px 16px;border-radius:11px;background:#f3f8fb;color:#38566c;line-height:1.5}
+    .discount-list{display:grid;gap:14px}
+    .discount-card{padding:18px;border:1px solid #d7e2e7;border-radius:14px;background:#fbfcfd}
+    .discount-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}
+    .discount-code{font-size:1.12rem;font-weight:900;letter-spacing:.02em;color:#1c3148}
+    .discount-meta{margin-top:4px;color:var(--muted);font-size:.92rem;line-height:1.4}
+    .discount-status{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;background:#eef2f4;color:#425563;font-size:.82rem;font-weight:800;white-space:nowrap}
+    .discount-status.active{background:#eaf6ed;color:#176b32}.discount-status.paused{background:#f3f4f5;color:#5a6570}.discount-status.scheduled{background:#fff5dc;color:#725514}.discount-status.expired,.discount-status.stripe{background:#fff0ee;color:#9a2f2f}.discount-status.waiting{background:#edf4fb;color:#245a86}
+    .discount-controls{display:grid;grid-template-columns:minmax(150px,.7fr) repeat(2,minmax(180px,1fr)) auto;gap:12px;align-items:end}
+    .discount-field label{display:block;margin-bottom:6px;font-size:.86rem;font-weight:800;color:#435463}
+    .discount-field input[type="datetime-local"],.discount-field input[type="text"],.discount-field input[type="number"]{width:100%;min-height:46px;padding:9px 11px;border:1px solid #bfcbd2;border-radius:9px;background:#fff;font:inherit}
+    .discount-toggle{display:flex;align-items:center;gap:9px;min-height:46px;padding:9px 12px;border:1px solid #d1dde3;border-radius:9px;background:#fff;font-weight:800}.discount-toggle input{width:20px;height:20px}
+    .discount-save{min-height:46px}
+    .discount-stripe{margin:12px 0 0;padding-top:12px;border-top:1px solid #e2eaee;color:#596976;font-size:.9rem;line-height:1.5}
+    .new-code-box{margin-top:20px;padding:18px;border:1px dashed #a9bdc8;border-radius:13px;background:#f8fbfc}
+    .new-code-box h3{margin:0 0 6px}.new-code-box>p{margin:0 0 14px;color:var(--muted)}
+    .new-code-grid{display:grid;grid-template-columns:1.2fr .7fr 1fr 1fr .7fr;gap:12px;align-items:end}
+    .discount-message{margin:12px 0 0;font-weight:700;line-height:1.45}.discount-message.success{color:#176b32}.discount-message.error{color:#9a2f2f}
     .settings-actions{position:sticky;bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:24px;padding:15px 18px;border:1px solid #ccd9df;border-radius:14px;background:rgba(255,255,255,.97);box-shadow:0 10px 30px rgba(24,52,77,.13)}
     .settings-status{margin:0;color:#435463;font-weight:700;line-height:1.4}.settings-status.success{color:#176b32}.settings-status.error{color:#9a2f2f}
     #settings-form[aria-busy="true"]{opacity:.72;pointer-events:none}
     @media(max-width:760px){
       .settings-page{padding:34px 13px}.settings-heading{flex-direction:column}.settings-nav{width:100%}.settings-nav .button{flex:1;text-align:center}
       .price-grid{grid-template-columns:1fr}.price-grid-head{display:none}.price-row{display:grid;grid-template-columns:1fr;gap:8px;padding:15px 0;border-top:1px solid #e3eaee}.price-row:first-of-type{border-top:0;padding-top:0}.price-label{font-size:1.05rem}
-      .simple-grid,.renewal-grid{grid-template-columns:1fr}.settings-actions{position:static;align-items:stretch;flex-direction:column}.settings-actions .button{width:100%}
+      .simple-grid,.renewal-grid{grid-template-columns:1fr}.discount-controls,.new-code-grid{grid-template-columns:1fr}.discount-card-head{flex-direction:column}.discount-save{width:100%}.settings-actions{position:static;align-items:stretch;flex-direction:column}.settings-actions .button{width:100%}
     }
   </style>
 </head>
@@ -106,6 +124,27 @@
         <div class="technical-note"><strong>Technical change required.</strong> If you decide to change a renewal price, the Stripe recurring price, website wording and treatment of existing versus new members must be reviewed together. This prevents an accidental mismatch between what a customer is told and what Stripe will charge.</div>
       </section>
 
+      <section class="settings-section" id="discount-code-settings">
+        <h2>Discount &amp; trial codes</h2>
+        <p>Manage when your customer-facing codes can be used without changing website code. Public discount codes only work when registration is open; trial codes only work while the site is in invitation-only trial mode.</p>
+        <div id="discount-registration-mode" class="discount-mode">Loading registration mode…</div>
+        <div id="discount-code-list" class="discount-list" aria-live="polite"></div>
+        <div class="new-code-box">
+          <h3>Create a new public discount code</h3>
+          <p>Create a percentage discount for the initial membership payment. Postage and future automatic renewals are not discounted. The code is created securely in Stripe and then controlled from this page.</p>
+          <div class="new-code-grid">
+            <div class="discount-field"><label for="new-discount-code">Code</label><input id="new-discount-code" type="text" maxlength="32" autocomplete="off" placeholder="e.g. SPRING15"></div>
+            <div class="discount-field"><label for="new-discount-percent">Discount %</label><input id="new-discount-percent" type="number" min="0.01" max="100" step="0.01" placeholder="10"></div>
+            <div class="discount-field"><label for="new-discount-from">Valid from (optional)</label><input id="new-discount-from" type="datetime-local"></div>
+            <div class="discount-field"><label for="new-discount-until">Valid until (optional)</label><input id="new-discount-until" type="datetime-local"></div>
+            <div class="discount-field"><label for="new-discount-max">Maximum uses</label><input id="new-discount-max" type="number" min="1" max="100000" step="1" placeholder="No limit"></div>
+          </div>
+          <label class="discount-toggle" style="margin-top:12px;max-width:260px"><input id="new-discount-enabled" type="checkbox"><span>Enable on website</span></label>
+          <div style="margin-top:14px"><button type="button" id="create-discount-code" class="button button-primary">Create Discount Code</button></div>
+          <p id="discount-code-message" class="discount-message" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
       <section class="settings-section">
         <h2>Website wording, images and emails</h2>
         <p>These remain outside Business Settings because unrestricted editing can accidentally affect page layout, legal wording or automated customer journeys. Use the LymphAware ID Website &amp; System Maintenance Guide for the safe process. Routine text and image changes are still straightforward; they are simply handled as controlled website updates.</p>
@@ -119,6 +158,7 @@
     const SUPABASE_PUBLISHABLE_KEY='sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
     const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
     const form=document.getElementById('settings-form'),statusEl=document.getElementById('settings-status'),saveButton=document.getElementById('save-settings'),renewalGrid=document.getElementById('renewal-grid');
+    const discountList=document.getElementById('discount-code-list'),discountMode=document.getElementById('discount-registration-mode'),discountMessage=document.getElementById('discount-code-message'),createDiscountButton=document.getElementById('create-discount-code'),newDiscountCode=document.getElementById('new-discount-code'),newDiscountPercent=document.getElementById('new-discount-percent'),newDiscountFrom=document.getElementById('new-discount-from'),newDiscountUntil=document.getElementById('new-discount-until'),newDiscountMax=document.getElementById('new-discount-max'),newDiscountEnabled=document.getElementById('new-discount-enabled');
     const keys=['price_standard_1y_pence','price_standard_2y_pence','price_standard_3y_pence','price_plus_1y_pence','price_plus_2y_pence','price_plus_3y_pence','price_multilingual_1y_pence','price_multilingual_2y_pence','price_multilingual_3y_pence','price_additional_card_pence','price_lanyard_holder_pence','price_additional_language_pence','postage_uk_pence','postage_europe_pence','postage_rest_of_world_pence'];
 
     function money(pence){return `£${(Number(pence||0)/100).toFixed(2)}`}
@@ -127,10 +167,24 @@
     function fill(settings){for(const key of keys){const input=document.getElementById(key);if(input)input.value=(Number(settings[key]||0)/100).toFixed(2)}}
     function renderRenewals(prices){const names={STANDARD:'Standard',PLUS:'Plus',MULTILINGUAL:'Multilingual'};renewalGrid.innerHTML=Object.entries(names).map(([code,name])=>`<article class="renewal-card"><h3>${name}</h3><dl>${[1,2,3].map(years=>`<div><dt>${years} year${years===1?'':'s'}</dt><dd>${money(prices?.[code]?.[years])}</dd></div>`).join('')}</dl></article>`).join('')}
     async function request(method='GET',body=null){const accessToken=await token();if(!accessToken)return null;const response=await fetch('/api/admin-business-settings',{method,headers:{Authorization:`Bearer ${accessToken}`,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,cache:'no-store'});const result=await response.json().catch(()=>({}));if(response.status===403){location.href='/sign-in/';return null}if(!response.ok)throw new Error(result.error||'Business settings could not be loaded.');return result}
+    async function discountRequest(method='GET',body=null){const accessToken=await token();if(!accessToken)return null;const response=await fetch('/api/admin-discount-codes',{method,headers:{Authorization:`Bearer ${accessToken}`,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,cache:'no-store'});const result=await response.json().catch(()=>({}));if(response.status===403){location.href='/sign-in/';return null}if(!response.ok)throw new Error(result.error||'Discount-code settings could not be loaded.');return result}
+    function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
+    function localDateTimeValue(iso){if(!iso)return'';const d=new Date(iso);if(Number.isNaN(d.getTime()))return'';const local=new Date(d.getTime()-d.getTimezoneOffset()*60000);return local.toISOString().slice(0,16)}
+    function inputIso(input){return input?.value?new Date(input.value).toISOString():null}
+    function discountDescription(code){const stripe=code.stripe;if(!stripe)return'Stripe code not found';if(stripe.percentOff!=null)return`${stripe.percentOff}% off initial membership`;if(stripe.amountOff!=null)return`${money(stripe.amountOff)} off initial membership`;return'Discount details unavailable'}
+    function statusDisplay(status){const map={ACTIVE:['Available now','active'],PAUSED:['Paused','paused'],SCHEDULED:['Scheduled','scheduled'],EXPIRED:['Expired','expired'],WAITING_FOR_OPEN_REGISTRATION:['Enabled – waits for public launch','waiting'],TRIAL_MODE_NOT_ACTIVE:['Trial code – trial mode not active','waiting'],STRIPE_INACTIVE:['Unavailable in Stripe','stripe'],UNMANAGED:['Not managed','stripe'],WRONG_TYPE:['Configuration issue','stripe']};return map[status]||[String(status||'Unknown').replaceAll('_',' '),'paused']}
+    function renderDiscountCodes(result){const mode=String(result?.registrationMode||'CLOSED').toUpperCase();discountMode.innerHTML=mode==='INVITE_ONLY'?'<strong>Current website mode: Private trial / invitation only.</strong> Trial codes can be used now. Public codes such as WELCOME10 remain unavailable until registration is changed to Open.':mode==='OPEN'?'<strong>Current website mode: Open registration.</strong> Enabled public discount codes within their valid dates can be used now. Trial codes are not accepted.':'<strong>Current website mode: Registration closed.</strong> No trial or public discount codes can currently be used.';
+      const codes=Array.isArray(result?.codes)?result.codes:[];if(!codes.length){discountList.innerHTML='<p>No managed discount codes were found.</p>';return}
+      discountList.innerHTML=codes.map(code=>{const [label,cls]=statusDisplay(code.websiteStatus),stripe=code.stripe||{},uses=stripe.maxRedemptions==null?`${stripe.timesRedeemed||0} uses`:`${stripe.timesRedeemed||0} of ${stripe.maxRedemptions} uses`,kind=code.codeType==='TRIAL'?'Trial code':'Public discount';return `<article class="discount-card" data-code="${escapeHtml(code.code)}"><div class="discount-card-head"><div><div class="discount-code">${escapeHtml(code.code)}</div><div class="discount-meta">${kind} · ${escapeHtml(discountDescription(code))} · ${escapeHtml(uses)}</div></div><span class="discount-status ${cls}">${escapeHtml(label)}</span></div><div class="discount-controls"><label class="discount-toggle"><input class="discount-enabled" type="checkbox" ${code.enabled?'checked':''}><span>Enabled on website</span></label><div class="discount-field"><label>Valid from (optional)</label><input class="discount-from" type="datetime-local" value="${escapeHtml(localDateTimeValue(code.validFrom))}"></div><div class="discount-field"><label>Valid until (optional)</label><input class="discount-until" type="datetime-local" value="${escapeHtml(localDateTimeValue(code.validUntil))}"></div><button type="button" class="button button-secondary discount-save">Save Code</button></div><p class="discount-stripe">Stripe: ${stripe.active?'active':'inactive'}${stripe.couponValid===false?' · coupon invalid':''}. Website dates can be changed here without altering previous orders or customers who have already checked out.</p></article>`}).join('');
+      discountList.querySelectorAll('.discount-save').forEach(button=>button.addEventListener('click',saveDiscountCode))}
+    async function loadDiscountCodes(){discountList.innerHTML='<p>Loading discount codes…</p>';try{const result=await discountRequest();if(result)renderDiscountCodes(result)}catch(error){discountList.innerHTML=`<p class="discount-message error">${escapeHtml(error.message||'Discount codes could not be loaded.')}</p>`}}
+    async function saveDiscountCode(event){const card=event.currentTarget.closest('.discount-card'),code=card?.dataset.code;if(!code)return;const button=event.currentTarget;button.disabled=true;button.textContent='Saving…';try{await discountRequest('PATCH',{code,enabled:card.querySelector('.discount-enabled').checked,validFrom:inputIso(card.querySelector('.discount-from')),validUntil:inputIso(card.querySelector('.discount-until'))});discountMessage.className='discount-message success';discountMessage.textContent=`${code} has been updated.`;await loadDiscountCodes()}catch(error){discountMessage.className='discount-message error';discountMessage.textContent=error.message||'The code could not be updated.'}finally{button.disabled=false;button.textContent='Save Code'}}
+    createDiscountButton.addEventListener('click',async()=>{discountMessage.textContent='';const code=newDiscountCode.value.trim().toUpperCase();newDiscountCode.value=code;if(!code||!newDiscountPercent.value){discountMessage.className='discount-message error';discountMessage.textContent='Enter a code and percentage discount.';return}createDiscountButton.disabled=true;createDiscountButton.textContent='Creating…';try{await discountRequest('POST',{code,percentOff:Number(newDiscountPercent.value),enabled:newDiscountEnabled.checked,validFrom:inputIso(newDiscountFrom),validUntil:inputIso(newDiscountUntil),maxRedemptions:newDiscountMax.value?Number(newDiscountMax.value):null});discountMessage.className='discount-message success';discountMessage.textContent=`${code} has been created in Stripe and added to Business Settings.`;newDiscountCode.value='';newDiscountPercent.value='';newDiscountFrom.value='';newDiscountUntil.value='';newDiscountMax.value='';newDiscountEnabled.checked=false;await loadDiscountCodes()}catch(error){discountMessage.className='discount-message error';discountMessage.textContent=error.message||'The discount code could not be created.'}finally{createDiscountButton.disabled=false;createDiscountButton.textContent='Create Discount Code'}});
     async function load(){form.setAttribute('aria-busy','true');saveButton.disabled=true;try{const result=await request();if(!result)return;fill(result.settings);renderRenewals(result.renewalPrices);statusEl.className='settings-status';statusEl.textContent='Current business settings loaded.'}catch(error){statusEl.className='settings-status error';statusEl.textContent=error.message||'Business settings could not be loaded.'}finally{form.setAttribute('aria-busy','false');saveButton.disabled=false}}
     form.addEventListener('submit',async event=>{event.preventDefault();if(!form.reportValidity())return;const settings={};for(const key of keys){const pence=poundsToPence(document.getElementById(key).value);if(!Number.isInteger(pence)||pence<0){statusEl.className='settings-status error';statusEl.textContent='Please enter valid prices in every field.';return}settings[key]=pence}saveButton.disabled=true;form.setAttribute('aria-busy','true');statusEl.className='settings-status';statusEl.textContent='Saving…';try{const result=await request('PUT',{settings});if(!result)return;fill(result.settings);renderRenewals(result.renewalPrices);statusEl.className='settings-status success';statusEl.textContent='Saved. New checkouts will now use these prices.'}catch(error){statusEl.className='settings-status error';statusEl.textContent=error.message||'Business settings could not be saved.'}finally{form.setAttribute('aria-busy','false');saveButton.disabled=false}});
     document.getElementById('admin-sign-out').addEventListener('click',async()=>{await supabaseClient.auth.signOut();location.href='/sign-in/'});
     load();
+    loadDiscountCodes();
   </script>
 </body>
 </html>
