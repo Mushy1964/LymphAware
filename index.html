@@ -1519,11 +1519,21 @@
     if(typeof QRCode!=='function')return;
     new QRCode(qrBox,{
       text:`https://lymphawareid.com/p/${token}`,
-      width:180,
-      height:180,
+      width:220,
+      height:220,
       colorDark:'#172536',
       colorLight:'#ffffff',
       correctLevel:QRCode.CorrectLevel.M
+    });
+    requestAnimationFrame(()=>{
+      const canvas=qrBox.querySelector('canvas');
+      const image=qrBox.querySelector('img');
+      if(canvas){
+        canvas.style.display='block';
+        if(image)image.remove();
+      }else if(image){
+        image.style.display='block';
+      }
     });
   }
 

@@ -1461,14 +1461,12 @@
   border: 0;
 }
 
-.home-page .home-demo-dynamic-card-qr canvas {
+.home-page .home-demo-dynamic-card-qr canvas,
+.home-page .home-demo-dynamic-card-qr img {
   display: block;
   width: 100% !important;
   height: 100% !important;
-}
-
-.home-page .home-demo-dynamic-card-qr img {
-  display: none !important;
+  object-fit: contain;
 }
 
 .home-page .home-demo-dynamic-card-qr-copy {
