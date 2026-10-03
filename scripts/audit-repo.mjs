@@ -104,6 +104,8 @@ function checkProjectConsistency() {
   const discountControlsPath = path.join(root, 'netlify/functions/_shared/discount-code-controls.mjs');
   const adminDiscountCodesPath = path.join(root, 'netlify/functions/admin-discount-codes.mjs');
   const adminOrdersPath = path.join(root, 'netlify/functions/admin-orders-list.mjs');
+  const adminOrderArchivePath = path.join(root, 'netlify/functions/admin-order-archive.mjs');
+  const adminDashboardSummaryPath = path.join(root, 'netlify/functions/admin-dashboard-summary.mjs');
   const adminDashboardPath = path.join(root, 'admin/index.html');
   const adminOrderDetailPath = path.join(root, 'admin/orders/index.html');
   const signInPath = path.join(root, 'sign-in/index.html');
@@ -130,6 +132,8 @@ function checkProjectConsistency() {
   const discountControls = fs.readFileSync(discountControlsPath, 'utf8');
   const adminDiscountCodes = fs.readFileSync(adminDiscountCodesPath, 'utf8');
   const adminOrders = fs.readFileSync(adminOrdersPath, 'utf8');
+  const adminOrderArchive = fs.readFileSync(adminOrderArchivePath, 'utf8');
+  const adminDashboardSummary = fs.readFileSync(adminDashboardSummaryPath, 'utf8');
   const adminDashboard = fs.readFileSync(adminDashboardPath, 'utf8');
   const adminOrderDetail = fs.readFileSync(adminOrderDetailPath, 'utf8');
   const signIn = fs.readFileSync(signInPath, 'utf8');
@@ -167,6 +171,18 @@ function checkProjectConsistency() {
   }
   if (!adminDashboard.includes('href="/admin/business-settings/"') || !adminBusinessSettings.includes('Routine business prices and postage can be maintained here') || !adminBusinessSettingsApi.includes('verifyAdminRequest')) {
     errors.push('Business Settings is not kept as a separate protected Admin destination.');
+  }
+  if (!adminDashboardSummary.includes('profile?.is_archived !== true') || !adminDashboardSummary.includes('profile?.is_demo !== true') || !adminDashboardSummary.includes('activeMemberships')) {
+    errors.push('Membership Overview does not consistently exclude archived and demo records.');
+  }
+  if (!adminDashboard.includes('data-stage="ARCHIVED"') || !adminDashboard.includes('function renderHistoryOrder(order)') || !adminDashboard.includes('Reprint welcome letter') || !adminDashboard.includes('Reprint envelope')) {
+    errors.push('Completed/Archived order history is missing the compact expandable history controls.');
+  }
+  if (!adminOrders.includes("searchParams.get('scope')") || !adminOrders.includes("is_archived=eq.")) {
+    errors.push('Admin order loading does not separate active and archived order history.');
+  }
+  if (!adminOrderArchive.includes("['COMPLETED', 'CANCELLED', 'REFUNDED']") || !adminOrderArchive.includes('hasOpenCancellation') || !adminOrderArchive.includes("path: '/api/admin-order-archive'")) {
+    errors.push('Protected terminal-order archive/restore safeguards are missing.');
   }
   if (!webhook.includes('metadataCardUnitPricePence') || !webhook.includes('metadataPackagePricePence')) {
     errors.push('Webhook is not preserving the price captured at the time of checkout.');
