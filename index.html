@@ -1009,16 +1009,36 @@
 
       <div class="home-demo-card-area">
         <div class="home-demo-label">Demonstration card</div>
+        <p class="home-demo-language-intro">Choose a language to see how the matching card and QR profile would appear.</p>
+        <div class="home-demo-language-switcher" role="group" aria-label="Choose demonstration language">
+          <button type="button" class="home-demo-language-button" data-demo-language="EN" aria-pressed="true">English</button>
+          <button type="button" class="home-demo-language-button" data-demo-language="FR" aria-pressed="false">Français</button>
+          <button type="button" class="home-demo-language-button" data-demo-language="ES" aria-pressed="false">Español</button>
+          <button type="button" class="home-demo-language-button" data-demo-language="DE" aria-pressed="false">Deutsch</button>
+        </div>
         <a
+          id="home-demo-card-link"
           class="home-demo-card-link"
           href="/p/1babe83a-9ad9-4999-a7c4-658b1400b044"
-          aria-label="Open the fictional Alex Morgan LymphAware ID demonstration profile">
-          <img
-            class="home-demo-card-image"
-            src="/assets/demo/LymphAware_Alex_Morgan_Demo_Card.png?v=20260922-final-rev"
-            alt="Fictional LymphAware ID demonstration card for Alex Morgan">
+          aria-label="Open the fictional Alex Morgan English LymphAware ID demonstration profile">
+          <div id="home-demo-dynamic-card" class="home-demo-dynamic-card" role="img" aria-label="Fictional English LymphAware ID demonstration card for Alex Morgan">
+            <img class="home-demo-dynamic-card-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="">
+            <img id="home-demo-card-photo" class="home-demo-dynamic-card-photo" alt="Fictional demonstration photograph of Alex Morgan">
+            <div class="home-demo-dynamic-card-main">
+              <p id="home-demo-card-condition" class="home-demo-dynamic-card-condition">LYMPHOEDEMA PATIENT</p>
+              <p class="home-demo-dynamic-card-name">Alex Morgan</p>
+              <p class="home-demo-dynamic-card-id">LymphAware ID: <strong>LA-000003</strong></p>
+            </div>
+            <div class="home-demo-dynamic-card-qr-wrap">
+              <div id="home-demo-card-qr" class="home-demo-dynamic-card-qr" aria-label="QR code linking to the selected demonstration profile"></div>
+              <p id="home-demo-card-qr-copy" class="home-demo-dynamic-card-qr-copy">SCAN QR CODE<br>to view my profile</p>
+            </div>
+            <div class="home-demo-dynamic-card-bars" aria-hidden="true"></div>
+          </div>
         </a>
+        <p id="home-demo-card-language-name" class="home-demo-card-language-name">English demonstration</p>
         <a
+          id="home-demo-profile-link"
           class="home-demo-profile-link"
           href="/p/1babe83a-9ad9-4999-a7c4-658b1400b044">
           Open sample profile →
@@ -1364,6 +1384,8 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
 <script>
   const SUPABASE_URL = 'https://thbhsktcenhrnxzkbjus.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
@@ -1470,6 +1492,64 @@
   });
 
   checkAccountSession();
+</script>
+
+<script>
+(function initialiseMultilingualDemo(){
+  const API='https://thbhsktcenhrnxzkbjus.supabase.co/functions/v1/public-profile';
+  const DEMO={
+    EN:{name:'English',token:'1babe83a-9ad9-4999-a7c4-658b1400b044',patient:'LYMPHOEDEMA PATIENT',qr:'SCAN QR CODE<br>to view my profile'},
+    FR:{name:'French',token:'1babe83a-9ad9-4999-a7c4-658b1400b045',patient:'PATIENT ATTEINT DE LYMPHŒDÈME',qr:'SCANNEZ LE CODE QR<br>pour consulter mon profil'},
+    ES:{name:'Spanish',token:'1babe83a-9ad9-4999-a7c4-658b1400b046',patient:'PACIENTE CON LINFEDEMA',qr:'ESCANEE EL CÓDIGO QR<br>para ver mi perfil'},
+    DE:{name:'German',token:'1babe83a-9ad9-4999-a7c4-658b1400b047',patient:'PATIENT MIT LYMPHÖDEM',qr:'QR-CODE SCANNEN<br>um mein Profil anzusehen'}
+  };
+  const buttons=[...document.querySelectorAll('.home-demo-language-button')];
+  const cardLink=document.getElementById('home-demo-card-link');
+  const profileLink=document.getElementById('home-demo-profile-link');
+  const card=document.getElementById('home-demo-dynamic-card');
+  const condition=document.getElementById('home-demo-card-condition');
+  const qrCopy=document.getElementById('home-demo-card-qr-copy');
+  const qrBox=document.getElementById('home-demo-card-qr');
+  const languageName=document.getElementById('home-demo-card-language-name');
+  const photo=document.getElementById('home-demo-card-photo');
+  if(!cardLink||!profileLink||!card||!condition||!qrCopy||!qrBox)return;
+
+  function renderQr(token){
+    qrBox.innerHTML='';
+    if(typeof QRCode!=='function')return;
+    new QRCode(qrBox,{
+      text:`https://lymphawareid.com/p/${token}`,
+      width:180,
+      height:180,
+      colorDark:'#172536',
+      colorLight:'#ffffff',
+      correctLevel:QRCode.CorrectLevel.M
+    });
+  }
+
+  function selectLanguage(code){
+    const chosen=DEMO[code]||DEMO.EN;
+    const href=`/p/${chosen.token}`;
+    cardLink.href=href;
+    profileLink.href=href;
+    cardLink.setAttribute('aria-label',`Open the fictional Alex Morgan ${chosen.name} LymphAware ID demonstration profile`);
+    card.setAttribute('aria-label',`Fictional ${chosen.name} LymphAware ID demonstration card for Alex Morgan`);
+    condition.textContent=chosen.patient;
+    qrCopy.innerHTML=chosen.qr;
+    languageName.textContent=`${chosen.name} demonstration`;
+    buttons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.demoLanguage===code)));
+    renderQr(chosen.token);
+  }
+
+  buttons.forEach(button=>button.addEventListener('click',()=>selectLanguage(button.dataset.demoLanguage||'EN')));
+
+  fetch(`${API}?token=${encodeURIComponent(DEMO.EN.token)}`,{cache:'no-store'})
+    .then(response=>response.ok?response.json():null)
+    .then(profile=>{if(profile?.photo_url){photo.src=profile.photo_url;}else{photo.removeAttribute('src');}})
+    .catch(()=>{photo.removeAttribute('src');});
+
+  selectLanguage('EN');
+})();
 </script>
 
 
