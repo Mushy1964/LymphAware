@@ -1,5 +1,6 @@
 export { MEMBERSHIP_CONTRACT_VERSION, FIRST_REMINDER_WINDOW, FINAL_REMINDER_WINDOW } from './membership-contract.mjs';
 import { MEMBERSHIP_CONTRACT_VERSION, FIRST_REMINDER_WINDOW, FINAL_REMINDER_WINDOW } from './membership-contract.mjs';
+import { getBusinessSettings, publicPricing } from './business-settings.mjs';
 
 export const APPROVED_LANGUAGES = {
   FR: 'French',
@@ -46,7 +47,7 @@ const CHECKOUT_COUNTRIES = new Set([
   'ME','MK','RS','UA','AE','ZA','IN','JP','SG','HK'
 ]);
 
-export function normaliseInitialSelection(body = {}) {
+export async function normaliseInitialSelection(body = {}) {
   const packageType = String(body.packageType || '').trim().toUpperCase();
   const packageDefinition = PACKAGE_DEFINITIONS[packageType];
   const membershipTermYears = Number(body.membershipTermYears);
@@ -63,10 +64,15 @@ export function normaliseInitialSelection(body = {}) {
   if (body.termsAccepted !== true) throw new Error('Please accept the Terms and Privacy Notice.');
   if (autoRenew && body.autoRenewAcknowledged !== true) throw new Error('Please confirm the automatic-renewal details.');
 
+  const businessSettings = await getBusinessSettings({ strict: true });
+  const pricing = publicPricing(businessSettings);
   const shippingBand = deliveryCountry === 'GB' ? 'UK' : EUROPE_COUNTRIES.has(deliveryCountry) ? 'EUROPE' : 'REST_OF_WORLD';
-  const shippingPence = shippingBand === 'UK' ? 299 : shippingBand === 'EUROPE' ? 499 : 999;
-  const packagePricePence = packageDefinition.prices[membershipTermYears];
+  const shippingPence = pricing.shipping[shippingBand];
+  const packagePricePence = pricing.packages[packageType][membershipTermYears];
   const renewalPricePence = packageDefinition.renewals[membershipTermYears];
+  if (autoRenew && packagePricePence < renewalPricePence) {
+    throw new Error('This membership price cannot currently be used with automatic renewal. Please contact LymphAware ID.');
+  }
   return {
     packageType,
     packageDefinition,
