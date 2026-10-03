@@ -1402,6 +1402,10 @@
   background: #eef2f4;
 }
 
+.home-page .home-demo-dynamic-card-photo:not([src]) {
+  visibility: hidden;
+}
+
 .home-page .home-demo-dynamic-card-main {
   position: absolute;
   left: 31.5%;
