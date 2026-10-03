@@ -5,13 +5,31 @@ const secretKeys = JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') ?? '{}')
 const supabaseAdmin = createClient(Deno.env.get('SUPABASE_URL')!, secretKeys['default'])
 const DEMO_PROFILE_TOKEN = '1babe83a-9ad9-4999-a7c4-658b1400b044'
 
-const FR_ASSISTANCE: Record<string,string> = {
-  standing: 'Je peux avoir des difficultés à rester debout pendant de longues périodes.',
-  seating: 'Je peux avoir besoin d’un endroit où m’asseoir.',
-  time: 'Je peux avoir besoin de plus de temps.',
-  mobility: 'Je peux avoir besoin d’aide pour me déplacer.',
-  'extra-space': 'Je peux avoir besoin de plus d’espace en raison d’un gonflement ou de vêtements de compression.',
-  understanding: 'Merci de faire preuve de patience et de compréhension.'
+const ASSISTANCE_TRANSLATIONS: Record<string, Record<string,string>> = {
+  FR: {
+    standing: 'Je peux avoir des difficultés à rester debout pendant de longues périodes.',
+    seating: 'Je peux avoir besoin d’un endroit où m’asseoir.',
+    time: 'Je peux avoir besoin de plus de temps.',
+    mobility: 'Je peux avoir besoin d’aide pour me déplacer.',
+    'extra-space': 'Je peux avoir besoin de plus d’espace en raison d’un gonflement ou de vêtements de compression.',
+    understanding: 'Merci de faire preuve de patience et de compréhension.'
+  },
+  ES: {
+    standing: 'Puedo tener dificultad para permanecer de pie durante largos periodos.',
+    seating: 'Puedo necesitar un lugar donde sentarme.',
+    time: 'Puedo necesitar más tiempo.',
+    mobility: 'Puedo necesitar ayuda para moverme.',
+    'extra-space': 'Puedo necesitar más espacio debido a la hinchazón o a las prendas de compresión.',
+    understanding: 'Por favor, tenga paciencia y sea comprensivo.'
+  },
+  DE: {
+    standing: 'Ich kann Schwierigkeiten haben, längere Zeit zu stehen.',
+    seating: 'Ich brauche möglicherweise eine Sitzmöglichkeit.',
+    time: 'Ich brauche möglicherweise mehr Zeit.',
+    mobility: 'Ich brauche möglicherweise Unterstützung bei der Fortbewegung.',
+    'extra-space': 'Ich brauche aufgrund von Schwellungen oder Kompressionskleidung möglicherweise mehr Platz.',
+    understanding: 'Bitte haben Sie Geduld und Verständnis.'
+  }
 }
 
 async function signedPhoto(path?: string | null) {
@@ -121,7 +139,7 @@ Deno.serve(async (req) => {
         const option = item.assistance_options
         if (!option) return null
         return {
-          statement: languageProfile.language_code === 'FR' ? (FR_ASSISTANCE[option.icon_key] ?? option.statement) : option.statement,
+          statement: ASSISTANCE_TRANSLATIONS[languageProfile.language_code]?.[option.icon_key] ?? option.statement,
           icon_key: option.icon_key
         }
       }).filter(Boolean)
