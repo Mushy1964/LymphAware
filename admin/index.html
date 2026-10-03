@@ -19,11 +19,11 @@
     .membership-number{display:block;color:var(--green-dark);font-size:1.75rem;font-weight:800}
     .membership-label{display:block;margin-top:3px;font-weight:800}
     .membership-help{display:block;margin-top:4px;color:var(--muted);font-size:.88rem;line-height:1.4}
-    .stage-tabs{display:flex;gap:8px;margin:0 0 24px;padding:5px;border:1px solid var(--border);border-radius:14px;background:#fff;overflow-x:auto;scrollbar-width:thin}
-    .stage-tab{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 15px;border:0;border-radius:10px;background:transparent;color:var(--text);font:inherit;font-weight:800;white-space:nowrap;cursor:pointer}
+    .stage-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:0 0 24px;padding:5px;border:1px solid var(--border);border-radius:14px;background:#fff;overflow:visible}
+    .stage-tab{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-width:0;min-height:48px;padding:10px 9px;border:0;border-radius:10px;background:transparent;color:var(--text);font:inherit;font-size:.94rem;font-weight:800;line-height:1.18;white-space:normal;text-align:center;cursor:pointer}
     .stage-tab:hover{background:#f2f7fa}
     .stage-tab[aria-selected="true"]{background:var(--blue-dark);color:#fff}
-    .stage-count{display:inline-flex;align-items:center;justify-content:center;min-width:25px;height:25px;padding:0 7px;border-radius:999px;background:#e7f1f7;color:var(--blue-dark);font-size:.84rem}
+    .stage-count{display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;min-width:25px;height:25px;padding:0 7px;border-radius:999px;background:#e7f1f7;color:var(--blue-dark);font-size:.84rem}
     .stage-tab[aria-selected="true"] .stage-count{background:#fff;color:var(--blue-dark)}
     .stage-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:8px}
     .stage-heading h2{margin:0;font-size:1.5rem}
@@ -102,9 +102,12 @@
     #admin-loading{display:none!important}
     #admin-error{padding:20px;border:1px solid #efcaca;border-radius:14px;background:#fff4f4;color:#7b2929}
     #admin-error .button{margin-top:12px}
+    @media(max-width:1100px) and (min-width:761px){
+      .stage-tabs{gap:4px}.stage-tab{gap:5px;padding:9px 6px;font-size:.84rem}.stage-count{min-width:23px;height:23px;padding:0 6px;font-size:.78rem}
+    }
     @media(max-width:760px){
       .admin-page{padding:34px 13px}.admin-heading{align-items:stretch;flex-direction:column}.admin-heading .button{width:100%}
-      .membership-summary{grid-template-columns:1fr}.stage-tabs{margin-left:-3px;margin-right:-3px}
+      .membership-summary{grid-template-columns:1fr}.stage-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-left:-3px;margin-right:-3px}.stage-tab{font-size:.9rem;padding:10px 7px}.stage-tab:last-child{grid-column:1 / -1}
       .order-card{padding:18px 16px}.order-card-head{flex-direction:column;gap:12px}.stage-badge{align-self:flex-start}
       .details-grid{grid-template-columns:1fr}.order-actions{display:grid}.order-actions .button{width:100%;text-align:center}.cancellation-grid{grid-template-columns:1fr}.cancellation-note{grid-column:auto}.cancellation-actions{display:grid}.cancellation-actions .button{width:100%}
       .stage-heading{align-items:stretch;flex-direction:column}.stage-heading .button{width:100%;text-align:center}
