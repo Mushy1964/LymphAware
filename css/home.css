@@ -1453,9 +1453,11 @@
 }
 
 .home-page .home-demo-dynamic-card-qr {
+  position: relative;
   width: 100%;
   aspect-ratio: 1;
   display: block;
+  overflow: hidden;
   padding: 0;
   background: #fff;
   border: 0;
@@ -1463,19 +1465,25 @@
 
 .home-page .home-demo-dynamic-card-qr canvas,
 .home-page .home-demo-dynamic-card-qr img {
-  display: block;
+  position: absolute;
+  inset: 0;
+  display: block !important;
   width: 100% !important;
   height: 100% !important;
   object-fit: contain;
 }
 
 .home-page .home-demo-dynamic-card-qr-copy {
-  margin: 5% -18% 0;
+  width: 100%;
+  margin: 5% 0 0;
   color: #0053b7;
-  font-size: clamp(.45rem, .72vw, .67rem);
+  font-size: clamp(.42rem, .66vw, .62rem);
   font-weight: 900;
   line-height: 1.08;
   text-align: center;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .home-page .home-demo-dynamic-card-bars {

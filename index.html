@@ -1525,16 +1525,6 @@
       colorLight:'#ffffff',
       correctLevel:QRCode.CorrectLevel.M
     });
-    requestAnimationFrame(()=>{
-      const canvas=qrBox.querySelector('canvas');
-      const image=qrBox.querySelector('img');
-      if(canvas){
-        canvas.style.display='block';
-        if(image)image.remove();
-      }else if(image){
-        image.style.display='block';
-      }
-    });
   }
 
   function selectLanguage(code){
