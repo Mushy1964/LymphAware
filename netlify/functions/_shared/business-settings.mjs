@@ -20,7 +20,7 @@ export const BUSINESS_SETTING_KEYS = Object.freeze(Object.keys(DEFAULTS));
 export const DEFAULT_BUSINESS_SETTINGS = DEFAULTS;
 
 function env(name) {
-  return String(globalThis.Netlify?.env?.get?.(name) || process.env[name] || '').trim();
+  return String(Netlify.env.get(name) || '').trim();
 }
 
 function serviceHeaders(prefer = '') {
