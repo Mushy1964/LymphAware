@@ -34,6 +34,14 @@
     .wallet-error{display:none}
     .wallet-note{margin:18px 0 0;color:#536273;font-size:.95rem;line-height:1.5;text-align:center}
     .wallet-actions{display:flex;justify-content:center;margin-top:18px}
+    .wallet-install{margin-top:20px;padding:20px;border:1px solid #d7e4e9;border-radius:16px;background:#fff}
+    .wallet-install h2{margin:0 0 6px;font-size:1.2rem;color:#172536}
+    .wallet-install>p{margin:0;color:#536273;line-height:1.5}
+    .wallet-provider-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    .wallet-provider-actions .button{min-height:46px}
+    .wallet-provider-status{margin-top:14px!important;padding-top:14px;border-top:1px solid #e2e9ed;color:#536273!important;font-size:.92rem}
+    .wallet-provider-status strong{color:#172536}
+    .wallet-provider-message{margin-top:12px!important;font-weight:700;color:#31566f!important}
     @media(max-width:680px){.wallet-page{padding:10px 8px 26px}.card-stage{padding:10px;border-radius:16px}.member-card-qr{padding:3px}.wallet-toolbar{font-size:.92rem}}
   </style>
   <link rel="stylesheet" href="/css/brand-header.css?v=20260921-7">
@@ -67,6 +75,16 @@
           </div>
         </div>
         <p class="wallet-note">Apple Wallet and Google Wallet apply their own native layout rules. The issued pass will preserve this LymphAware ID identity, QR destination, wording and expiry information as closely as each platform permits.</p>
+        <section class="wallet-install" aria-labelledby="wallet-install-title">
+          <h2 id="wallet-install-title">Add your digital LymphAware ID</h2>
+          <p id="wallet-install-intro">Native Wallet installation is available when the relevant Apple or Google issuer setup is complete.</p>
+          <div class="wallet-provider-actions">
+            <button type="button" id="apple-wallet-button" class="button button-primary" hidden>Add to Apple Wallet</button>
+            <button type="button" id="google-wallet-button" class="button button-primary" hidden>Add to Google Wallet</button>
+          </div>
+          <p id="wallet-provider-status" class="wallet-provider-status"></p>
+          <p id="wallet-provider-message" class="wallet-provider-message" role="status" aria-live="polite"></p>
+        </section>
       </div>
 
       <div class="wallet-actions">
@@ -92,6 +110,81 @@
       const date=new Date(value);
       if(!Number.isFinite(date.getTime()))return 'No expiry recorded';
       return date.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}).replace(/ /g,' ');
+    }
+
+    async function sessionToken(){
+      const {data:{session},error}=await supabaseClient.auth.getSession();
+      if(error||!session?.access_token)return null;
+      return session.access_token;
+    }
+
+    function configureWalletProviders(providers){
+      const appleButton=document.getElementById('apple-wallet-button');
+      const googleButton=document.getElementById('google-wallet-button');
+      const status=document.getElementById('wallet-provider-status');
+      const appleReady=providers?.apple?.available===true;
+      const googleReady=providers?.google?.available===true;
+      appleButton.hidden=!appleReady;
+      googleButton.hidden=!googleReady;
+
+      const notes=[];
+      notes.push(appleReady?'Apple Wallet is ready.':'Apple Wallet signing setup is still being completed.');
+      if(googleReady){
+        notes.push('Google Wallet private-pass issuing is ready.');
+      }else if(providers?.google?.configured===true&&providers?.google?.private_pass_approved!==true){
+        notes.push('Google Wallet credentials are configured but private-pass approval is still required.');
+      }else{
+        notes.push('Google Wallet private-pass setup is still being completed.');
+      }
+      status.innerHTML='<strong>Wallet availability:</strong> '+notes.join(' ');
+    }
+
+    async function addAppleWallet(){
+      const button=document.getElementById('apple-wallet-button');
+      const message=document.getElementById('wallet-provider-message');
+      const token=await sessionToken();
+      if(!token){location.href='/sign-in/';return}
+      button.disabled=true;
+      message.textContent='Preparing your Apple Wallet pass…';
+      try{
+        const response=await fetch('/.netlify/functions/apple-wallet-pass',{headers:{Authorization:`Bearer ${token}`}});
+        if(!response.ok){
+          const result=await response.json().catch(()=>({}));
+          throw new Error(result.error||result.message||'Your Apple Wallet pass could not be prepared.');
+        }
+        const blob=await response.blob();
+        const url=URL.createObjectURL(blob);
+        const link=document.createElement('a');
+        link.href=url;
+        link.download='LymphAware-ID.pkpass';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),60000);
+        message.textContent='Your Apple Wallet pass has been prepared.';
+      }catch(error){
+        message.textContent=error.message||'Your Apple Wallet pass could not be prepared.';
+      }finally{
+        button.disabled=false;
+      }
+    }
+
+    async function addGoogleWallet(){
+      const button=document.getElementById('google-wallet-button');
+      const message=document.getElementById('wallet-provider-message');
+      const token=await sessionToken();
+      if(!token){location.href='/sign-in/';return}
+      button.disabled=true;
+      message.textContent='Preparing your Google Wallet pass…';
+      try{
+        const response=await fetch('/.netlify/functions/google-wallet-pass',{headers:{Authorization:`Bearer ${token}`}});
+        const result=await response.json().catch(()=>({}));
+        if(!response.ok||!result.save_url)throw new Error(result.error||result.message||'Your Google Wallet pass could not be prepared.');
+        location.href=result.save_url;
+      }catch(error){
+        message.textContent=error.message||'Your Google Wallet pass could not be prepared.';
+        button.disabled=false;
+      }
     }
 
     async function loadWalletPreview(){
@@ -122,6 +215,7 @@
       document.getElementById('card-id').textContent=result.lymphaware_id||'';
       document.getElementById('card-expiry').textContent=formatExpiry(result.membership_end);
       document.getElementById('card-photo').src=result.photo_url;
+      configureWalletProviders(result.providers);
 
       try{
         new QRCode(document.getElementById('card-qr'),{
@@ -146,7 +240,9 @@
       document.getElementById('wallet-content').hidden=false;
     }
 
-    loadWalletPreview();
+    document.getElementById('apple-wallet-button').addEventListener('click',addAppleWallet);
+    document.getElementById('google-wallet-button').addEventListener('click',addGoogleWallet);
+        loadWalletPreview();
   </script>
 </body>
 </html>
