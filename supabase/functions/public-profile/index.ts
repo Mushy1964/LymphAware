@@ -58,6 +58,33 @@ async function hasEmergencyNotice(profileId: string, isDemo = false) {
   return data === true
 }
 
+async function hasCurrentMembershipEntitlement(userId: string, isDemo = false) {
+  if (isDemo) return true
+  const { data, error } = await supabaseAdmin
+    .from('memberships')
+    .select('membership_status,payment_status,membership_end')
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  if (error || !data) {
+    console.error('Membership entitlement check failed:', error)
+    return false
+  }
+
+  const status = String(data.membership_status ?? '').toUpperCase()
+  const paymentStatus = String(data.payment_status ?? '').toUpperCase()
+  const statusEntitled =
+    (status === 'ACTIVE' && paymentStatus === 'PAID') ||
+    status === 'PILOT' ||
+    status === 'SPONSORED'
+
+  if (!statusEntitled) return false
+
+  if (!data.membership_end) return true
+  const membershipEnd = new Date(data.membership_end).getTime()
+  return Number.isFinite(membershipEnd) && membershipEnd > Date.now()
+}
+
 async function selectedResources(profileId: string) {
   const { data, error } = await supabaseAdmin
     .from('profile_information_resources')
@@ -96,7 +123,7 @@ Deno.serve(async (req) => {
     if (languageProfile) {
       const { data: source, error: sourceError } = await supabaseAdmin
         .from('profiles')
-        .select('id,display_name,lymphaware_id,photo_path,emergency_contact_name,emergency_contact_phone,qr_profile_active,is_demo')
+        .select('id,user_id,display_name,lymphaware_id,photo_path,emergency_contact_name,emergency_contact_phone,qr_profile_active,is_demo')
         .eq('id', languageProfile.source_profile_id)
         .maybeSingle()
       if (sourceError || !source || source.qr_profile_active !== true) {
@@ -106,6 +133,9 @@ Deno.serve(async (req) => {
       const isDemo = source.is_demo === true || token === DEMO_PROFILE_TOKEN
       const consentOk = await hasActiveHealthConsent(source.id, isDemo)
       if (!consentOk) return Response.json({ error: 'Profile not available' }, { status: 404, headers: corsHeaders })
+
+      const membershipOk = await hasCurrentMembershipEntitlement(source.user_id, isDemo)
+      if (!membershipOk) return Response.json({ error: 'Profile not available' }, { status: 404, headers: corsHeaders })
 
       const emergencyOk = await hasEmergencyNotice(source.id, isDemo)
       const t = languageProfile.translated_content ?? {}
@@ -150,7 +180,7 @@ Deno.serve(async (req) => {
 
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
-      .select('id,display_name,lymphaware_id,photo_path,lymphoedema_type,lymphoedema_location,compression_information,treatment_considerations,assistance_needs,emergency_contact_name,emergency_contact_relationship,emergency_contact_phone,additional_statement,is_demo')
+      .select('id,user_id,display_name,lymphaware_id,photo_path,lymphoedema_type,lymphoedema_location,compression_information,treatment_considerations,assistance_needs,emergency_contact_name,emergency_contact_relationship,emergency_contact_phone,additional_statement,is_demo')
       .eq(token.includes('-') ? 'qr_token' : 'public_code', token)
       .eq('qr_profile_active', true)
       .maybeSingle()
@@ -161,6 +191,9 @@ Deno.serve(async (req) => {
     const isDemo = profile.is_demo === true || token === DEMO_PROFILE_TOKEN
     const consentOk = await hasActiveHealthConsent(profile.id, isDemo)
     if (!consentOk) return Response.json({ error: 'Profile not available' }, { status: 404, headers: corsHeaders })
+
+    const membershipOk = await hasCurrentMembershipEntitlement(profile.user_id, isDemo)
+    if (!membershipOk) return Response.json({ error: 'Profile not available' }, { status: 404, headers: corsHeaders })
 
     const emergencyOk = await hasEmergencyNotice(profile.id, isDemo)
     const publicProfile: Record<string, unknown> = {
