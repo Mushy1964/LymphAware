@@ -1,3 +1,5 @@
+import { memberEmail, membershipExpiredNoticeText, sendMembershipEmail } from './_shared/membership-contract.mjs';
+
 function serviceHeaders(prefer = '') {
   return {
     apikey: Netlify.env.get('SUPABASE_SECRET_KEY'),
@@ -42,6 +44,20 @@ export default async () => {
     try {
       await markLapsed(membership);
       lapsed += 1;
+      try {
+        const email = await memberEmail(membership.user_id);
+        if (email) {
+          const result = await sendMembershipEmail({
+            to: email,
+            subject: 'Your LymphAware ID membership has expired',
+            text: membershipExpiredNoticeText(membership),
+            idempotencyKey: `membership-expired-${membership.id}-${new Date(membership.membership_end).toISOString().slice(0, 10)}`
+          });
+          if (!result.ok) console.error('Unable to send membership expiry email:', result.error);
+        }
+      } catch (emailError) {
+        console.error('Unable to send membership expiry email:', emailError);
+      }
     } catch (error) {
       failures.push({
         membership: membership.id,

@@ -1,28 +1,45 @@
 import {
   FINAL_REMINDER_WINDOW,
   FIRST_REMINDER_WINDOW,
+  manualRenewalNoticeText,
   memberEmail,
   recordContractEvent,
   renewalNoticeText,
   sendMembershipEmail,
   serviceHeaders
 } from './_shared/membership-contract.mjs';
+import { PACKAGE_DEFINITIONS } from './_shared/initial-membership-checkout.mjs';
 
 function daysUntil(value) {
   return Math.ceil((new Date(value).getTime() - Date.now()) / 86400000);
 }
 
+function reminderDate(membership) {
+  return membership.auto_renew_enabled === true && membership.next_renewal_at
+    ? membership.next_renewal_at
+    : membership.membership_end;
+}
+
+function renewalPrice(membership) {
+  const saved = Number(membership.renewal_price_pence || 0);
+  if (saved > 0) return saved;
+  const packageType = String(membership.package_type || '').toUpperCase();
+  const years = Number(membership.membership_term_years || 0);
+  return Number(PACKAGE_DEFINITIONS[packageType]?.renewals?.[years] || 0);
+}
+
 async function dueMemberships() {
+  const now = new Date().toISOString();
   const latest = new Date(Date.now() + (60 * 86400000)).toISOString();
   const response = await fetch(
-    `${process.env.SUPABASE_URL}/rest/v1/memberships?membership_status=eq.ACTIVE&payment_status=eq.PAID&auto_renew_enabled=eq.true&next_renewal_at=not.is.null&next_renewal_at=lte.${encodeURIComponent(latest)}&select=id,user_id,membership_term_years,renewal_price_pence,next_renewal_at,renewal_reminder_first_sent_at,renewal_reminder_final_sent_at`,
+    `${process.env.SUPABASE_URL}/rest/v1/memberships?membership_status=eq.ACTIVE&payment_status=eq.PAID&membership_end=not.is.null&membership_end=gt.${encodeURIComponent(now)}&membership_end=lte.${encodeURIComponent(latest)}&select=id,user_id,package_type,membership_term_years,renewal_price_pence,membership_end,auto_renew_enabled,next_renewal_at,renewal_reminder_first_sent_at,renewal_reminder_final_sent_at`,
     { headers: serviceHeaders() }
   );
   if (!response.ok) throw new Error(`Unable to load memberships due for reminders: ${await response.text()}`);
   return response.json();
 }
 
-async function markSent(membership, column, eventType, window, email) {
+async function markSent(membership, column, eventType, window, email, dueAt, pricePence) {
   const sentAt = new Date().toISOString();
   const update = await fetch(`${process.env.SUPABASE_URL}/rest/v1/memberships?id=eq.${encodeURIComponent(membership.id)}`, {
     method: 'PATCH',
@@ -34,41 +51,68 @@ async function markSent(membership, column, eventType, window, email) {
     membershipId: membership.id,
     userId: membership.user_id,
     eventType,
-    stripeReference: `${membership.id}:${membership.next_renewal_at}:${eventType}`,
-    details: { reminder_window: window, sent_to: email, renewal_at: membership.next_renewal_at, renewal_price_pence: membership.renewal_price_pence }
+    stripeReference: `${membership.id}:${dueAt}:${eventType}`,
+    details: {
+      reminder_window: window,
+      sent_to: email,
+      due_at: dueAt,
+      renewal_price_pence: pricePence,
+      automatic_renewal: membership.auto_renew_enabled === true
+    }
   });
 }
 
 async function sendReminder(membership, kind) {
   const email = await memberEmail(membership.user_id);
   if (!email) throw new Error(`No email address for member ${membership.user_id}`);
+
   const first = kind === 'first';
+  const automatic = membership.auto_renew_enabled === true;
+  const dueAt = reminderDate(membership);
+  const pricePence = renewalPrice(membership);
+  const messageMembership = {
+    ...membership,
+    renewal_price_pence: pricePence,
+    next_renewal_at: dueAt
+  };
+
   const result = await sendMembershipEmail({
     to: email,
-    subject: first ? 'Advance notice of your LymphAware ID membership renewal' : 'Your LymphAware ID membership renews soon',
-    text: renewalNoticeText(membership, first ? 'Advance automatic-renewal reminder' : 'Final automatic-renewal reminder'),
-    idempotencyKey: `renewal-${kind}-${membership.id}-${new Date(membership.next_renewal_at).toISOString().slice(0, 10)}`
+    subject: automatic
+      ? (first ? 'Advance notice of your LymphAware ID membership renewal' : 'Your LymphAware ID membership renews soon')
+      : (first ? 'Your LymphAware ID membership is approaching expiry' : 'Your LymphAware ID membership expires soon'),
+    text: automatic
+      ? renewalNoticeText(messageMembership, first ? 'Advance automatic-renewal reminder' : 'Final automatic-renewal reminder')
+      : manualRenewalNoticeText(messageMembership, first ? 'Membership expiry reminder' : 'Final membership expiry reminder'),
+    idempotencyKey: `renewal-${automatic ? 'auto' : 'manual'}-${kind}-${membership.id}-${new Date(dueAt).toISOString().slice(0, 10)}`
   });
   if (!result.ok) throw new Error(result.error);
+
   await markSent(
     membership,
     first ? 'renewal_reminder_first_sent_at' : 'renewal_reminder_final_sent_at',
-    first ? 'RENEWAL_REMINDER_FIRST' : 'RENEWAL_REMINDER_FINAL',
+    automatic
+      ? (first ? 'RENEWAL_REMINDER_FIRST' : 'RENEWAL_REMINDER_FINAL')
+      : (first ? 'EXPIRY_REMINDER_FIRST' : 'EXPIRY_REMINDER_FINAL'),
     first ? FIRST_REMINDER_WINDOW : FINAL_REMINDER_WINDOW,
-    email
+    email,
+    dueAt,
+    pricePence
   );
 }
 
 export default async () => {
   const failures = [];
   let sent = 0;
+
   for (const membership of await dueMemberships()) {
-    const days = daysUntil(membership.next_renewal_at);
+    const dueAt = reminderDate(membership);
+    const days = daysUntil(dueAt);
     try {
       if (days >= 7 && days <= 14 && !membership.renewal_reminder_final_sent_at) {
         await sendReminder(membership, 'final');
         sent += 1;
-      } else if (days > 14 && days <= 60 && !membership.renewal_reminder_first_sent_at) {
+      } else if (days >= 45 && days <= 60 && !membership.renewal_reminder_first_sent_at) {
         await sendReminder(membership, 'first');
         sent += 1;
       }
@@ -76,6 +120,7 @@ export default async () => {
       failures.push({ membership: membership.id, error: error instanceof Error ? error.message : String(error) });
     }
   }
+
   if (failures.length) console.error('Membership reminder failures:', failures);
   return new Response(JSON.stringify({ sent, failures: failures.length }), { headers: { 'Content-Type': 'application/json' } });
 };
