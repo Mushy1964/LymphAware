@@ -6,5 +6,7 @@
   "engines": {
     "node": ">=22"
   },
-  "dependencies": {}
+  "dependencies": {
+    "passkit-generator": "3.6.1"
+  }
 }

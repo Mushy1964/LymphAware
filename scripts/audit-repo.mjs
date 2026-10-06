@@ -115,6 +115,11 @@ function checkProjectConsistency() {
   const publicChromePath = path.join(root, 'css/public-chrome.css');
   const profilePath = path.join(root, 'profile-v2/index.html');
   const understandingPath = path.join(root, 'understanding-lymphoedema/index.html');
+  const packageJsonPath = path.join(root, 'package.json');
+  const walletPagePath = path.join(root, 'wallet-card/index.html');
+  const walletMemberPath = path.join(root, 'netlify/functions/_shared/wallet-member.mjs');
+  const appleWalletPath = path.join(root, 'netlify/functions/apple-wallet-pass.mjs');
+  const googleWalletPath = path.join(root, 'netlify/functions/google-wallet-pass.mjs');
 
   const checkout = fs.readFileSync(checkoutPath, 'utf8');
   const portal = fs.readFileSync(portalPath, 'utf8');
@@ -144,6 +149,27 @@ function checkProjectConsistency() {
   const publicChrome = fs.readFileSync(publicChromePath, 'utf8');
   const profile = fs.readFileSync(profilePath, 'utf8');
   const understanding = fs.readFileSync(understandingPath, 'utf8');
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  const walletPage = fs.readFileSync(walletPagePath, 'utf8');
+  const walletMember = fs.readFileSync(walletMemberPath, 'utf8');
+  const appleWallet = fs.readFileSync(appleWalletPath, 'utf8');
+  const googleWallet = fs.readFileSync(googleWalletPath, 'utf8');
+
+  if (packageJson.dependencies?.['passkit-generator'] !== '3.6.1') {
+    errors.push('Apple Wallet pass generator dependency is missing or not pinned to the reviewed version.');
+  }
+  if (!walletMember.includes("['PLUS', 'MULTILINGUAL']") || !walletMember.includes('membership_end') || !walletMember.includes('walletProviderReadiness')) {
+    errors.push('Wallet eligibility is not centrally restricted to current Plus/Multilingual memberships.');
+  }
+  if (!appleWallet.includes("expirationDate: loaded.card.membership_end") || !appleWallet.includes("sharingProhibited: true") || !appleWallet.includes("PKBarcodeFormatQR")) {
+    errors.push('Apple Wallet pass is missing expiry, sharing protection or QR linkage.');
+  }
+  if (!walletMember.includes("GOOGLE_WALLET_PRIVATE_PASS_APPROVED") || !googleWallet.includes("readiness.google.private_pass_approved") || !googleWallet.includes("genericPrivatePasses") || !googleWallet.includes("GENERIC_PRIVATE_PASS_TYPE_UNSPECIFIED")) {
+    errors.push('Google Wallet private-pass approval gate or private-pass payload is missing.');
+  }
+  if (!walletPage.includes("providers?.apple?.available===true") || !walletPage.includes("providers?.google?.available===true")) {
+    errors.push('Wallet page can expose provider controls without confirmed provider readiness.');
+  }
 
   for (const [code, name] of [['FR', 'French'], ['ES', 'Spanish'], ['DE', 'German']]) {
     if (!checkout.includes(`${code}: '${name}'`)) errors.push(`Checkout language configuration is missing ${name} (${code}).`);
