@@ -82,25 +82,16 @@ export default async (request) => {
       },
       textModulesData: [
         {
-          id: 'lymphaware_id',
-          header: 'LymphAware ID',
+          id: 'row2left',
+          localizedHeader: localized('LymphAware ID'),
           body: loaded.card.lymphaware_id
         },
         {
-          id: 'expires',
-          header: 'Expires',
+          id: 'row2right',
+          localizedHeader: localized('Expires'),
           body: loaded.card.expiry_label
         }
-      ],
-      linksModuleData: {
-        uris: [
-          {
-            uri: loaded.card.profile_url,
-            description: 'View LymphAware ID profile',
-            id: 'profile'
-          }
-        ]
-      }
+      ]
     };
 
     const claims = {
@@ -108,7 +99,8 @@ export default async (request) => {
       aud: 'google',
       typ: 'savetowallet',
       iat: Math.floor(Date.now() / 1000),
-      origins: ['https://lymphawareid.com'],
+      exp: Math.floor(new Date(loaded.card.membership_end).getTime() / 1000),
+      origins: ['lymphawareid.com'],
       payload: {
         genericPrivatePasses: [privatePass]
       }
