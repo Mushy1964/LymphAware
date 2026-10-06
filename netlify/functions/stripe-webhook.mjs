@@ -99,6 +99,30 @@ async function membershipBySubscription(subscriptionId) {
   return (await response.json())?.[0] || null;
 }
 
+async function membershipForManualRenewal(membershipId, userId) {
+  if (!membershipId || !userId) return null;
+  const response = await fetch(
+    `${process.env.SUPABASE_URL}/rest/v1/memberships?id=eq.${encodeURIComponent(membershipId)}&user_id=eq.${encodeURIComponent(userId)}&select=*&limit=1`,
+    { headers: supabaseHeaders() }
+  );
+  if (!response.ok) throw new Error(`Unable to load membership for manual renewal: ${await response.text()}`);
+  return (await response.json())?.[0] || null;
+}
+
+function addYearsClamped(value, years) {
+  const source = new Date(value);
+  if (!Number.isFinite(source.getTime())) return null;
+  const month = source.getUTCMonth();
+  const day = source.getUTCDate();
+  const result = new Date(source);
+  result.setUTCDate(1);
+  result.setUTCFullYear(result.getUTCFullYear() + years);
+  result.setUTCMonth(month);
+  const lastDay = new Date(Date.UTC(result.getUTCFullYear(), month + 1, 0)).getUTCDate();
+  result.setUTCDate(Math.min(day, lastDay));
+  return result;
+}
+
 function invoiceSubscriptionId(invoice) {
   const value = invoice?.subscription || invoice?.parent?.subscription_details?.subscription;
   return typeof value === 'string' ? value : value?.id || null;
@@ -651,7 +675,7 @@ export default async (request) => {
     let membershipId = session?.metadata?.membership_id || null;
     let accountSetupLink = '';
     const paymentType = String(session?.metadata?.payment_type || '').trim();
-    if (!['initial_membership', 'additional_language', 'replacement_items', 'additional_items'].includes(paymentType)) {
+    if (!['initial_membership', 'additional_language', 'replacement_items', 'additional_items', 'manual_membership_renewal'].includes(paymentType)) {
       return new Response('Invalid payment metadata', { status: 400 });
     }
     if (paymentType !== 'initial_membership' && !userId) {
@@ -692,6 +716,93 @@ export default async (request) => {
     const autoRenew = String(session.metadata?.auto_renew || '') === '1' && typeof session.subscription === 'string';
     const isTrial = String(session.metadata?.trial_discount_applied || '') === '1';
     const renewalPricePence = autoRenew ? Number(session.metadata?.renewal_price_pence || RENEWAL_PRICES[packageType]?.[membershipTermYears] || 0) : null;
+
+    if (paymentType === 'manual_membership_renewal') {
+      const membership = await membershipForManualRenewal(membershipId, userId);
+      if (!membership) return new Response('Renewal membership not found', { status: 404 });
+
+      if (String(membership.payment_reference || '') === String(session.id)) {
+        return new Response(JSON.stringify({ received: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      }
+
+      const currentPackageType = String(membership.package_type || '').toUpperCase();
+      const currentTermYears = Number(membership.membership_term_years || 0);
+      if (!RENEWAL_PRICES[currentPackageType]?.[currentTermYears]) {
+        return new Response('Invalid renewal membership configuration', { status: 400 });
+      }
+      if (
+        currentPackageType !== packageType ||
+        currentTermYears !== membershipTermYears
+      ) {
+        return new Response('Renewal membership metadata mismatch', { status: 400 });
+      }
+
+      const recordedEnd = new Date(membership.membership_end || 0);
+      const renewalBase = Number.isFinite(recordedEnd.getTime()) && recordedEnd.getTime() > paidAt.getTime()
+        ? recordedEnd
+        : paidAt;
+      const newMembershipEnd = addYearsClamped(renewalBase, currentTermYears);
+      if (!newMembershipEnd) return new Response('Unable to calculate renewal expiry date', { status: 500 });
+
+      const manualRenewalPricePence = Number(session.metadata?.renewal_price_pence || RENEWAL_PRICES[currentPackageType][currentTermYears]);
+      const trialRenewal = String(membership.membership_status || '').toUpperCase() === 'PILOT';
+
+      const updateResponse = await fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/memberships?id=eq.${encodeURIComponent(membership.id)}`,
+        {
+          method: 'PATCH',
+          headers: supabaseHeaders('return=minimal'),
+          body: JSON.stringify({
+            membership_status: trialRenewal ? 'PILOT' : 'ACTIVE',
+            payment_status: 'PAID',
+            payment_provider: 'STRIPE',
+            payment_reference: session.id,
+            paid_at: paidAt.toISOString(),
+            latest_renewal_paid_at: paidAt.toISOString(),
+            membership_end: newMembershipEnd.toISOString(),
+            renewal_price_pence: manualRenewalPricePence,
+            auto_renew_requested: false,
+            auto_renew_enabled: false,
+            next_renewal_at: null,
+            renewal_reminder_first_sent_at: null,
+            renewal_reminder_final_sent_at: null,
+            stripe_customer_id: typeof session.customer === 'string' ? session.customer : membership.stripe_customer_id,
+            updated_at: paidAt.toISOString()
+          })
+        }
+      );
+      if (!updateResponse.ok) {
+        console.error('Unable to update manual membership renewal:', await updateResponse.text());
+        return new Response('Membership renewal update failed', { status: 500 });
+      }
+
+      await recordContractEvent({
+        membershipId: membership.id,
+        userId,
+        eventType: 'MANUAL_RENEWAL_PAID',
+        stripeReference: session.id,
+        details: {
+          paid_at: paidAt.toISOString(),
+          previous_membership_end: membership.membership_end,
+          renewal_base_date: renewalBase.toISOString(),
+          new_membership_end: newMembershipEnd.toISOString(),
+          package_type: currentPackageType,
+          membership_term_years: currentTermYears,
+          renewal_price_pence: manualRenewalPricePence
+        }
+      });
+
+      const email = String(session.customer_details?.email || session.customer_email || '').trim() || await memberEmail(userId);
+      const emailResult = await sendMembershipEmail({
+        to: email,
+        subject: 'Your LymphAware ID membership has been renewed',
+        idempotencyKey: `manual-renewal-confirmation-${session.id}`,
+        text: `Your LymphAware ID membership renewal has been completed.\n\nYour previous membership expiry date was ${dateUK(membership.membership_end)}.\nYour renewed membership is now active until ${dateUK(newMembershipEnd.toISOString())}.\n\nBecause your renewal was completed before the previous expiry date, the new term has been added from that existing expiry date. You have not lost any remaining membership time.\n\nYour existing LymphAware ID, Patient Portal and QR profile continue as normal. No new physical cards, lanyards, holders or postage are included with a membership renewal.\n\nThe LymphAware ID Team`
+      });
+      if (!emailResult.ok) console.error('Unable to send manual renewal confirmation:', emailResult.error);
+
+      return new Response(JSON.stringify({ received: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
 
     if (paymentType === 'initial_membership') {
       const existingOrder = await getExistingOrder(session.id);
