@@ -164,7 +164,7 @@ function checkProjectConsistency() {
   if (!appleWallet.includes("expirationDate: loaded.card.membership_end") || !appleWallet.includes("sharingProhibited: true") || !appleWallet.includes("PKBarcodeFormatQR")) {
     errors.push('Apple Wallet pass is missing expiry, sharing protection or QR linkage.');
   }
-  if (!googleWallet.includes("GOOGLE_WALLET_PRIVATE_PASS_APPROVED") || !googleWallet.includes("genericPrivatePasses") || !googleWallet.includes("GENERIC_PRIVATE_PASS_TYPE_UNSPECIFIED")) {
+  if (!walletMember.includes("GOOGLE_WALLET_PRIVATE_PASS_APPROVED") || !googleWallet.includes("readiness.google.private_pass_approved") || !googleWallet.includes("genericPrivatePasses") || !googleWallet.includes("GENERIC_PRIVATE_PASS_TYPE_UNSPECIFIED")) {
     errors.push('Google Wallet private-pass approval gate or private-pass payload is missing.');
   }
   if (!walletPage.includes("providers?.apple?.available===true") || !walletPage.includes("providers?.google?.available===true")) {
