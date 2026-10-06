@@ -10,8 +10,8 @@ function json(body, status = 200) {
 
 function serviceHeaders() {
   return {
-    apikey: process.env.SUPABASE_SECRET_KEY,
-    Authorization: `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
+    apikey: Netlify.env.get('SUPABASE_SECRET_KEY'),
+    Authorization: `Bearer ${Netlify.env.get('SUPABASE_SECRET_KEY')}`,
     Accept: 'application/json'
   };
 }
@@ -20,9 +20,9 @@ async function getUser(request) {
   const authHeader = request.headers.get('authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
   const accessToken = authHeader.replace('Bearer ', '').trim();
-  const response = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
+  const response = await fetch(`${Netlify.env.get('SUPABASE_URL')}/auth/v1/user`, {
     headers: {
-      apikey: process.env.SUPABASE_PUBLISHABLE_KEY,
+      apikey: Netlify.env.get('SUPABASE_PUBLISHABLE_KEY'),
       Authorization: `Bearer ${accessToken}`
     }
   });
@@ -59,7 +59,7 @@ export default async (request) => {
     if (!user) return json({ error: 'Authentication required.' }, 401);
 
     const membershipResponse = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${encodeURIComponent(user.id)}&select=membership_status,payment_status,package_type,membership_end&limit=1`,
+      `${Netlify.env.get('SUPABASE_URL')}/rest/v1/memberships?user_id=eq.${encodeURIComponent(user.id)}&select=membership_status,payment_status,package_type,membership_end&limit=1`,
       { headers: serviceHeaders() }
     );
     if (!membershipResponse.ok) return json({ error: 'Membership information could not be loaded.' }, 500);
@@ -73,7 +73,7 @@ export default async (request) => {
     }
 
     const profileResponse = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/profiles?user_id=eq.${encodeURIComponent(user.id)}&select=display_name,lymphaware_id,qr_token,qr_profile_active,photo_path,is_archived&limit=1`,
+      `${Netlify.env.get('SUPABASE_URL')}/rest/v1/profiles?user_id=eq.${encodeURIComponent(user.id)}&select=display_name,lymphaware_id,qr_token,qr_profile_active,photo_path,is_archived&limit=1`,
       { headers: serviceHeaders() }
     );
     if (!profileResponse.ok) return json({ error: 'Profile information could not be loaded.' }, 500);
