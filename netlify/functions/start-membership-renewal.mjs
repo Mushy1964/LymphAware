@@ -1,7 +1,7 @@
 import { PACKAGE_DEFINITIONS } from './_shared/initial-membership-checkout.mjs';
 import { MEMBERSHIP_CONTRACT_VERSION, recordContractEvent } from './_shared/membership-contract.mjs';
 
-const TRIAL_LATER_ORDER_COUPON = 'LYMPHAWARE_TRIAL_LATER_100_V1';
+const TRIAL_RENEWAL_PROTECTION_COUPON = 'LYMPHAWARE_TRIAL_RENEWAL_FREE_V1';
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -123,7 +123,7 @@ export default async (request) => {
     form.append('metadata[manual_renewal_terms_accepted_at]', new Date().toISOString());
     form.append('metadata[trial_discount_applied]', status === 'PILOT' ? '1' : '0');
 
-    if (status === 'PILOT') form.append('discounts[0][coupon]', TRIAL_LATER_ORDER_COUPON);
+    if (status === 'PILOT') form.append('discounts[0][coupon]', TRIAL_RENEWAL_PROTECTION_COUPON);
 
     form.append('success_url', 'https://lymphawareid.com/portal/?payment=success&type=renewal');
     form.append('cancel_url', 'https://lymphawareid.com/portal/?payment=cancelled&type=renewal');
