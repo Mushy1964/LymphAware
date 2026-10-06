@@ -73,3 +73,15 @@ export function renewalNoticeText(membership, heading) {
   const renewalAmount = money(membership.renewal_price_pence);
   return `${heading}\n\nYour LymphAware ID digital membership is scheduled to renew on ${renewalDate}.\n\nRenewal payment: ${renewalAmount}\nRenewal period: ${years} year${years === 1 ? '' : 's'}\nMinimum renewal total: ${renewalAmount}\nWhat continues: your digital LymphAware ID membership and QR profile.\nNot included: new cards, lanyards, holders or postage.\n\nIf you want the membership to renew, you do not need to do anything.\n\nYou can stop this payment at any time before ${renewalDate} by selecting “Cancel automatic renewal” in your Patient Portal:\nhttps://lymphawareid.com/portal/\n\nYou can also email admin@lymphawareid.com. Cancelling automatic renewal does not shorten the membership term you have already paid for.\n\nAfter a renewal of 12 months or more, you will also have a 14-day renewal cooling-off period and an online cancellation option in your Patient Portal.\n\nThe LymphAware ID Team`;
 }
+
+export function manualRenewalNoticeText(membership, heading) {
+  const years = Number(membership.membership_term_years || 1);
+  const expiryDate = dateUK(membership.membership_end);
+  const renewalAmount = money(membership.renewal_price_pence);
+  return `${heading}\n\nYour LymphAware ID membership is due to expire on ${expiryDate}.\n\nRenewal price: ${renewalAmount}\nRenewal period: ${years} year${years === 1 ? '' : 's'}\nWhat continues: your LymphAware ID membership, Patient Portal and QR profile access.\nNot included: new cards, lanyards, holders or postage.\n\nYou can renew now in your Patient Portal:\nhttps://lymphawareid.com/portal/\n\nRenewing early will not shorten your current membership. Your new term will begin from your existing expiry date, not from the date you make the early renewal payment.\n\nIf you do not renew, your QR profile will no longer be available after ${expiryDate}. You can renew later to restore membership access.\n\nThe LymphAware ID Team`;
+}
+
+export function membershipExpiredNoticeText(membership) {
+  const expiryDate = dateUK(membership.membership_end);
+  return `Your LymphAware ID membership expired on ${expiryDate}.\n\nYour QR-linked profile is no longer available while your membership is inactive. Your account and saved profile information have not been deleted.\n\nYou can renew your membership from your Patient Portal:\nhttps://lymphawareid.com/portal/\n\nIf you renew, your membership access will be restored using your existing LymphAware ID and profile.\n\nIf you need help, contact admin@lymphawareid.com.\n\nThe LymphAware ID Team`;
+}
