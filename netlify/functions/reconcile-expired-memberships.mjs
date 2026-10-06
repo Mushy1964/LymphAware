@@ -1,9 +1,17 @@
-import { serviceHeaders } from './_shared/membership-contract.mjs';
+function serviceHeaders(prefer = '') {
+  return {
+    apikey: Netlify.env.get('SUPABASE_SECRET_KEY'),
+    Authorization: `Bearer ${Netlify.env.get('SUPABASE_SECRET_KEY')}`,
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    ...(prefer ? { Prefer: prefer } : {})
+  };
+}
 
 async function expiredMemberships() {
   const now = new Date().toISOString();
   const response = await fetch(
-    `${process.env.SUPABASE_URL}/rest/v1/memberships?membership_status=in.(ACTIVE,PILOT,SPONSORED)&membership_end=not.is.null&membership_end=lte.${encodeURIComponent(now)}&select=id,user_id,membership_status,membership_end`,
+    `${Netlify.env.get('SUPABASE_URL')}/rest/v1/memberships?membership_status=in.(ACTIVE,PILOT,SPONSORED)&membership_end=not.is.null&membership_end=lte.${encodeURIComponent(now)}&select=id,user_id,membership_status,membership_end`,
     { headers: serviceHeaders() }
   );
   if (!response.ok) throw new Error(`Unable to load expired memberships: ${await response.text()}`);
@@ -13,7 +21,7 @@ async function expiredMemberships() {
 async function markLapsed(membership) {
   const now = new Date().toISOString();
   const response = await fetch(
-    `${process.env.SUPABASE_URL}/rest/v1/memberships?id=eq.${encodeURIComponent(membership.id)}`,
+    `${Netlify.env.get('SUPABASE_URL')}/rest/v1/memberships?id=eq.${encodeURIComponent(membership.id)}`,
     {
       method: 'PATCH',
       headers: serviceHeaders('return=minimal'),
