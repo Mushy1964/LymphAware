@@ -133,13 +133,17 @@ async function getMembership(userId) {
 }
 
 function hasActiveEntitlement(membership) {
-  return Boolean(
-    membership && (
-      (membership.membership_status === 'ACTIVE' && membership.payment_status === 'PAID') ||
-      membership.membership_status === 'PILOT' ||
-      membership.membership_status === 'SPONSORED'
-    )
-  );
+  if (!membership) return false;
+  const statusEntitled =
+    (membership.membership_status === 'ACTIVE' && membership.payment_status === 'PAID') ||
+    membership.membership_status === 'PILOT' ||
+    membership.membership_status === 'SPONSORED';
+
+  if (!statusEntitled) return false;
+  if (!membership.membership_end) return true;
+
+  const membershipEnd = new Date(membership.membership_end).getTime();
+  return Number.isFinite(membershipEnd) && membershipEnd > Date.now();
 }
 
 async function alreadyPurchasedLanguage(userId, languageCode, languageName) {
