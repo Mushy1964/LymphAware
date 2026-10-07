@@ -1,4 +1,5 @@
 import { PACKAGE_DEFINITIONS } from './_shared/initial-membership-checkout.mjs';
+import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
 import { MEMBERSHIP_CONTRACT_VERSION, recordContractEvent } from './_shared/membership-contract.mjs';
 
 const TRIAL_RENEWAL_PROTECTION_COUPON = 'LYMPHAWARE_TRIAL_RENEWAL_FREE_V1';
@@ -91,7 +92,8 @@ export default async (request) => {
     const packageType = String(membership.package_type || '').toUpperCase();
     const years = Number(membership.membership_term_years || 0);
     const packageDefinition = PACKAGE_DEFINITIONS[packageType];
-    const renewalPricePence = Number(packageDefinition?.renewals?.[years] || 0);
+    const livePricing = publicPricing(await getBusinessSettings({ strict: true }));
+    const renewalPricePence = Number(livePricing.renewals?.[packageType]?.[years] || 0);
 
     if (!packageDefinition || ![1, 2, 3].includes(years) || renewalPricePence <= 0) {
       return json({ error: 'The renewal price for this membership could not be confirmed.' }, 500);
@@ -121,6 +123,7 @@ export default async (request) => {
     form.append('metadata[projected_membership_end]', projectedEnd.toISOString());
     form.append('metadata[contract_version]', MEMBERSHIP_CONTRACT_VERSION);
     form.append('metadata[manual_renewal_terms_accepted_at]', new Date().toISOString());
+    form.append('metadata[renewal_cooling_off_days]', '14');
     form.append('metadata[trial_discount_applied]', status === 'PILOT' ? '1' : '0');
 
     if (status === 'PILOT') form.append('discounts[0][coupon]', TRIAL_RENEWAL_PROTECTION_COUPON);
