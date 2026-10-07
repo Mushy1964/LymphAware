@@ -17,6 +17,23 @@ import {
 } from './_shared/membership-contract.mjs';
 import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
 
+async function reminderTiming() {
+  const defaults = { first: 60, final: 14 };
+  try {
+    const response = await fetch(
+      `${process.env.SUPABASE_URL}/rest/v1/system_settings?setting_key=in.(renewal_first_reminder_days,renewal_final_reminder_days)&select=setting_key,setting_value`,
+      { headers: serviceHeaders() }
+    );
+    if (!response.ok) return defaults;
+    const values = Object.fromEntries((await response.json()).map(row => [row.setting_key, Number(row.setting_value)]));
+    const first = Number.isInteger(values.renewal_first_reminder_days) ? values.renewal_first_reminder_days : defaults.first;
+    const final = Number.isInteger(values.renewal_final_reminder_days) ? values.renewal_final_reminder_days : defaults.final;
+    return { first, final };
+  } catch {
+    return defaults;
+  }
+}
+
 function daysUntil(value) {
   return Math.ceil((new Date(value).getTime() - Date.now()) / 86400000);
 }
@@ -38,9 +55,9 @@ function renewalPrice(membership, livePricing) {
   return currentConfigured;
 }
 
-async function dueMemberships() {
+async function dueMemberships(maxDays = 60) {
   const now = new Date().toISOString();
-  const latest = new Date(Date.now() + (60 * 86400000)).toISOString();
+  const latest = new Date(Date.now() + (Math.max(14, Number(maxDays) || 60) * 86400000)).toISOString();
   const response = await fetch(
     `${process.env.SUPABASE_URL}/rest/v1/memberships?membership_status=eq.ACTIVE&payment_status=eq.PAID&membership_end=not.is.null&membership_end=gt.${encodeURIComponent(now)}&membership_end=lte.${encodeURIComponent(latest)}&select=id,user_id,package_type,membership_term_years,renewal_price_pence,membership_end,auto_renew_enabled,next_renewal_at,renewal_reminder_first_sent_at,renewal_reminder_final_sent_at`,
     { headers: serviceHeaders() }
@@ -150,15 +167,16 @@ export default async () => {
   const failures = [];
   let sent = 0;
   const livePricing = publicPricing(await getBusinessSettings({ strict: true }));
+  const timing = await reminderTiming();
 
-  for (const membership of await dueMemberships()) {
+  for (const membership of await dueMemberships(timing.first)) {
     const dueAt = reminderDate(membership);
     const days = daysUntil(dueAt);
     try {
-      if (days >= 7 && days <= 14 && !membership.renewal_reminder_final_sent_at) {
+      if (days >= Math.max(1, timing.final - 7) && days <= timing.final && !membership.renewal_reminder_final_sent_at) {
         await sendReminder(membership, 'final', livePricing);
         sent += 1;
-      } else if (days >= 45 && days <= 60 && !membership.renewal_reminder_first_sent_at) {
+      } else if (days >= Math.max(timing.final + 1, timing.first - 14) && days <= timing.first && !membership.renewal_reminder_first_sent_at) {
         await sendReminder(membership, 'first', livePricing);
         sent += 1;
       }
