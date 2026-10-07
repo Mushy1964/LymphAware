@@ -6,6 +6,7 @@ import {
   manualRenewalNoticeHtmlText,
   manualRenewalNoticeText,
   memberEmail,
+  membershipExpiredNoticeText,
   MEMBERSHIP_RENEWAL_URL,
   money,
   projectedRenewalEnd,
@@ -131,20 +132,22 @@ export default async request => {
       if (!messageMembership.renewal_price_pence) return json({ error: 'A valid renewal price is not available.' }, 400);
 
       const automatic = membership.auto_renew_enabled === true;
+      const expiry = new Date(membership.membership_end || 0);
+      const expired = !automatic && Number.isFinite(expiry.getTime()) && expiry.getTime() <= Date.now();
       const heading = automatic ? 'Automatic-renewal reminder' : 'Membership expiry reminder';
       const result = await sendMembershipEmail({
         to: email,
-        subject: automatic ? 'Your LymphAware ID membership renewal reminder' : 'Your LymphAware ID membership expiry reminder',
-        htmlTitle: automatic ? 'Your membership renews automatically' : 'Your membership is approaching expiry',
-        text: automatic ? renewalNoticeText(messageMembership, heading) : manualRenewalNoticeText(messageMembership, heading),
-        htmlText: automatic ? renewalNoticeHtmlText(messageMembership) : manualRenewalNoticeHtmlText(messageMembership),
+        subject: automatic ? 'Your LymphAware ID membership renewal reminder' : expired ? 'Your LymphAware ID membership has expired' : 'Your LymphAware ID membership expiry reminder',
+        htmlTitle: automatic ? 'Your membership renews automatically' : expired ? 'Your membership has expired' : 'Your membership is approaching expiry',
+        text: automatic ? renewalNoticeText(messageMembership, heading) : expired ? membershipExpiredNoticeText(messageMembership) : manualRenewalNoticeText(messageMembership, heading),
+        htmlText: automatic ? renewalNoticeHtmlText(messageMembership) : expired ? membershipExpiredNoticeText(messageMembership) : manualRenewalNoticeHtmlText(messageMembership),
         actionUrl: MEMBERSHIP_RENEWAL_URL,
         actionLabel: automatic ? 'Review my membership' : 'Renew now',
         heroImageUrl: RENEWAL_HERO_URL,
         heroImageAlt: 'LymphAware ID renewal',
         heroLinkUrl: MEMBERSHIP_RENEWAL_URL,
         showHeaderLogo: false,
-        detailRows: renewalRows(messageMembership),
+        detailRows: expired ? [] : renewalRows(messageMembership),
         idempotencyKey: 'admin-renewal-' + membership.id + '-' + Date.now()
       });
       if (!result.ok) throw new Error(result.error || 'Renewal email could not be sent.');
@@ -155,12 +158,16 @@ export default async request => {
         entityType: 'MEMBER',
         entityId: userId,
         summary: 'Renewal reminder manually sent to ' + (profile?.display_name || email) + '.',
-        details: { email, automatic }
+        details: { email, automatic, expired }
       });
       return json({ ok: true, message: 'Renewal reminder sent to ' + email + '.' });
     }
 
     if (action === 'SEND_PROFILE_REVIEW') {
+      const end = new Date(membership.membership_end || 0);
+      const current = ['ACTIVE', 'PILOT', 'SPONSORED'].includes(String(membership.membership_status || '').toUpperCase()) &&
+        (!membership.membership_end || (Number.isFinite(end.getTime()) && end.getTime() > Date.now()));
+      if (!current) return json({ error: 'Profile Health Check reminders are only appropriate for current memberships.' }, 400);
       const dueAt = profile?.profile_next_review_due_at || new Date().toISOString();
       const result = await sendProfileReviewEmail({
         to: email,
