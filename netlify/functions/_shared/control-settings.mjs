@@ -7,6 +7,12 @@ const DEFAULTS = Object.freeze({
   feature_auto_renew_signup_enabled: true,
   feature_additional_items_enabled: true,
   feature_additional_languages_enabled: true,
+  feature_package_standard_enabled: true,
+  feature_package_plus_enabled: true,
+  feature_package_multilingual_enabled: true,
+  feature_term_1y_enabled: true,
+  feature_term_2y_enabled: true,
+  feature_term_3y_enabled: true,
   communications_renewal_reminders_enabled: true,
   communications_profile_review_reminders_enabled: true,
   communications_expiry_notices_enabled: true,
@@ -64,6 +70,12 @@ export function normaliseControlSettings(input = {}) {
     feature_auto_renew_signup_enabled: parseBoolean(input.feature_auto_renew_signup_enabled, DEFAULTS.feature_auto_renew_signup_enabled),
     feature_additional_items_enabled: parseBoolean(input.feature_additional_items_enabled, DEFAULTS.feature_additional_items_enabled),
     feature_additional_languages_enabled: parseBoolean(input.feature_additional_languages_enabled, DEFAULTS.feature_additional_languages_enabled),
+    feature_package_standard_enabled: parseBoolean(input.feature_package_standard_enabled, DEFAULTS.feature_package_standard_enabled),
+    feature_package_plus_enabled: parseBoolean(input.feature_package_plus_enabled, DEFAULTS.feature_package_plus_enabled),
+    feature_package_multilingual_enabled: parseBoolean(input.feature_package_multilingual_enabled, DEFAULTS.feature_package_multilingual_enabled),
+    feature_term_1y_enabled: parseBoolean(input.feature_term_1y_enabled, DEFAULTS.feature_term_1y_enabled),
+    feature_term_2y_enabled: parseBoolean(input.feature_term_2y_enabled, DEFAULTS.feature_term_2y_enabled),
+    feature_term_3y_enabled: parseBoolean(input.feature_term_3y_enabled, DEFAULTS.feature_term_3y_enabled),
     communications_renewal_reminders_enabled: parseBoolean(input.communications_renewal_reminders_enabled, DEFAULTS.communications_renewal_reminders_enabled),
     communications_profile_review_reminders_enabled: parseBoolean(input.communications_profile_review_reminders_enabled, DEFAULTS.communications_profile_review_reminders_enabled),
     communications_expiry_notices_enabled: parseBoolean(input.communications_expiry_notices_enabled, DEFAULTS.communications_expiry_notices_enabled),
@@ -143,7 +155,17 @@ export function publicControlSettings(settings) {
     features: {
       autoRenewSignup: s.feature_auto_renew_signup_enabled,
       additionalItems: s.feature_additional_items_enabled,
-      additionalLanguages: s.feature_additional_languages_enabled
+      additionalLanguages: s.feature_additional_languages_enabled,
+      packages: {
+        STANDARD: s.feature_package_standard_enabled,
+        PLUS: s.feature_package_plus_enabled,
+        MULTILINGUAL: s.feature_package_multilingual_enabled
+      },
+      terms: {
+        1: s.feature_term_1y_enabled,
+        2: s.feature_term_2y_enabled,
+        3: s.feature_term_3y_enabled
+      }
     },
     announcement: {
       active: announcementActive,
