@@ -1,5 +1,6 @@
 import { verifyAdminRequest as verifyAdmin } from './_shared/admin-auth.mjs';
 import { brandedEmailHtml } from './_shared/email-branding.mjs';
+import { getControlSettings } from './_shared/control-settings.mjs';
 function serviceHeaders(prefer = '') {
   const headers = {
     apikey: process.env.SUPABASE_SECRET_KEY,
@@ -60,6 +61,10 @@ export default async (request) => {
       });
     }
 
+    const controlSettings = await getControlSettings({ strict: true });
+    if (controlSettings.communications_order_notifications_enabled !== true) {
+      return new Response(JSON.stringify({ error: 'Admin order notifications are currently paused in Control Centre.' }), { status: 409, headers: { 'Content-Type': 'application/json' } });
+    }
     const apiKey = String(process.env.RESEND_API_KEY || '').trim();
     if (!apiKey) {
       await fetch(`${process.env.SUPABASE_URL}/rest/v1/orders?id=eq.${encodeURIComponent(orderId)}`, {
@@ -75,7 +80,7 @@ export default async (request) => {
 
     const orderRef = `ORD-${String(order.order_number).padStart(6, '0')}`;
     const itemLines = items.map(item => `${item.quantity} × ${item.description}`).join('\n');
-    const to = String(process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphawareid.com').trim();
+    const to = String(controlSettings.communications_admin_notification_email || process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphawareid.com').trim();
     const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphawareid.com>').trim();
 
     const subject = `New LymphAware ID order – ${orderRef}`;
