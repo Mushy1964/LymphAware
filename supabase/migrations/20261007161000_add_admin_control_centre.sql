@@ -12,7 +12,7 @@ create table if not exists public.admin_activity_log (
 
 alter table public.admin_activity_log enable row level security;
 
-revoke all on table public.admin_activity_log from anon, authenticated;
+revoke all on table public.admin_activity_log from anon, authenticated, service_role;
 grant select, insert on table public.admin_activity_log to service_role;
 grant usage, select on sequence public.admin_activity_log_id_seq to service_role;
 
@@ -38,6 +38,12 @@ values
   ('feature_auto_renew_signup_enabled','true',now()),
   ('feature_additional_items_enabled','true',now()),
   ('feature_additional_languages_enabled','true',now()),
+  ('feature_package_standard_enabled','true',now()),
+  ('feature_package_plus_enabled','true',now()),
+  ('feature_package_multilingual_enabled','true',now()),
+  ('feature_term_1y_enabled','true',now()),
+  ('feature_term_2y_enabled','true',now()),
+  ('feature_term_3y_enabled','true',now()),
   ('communications_renewal_reminders_enabled','true',now()),
   ('communications_profile_review_reminders_enabled','true',now()),
   ('communications_expiry_notices_enabled','true',now()),
