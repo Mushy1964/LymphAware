@@ -22,6 +22,12 @@ function validate(input) {
   if (settings.announcement_message.length > 280) {
     throw new Error('Announcement text must be 280 characters or fewer.');
   }
+  if (![settings.feature_package_standard_enabled, settings.feature_package_plus_enabled, settings.feature_package_multilingual_enabled].some(Boolean)) {
+    throw new Error('Keep at least one membership package available for new customers.');
+  }
+  if (![settings.feature_term_1y_enabled, settings.feature_term_2y_enabled, settings.feature_term_3y_enabled].some(Boolean)) {
+    throw new Error('Keep at least one membership term available for new customers.');
+  }
   return settings;
 }
 
