@@ -48,7 +48,7 @@
   </div>
 </div>
 <script>
-const SUPABASE_URL='https://thbhsktcenhrnxzkbjus.supabase.co';const SUPABASE_PUBLISHABLE_KEY='sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);const profileReviewMode=new URLSearchParams(location.search).get('review')==='1';if(profileReviewMode)$('profile-review-banner')?.removeAttribute('hidden');
+const SUPABASE_URL='https://thbhsktcenhrnxzkbjus.supabase.co';const SUPABASE_PUBLISHABLE_KEY='sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);const profileReviewMode=new URLSearchParams(location.search).get('review')==='1';if(profileReviewMode)document.getElementById('profile-review-banner')?.removeAttribute('hidden');
 const HEALTH_CONSENT_VERSION='2026-09-09-v1';
 const HEALTH_CONSENT_STATEMENT='I explicitly consent to LymphAware ID processing the health information I choose to enter in this profile and making that information available through my QR-linked profile when I switch it on. I understand that anyone with the QR link can view it, that LymphAware ID does not clinically verify it, and that I can withdraw this consent at any time.';
 const EMERGENCY_NOTICE_VERSION='2026-09-09-v1';
