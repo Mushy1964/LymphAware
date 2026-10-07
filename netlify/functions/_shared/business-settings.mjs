@@ -8,6 +8,15 @@ const DEFAULTS = Object.freeze({
   price_multilingual_1y_pence: 5499,
   price_multilingual_2y_pence: 6999,
   price_multilingual_3y_pence: 8499,
+  renewal_standard_1y_pence: 1899,
+  renewal_standard_2y_pence: 2599,
+  renewal_standard_3y_pence: 3399,
+  renewal_plus_1y_pence: 1899,
+  renewal_plus_2y_pence: 2599,
+  renewal_plus_3y_pence: 3399,
+  renewal_multilingual_1y_pence: 4099,
+  renewal_multilingual_2y_pence: 5299,
+  renewal_multilingual_3y_pence: 6399,
   price_additional_card_pence: 699,
   price_lanyard_holder_pence: 799,
   price_additional_language_pence: 2499,
@@ -109,6 +118,11 @@ export function publicPricing(settings) {
       STANDARD: { 1: s.price_standard_1y_pence, 2: s.price_standard_2y_pence, 3: s.price_standard_3y_pence },
       PLUS: { 1: s.price_plus_1y_pence, 2: s.price_plus_2y_pence, 3: s.price_plus_3y_pence },
       MULTILINGUAL: { 1: s.price_multilingual_1y_pence, 2: s.price_multilingual_2y_pence, 3: s.price_multilingual_3y_pence }
+    },
+    renewals: {
+      STANDARD: { 1: s.renewal_standard_1y_pence, 2: s.renewal_standard_2y_pence, 3: s.renewal_standard_3y_pence },
+      PLUS: { 1: s.renewal_plus_1y_pence, 2: s.renewal_plus_2y_pence, 3: s.renewal_plus_3y_pence },
+      MULTILINGUAL: { 1: s.renewal_multilingual_1y_pence, 2: s.renewal_multilingual_2y_pence, 3: s.renewal_multilingual_3y_pence }
     },
     additionalItems: {
       CARD: s.price_additional_card_pence,
