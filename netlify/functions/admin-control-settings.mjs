@@ -2,14 +2,8 @@ import { verifyAdminRequest } from './_shared/admin-auth.mjs';
 
 const KEYS = Object.freeze({
   registration_mode: { type: 'enum', values: ['OPEN','INVITE_ONLY','CLOSED'], fallback: 'INVITE_ONLY' },
-  announcement_enabled: { type: 'bool', fallback: 'false' },
-  announcement_text: { type: 'text', max: 240, fallback: '' },
-  feature_multilingual_enabled: { type: 'bool', fallback: 'true' },
-  feature_wallet_enabled: { type: 'bool', fallback: 'true' },
-  feature_extra_orders_enabled: { type: 'bool', fallback: 'true' },
   renewal_first_reminder_days: { type: 'int', min: 14, max: 120, fallback: '60' },
-  renewal_final_reminder_days: { type: 'int', min: 3, max: 30, fallback: '14' },
-  profile_review_reminder_days: { type: 'int', min: 1, max: 60, fallback: '14' }
+  renewal_final_reminder_days: { type: 'int', min: 3, max: 30, fallback: '14' }
 });
 
 function env(name){return String(Netlify.env.get(name)||'').trim()}
