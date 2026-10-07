@@ -536,7 +536,7 @@ function checkProjectConsistency() {
     if (!register.includes(`['${code}',`)) errors.push(`Registration delivery-country selector is missing ${code}.`);
   }
 
-  if (!controlSettings.includes("registration_mode: 'INVITE_ONLY'") || !controlSettings.includes('feature_auto_renew_signup_enabled') || !controlSettings.includes('communications_renewal_reminders_enabled') || !controlSettings.includes('publicControlSettings')) {
+  if (!controlSettings.includes("registration_mode: 'INVITE_ONLY'") || !controlSettings.includes('feature_auto_renew_signup_enabled') || !controlSettings.includes('feature_package_standard_enabled') || !controlSettings.includes('feature_term_3y_enabled') || !controlSettings.includes('communications_renewal_reminders_enabled') || !controlSettings.includes('publicControlSettings')) {
     errors.push('Admin Control Centre shared settings are incomplete.');
   }
   if (!adminControlSettings.includes('registrationModeConfirmation') || !websiteControlsPage.includes('Open registration') || !websiteControlsPage.includes('Close new registrations')) {
@@ -550,6 +550,12 @@ function checkProjectConsistency() {
   }
   if (!checkout.includes("feature_additional_items_enabled !== true && (cardQuantity > 0 || lanyardQuantity > 0)") || !checkout.includes('feature_additional_languages_enabled') || !portal.includes('adminAdditionalItemsEnabled||adminAdditionalLanguagesEnabled')) {
     errors.push('Independent Admin controls for accessories and additional languages are not enforced correctly.');
+  }
+  if (!initialMembershipCheckout.includes('feature_package_standard_enabled') || !initialMembershipCheckout.includes('feature_term_1y_enabled') || !checkout.includes('feature_package_multilingual_enabled') || !register.includes('packageAvailability=settings.controls?.features?.packages') || !portal.includes('adminPackageAvailability')) {
+    errors.push('Package and membership-term availability controls are not enforced across new membership journeys.');
+  }
+  if (!websiteControlsPage.includes('feature-package-standard') || !websiteControlsPage.includes('feature-term-3')) {
+    errors.push('Website Controls does not expose package and term availability.');
   }
   if (!renewalReminders.includes('communications_renewal_reminders_enabled') || !profileReviewReminder.includes('communications_profile_review_reminders_enabled') || !reconcileExpired.includes('communications_expiry_notices_enabled')) {
     errors.push('Scheduled customer communications are not controlled by Admin Communication settings.');
@@ -572,7 +578,7 @@ function checkProjectConsistency() {
   if (!adminReports.includes("format==='csv'") || !reportsPage.includes('Download CSV') || !adminActivityLog.includes('admin_activity_log') || !activityPage.includes('Admin Activity Log')) {
     errors.push('Reports or Admin Activity Log are incomplete.');
   }
-  if (!controlCentreMigration.includes('alter table public.admin_activity_log enable row level security') || !controlCentreMigration.includes('revoke all on table public.admin_activity_log from anon, authenticated') || !controlCentreMigration.includes('grant select, insert on table public.admin_activity_log to service_role')) {
+  if (!controlCentreMigration.includes('alter table public.admin_activity_log enable row level security') || !controlCentreMigration.includes('revoke all on table public.admin_activity_log from anon, authenticated, service_role') || !controlCentreMigration.includes('grant select, insert on table public.admin_activity_log to service_role')) {
     errors.push('Admin Activity Log migration is missing RLS or explicit service-role-only grants.');
   }
   if (!adminAudit.includes('recordAdminActivity') || !adminBusinessSettingsApi.includes('BUSINESS_SETTINGS_UPDATED') || !adminDiscountCodes.includes('DISCOUNT_CODE_UPDATED') || !adminSyncRenewalPrices.includes('AUTO_RENEW_PRICE_SYNC_RUN')) {
