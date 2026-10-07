@@ -96,6 +96,64 @@ async function createRenewalStripePrice(packageType, years, amountPence) {
   }, `renewal-price-${packageType}-${years}-${amountPence}`);
 }
 
+async function applyDeferredRenewalPriceAfterPaidCycle(membership, nextRenewalAt) {
+  const pendingPrice = Number(membership?.pending_renewal_price_pence || 0);
+  if (!pendingPrice) return null;
+
+  const protectedRenewal = new Date(membership?.pending_renewal_price_effective_after || 0);
+  const recordedRenewal = new Date(membership?.next_renewal_at || 0);
+  if (
+    Number.isFinite(protectedRenewal.getTime()) &&
+    Number.isFinite(recordedRenewal.getTime()) &&
+    Math.abs(protectedRenewal.getTime() - recordedRenewal.getTime()) > 36 * 3600000
+  ) {
+    return null;
+  }
+
+  const packageType = String(membership.package_type || '').toUpperCase();
+  const years = Number(membership.membership_term_years || 0);
+  if (!membership.stripe_subscription_item_id || !PACKAGE_DEFINITIONS[packageType] || ![1, 2, 3].includes(years)) {
+    throw new Error('Deferred renewal price could not be activated because the membership renewal configuration is incomplete.');
+  }
+
+  const price = await createRenewalStripePrice(packageType, years, pendingPrice);
+  await stripeRequest(
+    `subscription_items/${encodeURIComponent(membership.stripe_subscription_item_id)}`,
+    'POST',
+    { price: price.id, proration_behavior: 'none' },
+    `activate-deferred-renewal-price-${membership.id}-${pendingPrice}`
+  );
+
+  await patchMembershipBySubscription(membership.stripe_subscription_id, {
+    renewal_price_pence: pendingPrice,
+    pending_renewal_price_pence: null,
+    pending_renewal_price_effective_after: null,
+    pending_renewal_price_notice_sent_at: null
+  });
+
+  try {
+    await recordContractEvent({
+      membershipId: membership.id,
+      userId: membership.user_id,
+      eventType: 'AUTO_RENEW_DEFERRED_PRICE_ACTIVATED',
+      stripeReference: price.id,
+      details: {
+        old_price_pence: Number(membership.renewal_price_pence || 0),
+        new_price_pence: pendingPrice,
+        next_renewal_at: nextRenewalAt || null,
+        prior_notice_sent_at: membership.pending_renewal_price_notice_sent_at || null
+      }
+    });
+  } catch (auditError) {
+    console.error('Unable to record deferred renewal price activation event:', auditError);
+  }
+
+  return {
+    newPricePence: pendingPrice,
+    nextRenewalAt: nextRenewalAt || null
+  };
+}
+
 async function patchMembershipBySubscription(subscriptionId, values) {
   if (!subscriptionId) return;
   const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/memberships?stripe_subscription_id=eq.${encodeURIComponent(subscriptionId)}`, {
@@ -168,7 +226,12 @@ async function handleRecurringEvent(event) {
     await patchMembershipBySubscription(object.id, {
       auto_renew_enabled: active,
       stripe_subscription_status: object.status || (active ? 'active' : 'canceled'),
-      next_renewal_at: object.current_period_end ? new Date(object.current_period_end * 1000).toISOString() : null
+      next_renewal_at: object.current_period_end ? new Date(object.current_period_end * 1000).toISOString() : null,
+      ...(!active ? {
+        pending_renewal_price_pence: null,
+        pending_renewal_price_effective_after: null,
+        pending_renewal_price_notice_sent_at: null
+      } : {})
     });
     return true;
   }
@@ -243,13 +306,18 @@ async function handleRecurringEvent(event) {
       renewal_reminder_final_sent_at: null,
       ...(periodEnd ? { membership_end: new Date(periodEnd * 1000).toISOString(), next_renewal_at: new Date(periodEnd * 1000).toISOString() } : {})
     });
+    const nextRenewalAt = periodEnd ? new Date(periodEnd * 1000).toISOString() : null;
+    const deferredPrice = await applyDeferredRenewalPriceAfterPaidCycle(membership, nextRenewalAt);
     const email = String(object?.customer_email || '').trim() || await memberEmail(membership.user_id);
     const amountPaid = money(object.amount_paid || membership.renewal_price_pence);
+    const futurePriceNote = deferredPrice
+      ? `\n\nAs previously notified, your future automatic-renewal price has now been updated to ${money(deferredPrice.newPricePence)}. This new price will apply at your next renewal${deferredPrice.nextRenewalAt ? ` on ${dateUK(deferredPrice.nextRenewalAt)}` : ''}. No additional payment has been taken now.`
+      : '';
     const emailResult = await sendMembershipEmail({
       to: email,
       subject: 'Your LymphAware ID membership has renewed',
       idempotencyKey: `renewal-cooling-${object.id}`,
-      text: `Your LymphAware ID digital membership has renewed and ${amountPaid} has been paid. Your new membership end date is ${dateUK(periodEnd ? new Date(periodEnd * 1000) : null)}.\n\nRENEWAL COOLING-OFF PERIOD\n\nYou may cancel this renewed membership until ${dateUK(renewalCoolingEnds)}. Use the “Cancel this renewal” option in your Patient Portal:\nhttps://lymphawareid.com/portal/\n\nIf you cancel during this period, the renewal payment will be refunded and renewed access will end. You can also email admin@lymphawareid.com.\n\nThe LymphAware ID Team`
+      text: `Your LymphAware ID digital membership has renewed and ${amountPaid} has been paid. Your new membership end date is ${dateUK(periodEnd ? new Date(periodEnd * 1000) : null)}.${futurePriceNote}\n\nRENEWAL COOLING-OFF PERIOD\n\nYou may cancel this renewed membership until ${dateUK(renewalCoolingEnds)}. Use the “Cancel this renewal” option in your Patient Portal:\nhttps://lymphawareid.com/portal/\n\nIf you cancel during this period, the renewal payment will be refunded and renewed access will end. You can also email admin@lymphawareid.com.\n\nThe LymphAware ID Team`
     });
     if (!emailResult.ok) console.error('Unable to send renewal cooling-off notice:', emailResult.error);
     await recordContractEvent({
