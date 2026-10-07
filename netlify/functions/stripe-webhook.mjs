@@ -1,5 +1,7 @@
 import crypto from 'node:crypto';
 import { brandedEmailHtml } from './_shared/email-branding.mjs';
+import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
+import { PACKAGE_DEFINITIONS } from './_shared/initial-membership-checkout.mjs';
 import {
   MEMBERSHIP_CONTRACT_VERSION,
   dateUK,
@@ -14,16 +16,6 @@ const INITIAL_PACKAGE_PRICES = {
   STANDARD: { 1: 2499, 2: 3499, 3: 4499, 5: 2999 },
   PLUS: { 1: 3499, 2: 4499, 3: 5499, 5: 3999 },
   MULTILINGUAL: { 1: 5499, 2: 6999, 3: 8499, 5: 4999 }
-};
-
-const RENEWAL_PRICES = {
-  STANDARD: { 1: 1899, 2: 2599, 3: 3399 },
-  PLUS: { 1: 1899, 2: 2599, 3: 3399 },
-  MULTILINGUAL: { 1: 4099, 2: 5299, 3: 6399 }
-};
-
-const RENEWAL_STRIPE_PRICES = {
-  MULTILINGUAL: { 1: 'price_1UFGEVPMYhQKb2OT4B45XA28', 2: 'price_1UFGEWPMYhQKb2OTbVjZEvW4', 3: 'price_1UFGEWPMYhQKb2OTD1iA0xNU' }
 };
 
 const ADDITIONAL_CARD_PRICE_PENCE = 699;
@@ -77,6 +69,30 @@ async function stripeRequest(path, method = 'GET', values = null) {
   const result = await response.json();
   if (!response.ok) throw new Error(result?.error?.message || 'Stripe request failed');
   return result;
+}
+
+async function liveRenewalPrice(packageType, years) {
+  const pricing = publicPricing(await getBusinessSettings({ strict: true }));
+  return Number(pricing.renewals?.[packageType]?.[years] || 0);
+}
+
+async function createRenewalStripePrice(packageType, years, amountPence) {
+  const productId = PACKAGE_DEFINITIONS[packageType]?.renewalProductId;
+  if (!productId || ![1, 2, 3].includes(Number(years)) || Number(amountPence) <= 0) {
+    throw new Error('Unable to create the required Stripe renewal price.');
+  }
+  return stripeRequest('prices', 'POST', {
+    currency: 'gbp',
+    unit_amount: String(amountPence),
+    product: productId,
+    'recurring[interval]': 'year',
+    'recurring[interval_count]': String(years),
+    nickname: `${packageType} ${years}-year renewal – ${new Date().toISOString().slice(0, 10)}`,
+    'metadata[lymphaware_package]': packageType,
+    'metadata[membership_term_years]': String(years),
+    'metadata[purpose]': 'membership_renewal',
+    'metadata[managed_by]': 'lymphaware_system'
+  });
 }
 
 async function patchMembershipBySubscription(subscriptionId, values) {
@@ -715,7 +731,10 @@ export default async (request) => {
     const translationConsent = String(session.metadata?.translation_consent || '') === '1';
     const autoRenew = String(session.metadata?.auto_renew || '') === '1' && typeof session.subscription === 'string';
     const isTrial = String(session.metadata?.trial_discount_applied || '') === '1';
-    const renewalPricePence = autoRenew ? Number(session.metadata?.renewal_price_pence || RENEWAL_PRICES[packageType]?.[membershipTermYears] || 0) : null;
+    const metadataRenewalPricePence = Number(session.metadata?.renewal_price_pence || 0);
+    const renewalPricePence = autoRenew
+      ? (metadataRenewalPricePence > 0 ? metadataRenewalPricePence : await liveRenewalPrice(packageType, membershipTermYears))
+      : null;
 
     if (paymentType === 'manual_membership_renewal') {
       const membership = await membershipForManualRenewal(membershipId, userId);
@@ -727,7 +746,7 @@ export default async (request) => {
 
       const currentPackageType = String(membership.package_type || '').toUpperCase();
       const currentTermYears = Number(membership.membership_term_years || 0);
-      if (!RENEWAL_PRICES[currentPackageType]?.[currentTermYears]) {
+      if (!PACKAGE_DEFINITIONS[currentPackageType] || ![1, 2, 3].includes(currentTermYears)) {
         return new Response('Invalid renewal membership configuration', { status: 400 });
       }
       if (
@@ -744,8 +763,12 @@ export default async (request) => {
       const newMembershipEnd = addYearsClamped(renewalBase, currentTermYears);
       if (!newMembershipEnd) return new Response('Unable to calculate renewal expiry date', { status: 500 });
 
-      const manualRenewalPricePence = Number(session.metadata?.renewal_price_pence || RENEWAL_PRICES[currentPackageType][currentTermYears]);
+      const manualRenewalPricePence = Number(session.metadata?.renewal_price_pence || 0) || await liveRenewalPrice(currentPackageType, currentTermYears);
       const trialRenewal = String(membership.membership_status || '').toUpperCase() === 'PILOT';
+      const renewalCoolingEnds = new Date(paidAt.getTime() + (14 * 86400000));
+      const renewalPaymentIntent = typeof session.payment_intent === 'string'
+        ? session.payment_intent
+        : session.payment_intent?.id || null;
 
       const updateResponse = await fetch(
         `${process.env.SUPABASE_URL}/rest/v1/memberships?id=eq.${encodeURIComponent(membership.id)}`,
@@ -759,6 +782,13 @@ export default async (request) => {
             payment_reference: session.id,
             paid_at: paidAt.toISOString(),
             latest_renewal_paid_at: paidAt.toISOString(),
+            latest_renewal_mode: 'MANUAL',
+            latest_renewal_payment_intent_id: renewalPaymentIntent,
+            latest_renewal_checkout_session_id: session.id,
+            renewal_previous_membership_end: membership.membership_end,
+            renewal_cooling_off_ends_at: renewalCoolingEnds.toISOString(),
+            renewal_cooling_notice_sent_at: paidAt.toISOString(),
+            cooling_off_cancellation_requested_at: null,
             membership_end: newMembershipEnd.toISOString(),
             renewal_price_pence: manualRenewalPricePence,
             auto_renew_requested: false,
@@ -788,7 +818,9 @@ export default async (request) => {
           new_membership_end: newMembershipEnd.toISOString(),
           package_type: currentPackageType,
           membership_term_years: currentTermYears,
-          renewal_price_pence: manualRenewalPricePence
+          renewal_price_pence: manualRenewalPricePence,
+          cooling_off_ends_at: renewalCoolingEnds.toISOString(),
+          payment_intent_id: renewalPaymentIntent
         }
       });
 
@@ -797,7 +829,7 @@ export default async (request) => {
         to: email,
         subject: 'Your LymphAware ID membership has been renewed',
         idempotencyKey: `manual-renewal-confirmation-${session.id}`,
-        text: `Your LymphAware ID membership renewal has been completed.\n\nYour previous membership expiry date was ${dateUK(membership.membership_end)}.\nYour renewed membership is now active until ${dateUK(newMembershipEnd.toISOString())}.\n\nBecause your renewal was completed before the previous expiry date, the new term has been added from that existing expiry date. You have not lost any remaining membership time.\n\nYour existing LymphAware ID, Patient Portal and QR profile continue as normal. No new physical cards, lanyards, holders or postage are included with a membership renewal.\n\nThe LymphAware ID Team`
+        text: `Your LymphAware ID membership renewal has been completed.\n\nYour previous membership expiry date was ${dateUK(membership.membership_end)}.\nYour renewed membership is now active until ${dateUK(newMembershipEnd.toISOString())}.\n\n${Number.isFinite(recordedEnd.getTime()) && recordedEnd.getTime() > paidAt.getTime() ? 'Because your renewal was completed before the previous expiry date, the new term has been added from that existing expiry date. You have not lost any remaining membership time.\n\n' : ''}Your existing LymphAware ID, Patient Portal and QR profile continue as normal. No new physical cards, lanyards, holders or postage are included with a membership renewal.\n\nRENEWAL COOLING-OFF PERIOD\n\nYou may cancel this renewed membership until ${dateUK(renewalCoolingEnds)} from your Patient Portal. The renewal payment will be refunded. If your previous paid membership term is still running, it will continue until its original expiry date.\n\nhttps://lymphawareid.com/portal/\n\nThe LymphAware ID Team`
       });
       if (!emailResult.ok) console.error('Unable to send manual renewal confirmation:', emailResult.error);
 
