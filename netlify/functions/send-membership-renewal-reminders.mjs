@@ -15,7 +15,7 @@ import {
   sendMembershipEmail,
   serviceHeaders
 } from './_shared/membership-contract.mjs';
-import { PACKAGE_DEFINITIONS } from './_shared/initial-membership-checkout.mjs';
+import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
 
 function daysUntil(value) {
   return Math.ceil((new Date(value).getTime() - Date.now()) / 86400000);
@@ -27,12 +27,15 @@ function reminderDate(membership) {
     : membership.membership_end;
 }
 
-function renewalPrice(membership) {
-  const saved = Number(membership.renewal_price_pence || 0);
-  if (saved > 0) return saved;
+function renewalPrice(membership, livePricing) {
   const packageType = String(membership.package_type || '').toUpperCase();
   const years = Number(membership.membership_term_years || 0);
-  return Number(PACKAGE_DEFINITIONS[packageType]?.renewals?.[years] || 0);
+  const currentConfigured = Number(livePricing?.renewals?.[packageType]?.[years] || 0);
+  if (membership.auto_renew_enabled === true) {
+    const agreed = Number(membership.renewal_price_pence || 0);
+    return agreed > 0 ? agreed : currentConfigured;
+  }
+  return currentConfigured;
 }
 
 async function dueMemberships() {
@@ -69,14 +72,14 @@ async function markSent(membership, column, eventType, window, email, dueAt, pri
   });
 }
 
-async function sendReminder(membership, kind) {
+async function sendReminder(membership, kind, livePricing) {
   const email = await memberEmail(membership.user_id);
   if (!email) throw new Error(`No email address for member ${membership.user_id}`);
 
   const first = kind === 'first';
   const automatic = membership.auto_renew_enabled === true;
   const dueAt = reminderDate(membership);
-  const pricePence = renewalPrice(membership);
+  const pricePence = renewalPrice(membership, livePricing);
   const messageMembership = {
     ...membership,
     renewal_price_pence: pricePence,
@@ -146,16 +149,17 @@ async function sendReminder(membership, kind) {
 export default async () => {
   const failures = [];
   let sent = 0;
+  const livePricing = publicPricing(await getBusinessSettings({ strict: true }));
 
   for (const membership of await dueMemberships()) {
     const dueAt = reminderDate(membership);
     const days = daysUntil(dueAt);
     try {
       if (days >= 7 && days <= 14 && !membership.renewal_reminder_final_sent_at) {
-        await sendReminder(membership, 'final');
+        await sendReminder(membership, 'final', livePricing);
         sent += 1;
       } else if (days >= 45 && days <= 60 && !membership.renewal_reminder_first_sent_at) {
-        await sendReminder(membership, 'first');
+        await sendReminder(membership, 'first', livePricing);
         sent += 1;
       }
     } catch (error) {
