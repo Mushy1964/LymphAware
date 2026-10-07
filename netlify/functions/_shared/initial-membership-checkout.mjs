@@ -11,25 +11,16 @@ export const APPROVED_LANGUAGES = {
 export const PACKAGE_DEFINITIONS = {
   STANDARD: {
     name: 'LymphAware ID Standard',
-    prices: { 1: 2499, 2: 3499, 3: 4499 },
-    renewals: { 1: 1899, 2: 2599, 3: 3399 },
-    stripePrices: { 1: 'price_1UFGECPMYhQKb2OTxec6KcE8', 2: 'price_1UFGERPMYhQKb2OTLU8gqlJ0', 3: 'price_1UFGETPMYhQKb2OTGS496BLh' },
     initialProductId: 'prod_VJoj1Jx9jjanuP',
     renewalProductId: 'prod_VFJ4HtlMHhiQZE'
   },
   PLUS: {
     name: 'LymphAware ID Plus',
-    prices: { 1: 3499, 2: 4499, 3: 5499 },
-    renewals: { 1: 1899, 2: 2599, 3: 3399 },
-    stripePrices: { 1: 'price_1UJrXSPMYhQKb2OTVotqXy8R', 2: 'price_1UJrXZPMYhQKb2OTO9U5RlEE', 3: 'price_1UJrXaPMYhQKb2OT4xcauEkG' },
     initialProductId: 'prod_VJojHiFSBQfKEg',
     renewalProductId: 'prod_VFJ4Wpeq0QMpAX'
   },
   MULTILINGUAL: {
     name: 'LymphAware ID Multilingual',
-    prices: { 1: 5499, 2: 6999, 3: 8499 },
-    renewals: { 1: 4099, 2: 5299, 3: 6399 },
-    stripePrices: { 1: 'price_1UFGEVPMYhQKb2OT4B45XA28', 2: 'price_1UFGEWPMYhQKb2OTbVjZEvW4', 3: 'price_1UFGEWPMYhQKb2OTD1iA0xNU' },
     initialProductId: 'prod_VJojYNBtO0HSc2',
     renewalProductId: 'prod_VFJ4xSalNV5KEi'
   }
@@ -69,7 +60,7 @@ export async function normaliseInitialSelection(body = {}) {
   const shippingBand = deliveryCountry === 'GB' ? 'UK' : EUROPE_COUNTRIES.has(deliveryCountry) ? 'EUROPE' : 'REST_OF_WORLD';
   const shippingPence = pricing.shipping[shippingBand];
   const packagePricePence = pricing.packages[packageType][membershipTermYears];
-  const renewalPricePence = packageDefinition.renewals[membershipTermYears];
+  const renewalPricePence = pricing.renewals[packageType][membershipTermYears];
   if (autoRenew && packagePricePence < renewalPricePence) {
     throw new Error('This membership price cannot currently be used with automatic renewal. Please contact LymphAware ID.');
   }
@@ -82,7 +73,6 @@ export async function normaliseInitialSelection(body = {}) {
     shippingPence,
     packagePricePence,
     renewalPricePence,
-    renewalStripePrice: packageDefinition.stripePrices[membershipTermYears],
     languageCode: packageType === 'MULTILINGUAL' ? languageCode : '',
     languageName: packageType === 'MULTILINGUAL' ? languageName : '',
     translationConsent: packageType === 'MULTILINGUAL',
@@ -102,6 +92,15 @@ function appendInlinePrice(form, index, name, amountPence, description = '', pro
   form.append(`line_items[${index}][quantity]`, '1');
 }
 
+function appendRecurringPrice(form, index, productId, amountPence, intervalCount) {
+  form.append(`line_items[${index}][price_data][currency]`, 'gbp');
+  form.append(`line_items[${index}][price_data][unit_amount]`, String(amountPence));
+  form.append(`line_items[${index}][price_data][product]`, productId);
+  form.append(`line_items[${index}][price_data][recurring][interval]`, 'year');
+  form.append(`line_items[${index}][price_data][recurring][interval_count]`, String(intervalCount));
+  form.append(`line_items[${index}][quantity]`, '1');
+}
+
 function packageDescription(selection) {
   const { packageType, membershipTermYears, languageName } = selection;
   if (packageType === 'MULTILINGUAL') return `${membershipTermYears}-year membership with English and ${languageName} profiles, 2 English cards, 2 ${languageName} cards and 2 lanyards & holders.`;
@@ -116,8 +115,7 @@ export async function createInitialMembershipCheckout({ email, selection, promot
 
   let shippingIndex = 1;
   if (selection.autoRenew) {
-    form.append('line_items[0][price]', selection.renewalStripePrice);
-    form.append('line_items[0][quantity]', '1');
+    appendRecurringPrice(form, 0, selection.packageDefinition.renewalProductId, selection.renewalPricePence, selection.membershipTermYears);
     const joiningPence = selection.packagePricePence - selection.renewalPricePence;
     if (joiningPence > 0) {
       appendInlinePrice(form, 1, `${checkoutName} – joining and card fulfilment`, joiningPence, 'One-time joining, card and lanyard fulfilment charge.', selection.packageDefinition.initialProductId);
