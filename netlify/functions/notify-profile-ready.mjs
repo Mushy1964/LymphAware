@@ -1,4 +1,5 @@
 import { brandedEmailHtml } from './_shared/email-branding.mjs';
+import { getControlSettings } from './_shared/control-settings.mjs';
 function env(name) {
   return String(process.env[name] || '').trim();
 }
@@ -94,8 +95,13 @@ export default async (request) => {
     const items = itemsResponse.ok ? await itemsResponse.json() : [];
     const itemLines = items.map(item => `• ${Math.max(1, Number(item.quantity || 1))} × ${item.description}${item.language_name ? ` – ${item.language_name}` : ''}`).join('\n');
 
+    const controlSettings = await getControlSettings();
+    if (controlSettings.communications_order_notifications_enabled !== true) {
+      await patchOrder(order.id, { profile_ready_notification_status: 'SENT', profile_ready_notification_error: null, profile_ready_notification_sent_at: new Date().toISOString() });
+      return json({ ok: true, ready: true, notification: 'disabled-by-admin' });
+    }
     const apiKey = env('RESEND_API_KEY');
-    const to = env('ORDER_NOTIFICATION_EMAIL') || 'admin@lymphawareid.com';
+    const to = controlSettings.communications_admin_notification_email || env('ORDER_NOTIFICATION_EMAIL') || 'admin@lymphawareid.com';
     const from = env('ORDER_NOTIFICATION_FROM') || 'LymphAware ID <notifications@lymphawareid.com>';
     if (!apiKey) {
       await patchOrder(order.id, {
