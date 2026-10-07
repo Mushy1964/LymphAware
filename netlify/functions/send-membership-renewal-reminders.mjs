@@ -1,7 +1,7 @@
 import {
   FINAL_REMINDER_WINDOW,
   FIRST_REMINDER_WINDOW,
-  MANUAL_RENEWAL_HERO_URL,
+  RENEWAL_HERO_URL,
   MEMBERSHIP_RENEWAL_URL,
   dateUK,
   manualRenewalNoticeHtmlText,
@@ -98,18 +98,21 @@ async function sendReminder(membership, kind) {
     text: automatic
       ? renewalNoticeText(messageMembership, heading)
       : manualRenewalNoticeText(messageMembership, heading),
+    htmlTitle: automatic
+      ? (first ? 'Your membership renews automatically' : 'Your membership renews soon')
+      : (first ? 'Your membership is approaching expiry' : 'Your membership expires soon'),
     htmlText: automatic
-      ? renewalNoticeHtmlText(messageMembership, heading)
-      : manualRenewalNoticeHtmlText(messageMembership, heading),
+      ? renewalNoticeHtmlText(messageMembership)
+      : manualRenewalNoticeHtmlText(messageMembership),
     preheader: automatic
       ? `Your LymphAware ID membership is due to renew on ${dateUK(dueAt)}.`
       : `Your LymphAware ID membership expires on ${dateUK(dueAt)}. Renew without losing any remaining membership time.`,
     actionUrl: MEMBERSHIP_RENEWAL_URL,
     actionLabel: automatic ? 'Review my membership' : 'Renew now',
-    heroImageUrl: automatic ? '' : MANUAL_RENEWAL_HERO_URL,
-    heroImageAlt: automatic ? '' : 'Renew your LymphAware ID membership',
-    heroLinkUrl: automatic ? '' : MEMBERSHIP_RENEWAL_URL,
-    showHeaderLogo: automatic,
+    heroImageUrl: RENEWAL_HERO_URL,
+    heroImageAlt: 'LymphAware ID card, phone and membership identity',
+    heroLinkUrl: MEMBERSHIP_RENEWAL_URL,
+    showHeaderLogo: false,
     detailRows: automatic
       ? [
           { label: 'Next renewal date', value: dateUK(dueAt) },
