@@ -3,7 +3,7 @@ export const MEMBERSHIP_CONTRACT_VERSION = 'DMCCA-READY-2026-09-12';
 export const FIRST_REMINDER_WINDOW = '60 to 45 days before renewal';
 export const FINAL_REMINDER_WINDOW = '14 to 7 days before renewal';
 export const MEMBERSHIP_RENEWAL_URL = 'https://lymphawareid.com/portal/#membership-panel';
-export const MANUAL_RENEWAL_HERO_URL = 'https://lymphawareid.com/assets/demo/LymphAware_Hero_Final_v4.jpeg';
+export const RENEWAL_HERO_URL = 'https://lymphawareid.com/assets/demo/LymphAware_Hero_Product_Showcase_v1.png';
 
 export function serviceHeaders(prefer = '') {
   const headers = {
@@ -72,6 +72,7 @@ export async function sendMembershipEmail({
   to,
   subject,
   text,
+  htmlTitle = '',
   htmlText = '',
   preheader = '',
   actionUrl = '',
@@ -97,7 +98,7 @@ export async function sendMembershipEmail({
       subject,
       text,
       html: brandedEmailHtml({
-        title: subject,
+        title: htmlTitle || subject,
         text: htmlText || text,
         preheader,
         actionUrl,
@@ -121,9 +122,9 @@ export function renewalNoticeText(membership, heading) {
   return `${heading}\n\nYour LymphAware ID membership is scheduled to renew automatically on ${renewalDate}.\n\nRenewal amount: ${renewalAmount}\nRenewal period: ${years} year${years === 1 ? '' : 's'}\nExpected new expiry date: ${projectedEnd}\nWhat continues: your LymphAware ID membership, Patient Portal and QR-linked profile.\nNot included: new physical cards, lanyards, holders or postage.\n\nIf you want your membership to continue, you do not need to do anything.\n\nReview or manage your membership:\n${MEMBERSHIP_RENEWAL_URL}\n\nYou can cancel automatic renewal at any time before ${renewalDate} in your Patient Portal or by emailing admin@lymphawareid.com. Cancelling automatic renewal does not shorten the membership term you have already paid for.\n\nAfter a renewal of 12 months or more, you will also have a 14-day renewal cooling-off period and an online cancellation option in your Patient Portal.\n\nThe LymphAware ID Team`;
 }
 
-export function renewalNoticeHtmlText(membership, heading) {
+export function renewalNoticeHtmlText(membership) {
   const renewalDate = dateUK(membership.next_renewal_at);
-  return `${heading}\n\nYour LymphAware ID membership will renew automatically on ${renewalDate}. You do not need to take any action if you want your membership to continue.\n\nYour Patient Portal and QR-linked profile will continue with your renewed membership. New physical cards, lanyards, holders and postage are not included in a membership renewal.\n\nYou can review your membership or cancel automatic renewal in the Patient Portal before the renewal date.`;
+  return `Your LymphAware ID membership will renew automatically on ${renewalDate}. You do not need to take any action if you want your membership to continue.\n\nYour Patient Portal and QR-linked profile will continue with your renewed membership. New physical cards, lanyards, holders and postage are not included in a membership renewal.\n\nYou can review your membership or cancel automatic renewal in the Patient Portal before the renewal date.`;
 }
 
 export function manualRenewalNoticeText(membership, heading) {
@@ -134,9 +135,9 @@ export function manualRenewalNoticeText(membership, heading) {
   return `${heading}\n\nYour LymphAware ID membership is due to expire on ${expiryDate}.\n\nMembership expires on: ${expiryDate}\nRenewal period: ${years} year${years === 1 ? '' : 's'}\nRenewal price: ${renewalAmount}\nIf you renew now, your new expiry date will be: ${projectedEnd}\nWhat continues: your LymphAware ID membership, Patient Portal and QR-linked profile.\nNot included: new physical cards, lanyards, holders or postage.\n\nRenew now:\n${MEMBERSHIP_RENEWAL_URL}\n\nRenewing early will not shorten your current membership. Your new term starts from your existing expiry date, so you do not lose any remaining membership time.\n\nIf you do not renew, your QR-linked profile will no longer be available after ${expiryDate}. You can renew later to restore membership access.\n\nThe LymphAware ID Team`;
 }
 
-export function manualRenewalNoticeHtmlText(membership, heading) {
+export function manualRenewalNoticeHtmlText(membership) {
   const expiryDate = dateUK(membership.membership_end);
-  return `${heading}\n\nYour LymphAware ID membership is approaching its expiry date. Renewing keeps your Patient Portal and QR-linked profile available without interruption.\n\nRenewing before ${expiryDate} will not cause you to lose any remaining membership time. Your renewed term starts from your current expiry date.\n\nThank you for being part of LymphAware ID.`;
+  return `Your LymphAware ID membership is approaching its expiry date. Renewing keeps your Patient Portal and QR-linked profile available without interruption.\n\nRenewing before ${expiryDate} will not cause you to lose any remaining membership time. Your renewed term starts from your current expiry date.\n\nThank you for being part of LymphAware ID.`;
 }
 
 export function membershipExpiredNoticeText(membership) {
