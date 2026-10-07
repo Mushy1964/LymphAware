@@ -3,7 +3,7 @@ export const MEMBERSHIP_CONTRACT_VERSION = 'DMCCA-READY-2026-09-12';
 export const FIRST_REMINDER_WINDOW = '60 to 45 days before renewal';
 export const FINAL_REMINDER_WINDOW = '14 to 7 days before renewal';
 export const MEMBERSHIP_RENEWAL_URL = 'https://lymphawareid.com/portal/#membership-panel';
-export const RENEWAL_HERO_URL = 'https://lymphawareid.com/assets/demo/LymphAware_Hero_Product_Showcase_v1.png';
+export const RENEWAL_HERO_URL = 'https://lymphawareid.com/assets/demo/LymphAware_Hero_Final_v4.jpeg';
 
 export function serviceHeaders(prefer = '') {
   const headers = {
