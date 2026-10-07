@@ -126,7 +126,7 @@ function checkProjectConsistency() {
   const emailBrandingPath = path.join(root, 'netlify/functions/_shared/email-branding.mjs');
   const membershipContractPath = path.join(root, 'netlify/functions/_shared/membership-contract.mjs');
   const renewalRemindersPath = path.join(root, 'netlify/functions/send-membership-renewal-reminders.mjs');
-  const renewalArtworkPath = path.join(root, 'assets/brand/LymphAwareID_Renewal_Reminder.jpg');
+  const renewalArtworkPath = path.join(root, 'assets/demo/LymphAware_Hero_Final_v4.jpeg');
 
   const checkout = fs.readFileSync(checkoutPath, 'utf8');
   const portal = fs.readFileSync(portalPath, 'utf8');
@@ -163,11 +163,11 @@ function checkProjectConsistency() {
   const membershipContract = fs.readFileSync(membershipContractPath, 'utf8');
   const renewalReminders = fs.readFileSync(renewalRemindersPath, 'utf8');
 
-  if (!fs.existsSync(renewalArtworkPath) || fs.statSync(renewalArtworkPath).size < 10000) {
-    errors.push('Approved LymphAware ID renewal artwork is missing or unexpectedly small.');
+  if (!fs.existsSync(renewalArtworkPath) || fs.statSync(renewalArtworkPath).size < 100000) {
+    errors.push('Established LymphAware ID hero artwork is missing or unexpectedly small.');
   }
-  if (!membershipContract.includes("LymphAwareID_Renewal_Reminder.jpg") || !membershipContract.includes("portal/#membership-panel")) {
-    errors.push('Renewal email configuration is not using the approved artwork and membership Portal deep link.');
+  if (!membershipContract.includes("LymphAware_Hero_Final_v4.jpeg") || !membershipContract.includes("portal/#membership-panel")) {
+    errors.push('Renewal email configuration is not using established LymphAware ID artwork and the membership Portal deep link.');
   }
   if (!emailBranding.includes('heroImageHtml') || !emailBranding.includes('detailRowsHtml') || !emailBranding.includes('actionButtonHtml')) {
     errors.push('Branded email template is missing renewal artwork, details or accessible action-button support.');
