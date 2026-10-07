@@ -31,35 +31,50 @@ export default async (request) => {
     const user = await userResponse.json();
 
     const membershipResponse = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${encodeURIComponent(user.id)}&select=id,stripe_subscription_id,renewal_price_pence,renewal_cooling_off_ends_at,cooling_off_cancellation_requested_at&limit=1`,
+      `${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${encodeURIComponent(user.id)}&select=id,stripe_subscription_id,renewal_price_pence,renewal_cooling_off_ends_at,cooling_off_cancellation_requested_at,latest_renewal_mode,latest_renewal_payment_intent_id,renewal_previous_membership_end,membership_end&limit=1`,
       { headers: serviceHeaders() }
     );
     const membership = (await membershipResponse.json())?.[0];
-    if (!membershipResponse.ok || !membership?.stripe_subscription_id) return json({ error: 'A renewed membership could not be found.' }, 400);
+    if (!membershipResponse.ok || !membership) return json({ error: 'A renewed membership could not be found.' }, 400);
     if (membership.cooling_off_cancellation_requested_at) return json({ error: 'This renewal cancellation has already been requested.' }, 409);
     const coolingEnd = new Date(membership.renewal_cooling_off_ends_at || 0);
     if (!Number.isFinite(coolingEnd.getTime()) || coolingEnd.getTime() < Date.now()) return json({ error: 'The renewal cooling-off period has ended.' }, 400);
 
-    const subscription = await stripeRequest(`subscriptions/${encodeURIComponent(membership.stripe_subscription_id)}?expand[]=latest_invoice.payment_intent`);
-    const invoice = typeof subscription.latest_invoice === 'object' ? subscription.latest_invoice : null;
-    const paymentIntent = typeof invoice?.payment_intent === 'string' ? invoice.payment_intent : invoice?.payment_intent?.id;
+    const renewalMode = String(membership.latest_renewal_mode || '').toUpperCase();
+    let paymentIntent = String(membership.latest_renewal_payment_intent_id || '').trim();
+    let refundKeyReference = paymentIntent || membership.id;
+
+    if (!paymentIntent && membership.stripe_subscription_id) {
+      const subscription = await stripeRequest(`subscriptions/${encodeURIComponent(membership.stripe_subscription_id)}?expand[]=latest_invoice.payment_intent`);
+      const invoice = typeof subscription.latest_invoice === 'object' ? subscription.latest_invoice : null;
+      paymentIntent = typeof invoice?.payment_intent === 'string' ? invoice.payment_intent : invoice?.payment_intent?.id;
+      refundKeyReference = invoice?.id || paymentIntent || membership.id;
+    }
     if (!paymentIntent) return json({ error: 'The renewal payment could not be located. Please contact admin@lymphawareid.com.' }, 500);
 
-    const refund = await stripeRequest('refunds', 'POST', { payment_intent: paymentIntent, reason: 'requested_by_customer', 'metadata[lymphaware_membership_id]': membership.id, 'metadata[reason]': 'renewal_cooling_off' }, `cooling-off-refund-${invoice.id}`);
-    await stripeRequest(`subscriptions/${encodeURIComponent(membership.stripe_subscription_id)}`, 'DELETE', null, `cooling-off-cancel-${membership.stripe_subscription_id}`);
+    const refund = await stripeRequest('refunds', 'POST', { payment_intent: paymentIntent, reason: 'requested_by_customer', 'metadata[lymphaware_membership_id]': membership.id, 'metadata[reason]': 'renewal_cooling_off' }, `cooling-off-refund-${refundKeyReference}`);
 
-    const now = new Date().toISOString();
+    if (renewalMode !== 'MANUAL' && membership.stripe_subscription_id) {
+      await stripeRequest(`subscriptions/${encodeURIComponent(membership.stripe_subscription_id)}`, 'DELETE', null, `cooling-off-cancel-${membership.stripe_subscription_id}`);
+    }
+
+    const nowDate = new Date();
+    const now = nowDate.toISOString();
+    const previousEnd = new Date(membership.renewal_previous_membership_end || 0);
+    const hasPreviousEnd = Number.isFinite(previousEnd.getTime());
+    const previousTermStillActive = hasPreviousEnd && previousEnd.getTime() > nowDate.getTime();
+    const restoredMembershipEnd = hasPreviousEnd ? previousEnd.toISOString() : now;
     const update = await fetch(`${process.env.SUPABASE_URL}/rest/v1/memberships?id=eq.${encodeURIComponent(membership.id)}`, {
       method: 'PATCH',
       headers: serviceHeaders('return=minimal'),
       body: JSON.stringify({
-        membership_status: 'LAPSED',
-        payment_status: 'REFUNDED',
-        membership_end: now,
+        membership_status: previousTermStillActive ? 'ACTIVE' : 'LAPSED',
+        payment_status: previousTermStillActive ? 'PAID' : 'REFUNDED',
+        membership_end: restoredMembershipEnd,
         auto_renew_enabled: false,
         auto_renew_cancelled_at: now,
         cooling_off_cancellation_requested_at: now,
-        stripe_subscription_status: 'canceled',
+        ...(renewalMode !== 'MANUAL' ? { stripe_subscription_status: 'canceled' } : {}),
         updated_at: now
       })
     });
@@ -69,17 +84,17 @@ export default async (request) => {
       userId: user.id,
       eventType: 'RENEWAL_COOLING_CANCELLATION_REQUESTED',
       stripeReference: refund.id,
-      details: { refund_id: refund.id, payment_intent_id: paymentIntent, refund_status: refund.status, requested_at: now }
+      details: { refund_id: refund.id, payment_intent_id: paymentIntent, refund_status: refund.status, requested_at: now, renewal_mode: renewalMode || 'AUTO', restored_membership_end: restoredMembershipEnd, previous_term_still_active: previousTermStillActive }
     });
 
     const amount = money(refund.amount || membership.renewal_price_pence);
-    const customerText = `Your renewed LymphAware ID membership has been cancelled during its renewal cooling-off period.\n\nA ${amount} refund has been submitted to your original payment method. Your bank may take several working days to show it. Renewed membership access has now ended.\n\nReference: ${refund.id}\n\nIf you need help, contact admin@lymphawareid.com.\n\nThe LymphAware ID Team`;
+    const customerText = `Your renewed LymphAware ID membership has been cancelled during its renewal cooling-off period.\n\nA ${amount} refund has been submitted to your original payment method. Your bank may take several working days to show it.\n\n${previousTermStillActive ? `Your earlier paid membership term remains active until ${dateUK(restoredMembershipEnd)}. Your QR profile and Patient Portal therefore continue until that original expiry date.\n\n` : 'The renewed membership access has now ended. You can renew again at any time from your Patient Portal.\n\n'}Reference: ${refund.id}\n\nIf you need help, contact admin@lymphawareid.com.\n\nThe LymphAware ID Team`;
     const customerEmail = await sendMembershipEmail({ to: user.email, subject: 'Your renewed LymphAware ID membership has been cancelled', text: customerText, idempotencyKey: `cooling-off-customer-${refund.id}` });
     if (!customerEmail.ok) console.error('Unable to send renewal cancellation email:', customerEmail.error);
     const adminEmail = await sendMembershipEmail({
       to: 'admin@lymphawareid.com',
       subject: 'Renewal cooling-off cancellation completed',
-      text: `A member used the online renewal cooling-off cancellation.\n\nMember: ${user.email}\nMembership: ${membership.id}\nRefund: ${refund.id}\nAmount: ${amount}\nCooling-off deadline: ${dateUK(coolingEnd)}\n\nThe Stripe refund was submitted and renewed portal access was ended.`,
+      text: `A member used the online renewal cooling-off cancellation.\n\nMember: ${user.email}\nMembership: ${membership.id}\nRenewal mode: ${renewalMode || 'AUTO'}\nRefund: ${refund.id}\nAmount: ${amount}\nCooling-off deadline: ${dateUK(coolingEnd)}\nRestored membership end: ${dateUK(restoredMembershipEnd)}\n\nThe Stripe refund was submitted. ${previousTermStillActive ? 'The member remains active until the original paid expiry date.' : 'Renewed portal access has ended.'}`,
       idempotencyKey: `cooling-off-admin-${refund.id}`
     });
     if (!adminEmail.ok) console.error('Unable to send renewal cancellation admin email:', adminEmail.error);

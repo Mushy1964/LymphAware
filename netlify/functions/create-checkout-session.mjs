@@ -7,24 +7,9 @@ const APPROVED_LANGUAGES = {
 };
 
 const PACKAGE_DEFINITIONS = {
-  STANDARD: { name: 'LymphAware ID Standard', prices: { 1: 2499, 2: 3499, 3: 4499 }, requiresLanguage: false },
-  PLUS: { name: 'LymphAware ID Plus', prices: { 1: 3499, 2: 4499, 3: 5499 }, requiresLanguage: false },
-  MULTILINGUAL: { name: 'LymphAware ID Multilingual', prices: { 1: 5499, 2: 6999, 3: 8499 }, requiresLanguage: true }
-};
-
-const RENEWAL_DEFINITIONS = {
-  STANDARD: {
-    prices: { 1: 1899, 2: 2599, 3: 3399 },
-    stripePrices: { 1: 'price_1UFGECPMYhQKb2OTxec6KcE8', 2: 'price_1UFGERPMYhQKb2OTLU8gqlJ0', 3: 'price_1UFGETPMYhQKb2OTGS496BLh' }
-  },
-  PLUS: {
-    prices: { 1: 1899, 2: 2599, 3: 3399 },
-    stripePrices: { 1: 'price_1UJrXSPMYhQKb2OTVotqXy8R', 2: 'price_1UJrXZPMYhQKb2OTO9U5RlEE', 3: 'price_1UJrXaPMYhQKb2OT4xcauEkG' }
-  },
-  MULTILINGUAL: {
-    prices: { 1: 4099, 2: 5299, 3: 6399 },
-    stripePrices: { 1: 'price_1UFGEVPMYhQKb2OT4B45XA28', 2: 'price_1UFGEWPMYhQKb2OTbVjZEvW4', 3: 'price_1UFGEWPMYhQKb2OTD1iA0xNU' }
-  }
+  STANDARD: { name: 'LymphAware ID Standard', requiresLanguage: false, renewalProductId: 'prod_VFJ4HtlMHhiQZE' },
+  PLUS: { name: 'LymphAware ID Plus', requiresLanguage: false, renewalProductId: 'prod_VFJ4Wpeq0QMpAX' },
+  MULTILINGUAL: { name: 'LymphAware ID Multilingual', requiresLanguage: true, renewalProductId: 'prod_VFJ4xSalNV5KEi' }
 };
 
 const EUROPE_COUNTRIES = new Set([
@@ -78,6 +63,15 @@ function appendInlinePrice(stripeForm, index, name, amountPence, description = '
   stripeForm.append(`line_items[${index}][price_data][product_data][name]`, name);
   if (description) stripeForm.append(`line_items[${index}][price_data][product_data][description]`, description);
   stripeForm.append(`line_items[${index}][quantity]`, String(quantity));
+}
+
+function appendRecurringPrice(stripeForm, index, productId, amountPence, intervalCount) {
+  stripeForm.append(`line_items[${index}][price_data][currency]`, 'gbp');
+  stripeForm.append(`line_items[${index}][price_data][unit_amount]`, String(amountPence));
+  stripeForm.append(`line_items[${index}][price_data][product]`, productId);
+  stripeForm.append(`line_items[${index}][price_data][recurring][interval]`, 'year');
+  stripeForm.append(`line_items[${index}][price_data][recurring][interval_count]`, String(intervalCount));
+  stripeForm.append(`line_items[${index}][quantity]`, '1');
 }
 
 function parseQuantity(value) {
@@ -220,7 +214,6 @@ export default async (request) => {
     let translationConsent = false;
     let autoRenew = false;
     let renewalPricePence = 0;
-    let renewalStripePrice = '';
     const checkoutItems = [];
 
     if (paymentType === 'initial_membership') {
@@ -253,8 +246,7 @@ export default async (request) => {
       if (autoRenew && body?.autoRenewAcknowledged !== true) {
         return json({ error: 'Please confirm the automatic-renewal amount and frequency.' }, 400);
       }
-      renewalPricePence = RENEWAL_DEFINITIONS[packageType].prices[membershipTermYears];
-      renewalStripePrice = RENEWAL_DEFINITIONS[packageType].stripePrices[membershipTermYears];
+      renewalPricePence = livePricing.renewals[packageType][membershipTermYears];
       if (autoRenew && amountPence < renewalPricePence) {
         return json({ error: 'This membership price cannot currently be used with automatic renewal. Please contact LymphAware ID.' }, 400);
       }
@@ -366,8 +358,7 @@ export default async (request) => {
       checkoutItems.forEach((item, index) => appendInlinePrice(stripeForm, index, item.name, item.amountPence, item.description, item.quantity));
       nextLineItemIndex = checkoutItems.length;
     } else if (autoRenew) {
-      stripeForm.append('line_items[0][price]', renewalStripePrice);
-      stripeForm.append('line_items[0][quantity]', '1');
+      appendRecurringPrice(stripeForm, 0, PACKAGE_DEFINITIONS[packageType].renewalProductId, renewalPricePence, membershipTermYears);
       const joiningAndFulfilmentPence = amountPence - renewalPricePence;
       if (joiningAndFulfilmentPence > 0) {
         appendInlinePrice(

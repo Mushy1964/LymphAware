@@ -126,6 +126,10 @@ function checkProjectConsistency() {
   const emailBrandingPath = path.join(root, 'netlify/functions/_shared/email-branding.mjs');
   const membershipContractPath = path.join(root, 'netlify/functions/_shared/membership-contract.mjs');
   const renewalRemindersPath = path.join(root, 'netlify/functions/send-membership-renewal-reminders.mjs');
+  const startMembershipRenewalPath = path.join(root, 'netlify/functions/start-membership-renewal.mjs');
+  const adminSyncRenewalPricesPath = path.join(root, 'netlify/functions/admin-sync-renewal-prices.mjs');
+  const cancelRenewedMembershipPath = path.join(root, 'netlify/functions/cancel-renewed-membership.mjs');
+  const termsPath = path.join(root, 'terms/index.html');
   const renewalArtworkPath = path.join(root, 'assets/demo/LymphAware_Hero_Final_v4.jpeg');
 
   const checkout = fs.readFileSync(checkoutPath, 'utf8');
@@ -162,6 +166,10 @@ function checkProjectConsistency() {
   const emailBranding = fs.readFileSync(emailBrandingPath, 'utf8');
   const membershipContract = fs.readFileSync(membershipContractPath, 'utf8');
   const renewalReminders = fs.readFileSync(renewalRemindersPath, 'utf8');
+  const startMembershipRenewal = fs.readFileSync(startMembershipRenewalPath, 'utf8');
+  const adminSyncRenewalPrices = fs.readFileSync(adminSyncRenewalPricesPath, 'utf8');
+  const cancelRenewedMembership = fs.readFileSync(cancelRenewedMembershipPath, 'utf8');
+  const terms = fs.readFileSync(termsPath, 'utf8');
 
   if (!fs.existsSync(renewalArtworkPath) || fs.statSync(renewalArtworkPath).size < 100000) {
     errors.push('Established LymphAware ID hero artwork is missing or unexpectedly small.');
@@ -248,15 +256,24 @@ function checkProjectConsistency() {
     'price_additional_language_pence: 2499',
     'postage_uk_pence: 299',
     'postage_europe_pence: 499',
-    'postage_rest_of_world_pence: 999'
+    'postage_rest_of_world_pence: 999',
+    'renewal_standard_1y_pence: 1899',
+    'renewal_standard_2y_pence: 2599',
+    'renewal_standard_3y_pence: 3399',
+    'renewal_plus_1y_pence: 1899',
+    'renewal_plus_2y_pence: 2599',
+    'renewal_plus_3y_pence: 3399',
+    'renewal_multilingual_1y_pence: 4099',
+    'renewal_multilingual_2y_pence: 5299',
+    'renewal_multilingual_3y_pence: 6399'
   ]) {
     if (!businessSettings.includes(expected)) errors.push(`Business Settings default is missing: ${expected}.`);
   }
-  if (!checkout.includes("getBusinessSettings({ strict: true })") || !checkout.includes('livePricing.additionalItems.CARD') || !checkout.includes('livePricing.shipping[band]')) {
-    errors.push('Member checkout is not using protected Business Settings for live prices.');
+  if (!checkout.includes("getBusinessSettings({ strict: true })") || !checkout.includes('livePricing.additionalItems.CARD') || !checkout.includes('livePricing.shipping[band]') || !checkout.includes('livePricing.renewals[packageType][membershipTermYears]')) {
+    errors.push('Member checkout is not using protected Business Settings for live prices, including renewal prices.');
   }
-  if (!initialMembershipCheckout.includes("getBusinessSettings({ strict: true })") || !initialMembershipCheckout.includes('pricing.packages[packageType][membershipTermYears]') || !initialMembershipCheckout.includes('pricing.shipping[shippingBand]')) {
-    errors.push('Initial membership checkout is not using protected Business Settings for live prices.');
+  if (!initialMembershipCheckout.includes("getBusinessSettings({ strict: true })") || !initialMembershipCheckout.includes('pricing.packages[packageType][membershipTermYears]') || !initialMembershipCheckout.includes('pricing.shipping[shippingBand]') || !initialMembershipCheckout.includes('pricing.renewals[packageType][membershipTermYears]')) {
+    errors.push('Initial membership checkout is not using protected Business Settings for live prices, including renewal prices.');
   }
   if (!registrationSettings.includes('pricing = publicPricing(businessSettings)') || !register.includes('settings.pricing?.packages') || !portal.includes('async function loadBusinessPricing()') || !home.includes('async function loadLiveBusinessPricing()')) {
     errors.push('Customer-facing pages are not loading the shared Business Settings prices.');
@@ -295,44 +312,45 @@ function checkProjectConsistency() {
   if (!understanding.includes('privacy-grid trusted-resource-grid') || (understanding.match(/class="trusted-resource-action"/g) || []).length !== 6) errors.push('Trusted-resource link buttons are not grouped for consistent alignment.');
   if (!styles.includes('.trusted-resource-grid .trusted-resource-action .button') || !styles.includes('width: 100%;')) errors.push('Trusted-resource link buttons do not share a consistent width.');
 
-  const membershipPrices = {
-    STANDARD: { 1: 2499, 2: 3499, 3: 4499 },
-    PLUS: { 1: 3499, 2: 4499, 3: 5499 },
-    MULTILINGUAL: { 1: 5499, 2: 6999, 3: 8499 }
-  };
-  for (const [packageCode, terms] of Object.entries(membershipPrices)) {
-    for (const [years, pence] of Object.entries(terms)) {
-      const pounds = `£${(pence / 100).toFixed(2)}`;
-      if (!checkout.includes(`${years}: ${pence}`)) errors.push(`Checkout is missing ${packageCode} ${years}-year price ${pounds}.`);
-      if (!portal.includes(`${years}:${pence}`)) errors.push(`Portal is missing ${packageCode} ${years}-year price ${pounds}.`);
-      if (!webhook.includes(`${years}: ${pence}`)) errors.push(`Webhook is missing ${packageCode} ${years}-year price ${pounds}.`);
-      if (!home.includes(pounds)) errors.push(`Homepage is missing membership price ${pounds}.`);
-    }
+  if (!businessSettings.includes('renewals: {') || !businessSettings.includes('renewal_standard_1y_pence') || !businessSettings.includes('renewal_plus_2y_pence') || !businessSettings.includes('renewal_multilingual_3y_pence')) {
+    errors.push('Business Settings does not expose all renewal prices through the shared public pricing structure.');
   }
-  const renewalPrices = {
-    STANDARD: { 1: 1899, 2: 2599, 3: 3399 },
-    PLUS: { 1: 1899, 2: 2599, 3: 3399 },
-    MULTILINGUAL: { 1: 4099, 2: 5299, 3: 6399 }
-  };
-  for (const [packageCode, terms] of Object.entries(renewalPrices)) {
-    for (const [years, pence] of Object.entries(terms)) {
-      const pounds = `£${(pence / 100).toFixed(2)}`;
-      if (!checkout.includes(`${years}: ${pence}`)) errors.push(`Checkout is missing ${packageCode} ${years}-year renewal price ${pounds}.`);
-      if (!portal.includes(`${years}:${pence}`)) errors.push(`Portal is missing ${packageCode} ${years}-year renewal price ${pounds}.`);
-      if (!webhook.includes(`${years}: ${pence}`)) errors.push(`Webhook is missing ${packageCode} ${years}-year renewal price ${pounds}.`);
-      if (!home.includes(pounds)) errors.push(`Homepage is missing renewal price ${pounds}.`);
-    }
+  if (!checkout.includes("appendRecurringPrice") || !checkout.includes("[price_data][recurring][interval_count]") || checkout.includes("stripePrices:")) {
+    errors.push('Member checkout does not build current admin-managed recurring renewal prices with the correct term interval.');
   }
-  const compact = value => value.replace(/\s+/g, '');
-  const plusRenewals = '1:1899,2:2599,3:3399';
-  const plusStripePrices = "1:'price_1UJrXSPMYhQKb2OTVotqXy8R',2:'price_1UJrXZPMYhQKb2OTO9U5RlEE',3:'price_1UJrXaPMYhQKb2OT4xcauEkG'";
-  if (!compact(checkout).includes(`PLUS:{prices:{${plusRenewals}},stripePrices:{${plusStripePrices}}}`)) errors.push('Checkout Plus renewal mapping is incorrect.');
-  if (!compact(initialMembershipCheckout).includes(`renewals:{${plusRenewals}},stripePrices:{${plusStripePrices}}`)) errors.push('Initial membership checkout Plus renewal mapping is incorrect.');
-  if (!compact(portal).includes(`PLUS:{${plusRenewals}}`)) errors.push('Portal Plus renewal mapping is incorrect.');
-  if (!compact(webhook).includes(`PLUS:{${plusRenewals}}`)) errors.push('Webhook Plus renewal mapping is incorrect.');
-  if (!compact(register).includes(`renewals:{${plusRenewals}}`)) errors.push('Registration Plus renewal mapping is incorrect.');
-  const plusHomeCard = home.match(/<article class="home-membership-price-card home-membership-package-plus">([\s\S]*?)<\/article>/)?.[1] || '';
-  if (!plusHomeCard.includes('1 year £18.99 · 2 years £25.99 · 3 years £33.99')) errors.push('Homepage Plus renewal prices are incorrect.');
+  if (!initialMembershipCheckout.includes("appendRecurringPrice") || !initialMembershipCheckout.includes("[price_data][recurring][interval_count]") || initialMembershipCheckout.includes("stripePrices:")) {
+    errors.push('Initial checkout does not build current admin-managed recurring renewal prices with the correct term interval.');
+  }
+  if (!registrationSettings.includes('const pricing = publicPricing(businessSettings)') || registrationSettings.includes('PACKAGE_DEFINITIONS.STANDARD.renewals')) {
+    errors.push('Registration settings are overriding shared renewal pricing instead of serving Business Settings.');
+  }
+  if (!register.includes('settings.pricing.renewals?.[code]') || !portal.includes('settings.pricing.renewals?.[code]') || !home.includes('settings.pricing.renewals?.[code]')) {
+    errors.push('Customer-facing membership pages are not applying live renewal prices from Business Settings.');
+  }
+  if (!startMembershipRenewal.includes("getBusinessSettings({ strict: true })") || !startMembershipRenewal.includes('livePricing.renewals?.[packageType]?.[years]')) {
+    errors.push('Manual membership renewal checkout is not securely re-reading the current Admin renewal price.');
+  }
+  if (!renewalReminders.includes("getBusinessSettings({ strict: true })") || !renewalReminders.includes('membership.auto_renew_enabled === true') || !renewalReminders.includes('livePricing?.renewals?.[packageType]?.[years]')) {
+    errors.push('Renewal reminders do not distinguish the agreed auto-renew amount from the current manual-renewal price.');
+  }
+  if (!adminBusinessSettings.includes('Membership renewal prices') || !adminBusinessSettings.includes('renewal_standard_1y_pence') || !adminBusinessSettings.includes('/api/admin-sync-renewal-prices')) {
+    errors.push('Admin Business Settings does not provide controlled renewal-price management.');
+  }
+  if (!adminSyncRenewalPrices.includes('const NOTICE_DAYS = 60') || !adminSyncRenewalPrices.includes("proration_behavior: 'none'") || !adminSyncRenewalPrices.includes('Member notification failed, so the price change was rolled back') || !adminSyncRenewalPrices.includes('AUTO_RENEW_PRICE_CHANGED')) {
+    errors.push('Existing automatic-renew price changes are missing advance-notice, no-proration or rollback safeguards.');
+  }
+  if (!webhook.includes("event.type === 'invoice.payment_failed'") || !webhook.includes("'RENEWAL_PAYMENT_FAILED'") || !webhook.includes('hosted_invoice_url')) {
+    errors.push('Failed automatic-renewal payments do not trigger the branded recovery workflow.');
+  }
+  if (!webhook.includes("latest_renewal_mode: 'MANUAL'") || !webhook.includes("latest_renewal_mode: 'AUTO'") || !webhook.includes('renewal_previous_membership_end') || !webhook.includes('renewal_cooling_off_ends_at')) {
+    errors.push('Renewal webhook does not preserve manual/automatic cooling-off state and the previous paid term.');
+  }
+  if (!cancelRenewedMembership.includes("renewalMode !== 'MANUAL'") || !cancelRenewedMembership.includes('previousTermStillActive') || !cancelRenewedMembership.includes('restoredMembershipEnd')) {
+    errors.push('Renewal cooling-off cancellation cannot safely refund manual renewals while restoring an unexpired previous term.');
+  }
+  if (!terms.includes('both automatic and member-initiated renewals') || !terms.includes('does not create an immediate charge')) {
+    errors.push('Terms do not explain manual renewal cooling-off and controlled future price changes.');
+  }
   if (!home.includes('Choose one, two or three years of membership')) {
     errors.push('Homepage membership wording does not offer the agreed one-, two- and three-year terms.');
   }

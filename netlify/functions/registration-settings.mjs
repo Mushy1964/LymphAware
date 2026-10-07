@@ -1,5 +1,4 @@
 import { getRegistrationMode } from './_shared/registration-access.mjs';
-import { PACKAGE_DEFINITIONS } from './_shared/initial-membership-checkout.mjs';
 import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
 
 function json(body, status = 200) {
@@ -14,11 +13,6 @@ export default async (request) => {
   try {
     const [mode, businessSettings] = await Promise.all([getRegistrationMode(), getBusinessSettings()]);
     const pricing = publicPricing(businessSettings);
-    pricing.renewals = {
-      STANDARD: PACKAGE_DEFINITIONS.STANDARD.renewals,
-      PLUS: PACKAGE_DEFINITIONS.PLUS.renewals,
-      MULTILINGUAL: PACKAGE_DEFINITIONS.MULTILINGUAL.renewals
-    };
     return json({
       mode,
       codeRequired: mode === 'INVITE_ONLY',
