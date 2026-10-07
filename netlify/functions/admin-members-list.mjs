@@ -11,11 +11,20 @@ export default async request=>{
   try{
     const admin=await verifyAdminRequest(request);if(!admin)return json({error:'Administrator access required.'},403);
     const url=new URL(request.url);const q=String(url.searchParams.get('q')||'').trim().toLowerCase();
-    const r=await fetch(`${env('SUPABASE_URL')}/rest/v1/memberships?select=id,user_id,membership_status,payment_status,package_type,membership_term_years,membership_start,membership_end,auto_renew_enabled,next_renewal_at,renewal_price_pence,pending_renewal_price_pence,stripe_subscription_status,profiles(display_name,lymphaware_id,qr_profile_active,profile_next_review_due_at)&order=created_at.desc&limit=100`,{headers:headers()});
+    const r=await fetch(`${env('SUPABASE_URL')}/rest/v1/memberships?select=id,user_id,membership_status,payment_status,package_type,membership_term_years,membership_start,membership_end,auto_renew_enabled,next_renewal_at,renewal_price_pence,pending_renewal_price_pence,stripe_subscription_status&order=created_at.desc&limit=100`,{headers:headers()});
     if(!r.ok)throw new Error('Members could not be loaded.');
-    const rows=await r.json();const out=[];
+    const rows=await r.json();
+    const userIds=[...new Set(rows.map(row=>row.user_id).filter(Boolean))];
+    const profileMap=new Map();
+    if(userIds.length){
+      const profileFilter=`in.(${userIds.join(',')})`;
+      const profilesResponse=await fetch(`${env('SUPABASE_URL')}/rest/v1/profiles?user_id=${encodeURIComponent(profileFilter)}&select=user_id,display_name,lymphaware_id,qr_profile_active,profile_next_review_due_at`,{headers:headers()});
+      if(!profilesResponse.ok)throw new Error('Member profiles could not be loaded.');
+      for(const profile of await profilesResponse.json())profileMap.set(profile.user_id,profile);
+    }
+    const out=[];
     for(const row of rows){
-      const auth=await authUser(row.user_id);const profile=Array.isArray(row.profiles)?row.profiles[0]:(row.profiles||{});
+      const auth=await authUser(row.user_id);const profile=profileMap.get(row.user_id)||{};
       const member={...row,display_name:profile?.display_name||'',lymphaware_id:profile?.lymphaware_id||'',qr_profile_active:Boolean(profile?.qr_profile_active),profile_next_review_due_at:profile?.profile_next_review_due_at||null,email:auth?.email||'',last_sign_in_at:auth?.lastSignInAt||null};
       const hay=[member.display_name,member.lymphaware_id,member.email,member.membership_status,member.package_type].join(' ').toLowerCase();
       if(!q||hay.includes(q))out.push(member);
