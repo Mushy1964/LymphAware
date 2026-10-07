@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import { brandedEmailHtml } from './_shared/email-branding.mjs';
+import { getControlSettings } from './_shared/control-settings.mjs';
 import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
 import { PACKAGE_DEFINITIONS } from './_shared/initial-membership-checkout.mjs';
 import {
@@ -397,15 +398,24 @@ async function patchOrder(orderId, values) {
 }
 
 async function sendOrderNotification(order, session, items) {
+  const controlSettings = await getControlSettings();
   const apiKey = String(process.env.RESEND_API_KEY || '').trim();
   const orderRef = `ORD-${String(order.order_number).padStart(6, '0')}`;
+  if (controlSettings.communications_order_notifications_enabled !== true) {
+    await patchOrder(order.id, {
+      notification_status: 'SENT',
+      notification_error: null,
+      notification_sent_at: new Date().toISOString()
+    });
+    return { ok: true, disabled: true };
+  }
   if (!apiKey) {
     const error = 'RESEND_API_KEY is not configured.';
     await patchOrder(order.id, { notification_status: 'FAILED', notification_error: error, notification_sent_at: null });
     return { ok: false, error };
   }
 
-  const to = String(process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphawareid.com').trim();
+  const to = String(controlSettings.communications_admin_notification_email || process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphawareid.com').trim();
   const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphawareid.com>').trim();
   const itemLines = items.map((item) => {
     const language = item.language_name ? ` – ${item.language_name}` : '';
