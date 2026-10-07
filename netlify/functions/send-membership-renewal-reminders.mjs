@@ -16,6 +16,7 @@ import {
   serviceHeaders
 } from './_shared/membership-contract.mjs';
 import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
+import { getControlSettings } from './_shared/control-settings.mjs';
 
 function daysUntil(value) {
   return Math.ceil((new Date(value).getTime() - Date.now()) / 86400000);
@@ -147,6 +148,11 @@ async function sendReminder(membership, kind, livePricing) {
 }
 
 export default async () => {
+  const controlSettings = await getControlSettings();
+  if (controlSettings.communications_renewal_reminders_enabled !== true) {
+    console.log('Membership renewal reminders are paused in Admin Control Centre.');
+    return new Response(null, { status: 204 });
+  }
   const failures = [];
   let sent = 0;
   const livePricing = publicPricing(await getBusinessSettings({ strict: true }));
