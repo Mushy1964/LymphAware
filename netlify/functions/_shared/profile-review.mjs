@@ -142,13 +142,17 @@ export async function sendProfileReviewEmail({ to, kind, dueAt, idempotencyKey }
   const text = profileReviewEmailText(kind, dueAt);
   const actionUrl = `${SITE_URL}/portal/#profile-review`;
 
+  const headers = {
+    Authorization: `Bearer ${apiKey}`,
+    'Content-Type': 'application/json'
+  };
+  if (String(idempotencyKey || '').trim()) {
+    headers['Idempotency-Key'] = String(idempotencyKey).trim();
+  }
+
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-      'Idempotency-Key': idempotencyKey
-    },
+    headers,
     body: JSON.stringify({
       from: env('ORDER_NOTIFICATION_FROM') || 'LymphAware ID <notifications@lymphawareid.com>',
       to: [to],
