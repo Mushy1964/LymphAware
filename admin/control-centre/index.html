@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin Control Centre | LymphAware ID</title>
+<link rel="stylesheet" href="/css/styles.css"><link rel="stylesheet" href="/css/brand-header.css?v=20260921">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<style>
+.cc-page{min-height:calc(100vh - 84px);padding:42px 16px;background:#f7f9fa}.cc-shell{max-width:1180px;margin:auto}.cc-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:24px}.cc-head h1{margin:6px 0 8px;font-size:clamp(2rem,4vw,2.65rem)}.cc-head p{margin:0;color:var(--muted);max-width:760px;line-height:1.5}.cc-nav{display:flex;gap:8px;flex-wrap:wrap}.cc-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.panel{padding:22px;border:1px solid var(--border);border-radius:16px;background:#fff;box-shadow:0 6px 20px rgba(31,41,51,.04)}.panel h2{margin:0 0 8px;font-size:1.35rem}.panel>p{margin:0 0 16px;color:var(--muted);line-height:1.5}.field{margin-bottom:14px}.field label{display:block;margin-bottom:6px;font-weight:800}.field input,.field select,.field textarea{width:100%;min-height:46px;padding:10px 12px;border:1px solid #bfcbd2;border-radius:9px;background:#fff;font:inherit}.field textarea{min-height:86px}.switch{display:flex;gap:10px;align-items:center}.switch input{width:20px;height:20px}.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.status{margin:10px 0 0;font-weight:700}.ok{color:#176b32}.err{color:#9a2f2f}.members{grid-column:1/-1}.member-tools{display:flex;gap:10px;margin-bottom:14px}.member-tools input{flex:1;min-height:46px;padding:10px 12px;border:1px solid #bfcbd2;border-radius:9px;font:inherit}.member-list{display:grid;gap:10px}.member{border:1px solid #dbe4e8;border-radius:12px;background:#fbfcfd;overflow:hidden}.member summary{display:grid;grid-template-columns:1.2fr 1fr .8fr .8fr auto;gap:10px;align-items:center;padding:14px;cursor:pointer}.member-body{padding:15px;border-top:1px solid #e1e8ec}.details{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.detail{padding:10px;border-radius:9px;background:#fff}.detail b{display:block;font-size:.85rem;color:#526273;margin-bottom:3px}.activity{grid-column:1/-1}.activity-list{display:grid;gap:8px}.activity-row{display:grid;grid-template-columns:165px 180px 1fr;gap:10px;padding:11px 12px;border:1px solid #e0e7eb;border-radius:10px;background:#fbfcfd;font-size:.92rem}.protected{padding:14px 16px;border-left:4px solid #9b6c00;border-radius:8px;background:#fff8e6;color:#5e491b;line-height:1.5}
+@media(max-width:800px){.cc-grid{grid-template-columns:1fr}.cc-head{flex-direction:column}.members,.activity{grid-column:auto}.member summary{grid-template-columns:1fr}.details{grid-template-columns:1fr}.activity-row{grid-template-columns:1fr}.member-tools{flex-direction:column}}
+</style></head>
+<body>
+<header class="site-header"><div class="container header-inner"><a href="/" class="header-brand"><img class="header-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID"></a><div class="header-actions"><button id="admin-sign-out" class="button button-secondary">Sign Out</button></div></div></header>
+<main class="cc-page"><section class="cc-shell">
+<div class="cc-head"><div><p class="eyebrow">Private Administration Area</p><h1>Admin Control Centre</h1><p>Control routine website access, reminder timing and safe member operations without changing code. Payment, entitlement, expiry, QR/security and deployment logic remain protected.</p></div><div class="cc-nav"><a href="/admin/" class="button button-secondary">Orders</a><a href="/admin/business-settings/" class="button button-secondary">Business Settings</a></div></div>
+<div class="cc-grid">
+<section class="panel">
+<h2>Registration & website access</h2><p>Change who can create a new LymphAware ID account. This setting is already used by the registration journey.</p>
+<div class="field"><label for="registration_mode">Registration mode</label><select id="registration_mode"><option value="OPEN">Open – public registration</option><option value="INVITE_ONLY">Invitation only – trial code required</option><option value="CLOSED">Closed – no new registrations</option></select></div>
+<div class="protected"><strong>Protected:</strong> changing this does not alter existing members, payments, subscriptions or expiry dates.</div>
+</section>
+<section class="panel">
+<h2>Renewal communications</h2><p>Control when the scheduled membership reminders are sent. The reminder content and compliance wording remain protected in code.</p>
+<div class="field"><label for="renewal_first_reminder_days">Advance reminder (days before renewal/expiry)</label><input id="renewal_first_reminder_days" type="number" min="14" max="120" step="1"></div>
+<div class="field"><label for="renewal_final_reminder_days">Final reminder (days before renewal/expiry)</label><input id="renewal_final_reminder_days" type="number" min="3" max="30" step="1"></div>
+</section>
+<section class="panel" style="grid-column:1/-1">
+<div class="actions"><button id="save-controls" class="button button-primary">Save Control Centre Settings</button><span id="settings-status" class="status" role="status"></span></div>
+</section>
+<section class="panel members">
+<h2>Member management</h2><p>Search and inspect membership, renewal and profile status. Operational actions are deliberately limited: paid status and membership expiry cannot be overridden here.</p>
+<div class="member-tools"><input id="member-search" type="search" placeholder="Search name, email or LymphAware ID"><button id="search-members" class="button button-secondary">Search</button></div>
+<div id="member-status" class="status"></div><div id="member-list" class="member-list"></div>
+</section>
+<section class="panel activity">
+<h2>Admin activity log</h2><p>A trace of Control Centre changes and sensitive member operations.</p><div id="activity-list" class="activity-list"></div>
+</section>
+</div></section></main>
+<script>
+const SUPABASE_URL='https://thbhsktcenhrnxzkbjus.supabase.co',SUPABASE_PUBLISHABLE_KEY='sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function token(){const {data:{session}}=await sb.auth.getSession();if(!session?.access_token){location.href='/sign-in/';return null}return session.access_token}
+async function api(path,method='GET',body=null){const t=await token();if(!t)return null;const r=await fetch(path,{method,headers:{Authorization:'Bearer '+t,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,cache:'no-store'});const j=await r.json().catch(()=>({}));if(r.status===403){location.href='/sign-in/';return null}if(!r.ok)throw new Error(j.error||'Request failed.');return j}
+function date(v){return v?new Date(v).toLocaleDateString('en-GB'):'—'};function money(p){return p==null?'—':'£'+(Number(p)/100).toFixed(2)}
+async function loadSettings(){try{const r=await api('/api/admin-control-settings');if(!r)return;for(const [k,v] of Object.entries(r.settings||{})){const e=document.getElementById(k);if(e)e.value=v}}catch(e){document.getElementById('settings-status').textContent=e.message}}
+document.getElementById('save-controls').onclick=async()=>{const s=document.getElementById('settings-status');s.className='status';s.textContent='Saving…';try{await api('/api/admin-control-settings','PUT',{settings:{registration_mode:document.getElementById('registration_mode').value,renewal_first_reminder_days:document.getElementById('renewal_first_reminder_days').value,renewal_final_reminder_days:document.getElementById('renewal_final_reminder_days').value}});s.className='status ok';s.textContent='Saved.';await loadActivity()}catch(e){s.className='status err';s.textContent=e.message}}
+function renderMembers(members){const box=document.getElementById('member-list');if(!members.length){box.innerHTML='<div class="protected">No matching members found.</div>';return}box.innerHTML=members.map(m=>`<details class="member"><summary><strong>${esc(m.display_name||'Name not completed')}</strong><span>${esc(m.lymphaware_id||'No ID')}</span><span>${esc(m.package_type||'—')}</span><span>${esc(m.membership_status||'—')}</span><span>${m.auto_renew_enabled?'Auto-renew on':'Auto-renew off'}</span></summary><div class="member-body"><div class="details"><div class="detail"><b>Email</b>${esc(m.email||'—')}</div><div class="detail"><b>Membership end</b>${date(m.membership_end)}</div><div class="detail"><b>Next renewal</b>${date(m.next_renewal_at)}</div><div class="detail"><b>Renewal price</b>${money(m.renewal_price_pence)}</div><div class="detail"><b>Queued future price</b>${money(m.pending_renewal_price_pence)}</div><div class="detail"><b>QR profile</b>${m.qr_profile_active?'Visible':'Not visible'}</div></div>${m.auto_renew_enabled?`<div class="actions" style="margin-top:14px"><button class="button button-danger cancel-renew" data-id="${esc(m.id)}" data-name="${esc(m.display_name||m.lymphaware_id||'this member')}">Cancel automatic renewal</button></div>`:''}</div></details>`).join('');
+box.querySelectorAll('.cancel-renew').forEach(b=>b.onclick=cancelRenew)}
+async function loadMembers(){const q=document.getElementById('member-search').value.trim();const s=document.getElementById('member-status');s.textContent='Loading members…';try{const r=await api('/api/admin-members-list?q='+encodeURIComponent(q));renderMembers(r.members||[]);s.className='status';s.textContent=(r.members||[]).length+' member(s) shown.'}catch(e){s.className='status err';s.textContent=e.message}}
+async function cancelRenew(e){const b=e.currentTarget;if(!confirm('Cancel automatic renewal for '+b.dataset.name+'? Their current membership remains active until its existing expiry date.'))return;b.disabled=true;try{await api('/api/admin-member-action','POST',{action:'CANCEL_AUTO_RENEW',membershipId:b.dataset.id});await loadMembers();await loadActivity()}catch(err){alert(err.message)}finally{b.disabled=false}}
+async function loadActivity(){const box=document.getElementById('activity-list');try{const r=await api('/api/admin-activity-log');const rows=r.activity||[];box.innerHTML=rows.length?rows.map(a=>`<div class="activity-row"><span>${new Date(a.created_at).toLocaleString('en-GB')}</span><strong>${esc(a.actor_email)}</strong><span>${esc(a.summary)}</span></div>`).join(''):'<div class="protected">No Control Centre activity has been recorded yet.</div>'}catch(e){box.innerHTML='<div class="protected">'+esc(e.message)+'</div>'}}
+document.getElementById('search-members').onclick=loadMembers;document.getElementById('member-search').addEventListener('keydown',e=>{if(e.key==='Enter')loadMembers()});
+document.getElementById('admin-sign-out').onclick=async()=>{await sb.auth.signOut();location.href='/sign-in/'};
+loadSettings();loadMembers();loadActivity();
+</script></body></html>
