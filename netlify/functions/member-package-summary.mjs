@@ -44,8 +44,8 @@ function packageFromItems(items) {
       name: `${termYears}-Year Multilingual`,
       language_name: languageName || null,
       included_summary: languageName
-        ? `English + ${languageName} QR profiles · 2 English ID cards · 2 ${languageName} ID cards · 2 Lanyards & holders`
-        : '2 QR profiles · 2 English ID cards · 2 translated-language ID cards · 2 Lanyards & holders'
+        ? `English + ${languageName} QR profiles · 2 English ID cards · 2 ${languageName} ID cards · 2 Lanyards & holders · Six-monthly profile review reminders`
+        : '2 QR profiles · 2 English ID cards · 2 translated-language ID cards · 2 Lanyards & holders · Six-monthly profile review reminders'
     };
   }
   if (description.includes('Plus')) {
@@ -53,14 +53,14 @@ function packageFromItems(items) {
       code: 'PLUS',
       name: `${termYears}-Year Plus`,
       language_name: null,
-      included_summary: '1 English QR profile · 2 English ID cards · 2 Lanyards & holders'
+      included_summary: '1 English QR profile · 2 English ID cards · 2 Lanyards & holders · Six-monthly profile review reminders'
     };
   }
   return {
     code: 'STANDARD',
     name: `${termYears}-Year Standard`,
     language_name: null,
-    included_summary: '1 English QR profile · 1 English ID card · 1 Lanyard & holder'
+    included_summary: '1 English QR profile · 1 English ID card · 1 Lanyard & holder · Six-monthly profile review reminders'
   };
 }
 

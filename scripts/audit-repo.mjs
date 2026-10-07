@@ -115,6 +115,9 @@ function checkProjectConsistency() {
   const publicChromePath = path.join(root, 'css/public-chrome.css');
   const profilePath = path.join(root, 'profile-v2/index.html');
   const understandingPath = path.join(root, 'understanding-lymphoedema/index.html');
+  const profileReviewSharedPath = path.join(root, 'netlify/functions/_shared/profile-review.mjs');
+  const profileReviewMemberPath = path.join(root, 'netlify/functions/member-profile-review.mjs');
+  const profileReviewReminderPath = path.join(root, 'netlify/functions/send-profile-review-reminders.mjs');
   const packageJsonPath = path.join(root, 'package.json');
   const walletPagePath = path.join(root, 'wallet-card/index.html');
   const walletMemberPath = path.join(root, 'netlify/functions/_shared/wallet-member.mjs');
@@ -149,6 +152,28 @@ function checkProjectConsistency() {
   const publicChrome = fs.readFileSync(publicChromePath, 'utf8');
   const profile = fs.readFileSync(profilePath, 'utf8');
   const understanding = fs.readFileSync(understandingPath, 'utf8');
+  const profileReviewShared = fs.readFileSync(profileReviewSharedPath, 'utf8');
+  const profileReviewMember = fs.readFileSync(profileReviewMemberPath, 'utf8');
+  const profileReviewReminder = fs.readFileSync(profileReviewReminderPath, 'utf8');
+
+  if (!portal.includes('Profile Health Check') || !portal.includes('/.netlify/functions/member-profile-review') || !portal.includes('/profile/?review=1')) {
+    errors.push('Patient Portal profile health-check controls are missing or incomplete.');
+  }
+  if (!profile.includes('profileReviewMode') || !profile.includes('confirmProfileReviewAfterSave')) {
+    errors.push('Profile editor does not complete a requested six-monthly review after save.');
+  }
+  if (!profileReviewShared.includes('REVIEW_MONTHS = 6') || !profileReviewShared.includes('FOLLOWUP_DAYS = 14') || !profileReviewShared.includes('RENEWAL_QUIET_DAYS = 30')) {
+    errors.push('Profile review cadence or renewal quiet-zone constants are missing.');
+  }
+  if (!profileReviewMember.includes('profile_next_review_due_at') || !profileReviewMember.includes('profile_review_events')) {
+    errors.push('Member profile review confirmation does not update the review cycle and history.');
+  }
+  if (!profileReviewReminder.includes("schedule: '30 9 * * *'") || !profileReviewReminder.includes('membershipInRenewalQuietZone') || !profileReviewReminder.includes('PROFILE_REVIEW_FOLLOWUP_DAYS')) {
+    errors.push('Scheduled profile review reminders are missing their cadence, follow-up, or renewal quiet-zone control.');
+  }
+  if ((home.match(/Six-monthly profile review reminders/g) || []).length < 3 || (register.match(/Six-monthly profile review reminders/g) || []).length < 3) {
+    errors.push('Profile review reminders are not listed across all three membership packages.');
+  }
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
   const walletPage = fs.readFileSync(walletPagePath, 'utf8');
   const walletMember = fs.readFileSync(walletMemberPath, 'utf8');
