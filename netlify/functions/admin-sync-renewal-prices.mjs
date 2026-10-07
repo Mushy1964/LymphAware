@@ -174,6 +174,28 @@ export default async request => {
           `renewal-item-price-${membership.id}-${nextPrice}`
         );
 
+        try {
+          await patchMembership(membership.id, { renewal_price_pence: nextPrice });
+        } catch (databaseError) {
+          try {
+            await stripeRequest(
+              `subscription_items/${encodeURIComponent(membership.stripe_subscription_item_id)}`,
+              'POST',
+              { price: previousStripePrice, proration_behavior: 'none' },
+              `renewal-item-db-rollback-${membership.id}-${oldPrice}`
+            );
+            await stripeRequest(
+              `prices/${encodeURIComponent(newStripePrice)}`,
+              'POST',
+              { active: 'false' },
+              `renewal-price-db-deactivate-${newStripePrice}`
+            );
+          } catch (rollbackError) {
+            console.error('Unable to roll back Stripe after the membership price update failed:', rollbackError);
+          }
+          throw databaseError;
+        }
+
         const notice = await notifyPriceChange(membership, oldPrice, nextPrice);
         if (!notice.ok) {
           try {
@@ -181,34 +203,38 @@ export default async request => {
               `subscription_items/${encodeURIComponent(membership.stripe_subscription_item_id)}`,
               'POST',
               { price: previousStripePrice, proration_behavior: 'none' },
-              `renewal-item-rollback-${membership.id}-${oldPrice}`
+              `renewal-item-notice-rollback-${membership.id}-${oldPrice}`
             );
+            await patchMembership(membership.id, { renewal_price_pence: oldPrice });
             await stripeRequest(
               `prices/${encodeURIComponent(newStripePrice)}`,
               'POST',
               { active: 'false' },
-              `renewal-price-deactivate-${newStripePrice}`
+              `renewal-price-notice-deactivate-${newStripePrice}`
             );
           } catch (rollbackError) {
             console.error('Unable to roll back unnotified renewal price change:', rollbackError);
           }
-          throw new Error(`Member notification failed, so the Stripe price was rolled back: ${notice.error}`);
+          throw new Error(`Member notification failed, so the price change was rolled back: ${notice.error}`);
         }
 
-        await patchMembership(membership.id, { renewal_price_pence: nextPrice });
-        await recordContractEvent({
-          membershipId: membership.id,
-          userId: membership.user_id,
-          eventType: 'AUTO_RENEW_PRICE_CHANGED',
-          stripeReference: newStripePrice,
-          details: {
-            old_price_pence: oldPrice,
-            new_price_pence: nextPrice,
-            next_renewal_at: membership.next_renewal_at,
-            notice_days_required: NOTICE_DAYS,
-            notice_sent: true
-          }
-        });
+        try {
+          await recordContractEvent({
+            membershipId: membership.id,
+            userId: membership.user_id,
+            eventType: 'AUTO_RENEW_PRICE_CHANGED',
+            stripeReference: newStripePrice,
+            details: {
+              old_price_pence: oldPrice,
+              new_price_pence: nextPrice,
+              next_renewal_at: membership.next_renewal_at,
+              notice_days_required: NOTICE_DAYS,
+              notice_sent: true
+            }
+          });
+        } catch (auditError) {
+          console.error('Unable to record automatic-renew price-change audit event:', auditError);
+        }
         updated += 1;
       } catch (error) {
         failures.push({
