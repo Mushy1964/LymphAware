@@ -1,4 +1,5 @@
 import { verifyAdminRequest } from './_shared/admin-auth.mjs';
+import { recordAdminActivity } from './_shared/admin-audit.mjs';
 import { PACKAGE_DEFINITIONS } from './_shared/initial-membership-checkout.mjs';
 import { getRegistrationMode } from './_shared/registration-access.mjs';
 import {
@@ -150,6 +151,14 @@ export default async request => {
         ...window
       });
       const [registrationMode, promotions] = await Promise.all([getRegistrationMode(), listStripePromotions()]);
+      await recordAdminActivity({
+        admin,
+        actionType: 'DISCOUNT_CODE_UPDATED',
+        entityType: 'DISCOUNT_CODE',
+        entityId: code,
+        summary: 'Discount or trial code settings updated: ' + code + '.',
+        details: { enabled: updated.enabled, valid_from: updated.validFrom, valid_until: updated.validUntil }
+      });
       return json({ code: serialiseCode(updated, promotions.data || [], registrationMode) });
     }
 
@@ -190,6 +199,14 @@ export default async request => {
     });
     const registrationMode = await getRegistrationMode();
     const promotions = await listStripePromotions();
+    await recordAdminActivity({
+      admin,
+      actionType: 'DISCOUNT_CODE_CREATED',
+      entityType: 'DISCOUNT_CODE',
+      entityId: code,
+      summary: 'Public discount code created: ' + code + '.',
+      details: { percent_off: percentOff, max_redemptions: maxRedemptions, enabled: created.enabled, valid_from: created.validFrom, valid_until: created.validUntil }
+    });
     return json({ created: true, code: serialiseCode(created, promotions.data || [], registrationMode) }, 201);
   } catch (error) {
     console.error('Admin discount-code error:', error);

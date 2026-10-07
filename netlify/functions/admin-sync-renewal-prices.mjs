@@ -1,4 +1,5 @@
 import { verifyAdminRequest } from './_shared/admin-auth.mjs';
+import { recordAdminActivity } from './_shared/admin-audit.mjs';
 import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
 import { PACKAGE_DEFINITIONS } from './_shared/initial-membership-checkout.mjs';
 import {
@@ -416,6 +417,13 @@ export default async request => {
     }
 
     if (failures.length) console.error('Automatic-renew price sync failures:', failures);
+    await recordAdminActivity({
+      admin,
+      actionType: 'AUTO_RENEW_PRICE_SYNC_RUN',
+      entityType: 'MEMBERSHIPS',
+      summary: 'Saved renewal prices applied to existing automatic-renew memberships.',
+      details: { updated, unchanged, deferred, withdrawn, failed: failures.length }
+    });
     return json({
       updated,
       unchanged,

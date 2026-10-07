@@ -276,7 +276,6 @@ export default async (request) => {
       });
       if (!complianceUpdate.ok) return json({ error: 'Unable to record your membership selection. Please try again.' }, 500);
     } else if (paymentType === 'additional_items') {
-      if (controlSettings.feature_additional_items_enabled !== true) return json({ error: 'Additional-item purchases are temporarily unavailable.' }, 403);
       if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware ID membership is required.' }, 403);
 
       const legacyCardQuantity = parseQuantity(body?.cardQuantity);
@@ -288,6 +287,9 @@ export default async (request) => {
         return json({ error: 'Card and lanyard quantities must be whole numbers, use only your available profile languages, and total no more than 10 cards.' }, 400);
       }
       cardQuantity = cardSelections.reduce((sum, item) => sum + item.quantity, 0);
+      if (controlSettings.feature_additional_items_enabled !== true && (cardQuantity > 0 || lanyardQuantity > 0)) {
+        return json({ error: 'Additional card and accessory purchases are temporarily unavailable.' }, 403);
+      }
 
       languageCode = normaliseLanguageCode(body?.languageCode);
       if (languageCode && controlSettings.feature_additional_languages_enabled !== true) {
