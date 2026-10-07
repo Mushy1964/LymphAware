@@ -443,5 +443,6 @@ function showRequestedPortalSection(){if(location.hash==='#membership-panel'){wi
 async function checkPortalAccess(){const {data:{user},error}=await supabaseClient.auth.getUser();if(error||!user){const returnTo=location.pathname+location.search+location.hash;location.href='/sign-in/?returnTo='+encodeURIComponent(returnTo);return}if(String(user.email||'').trim().toLowerCase()==='admin@lymphawareid.com'){location.href='/admin/';return}currentUserId=user.id;currentUserEmail=user.email||'';currentUserIsTrial=Boolean(user?.user_metadata?.trial_participant||user?.user_metadata?.registration_invite_code);updateAdditionalOrder();showPaymentResult();const m=await fetchMembership(user.id),entitled=await renderMembership(m);if(entitled){await loadOnboardingStatus(user.id);await loadProfileControls(user.id);await loadProfileReviewStatus();await loadLanguageProfiles(user.id);await loadOwnedPackageSummary()}portalLoading.style.display='none';portalContent.style.display='block';showRequestedPortalSection();await refreshAfterSuccessfulPayment()}
 async function initialisePortal(){await loadBusinessPricing();applyRequestedPackage();updateMembershipOrder();updateAdditionalOrder();await checkPortalAccess()}initialisePortal();
 </script>
+  <script src="/js/site-controls.js" defer></script>
 </body>
 </html>
