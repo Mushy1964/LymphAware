@@ -1,4 +1,5 @@
 import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
+import { getControlSettings } from './_shared/control-settings.mjs';
 
 const APPROVED_LANGUAGES = {
   FR: 'French',
@@ -191,7 +192,10 @@ export default async (request) => {
 
     const isTrialParticipant = membership.membership_status === 'PILOT';
     const trialLaterOrderCouponId = isTrialParticipant ? 'LYMPHAWARE_TRIAL_LATER_100_V1' : '';
-    const businessSettings = await getBusinessSettings({ strict: true });
+    const [businessSettings, controlSettings] = await Promise.all([
+      getBusinessSettings({ strict: true }),
+      getControlSettings({ strict: true })
+    ]);
     const livePricing = publicPricing(businessSettings);
 
     const deliveryCountry = normaliseCountry(body?.deliveryCountry);
@@ -243,6 +247,9 @@ export default async (request) => {
           : `${membershipTermYears}-year membership with 1 English ID card and 1 lanyard & holder.`;
       amountPence = livePricing.packages[packageType][membershipTermYears];
       autoRenew = body?.autoRenew === true;
+      if (autoRenew && controlSettings.feature_auto_renew_signup_enabled !== true) {
+        return json({ error: 'Automatic renewal is temporarily unavailable for new memberships. Please continue without automatic renewal.' }, 400);
+      }
       if (autoRenew && body?.autoRenewAcknowledged !== true) {
         return json({ error: 'Please confirm the automatic-renewal amount and frequency.' }, 400);
       }
@@ -269,6 +276,7 @@ export default async (request) => {
       });
       if (!complianceUpdate.ok) return json({ error: 'Unable to record your membership selection. Please try again.' }, 500);
     } else if (paymentType === 'additional_items') {
+      if (controlSettings.feature_additional_items_enabled !== true) return json({ error: 'Additional-item purchases are temporarily unavailable.' }, 403);
       if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware ID membership is required.' }, 403);
 
       const legacyCardQuantity = parseQuantity(body?.cardQuantity);
@@ -282,6 +290,9 @@ export default async (request) => {
       cardQuantity = cardSelections.reduce((sum, item) => sum + item.quantity, 0);
 
       languageCode = normaliseLanguageCode(body?.languageCode);
+      if (languageCode && controlSettings.feature_additional_languages_enabled !== true) {
+        return json({ error: 'Additional-language purchases are temporarily unavailable.' }, 403);
+      }
       if (languageCode) {
         languageName = APPROVED_LANGUAGES[languageCode] || '';
         if (!languageName) return json({ error: 'Please select an additional language that is currently available.' }, 400);
@@ -314,6 +325,7 @@ export default async (request) => {
       replacementCard = cardQuantity > 0;
       replacementLanyard = lanyardQuantity > 0;
     } else if (paymentType === 'additional_language') {
+      if (controlSettings.feature_additional_languages_enabled !== true) return json({ error: 'Additional-language purchases are temporarily unavailable.' }, 403);
       if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware ID membership is required.' }, 403);
 
       languageCode = normaliseLanguageCode(body?.languageCode);
@@ -330,6 +342,7 @@ export default async (request) => {
       amountPence = livePricing.additionalItems.LANGUAGE;
       packageType = 'ADDITIONAL_LANGUAGE';
     } else if (paymentType === 'replacement_items') {
+      if (controlSettings.feature_additional_items_enabled !== true) return json({ error: 'Additional-item purchases are temporarily unavailable.' }, 403);
       if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware ID membership is required.' }, 403);
 
       replacementCard = body?.replacementCard === true;
