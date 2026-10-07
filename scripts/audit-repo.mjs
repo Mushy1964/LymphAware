@@ -126,7 +126,7 @@ function checkProjectConsistency() {
   const emailBrandingPath = path.join(root, 'netlify/functions/_shared/email-branding.mjs');
   const membershipContractPath = path.join(root, 'netlify/functions/_shared/membership-contract.mjs');
   const renewalRemindersPath = path.join(root, 'netlify/functions/send-membership-renewal-reminders.mjs');
-  const renewalArtworkPath = path.join(root, 'assets/demo/LymphAware_Hero_Final_v4.jpeg');
+  const renewalArtworkPath = path.join(root, 'assets/demo/LymphAware_Hero_Product_Showcase_v1.png');
 
   const checkout = fs.readFileSync(checkoutPath, 'utf8');
   const portal = fs.readFileSync(portalPath, 'utf8');
@@ -166,14 +166,14 @@ function checkProjectConsistency() {
   if (!fs.existsSync(renewalArtworkPath) || fs.statSync(renewalArtworkPath).size < 100000) {
     errors.push('Established LymphAware ID hero artwork is missing or unexpectedly small.');
   }
-  if (!membershipContract.includes("LymphAware_Hero_Final_v4.jpeg") || !membershipContract.includes("portal/#membership-panel")) {
-    errors.push('Renewal email configuration is not using established LymphAware ID artwork and the membership Portal deep link.');
+  if (!membershipContract.includes("LymphAware_Hero_Product_Showcase_v1.png") || !membershipContract.includes("portal/#membership-panel")) {
+    errors.push('Renewal email configuration is not using established LymphAware ID product artwork and the membership Portal deep link.');
   }
-  if (!emailBranding.includes('heroImageHtml') || !emailBranding.includes('detailRowsHtml') || !emailBranding.includes('actionButtonHtml')) {
-    errors.push('Branded email template is missing renewal artwork, details or accessible action-button support.');
+  if (!emailBranding.includes('heroImageHtml') || !emailBranding.includes('detailRowsHtml') || !emailBranding.includes('actionButtonHtml') || !emailBranding.includes('overflow-wrap:anywhere') || !emailBranding.includes('.email-title')) {
+    errors.push('Branded email template is missing renewal artwork, responsive wrapping, details or accessible action-button support.');
   }
-  if (!renewalReminders.includes("actionLabel: automatic ? 'Review my membership' : 'Renew now'") || !renewalReminders.includes('showHeaderLogo: automatic') || !renewalReminders.includes('heroLinkUrl: automatic')) {
-    errors.push('Renewal reminders do not separate manual renewal artwork/action from automatic-renewal messaging.');
+  if (!renewalReminders.includes("actionLabel: automatic ? 'Review my membership' : 'Renew now'") || !renewalReminders.includes("heroImageUrl: RENEWAL_HERO_URL") || !renewalReminders.includes("showHeaderLogo: false") || !renewalReminders.includes("Your membership renews automatically") || !renewalReminders.includes("Your membership is approaching expiry")) {
+    errors.push('Renewal reminders do not use the shared branded hero, short mobile titles and distinct manual/automatic actions.');
   }
   if (!signIn.includes('safePortalReturnTo') || !signIn.includes('requestedReturnTo') || !portal.includes("returnTo='+encodeURIComponent(returnTo)") || !portal.includes("location.hash==='#membership-panel'")) {
     errors.push('Renewal deep links are not safely preserved through sign-in and returned to the membership section.');
