@@ -28,7 +28,7 @@ export default async request=>{
     const upcomingRenewals=memberships.filter(m=>m.auto_renew_enabled&&m.next_renewal_at&&new Date(m.next_renewal_at).getTime()>=now&&new Date(m.next_renewal_at).getTime()<=days60);
     const upcomingExpiries=memberships.filter(m=>!m.auto_renew_enabled&&m.membership_end&&new Date(m.membership_end).getTime()>=now&&new Date(m.membership_end).getTime()<=days60);
 
-    if(type==='summary')return json({summary:{active_memberships:entitled.length,auto_renew_active:memberships.filter(m=>m.auto_renew_enabled).length,renewals_next_60_days:upcomingRenewals.length,expiries_next_60_days:upcomingExpiries.length,paid_order_revenue_pence:paidOrders.reduce((s,o)=>s+Number(o.total_pence||0),0,open_fulfilment:openFulfilment.length,total_paid_orders:paidOrders.length},generated_at:new Date().toISOString()});
+    if(type==='summary')return json({summary:{active_memberships:entitled.length,auto_renew_active:memberships.filter(m=>m.auto_renew_enabled).length,renewals_next_60_days:upcomingRenewals.length,expiries_next_60_days:upcomingExpiries.length,paid_order_revenue_pence:paidOrders.reduce((s,o)=>s+Number(o.total_pence||0),0),open_fulfilment:openFulfilment.length,total_paid_orders:paidOrders.length},generated_at:new Date().toISOString()});
 
     let rows=[],columns=[];
     if(type==='memberships'){
