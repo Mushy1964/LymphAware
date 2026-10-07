@@ -172,7 +172,41 @@ async function handleRecurringEvent(event) {
     return true;
   }
   if (event.type === 'invoice.payment_failed') {
-    await patchMembershipBySubscription(invoiceSubscriptionId(object), { stripe_subscription_status: 'past_due' });
+    const subscriptionId = invoiceSubscriptionId(object);
+    await patchMembershipBySubscription(subscriptionId, { stripe_subscription_status: 'past_due' });
+    const membership = await membershipBySubscription(subscriptionId);
+    if (membership && membership.membership_status !== 'PILOT') {
+      const email = String(object?.customer_email || '').trim() || await memberEmail(membership.user_id);
+      const actionUrl = String(object?.hosted_invoice_url || '').trim() || 'https://lymphawareid.com/portal/#membership-panel';
+      const amountDue = money(object.amount_due || membership.renewal_price_pence);
+      const result = await sendMembershipEmail({
+        to: email,
+        subject: 'Action needed: your LymphAware ID renewal payment was not completed',
+        htmlTitle: 'Your renewal payment needs attention',
+        preheader: 'We could not complete your LymphAware ID automatic-renewal payment.',
+        actionUrl,
+        actionLabel: object?.hosted_invoice_url ? 'Complete renewal payment' : 'Review my membership',
+        text: `We could not complete the automatic-renewal payment for your LymphAware ID membership.\n\nAmount due: ${amountDue}\nRenewal date: ${dateUK(membership.next_renewal_at || membership.membership_end)}\n\nNo duplicate payment has been taken. Stripe may retry the payment automatically. You can also use the secure payment link below to complete the renewal or update the payment method offered by Stripe:\n\n${actionUrl}\n\nIf the renewal is not completed by the end of your paid membership term, your QR-linked profile will become unavailable until the membership is renewed.\n\nIf you need help, contact admin@lymphawareid.com.\n\nThe LymphAware ID Team`,
+        detailRows: [
+          { label: 'Amount due', value: amountDue },
+          { label: 'Renewal date', value: dateUK(membership.next_renewal_at || membership.membership_end) }
+        ],
+        idempotencyKey: `renewal-payment-failed-${object.id}-${object.attempt_count || 1}`
+      });
+      if (!result.ok) console.error('Unable to send failed renewal payment email:', result.error);
+      await recordContractEvent({
+        membershipId: membership.id,
+        userId: membership.user_id,
+        eventType: 'RENEWAL_PAYMENT_FAILED',
+        stripeReference: object.id,
+        details: {
+          attempt_count: object.attempt_count || null,
+          amount_due_pence: object.amount_due || membership.renewal_price_pence,
+          hosted_invoice_available: Boolean(object?.hosted_invoice_url),
+          notice_sent: result.ok
+        }
+      });
+    }
     return true;
   }
   if (event.type === 'invoice.paid') {
@@ -197,7 +231,12 @@ async function handleRecurringEvent(event) {
       stripe_subscription_status: 'active',
       paid_at: renewalPaidAt.toISOString(),
       latest_renewal_paid_at: renewalPaidAt.toISOString(),
+      latest_renewal_mode: 'AUTO',
+      latest_renewal_payment_intent_id: typeof object.payment_intent === 'string' ? object.payment_intent : object.payment_intent?.id || null,
+      latest_renewal_checkout_session_id: null,
+      renewal_previous_membership_end: membership.membership_end,
       renewal_cooling_off_ends_at: renewalCoolingEnds.toISOString(),
+      cooling_off_cancellation_requested_at: null,
       renewal_cooling_notice_sent_at: renewalPaidAt.toISOString(),
       renewal_reminder_first_sent_at: null,
       renewal_reminder_final_sent_at: null,
@@ -226,22 +265,26 @@ async function handleRecurringEvent(event) {
 
 async function moveRenewalToMultilingual(userId) {
   const response = await fetch(
-    `${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${encodeURIComponent(userId)}&auto_renew_enabled=eq.true&select=id,membership_term_years,stripe_subscription_item_id&limit=1`,
+    `${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${encodeURIComponent(userId)}&auto_renew_enabled=eq.true&select=id,membership_term_years,stripe_subscription_item_id,renewal_price_pence&limit=1`,
     { headers: supabaseHeaders() }
   );
   if (!response.ok) throw new Error(`Unable to read membership renewal: ${await response.text()}`);
   const membership = (await response.json())?.[0];
   const term = Number(membership?.membership_term_years);
-  const price = RENEWAL_STRIPE_PRICES.MULTILINGUAL[term];
-  if (!membership?.stripe_subscription_item_id || !price) return;
+  if (!membership?.stripe_subscription_item_id || ![1, 2, 3].includes(term)) return;
+
+  const renewalPricePence = await liveRenewalPrice('MULTILINGUAL', term);
+  if (renewalPricePence <= 0) throw new Error('Unable to determine the current Multilingual renewal price.');
+  const price = await createRenewalStripePrice('MULTILINGUAL', term, renewalPricePence);
+
   await stripeRequest(`subscription_items/${encodeURIComponent(membership.stripe_subscription_item_id)}`, 'POST', {
-    price,
+    price: price.id,
     proration_behavior: 'none'
   });
   const update = await fetch(`${process.env.SUPABASE_URL}/rest/v1/memberships?id=eq.${encodeURIComponent(membership.id)}`, {
     method: 'PATCH',
     headers: supabaseHeaders('return=minimal'),
-    body: JSON.stringify({ package_type: 'MULTILINGUAL', renewal_price_pence: RENEWAL_PRICES.MULTILINGUAL[term], updated_at: new Date().toISOString() })
+    body: JSON.stringify({ package_type: 'MULTILINGUAL', renewal_price_pence: renewalPricePence, updated_at: new Date().toISOString() })
   });
   if (!update.ok) throw new Error(`Unable to update multilingual renewal: ${await update.text()}`);
 }
