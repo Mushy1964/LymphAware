@@ -1,6 +1,7 @@
 export { MEMBERSHIP_CONTRACT_VERSION, FIRST_REMINDER_WINDOW, FINAL_REMINDER_WINDOW } from './membership-contract.mjs';
 import { MEMBERSHIP_CONTRACT_VERSION, FIRST_REMINDER_WINDOW, FINAL_REMINDER_WINDOW } from './membership-contract.mjs';
 import { getBusinessSettings, publicPricing } from './business-settings.mjs';
+import { getControlSettings } from './control-settings.mjs';
 
 export const APPROVED_LANGUAGES = {
   FR: 'French',
@@ -55,7 +56,13 @@ export async function normaliseInitialSelection(body = {}) {
   if (body.termsAccepted !== true) throw new Error('Please accept the Terms and Privacy Notice.');
   if (autoRenew && body.autoRenewAcknowledged !== true) throw new Error('Please confirm the automatic-renewal details.');
 
-  const businessSettings = await getBusinessSettings({ strict: true });
+  const [businessSettings, controlSettings] = await Promise.all([
+    getBusinessSettings({ strict: true }),
+    getControlSettings({ strict: true })
+  ]);
+  if (autoRenew && controlSettings.feature_auto_renew_signup_enabled !== true) {
+    throw new Error('Automatic renewal is temporarily unavailable for new memberships. Please continue without automatic renewal.');
+  }
   const pricing = publicPricing(businessSettings);
   const shippingBand = deliveryCountry === 'GB' ? 'UK' : EUROPE_COUNTRIES.has(deliveryCountry) ? 'EUROPE' : 'REST_OF_WORLD';
   const shippingPence = pricing.shipping[shippingBand];
