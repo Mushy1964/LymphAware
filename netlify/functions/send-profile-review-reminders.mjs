@@ -7,6 +7,7 @@ import {
   sendProfileReviewEmail,
   serviceHeaders
 } from './_shared/profile-review.mjs';
+import { getControlSettings } from './_shared/control-settings.mjs';
 
 function supabaseUrl() {
   return String(Netlify.env.get('SUPABASE_URL') || '').trim();
@@ -40,6 +41,11 @@ async function markReminder(profile, column) {
 }
 
 export default async () => {
+  const controlSettings = await getControlSettings();
+  if (controlSettings.communications_profile_review_reminders_enabled !== true) {
+    console.log('Profile review reminders are paused in Admin Control Centre.');
+    return new Response(null, { status: 204 });
+  }
   const failures = [];
   let firstReminders = 0;
   let followups = 0;

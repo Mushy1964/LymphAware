@@ -1,4 +1,5 @@
 import { verifyAdminRequest } from './_shared/admin-auth.mjs';
+import { changedSettings, recordAdminActivity } from './_shared/admin-audit.mjs';
 import {
   BUSINESS_SETTING_KEYS,
   getBusinessSettings,
@@ -58,8 +59,19 @@ export default async request => {
     }
 
     const body = await request.json().catch(() => ({}));
+    const before = await getBusinessSettings({ strict: true });
     const settings = validateSubmittedSettings(body.settings);
     const saved = await saveBusinessSettings(settings);
+    const changes = changedSettings(before, saved);
+    if (Object.keys(changes).length) {
+      await recordAdminActivity({
+        admin,
+        actionType: 'BUSINESS_SETTINGS_UPDATED',
+        entityType: 'SYSTEM_SETTINGS',
+        summary: 'Business prices or postage settings updated.',
+        details: { changes }
+      });
+    }
     return json({
       saved: true,
       settings: saved,

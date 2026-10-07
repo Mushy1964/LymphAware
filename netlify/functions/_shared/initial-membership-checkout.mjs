@@ -1,6 +1,7 @@
 export { MEMBERSHIP_CONTRACT_VERSION, FIRST_REMINDER_WINDOW, FINAL_REMINDER_WINDOW } from './membership-contract.mjs';
 import { MEMBERSHIP_CONTRACT_VERSION, FIRST_REMINDER_WINDOW, FINAL_REMINDER_WINDOW } from './membership-contract.mjs';
 import { getBusinessSettings, publicPricing } from './business-settings.mjs';
+import { getControlSettings } from './control-settings.mjs';
 
 export const APPROVED_LANGUAGES = {
   FR: 'French',
@@ -55,7 +56,25 @@ export async function normaliseInitialSelection(body = {}) {
   if (body.termsAccepted !== true) throw new Error('Please accept the Terms and Privacy Notice.');
   if (autoRenew && body.autoRenewAcknowledged !== true) throw new Error('Please confirm the automatic-renewal details.');
 
-  const businessSettings = await getBusinessSettings({ strict: true });
+  const [businessSettings, controlSettings] = await Promise.all([
+    getBusinessSettings({ strict: true }),
+    getControlSettings({ strict: true })
+  ]);
+  if (autoRenew && controlSettings.feature_auto_renew_signup_enabled !== true) {
+    throw new Error('Automatic renewal is temporarily unavailable for new memberships. Please continue without automatic renewal.');
+  }
+  const packageAvailable = {
+    STANDARD: controlSettings.feature_package_standard_enabled,
+    PLUS: controlSettings.feature_package_plus_enabled,
+    MULTILINGUAL: controlSettings.feature_package_multilingual_enabled
+  }[packageType] === true;
+  const termAvailable = {
+    1: controlSettings.feature_term_1y_enabled,
+    2: controlSettings.feature_term_2y_enabled,
+    3: controlSettings.feature_term_3y_enabled
+  }[membershipTermYears] === true;
+  if (!packageAvailable) throw new Error('That membership package is temporarily unavailable for new memberships.');
+  if (!termAvailable) throw new Error('That membership term is temporarily unavailable for new memberships.');
   const pricing = publicPricing(businessSettings);
   const shippingBand = deliveryCountry === 'GB' ? 'UK' : EUROPE_COUNTRIES.has(deliveryCountry) ? 'EUROPE' : 'REST_OF_WORLD';
   const shippingPence = pricing.shipping[shippingBand];

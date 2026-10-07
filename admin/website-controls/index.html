@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Website Controls | LymphAware ID Admin</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/brand-header.css?v=20260921">
+  <link rel="stylesheet" href="/css/admin-control-centre.css?v=20261007">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="site-header"><div class="container header-inner"><a href="/" class="header-brand" aria-label="LymphAware ID home"><img class="header-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID"></a><div class="header-actions"><button id="admin-sign-out" class="button button-secondary" type="button">Sign Out</button></div></div></header>
+<main class="admin-control-page">
+  <div class="admin-control-head"><div><p class="eyebrow">LymphAware ID Control Centre</p><h1>Website Controls</h1><p>Control registration availability, temporary customer notices and selected customer-facing features without changing code.</p></div><a class="button button-secondary admin-toplink" href="/admin/">Order Management</a></div>
+  <nav class="admin-nav" aria-label="Administration sections">
+    <a href="/admin/">Orders</a><a href="/admin/members/">Members</a><a href="/admin/business-settings/">Business Settings</a><a href="/admin/communications/">Communications</a><a href="/admin/website-controls/" aria-current="page">Website Controls</a><a href="/admin/reports/">Reports</a><a href="/admin/activity-log/">Activity Log</a>
+  </nav>
+
+  <form id="controls-form" class="control-grid" aria-busy="true">
+    <section class="control-card">
+      <h2>Registration status</h2>
+      <p>Choose who can start a new LymphAware ID membership. Existing members and their QR profiles are not affected.</p>
+      <div class="registration-options">
+        <label class="registration-option"><input type="radio" name="registration-mode" value="OPEN"><span><strong>Open registration</strong><span>Anyone can join. Enabled public discount codes can be used.</span></span></label>
+        <label class="registration-option"><input type="radio" name="registration-mode" value="INVITE_ONLY"><span><strong>Private trial / invitation only</strong><span>Only customers with the active trial invitation code can proceed.</span></span></label>
+        <label class="registration-option"><input type="radio" name="registration-mode" value="CLOSED"><span><strong>Close new registrations</strong><span>No new customer can create a membership. Existing member access continues.</span></span></label>
+      </div>
+      <div class="warning-box"><strong>Protected change.</strong> Changing registration mode affects who can become a customer. You will be asked to confirm before it is saved.</div>
+    </section>
+
+    <section class="control-card">
+      <h2>Website announcement</h2>
+      <p>Show a short notice across the main customer-facing pages without changing page code.</p>
+      <div class="toggle-row"><div class="toggle-copy"><strong>Show announcement</strong><span>The message only appears while this switch is on and within any dates below.</span></div><input id="announcement-enabled" type="checkbox"></div>
+      <div class="field"><label for="announcement-message">Message</label><textarea id="announcement-message" maxlength="280" placeholder="For example: Christmas dispatch dates are now available."></textarea><small id="announcement-count">0 / 280</small></div>
+      <div class="field"><label for="announcement-start">Start date/time (optional)</label><input id="announcement-start" type="datetime-local"></div>
+      <div class="field"><label for="announcement-end">End date/time (optional)</label><input id="announcement-end" type="datetime-local"></div>
+    </section>
+
+    <section class="control-card">
+      <h2>Customer feature availability</h2>
+      <p>Temporarily pause selected purchasing features while leaving existing memberships intact.</p>
+      <div class="toggle-row"><div class="toggle-copy"><strong>Automatic renewal for new memberships</strong><span>Existing auto-renew subscriptions continue. This only controls whether new customers can select auto renewal.</span></div><input id="feature-auto-renew" type="checkbox"></div>
+      <div class="toggle-row"><div class="toggle-copy"><strong>Additional cards &amp; accessories</strong><span>Controls later card/lanyard purchases from the Patient Portal.</span></div><input id="feature-additional-items" type="checkbox"></div>
+      <div class="toggle-row"><div class="toggle-copy"><strong>Additional-language purchases</strong><span>Controls later language-package purchases. Existing Multilingual memberships remain active.</span></div><input id="feature-additional-languages" type="checkbox"></div>
+      <h3>Packages available to new customers</h3>
+      <div class="toggle-row"><div class="toggle-copy"><strong>Standard</strong><span>Hide this package from new membership choices without changing its stored prices.</span></div><input id="feature-package-standard" type="checkbox"></div>
+      <div class="toggle-row"><div class="toggle-copy"><strong>Plus</strong><span>Hide this package from new membership choices without affecting existing Plus members.</span></div><input id="feature-package-plus" type="checkbox"></div>
+      <div class="toggle-row"><div class="toggle-copy"><strong>Multilingual</strong><span>Hide this package from new membership choices without affecting existing Multilingual members.</span></div><input id="feature-package-multilingual" type="checkbox"></div>
+      <h3>Membership terms available to new customers</h3>
+      <div class="toggle-row"><div class="toggle-copy"><strong>1-year term</strong><span>Controls whether new customers can select a 1-year membership.</span></div><input id="feature-term-1" type="checkbox"></div>
+      <div class="toggle-row"><div class="toggle-copy"><strong>2-year term</strong><span>Controls whether new customers can select a 2-year membership.</span></div><input id="feature-term-2" type="checkbox"></div>
+      <div class="toggle-row"><div class="toggle-copy"><strong>3-year term</strong><span>Controls whether new customers can select a 3-year membership.</span></div><input id="feature-term-3" type="checkbox"></div>
+    </section>
+
+    <section class="control-card">
+      <h2>Kept under controlled code</h2>
+      <p>These remain protected because a casual change could affect payment, security, entitlement or legal compliance.</p>
+      <div class="protected-list">
+        <div>Stripe webhook and payment reconciliation</div><div>QR entitlement/security rules</div><div>Membership expiry calculations</div><div>Database structure and RLS</div><div>Authentication/security settings</div><div>Core email HTML templates</div><div>Cooling-off calculation logic</div><div>Legal page structure</div><div>Deployment configuration</div><div>Translation engine internals</div>
+      </div>
+    </section>
+
+    <section class="control-card full">
+      <div class="actions"><button id="save-controls" class="button button-primary" type="submit">Save Website Controls</button></div>
+      <p id="control-status" class="status" role="status" aria-live="polite">Loading current controls…</p>
+    </section>
+  </form>
+</main>
+<script>
+const SUPABASE_URL='https://thbhsktcenhrnxzkbjus.supabase.co',SUPABASE_PUBLISHABLE_KEY='sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+const form=document.getElementById('controls-form'),statusEl=document.getElementById('control-status'),saveButton=document.getElementById('save-controls'),announcementMessage=document.getElementById('announcement-message'),announcementCount=document.getElementById('announcement-count');
+let loadedSettings=null,originalMode='';
+
+async function token(){const {data:{session},error}=await supabaseClient.auth.getSession();if(error||!session?.access_token){location.href='/sign-in/';return null}return session.access_token}
+function dtLocal(value){if(!value)return'';const d=new Date(value);if(!Number.isFinite(d.getTime()))return'';const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())}
+function isoOrBlank(value){if(!value)return'';const d=new Date(value);return Number.isFinite(d.getTime())?d.toISOString():''}
+async function request(method='GET',body=null){const accessToken=await token();if(!accessToken)return null;const response=await fetch('/api/admin-control-settings',{method,headers:{Authorization:'Bearer '+accessToken,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,cache:'no-store'});const result=await response.json().catch(()=>({}));if(response.status===403){location.href='/sign-in/';return null}if(!response.ok)throw new Error(result.error||'Website controls could not be updated.');return result}
+function fill(s){loadedSettings={...s};originalMode=s.registration_mode;document.querySelector('input[name="registration-mode"][value="'+s.registration_mode+'"]').checked=true;document.getElementById('announcement-enabled').checked=s.announcement_enabled===true;announcementMessage.value=s.announcement_message||'';document.getElementById('announcement-start').value=dtLocal(s.announcement_start_at);document.getElementById('announcement-end').value=dtLocal(s.announcement_end_at);document.getElementById('feature-auto-renew').checked=s.feature_auto_renew_signup_enabled===true;document.getElementById('feature-additional-items').checked=s.feature_additional_items_enabled===true;document.getElementById('feature-additional-languages').checked=s.feature_additional_languages_enabled===true;document.getElementById('feature-package-standard').checked=s.feature_package_standard_enabled===true;document.getElementById('feature-package-plus').checked=s.feature_package_plus_enabled===true;document.getElementById('feature-package-multilingual').checked=s.feature_package_multilingual_enabled===true;document.getElementById('feature-term-1').checked=s.feature_term_1y_enabled===true;document.getElementById('feature-term-2').checked=s.feature_term_2y_enabled===true;document.getElementById('feature-term-3').checked=s.feature_term_3y_enabled===true;announcementCount.textContent=announcementMessage.value.length+' / 280'}
+async function load(){try{const result=await request();if(!result)return;fill(result.settings);statusEl.textContent='';form.setAttribute('aria-busy','false')}catch(error){statusEl.className='status error';statusEl.textContent=error.message}}
+announcementMessage.addEventListener('input',()=>announcementCount.textContent=announcementMessage.value.length+' / 280');
+form.addEventListener('submit',async e=>{e.preventDefault();if(!loadedSettings)return;const mode=document.querySelector('input[name="registration-mode"]:checked')?.value||'INVITE_ONLY';if(mode!==originalMode){const descriptions={OPEN:'OPEN registration to the public',INVITE_ONLY:'PRIVATE TRIAL / invitation-only registration',CLOSED:'CLOSE all new registrations'};if(!confirm('Change LymphAware ID registration to '+descriptions[mode]+'? Existing members are not affected.'))return}const settings={...loadedSettings,registration_mode:mode,announcement_enabled:document.getElementById('announcement-enabled').checked,announcement_message:announcementMessage.value.trim(),announcement_start_at:isoOrBlank(document.getElementById('announcement-start').value),announcement_end_at:isoOrBlank(document.getElementById('announcement-end').value),feature_auto_renew_signup_enabled:document.getElementById('feature-auto-renew').checked,feature_additional_items_enabled:document.getElementById('feature-additional-items').checked,feature_additional_languages_enabled:document.getElementById('feature-additional-languages').checked,feature_package_standard_enabled:document.getElementById('feature-package-standard').checked,feature_package_plus_enabled:document.getElementById('feature-package-plus').checked,feature_package_multilingual_enabled:document.getElementById('feature-package-multilingual').checked,feature_term_1y_enabled:document.getElementById('feature-term-1').checked,feature_term_2y_enabled:document.getElementById('feature-term-2').checked,feature_term_3y_enabled:document.getElementById('feature-term-3').checked};saveButton.disabled=true;statusEl.className='status';statusEl.textContent='Saving…';try{const result=await request('PUT',{settings,registrationModeConfirmation:mode!==originalMode?mode:''});if(!result)return;fill(result.settings);statusEl.className='status success';statusEl.textContent='Website controls saved.'}catch(error){statusEl.className='status error';statusEl.textContent=error.message}finally{saveButton.disabled=false}});
+document.getElementById('admin-sign-out').addEventListener('click',async()=>{await supabaseClient.auth.signOut();location.href='/sign-in/'});
+load();
+</script>
+</body>
+</html>

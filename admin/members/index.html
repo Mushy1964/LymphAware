@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Members | LymphAware ID Admin</title>
+  <link rel="stylesheet" href="/css/styles.css"><link rel="stylesheet" href="/css/brand-header.css?v=20260921"><link rel="stylesheet" href="/css/admin-control-centre.css?v=20261007">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="site-header"><div class="container header-inner"><a href="/" class="header-brand"><img class="header-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID"></a><div class="header-actions"><button id="admin-sign-out" class="button button-secondary" type="button">Sign Out</button></div></div></header>
+<main class="admin-control-page">
+  <div class="admin-control-head"><div><p class="eyebrow">LymphAware ID Control Centre</p><h1>Members</h1><p>Find a member, review their membership and renewal status, and carry out safe operational actions without editing payment or entitlement fields directly.</p></div><a class="button button-secondary admin-toplink" href="/admin/">Order Management</a></div>
+  <nav class="admin-nav" aria-label="Administration sections"><a href="/admin/">Orders</a><a href="/admin/members/" aria-current="page">Members</a><a href="/admin/business-settings/">Business Settings</a><a href="/admin/communications/">Communications</a><a href="/admin/website-controls/">Website Controls</a><a href="/admin/reports/">Reports</a><a href="/admin/activity-log/">Activity Log</a></nav>
+
+  <section class="control-card full">
+    <div class="filter-row">
+      <div class="field"><label for="member-search">Search members</label><input id="member-search" type="search" placeholder="Name, email, LymphAware ID, package or status"></div>
+      <button id="member-search-button" class="button button-primary" type="button">Search</button>
+      <button id="member-clear-button" class="button button-secondary" type="button">Show all</button>
+    </div>
+    <div class="summary-strip">
+      <div class="summary-stat"><strong id="members-found">—</strong><span>Members found</span></div>
+      <div class="summary-stat"><strong id="members-active">—</strong><span>Active / trial / sponsored</span></div>
+      <div class="summary-stat"><strong id="members-auto">—</strong><span>Auto-renew active</span></div>
+      <div class="summary-stat"><strong id="members-qr">—</strong><span>QR profiles available</span></div>
+    </div>
+    <p id="member-status" class="status" role="status" aria-live="polite">Loading members…</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Member</th><th>Membership</th><th>Renewal</th><th>Profile</th><th>Actions</th></tr></thead>
+        <tbody id="member-list"><tr><td colspan="5" class="empty">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <dialog id="member-orders-dialog" style="max-width:760px;width:calc(100% - 30px);border:0;border-radius:16px;padding:0;box-shadow:0 18px 70px rgba(0,0,0,.25)">
+    <section style="padding:22px">
+      <div style="display:flex;justify-content:space-between;gap:16px;align-items:start"><div><h2 id="orders-member-name" style="margin:0;color:#0053b7">Member orders</h2><p id="orders-member-meta"></p></div><button id="orders-close" class="button button-secondary" type="button">Close</button></div>
+      <div id="member-order-list"></div>
+    </section>
+  </dialog>
+</main>
+<script>
+const SUPABASE_URL='https://thbhsktcenhrnxzkbjus.supabase.co',SUPABASE_PUBLISHABLE_KEY='sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY),list=document.getElementById('member-list'),statusEl=document.getElementById('member-status'),search=document.getElementById('member-search'),ordersDialog=document.getElementById('member-orders-dialog');
+let currentMembers=[];
+async function token(){const {data:{session},error}=await supabaseClient.auth.getSession();if(error||!session?.access_token){location.href='/sign-in/';return null}return session.access_token}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function date(v){if(!v)return'—';const d=new Date(v);return Number.isFinite(d.getTime())?d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—'}
+function money(v){return v==null?'—':'£'+(Number(v)/100).toFixed(2)}
+function statusPill(status){const s=String(status||'').toUpperCase(),cls=['ACTIVE','PILOT','SPONSORED'].includes(s)?'green':['LAPSED','CANCELLED','REFUNDED'].includes(s)?'red':'amber';return '<span class="pill '+cls+'">'+esc(s||'UNKNOWN')+'</span>'}
+async function api(path,method='GET',body=null){const t=await token();if(!t)return null;const response=await fetch(path,{method,headers:{Authorization:'Bearer '+t,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,cache:'no-store'});const result=await response.json().catch(()=>({}));if(response.status===403){location.href='/sign-in/';return null}if(!response.ok)throw new Error(result.error||'Request failed.');return result}
+function render(members,total){currentMembers=members;document.getElementById('members-found').textContent=total;document.getElementById('members-active').textContent=members.filter(m=>['ACTIVE','PILOT','SPONSORED'].includes(m.membership_status)).length;document.getElementById('members-auto').textContent=members.filter(m=>m.auto_renew_enabled).length;document.getElementById('members-qr').textContent=members.filter(m=>m.qr_profile_active).length;if(!members.length){list.innerHTML='<tr><td colspan="5" class="empty">No members match this search.</td></tr>';return}list.innerHTML=members.map(m=>'<tr data-user-id="'+esc(m.user_id)+'"><td><strong>'+esc(m.display_name||'Name not completed')+'</strong><br><span>'+esc(m.lymphaware_id||'ID pending')+'</span><br><small>'+esc(m.email||'Email unavailable')+'</small></td><td>'+statusPill(m.membership_status)+'<br><strong>'+esc(m.package_type||'—')+'</strong> · '+esc(m.membership_term_years||'—')+' year'+(Number(m.membership_term_years)===1?'':'s')+'<br><small>'+date(m.membership_start)+' → '+date(m.membership_end)+'</small></td><td>'+(m.auto_renew_enabled?'<span class="pill green">AUTO RENEW ON</span><br>'+money(m.renewal_price_pence)+' · '+date(m.next_renewal_at)+(m.pending_renewal_price_pence?'<br><small>Future queued price: '+money(m.pending_renewal_price_pence)+'</small>':''):'<span class="pill">Manual renewal</span><br><small>Expires '+date(m.membership_end)+'</small>')+'</td><td>'+(m.qr_profile_active?'<span class="pill green">QR available</span>':'<span class="pill red">QR unavailable</span>')+'<br><small>Next review: '+date(m.profile_next_review_due_at)+'</small></td><td><div class="member-actions"><button class="button button-secondary member-action" data-action="RESEND_RENEWAL" type="button">Send renewal reminder</button><button class="button button-secondary member-action" data-action="SEND_PROFILE_REVIEW" type="button">Send profile review</button><button class="button button-secondary member-action" data-action="SEND_PORTAL_LINK" type="button">Send Portal link</button><button class="button button-secondary view-orders" type="button">View orders</button>'+(m.auto_renew_enabled?'<button class="button button-danger member-action" data-action="CANCEL_AUTO_RENEW" type="button">Cancel auto renewal</button>':'')+'</div></td></tr>').join('')}
+async function load(){statusEl.className='status';statusEl.textContent='Loading members…';try{const q=search.value.trim(),r=await api('/api/admin-members?limit=100'+(q?'&q='+encodeURIComponent(q):''));if(!r)return;render(r.members||[],r.total||0);statusEl.textContent=(r.total||0)>100?'Showing the first 100 matches. Refine your search to narrow the list.':''}catch(e){statusEl.className='status error';statusEl.textContent=e.message}}
+async function runAction(button,row){const member=currentMembers.find(m=>m.user_id===row.dataset.userId);if(!member)return;const action=button.dataset.action;if(action==='CANCEL_AUTO_RENEW'&&!confirm('Cancel automatic renewal for '+(member.display_name||member.email)+'? Their current paid membership will remain active until '+date(member.membership_end)+'.'))return;const original=button.textContent;button.disabled=true;button.textContent='Working…';statusEl.className='status';statusEl.textContent='';try{const r=await api('/api/admin-member-action','POST',{userId:member.user_id,action,confirmation:action==='CANCEL_AUTO_RENEW'?'CANCEL_AUTO_RENEW':''});if(!r)return;statusEl.className='status success';statusEl.textContent=r.message||'Action completed.';if(action==='CANCEL_AUTO_RENEW')await load()}catch(e){statusEl.className='status error';statusEl.textContent=e.message}finally{button.disabled=false;button.textContent=original}}
+async function viewOrders(row){const member=currentMembers.find(m=>m.user_id===row.dataset.userId);if(!member)return;document.getElementById('orders-member-name').textContent=member.display_name||member.email;document.getElementById('orders-member-meta').textContent=(member.lymphaware_id||'ID pending')+' · '+(member.email||'');document.getElementById('member-order-list').innerHTML='<p>Loading orders…</p>';ordersDialog.showModal();try{const r=await api('/api/admin-members?user_id='+encodeURIComponent(member.user_id));const orders=r?.orders||[];document.getElementById('member-order-list').innerHTML=orders.length?orders.map(o=>'<div style="padding:12px 0;border-top:1px solid #e3ebef"><strong>'+esc(o.reference||'Order')+'</strong> · '+esc(o.order_type||'')+'<br><span>'+esc(o.order_status||'')+' / '+esc(o.payment_status||'')+'</span> · '+money(o.total_pence)+' · '+date(o.created_at)+'</div>').join(''):'<p>No orders found for this member.</p>'}catch(e){document.getElementById('member-order-list').innerHTML='<p class="status error">'+esc(e.message)+'</p>'}}
+list.addEventListener('click',e=>{const row=e.target.closest('tr[data-user-id]');if(!row)return;const action=e.target.closest('.member-action');if(action)return runAction(action,row);if(e.target.closest('.view-orders'))return viewOrders(row)});
+document.getElementById('member-search-button').addEventListener('click',load);document.getElementById('member-clear-button').addEventListener('click',()=>{search.value='';load()});search.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();load()}});document.getElementById('orders-close').addEventListener('click',()=>ordersDialog.close());document.getElementById('admin-sign-out').addEventListener('click',async()=>{await supabaseClient.auth.signOut();location.href='/sign-in/'});
+load();
+</script>
+</body></html>

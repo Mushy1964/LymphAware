@@ -62,12 +62,14 @@
       .price-grid{grid-template-columns:1fr}.price-grid-head{display:none}.price-row{display:grid;grid-template-columns:1fr;gap:8px;padding:15px 0;border-top:1px solid #e3eaee}.price-row:first-of-type{border-top:0;padding-top:0}.price-label{font-size:1.05rem}
       .simple-grid,.renewal-grid{grid-template-columns:1fr}.discount-controls,.new-code-grid{grid-template-columns:1fr}.discount-card-head{flex-direction:column}.discount-save{width:100%}.settings-actions{position:static;align-items:stretch;flex-direction:column}.settings-actions .button{width:100%}
     }
+  .control-centre-nav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 24px}.control-centre-nav a{padding:9px 12px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--blue-dark);font-weight:800;text-decoration:none}.control-centre-nav a[aria-current="page"]{background:var(--blue-dark);color:#fff}
   </style>
 </head>
 <body>
   <header class="site-header"><div class="container header-inner"><a href="/" class="header-brand" aria-label="LymphAware ID home"><img class="header-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood."></a><div class="header-actions"><button type="button" id="admin-sign-out" class="button button-secondary">Sign Out</button></div></div></header>
   <main class="settings-page"><section class="settings-shell">
     <div class="settings-heading"><div><p class="eyebrow">Private Administration Area</p><h1>Business settings</h1><p>Routine business prices and postage can be maintained here without entering the order-processing workflow.</p></div><div class="settings-nav"><a class="button button-secondary" href="/admin/">Order Management</a></div></div>
+    <nav class="control-centre-nav" aria-label="Administration sections"><a href="/admin/">Orders</a><a href="/admin/members/">Members</a><a href="/admin/business-settings/" aria-current="page">Business Settings</a><a href="/admin/communications/">Communications</a><a href="/admin/website-controls/">Website Controls</a><a href="/admin/reports/">Reports</a><a href="/admin/activity-log/">Activity Log</a></nav>
     <div class="settings-alert"><strong>These settings control the prices shown and charged by the website.</strong> New membership, manual-renewal, accessory, language and postage prices update from this screen. A changed renewal price is also used for new automatic-renewal memberships. Existing automatic-renewal agreements are not silently changed; use the separate controlled update below when you are ready to apply a new renewal price to them.</div>
 
     <form id="settings-form" aria-busy="true">
@@ -168,8 +170,8 @@
       </section>
 
       <section class="settings-section">
-        <h2>Website wording, images and emails</h2>
-        <p>These remain outside Business Settings because unrestricted editing can accidentally affect page layout, legal wording or automated customer journeys. Use the LymphAware ID Website &amp; System Maintenance Guide for the safe process. Routine text and image changes are still straightforward; they are simply handled as controlled website updates.</p>
+        <h2>Protected website content</h2>
+        <p>Operational website and communication controls are now available in <a href="/admin/website-controls/">Website Controls</a> and <a href="/admin/communications/">Communications</a>. Unrestricted editing of core page wording, images, legal content and automated email HTML remains protected because those changes can affect layout, accessibility, payment wording or customer journeys. Routine content changes can still be made as controlled website updates.</p>
       </section>
 
       <div class="settings-actions"><p id="settings-status" class="settings-status" role="status" aria-live="polite">Loading current settings…</p><button type="submit" id="save-settings" class="button button-primary">Save Business Settings</button></div>

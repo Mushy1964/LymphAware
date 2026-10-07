@@ -1,4 +1,5 @@
 import { brandedEmailHtml } from './_shared/email-branding.mjs';
+import { getControlSettings } from './_shared/control-settings.mjs';
 function jsonResponse(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -57,7 +58,9 @@ export default async (request) => {
       return jsonResponse({ error: 'Email delivery is not currently available.' }, 500);
     }
 
+    const controlSettings = await getControlSettings();
     const to =
+      controlSettings.communications_admin_notification_email ||
       env('CONTACT_NOTIFICATION_EMAIL') ||
       env('ORDER_NOTIFICATION_EMAIL') ||
       'admin@lymphawareid.com';

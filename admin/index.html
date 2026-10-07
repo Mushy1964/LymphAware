@@ -113,6 +113,7 @@
       .stage-heading{align-items:stretch;flex-direction:column}.stage-heading .button{width:100%;text-align:center}
       .completed-tools{align-items:stretch;flex-direction:column}.completed-search-group{max-width:none}.completed-results{white-space:normal}.history-order summary{grid-template-columns:1fr auto;gap:5px 12px;padding:14px}.history-id,.history-date{grid-column:1}.history-status{grid-column:2;grid-row:1 / span 3}.history-chevron{grid-column:2;grid-row:4}.history-actions{display:grid}.history-actions .button{width:100%;text-align:center}
     }
+  .admin-hub-nav{display:flex;flex-wrap:wrap;gap:8px;margin:-8px 0 24px}.admin-hub-nav a{padding:9px 12px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--blue-dark);font-weight:800;text-decoration:none}.admin-hub-nav a:hover,.admin-hub-nav a:focus-visible{border-color:var(--blue-dark);outline:none}.admin-hub-nav a[aria-current="page"]{background:var(--blue-dark);color:#fff}
   </style>
   <link rel="stylesheet" href="/css/brand-header.css?v=20260921">
 </head>
@@ -120,6 +121,7 @@
   <header class="site-header"><div class="container header-inner"><a href="/" class="header-brand" aria-label="LymphAware ID home"><img class="header-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood."></a><div class="header-actions"><button type="button" id="admin-sign-out" class="button button-secondary">Sign Out</button></div></div></header>
   <main class="admin-page"><section class="admin-shell">
     <div class="admin-heading"><div><p class="eyebrow">Private Administration Area</p><h1>Order management</h1><p class="order-meta">New-order notifications are also sent to <strong>admin@lymphawareid.com</strong>.</p></div><div class="order-actions"><a href="/admin/business-settings/" class="button button-secondary">Business Settings</a><button type="button" id="membership-toggle" class="button button-secondary" aria-expanded="false" aria-controls="membership-panel">View membership overview</button></div></div>
+    <nav class="admin-hub-nav" aria-label="Administration sections"><a href="/admin/" aria-current="page">Orders</a><a href="/admin/members/">Members</a><a href="/admin/business-settings/">Business Settings</a><a href="/admin/communications/">Communications</a><a href="/admin/website-controls/">Website Controls</a><a href="/admin/reports/">Reports</a><a href="/admin/activity-log/">Activity Log</a></nav>
     <section id="membership-panel" class="membership-panel" hidden>
       <h2>Membership overview</h2>
       <div class="membership-summary">

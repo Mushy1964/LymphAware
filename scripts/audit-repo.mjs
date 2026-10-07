@@ -131,6 +131,23 @@ function checkProjectConsistency() {
   const cancelRenewedMembershipPath = path.join(root, 'netlify/functions/cancel-renewed-membership.mjs');
   const termsPath = path.join(root, 'terms/index.html');
   const renewalArtworkPath = path.join(root, 'assets/demo/LymphAware_Hero_Final_v4.jpeg');
+  const controlSettingsPath = path.join(root, 'netlify/functions/_shared/control-settings.mjs');
+  const adminAuditPath = path.join(root, 'netlify/functions/_shared/admin-audit.mjs');
+  const adminControlSettingsPath = path.join(root, 'netlify/functions/admin-control-settings.mjs');
+  const adminCommunicationsPath = path.join(root, 'netlify/functions/admin-communications.mjs');
+  const adminTestEmailPath = path.join(root, 'netlify/functions/admin-test-email.mjs');
+  const adminMembersPath = path.join(root, 'netlify/functions/admin-members.mjs');
+  const adminMemberActionPath = path.join(root, 'netlify/functions/admin-member-action.mjs');
+  const adminReportsPath = path.join(root, 'netlify/functions/admin-reports.mjs');
+  const adminActivityLogPath = path.join(root, 'netlify/functions/admin-activity-log.mjs');
+  const websiteControlsPagePath = path.join(root, 'admin/website-controls/index.html');
+  const communicationsPagePath = path.join(root, 'admin/communications/index.html');
+  const membersPagePath = path.join(root, 'admin/members/index.html');
+  const reportsPagePath = path.join(root, 'admin/reports/index.html');
+  const activityPagePath = path.join(root, 'admin/activity-log/index.html');
+  const siteControlsPath = path.join(root, 'js/site-controls.js');
+  const reconcileExpiredPath = path.join(root, 'netlify/functions/reconcile-expired-memberships.mjs');
+  const controlCentreMigrationPath = path.join(root, 'supabase/migrations/20261007161000_add_admin_control_centre.sql');
 
   const checkout = fs.readFileSync(checkoutPath, 'utf8');
   const portal = fs.readFileSync(portalPath, 'utf8');
@@ -170,6 +187,23 @@ function checkProjectConsistency() {
   const adminSyncRenewalPrices = fs.readFileSync(adminSyncRenewalPricesPath, 'utf8');
   const cancelRenewedMembership = fs.readFileSync(cancelRenewedMembershipPath, 'utf8');
   const terms = fs.readFileSync(termsPath, 'utf8');
+  const controlSettings = fs.readFileSync(controlSettingsPath, 'utf8');
+  const adminAudit = fs.readFileSync(adminAuditPath, 'utf8');
+  const adminControlSettings = fs.readFileSync(adminControlSettingsPath, 'utf8');
+  const adminCommunications = fs.readFileSync(adminCommunicationsPath, 'utf8');
+  const adminTestEmail = fs.readFileSync(adminTestEmailPath, 'utf8');
+  const adminMembers = fs.readFileSync(adminMembersPath, 'utf8');
+  const adminMemberAction = fs.readFileSync(adminMemberActionPath, 'utf8');
+  const adminReports = fs.readFileSync(adminReportsPath, 'utf8');
+  const adminActivityLog = fs.readFileSync(adminActivityLogPath, 'utf8');
+  const websiteControlsPage = fs.readFileSync(websiteControlsPagePath, 'utf8');
+  const communicationsPage = fs.readFileSync(communicationsPagePath, 'utf8');
+  const membersPage = fs.readFileSync(membersPagePath, 'utf8');
+  const reportsPage = fs.readFileSync(reportsPagePath, 'utf8');
+  const activityPage = fs.readFileSync(activityPagePath, 'utf8');
+  const siteControls = fs.readFileSync(siteControlsPath, 'utf8');
+  const reconcileExpired = fs.readFileSync(reconcileExpiredPath, 'utf8');
+  const controlCentreMigration = fs.readFileSync(controlCentreMigrationPath, 'utf8');
 
   if (!fs.existsSync(renewalArtworkPath) || fs.statSync(renewalArtworkPath).size < 100000) {
     errors.push('Established LymphAware ID hero artwork is missing or unexpectedly small.');
@@ -500,6 +534,64 @@ function checkProjectConsistency() {
     if (!portal.includes(`['${code}',`)) errors.push(`Portal delivery-country selector is missing ${code}.`);
     if (!checkout.includes(`'${code}'`)) errors.push(`Checkout supported-country list is missing ${code}.`);
     if (!register.includes(`['${code}',`)) errors.push(`Registration delivery-country selector is missing ${code}.`);
+  }
+
+  if (!controlSettings.includes("registration_mode: 'INVITE_ONLY'") || !controlSettings.includes('feature_auto_renew_signup_enabled') || !controlSettings.includes('feature_package_standard_enabled') || !controlSettings.includes('feature_term_3y_enabled') || !controlSettings.includes('communications_renewal_reminders_enabled') || !controlSettings.includes('publicControlSettings')) {
+    errors.push('Admin Control Centre shared settings are incomplete.');
+  }
+  if (!adminControlSettings.includes('registrationModeConfirmation') || !websiteControlsPage.includes('Open registration') || !websiteControlsPage.includes('Close new registrations')) {
+    errors.push('Website Controls do not safely manage registration mode.');
+  }
+  if (!register.includes("registrationClosed=registrationMode==='CLOSED'") || !register.includes('New LymphAware ID registrations are temporarily closed.')) {
+    errors.push('Registration page does not visibly enforce the Admin CLOSED mode.');
+  }
+  if (!initialMembershipCheckout.includes('feature_auto_renew_signup_enabled') || !checkout.includes('feature_auto_renew_signup_enabled')) {
+    errors.push('Automatic-renew availability is not enforced server-side in both membership checkout paths.');
+  }
+  if (!checkout.includes("feature_additional_items_enabled !== true && (cardQuantity > 0 || lanyardQuantity > 0)") || !checkout.includes('feature_additional_languages_enabled') || !portal.includes('adminAdditionalItemsEnabled||adminAdditionalLanguagesEnabled')) {
+    errors.push('Independent Admin controls for accessories and additional languages are not enforced correctly.');
+  }
+  if (!initialMembershipCheckout.includes('feature_package_standard_enabled') || !initialMembershipCheckout.includes('feature_term_1y_enabled') || !checkout.includes('feature_package_multilingual_enabled') || !register.includes('packageAvailability=settings.controls?.features?.packages') || !portal.includes('adminPackageAvailability')) {
+    errors.push('Package and membership-term availability controls are not enforced across new membership journeys.');
+  }
+  if (!websiteControlsPage.includes('feature-package-standard') || !websiteControlsPage.includes('feature-term-3')) {
+    errors.push('Website Controls does not expose package and term availability.');
+  }
+  if (!renewalReminders.includes('communications_renewal_reminders_enabled') || !profileReviewReminder.includes('communications_profile_review_reminders_enabled') || !reconcileExpired.includes('communications_expiry_notices_enabled')) {
+    errors.push('Scheduled customer communications are not controlled by Admin Communication settings.');
+  }
+  if (!reconcileExpired.includes('await markLapsed(membership)') || !reconcileExpired.includes('if (!expiryNoticesEnabled) continue')) {
+    errors.push('Pausing expiry notices may incorrectly interfere with membership expiry enforcement.');
+  }
+  if (!webhook.includes('communications_order_notifications_enabled') || !webhook.includes('communications_admin_notification_email')) {
+    errors.push('Order notifications are not using Admin communication controls.');
+  }
+  if (!adminTestEmail.includes("kind === 'renewal_manual'") || !adminTestEmail.includes("kind === 'profile_review'") || !communicationsPage.includes('Test manual renewal')) {
+    errors.push('Admin test-email controls are incomplete.');
+  }
+  if (!adminMembers.includes('/auth/v1/admin/users') || !membersPage.includes('CANCEL_AUTO_RENEW') || !adminMemberAction.includes("action === 'CANCEL_AUTO_RENEW'") || !adminMemberAction.includes("action === 'RESEND_RENEWAL'")) {
+    errors.push('Safe Member Management actions are incomplete.');
+  }
+  if (adminMemberAction.includes('UPDATE_MEMBERSHIP') || membersPage.includes('Edit expiry')) {
+    errors.push('Member Management exposes an unsafe free-form membership edit.');
+  }
+  if (!adminReports.includes("format==='csv'") || !reportsPage.includes('Download CSV') || !adminActivityLog.includes('admin_activity_log') || !activityPage.includes('Admin Activity Log')) {
+    errors.push('Reports or Admin Activity Log are incomplete.');
+  }
+  if (!controlCentreMigration.includes('alter table public.admin_activity_log enable row level security') || !controlCentreMigration.includes('revoke all on table public.admin_activity_log from anon, authenticated, service_role') || !controlCentreMigration.includes('grant select, insert on table public.admin_activity_log to service_role')) {
+    errors.push('Admin Activity Log migration is missing RLS or explicit service-role-only grants.');
+  }
+  if (!adminAudit.includes('recordAdminActivity') || !adminBusinessSettingsApi.includes('BUSINESS_SETTINGS_UPDATED') || !adminDiscountCodes.includes('DISCOUNT_CODE_UPDATED') || !adminSyncRenewalPrices.includes('AUTO_RENEW_PRICE_SYNC_RUN')) {
+    errors.push('Important Admin price and discount changes are not written to the Activity Log.');
+  }
+  if (!siteControls.includes("document.createTextNode(announcement.message)") || siteControls.includes('innerHTML = announcement.message')) {
+    errors.push('Website announcement rendering is not safely text-only.');
+  }
+  for (const source of [home, register, portal, signIn, terms]) {
+    if (!source.includes('/js/site-controls.js')) errors.push('A key customer-facing page is missing Admin website controls.');
+  }
+  for (const link of ['/admin/members/','/admin/business-settings/','/admin/communications/','/admin/website-controls/','/admin/reports/','/admin/activity-log/']) {
+    if (!adminDashboard.includes(link)) errors.push('Admin dashboard is missing Control Centre link ' + link);
   }
 
   const customerFacingFiles = walk(root).filter(file => {
