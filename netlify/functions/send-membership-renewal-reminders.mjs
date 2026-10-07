@@ -1,9 +1,16 @@
 import {
   FINAL_REMINDER_WINDOW,
   FIRST_REMINDER_WINDOW,
+  MANUAL_RENEWAL_HERO_URL,
+  MEMBERSHIP_RENEWAL_URL,
+  dateUK,
+  manualRenewalNoticeHtmlText,
   manualRenewalNoticeText,
   memberEmail,
+  money,
+  projectedRenewalEnd,
   recordContractEvent,
+  renewalNoticeHtmlText,
   renewalNoticeText,
   sendMembershipEmail,
   serviceHeaders
@@ -76,14 +83,46 @@ async function sendReminder(membership, kind) {
     next_renewal_at: dueAt
   };
 
+  const years = Number(messageMembership.membership_term_years || 1);
+  const projectedEnd = projectedRenewalEnd(messageMembership);
+  const subject = automatic
+    ? (first ? 'Advance notice of your LymphAware ID membership renewal' : 'Your LymphAware ID membership renews soon')
+    : (first ? 'Your LymphAware ID membership is approaching expiry' : 'Your LymphAware ID membership expires soon');
+  const heading = automatic
+    ? (first ? 'Advance automatic-renewal reminder' : 'Final automatic-renewal reminder')
+    : (first ? 'Membership expiry reminder' : 'Final membership expiry reminder');
+
   const result = await sendMembershipEmail({
     to: email,
-    subject: automatic
-      ? (first ? 'Advance notice of your LymphAware ID membership renewal' : 'Your LymphAware ID membership renews soon')
-      : (first ? 'Your LymphAware ID membership is approaching expiry' : 'Your LymphAware ID membership expires soon'),
+    subject,
     text: automatic
-      ? renewalNoticeText(messageMembership, first ? 'Advance automatic-renewal reminder' : 'Final automatic-renewal reminder')
-      : manualRenewalNoticeText(messageMembership, first ? 'Membership expiry reminder' : 'Final membership expiry reminder'),
+      ? renewalNoticeText(messageMembership, heading)
+      : manualRenewalNoticeText(messageMembership, heading),
+    htmlText: automatic
+      ? renewalNoticeHtmlText(messageMembership, heading)
+      : manualRenewalNoticeHtmlText(messageMembership, heading),
+    preheader: automatic
+      ? `Your LymphAware ID membership is due to renew on ${dateUK(dueAt)}.`
+      : `Your LymphAware ID membership expires on ${dateUK(dueAt)}. Renew without losing any remaining membership time.`,
+    actionUrl: MEMBERSHIP_RENEWAL_URL,
+    actionLabel: automatic ? 'Review my membership' : 'Renew now',
+    heroImageUrl: automatic ? '' : MANUAL_RENEWAL_HERO_URL,
+    heroImageAlt: automatic ? '' : 'Renew your LymphAware ID membership',
+    heroLinkUrl: automatic ? '' : MEMBERSHIP_RENEWAL_URL,
+    showHeaderLogo: automatic,
+    detailRows: automatic
+      ? [
+          { label: 'Next renewal date', value: dateUK(dueAt) },
+          { label: 'Renewal period', value: `${years} year${years === 1 ? '' : 's'}` },
+          { label: 'Renewal amount', value: money(pricePence) },
+          { label: 'Expected new expiry date', value: dateUK(projectedEnd) }
+        ]
+      : [
+          { label: 'Membership expires on', value: dateUK(dueAt) },
+          { label: 'Renewal period', value: `${years} year${years === 1 ? '' : 's'}` },
+          { label: 'Renewal price', value: money(pricePence) },
+          { label: 'New expiry if renewed now', value: dateUK(projectedEnd) }
+        ],
     idempotencyKey: `renewal-${automatic ? 'auto' : 'manual'}-${kind}-${membership.id}-${new Date(dueAt).toISOString().slice(0, 10)}`
   });
   if (!result.ok) throw new Error(result.error);

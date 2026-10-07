@@ -123,6 +123,10 @@ function checkProjectConsistency() {
   const walletMemberPath = path.join(root, 'netlify/functions/_shared/wallet-member.mjs');
   const appleWalletPath = path.join(root, 'netlify/functions/apple-wallet-pass.mjs');
   const googleWalletPath = path.join(root, 'netlify/functions/google-wallet-pass.mjs');
+  const emailBrandingPath = path.join(root, 'netlify/functions/_shared/email-branding.mjs');
+  const membershipContractPath = path.join(root, 'netlify/functions/_shared/membership-contract.mjs');
+  const renewalRemindersPath = path.join(root, 'netlify/functions/send-membership-renewal-reminders.mjs');
+  const renewalArtworkPath = path.join(root, 'assets/demo/LymphAware_Hero_Final_v4.jpeg');
 
   const checkout = fs.readFileSync(checkoutPath, 'utf8');
   const portal = fs.readFileSync(portalPath, 'utf8');
@@ -155,6 +159,25 @@ function checkProjectConsistency() {
   const profileReviewShared = fs.readFileSync(profileReviewSharedPath, 'utf8');
   const profileReviewMember = fs.readFileSync(profileReviewMemberPath, 'utf8');
   const profileReviewReminder = fs.readFileSync(profileReviewReminderPath, 'utf8');
+  const emailBranding = fs.readFileSync(emailBrandingPath, 'utf8');
+  const membershipContract = fs.readFileSync(membershipContractPath, 'utf8');
+  const renewalReminders = fs.readFileSync(renewalRemindersPath, 'utf8');
+
+  if (!fs.existsSync(renewalArtworkPath) || fs.statSync(renewalArtworkPath).size < 100000) {
+    errors.push('Established LymphAware ID hero artwork is missing or unexpectedly small.');
+  }
+  if (!membershipContract.includes("LymphAware_Hero_Final_v4.jpeg") || !membershipContract.includes("portal/#membership-panel")) {
+    errors.push('Renewal email configuration is not using established LymphAware ID artwork and the membership Portal deep link.');
+  }
+  if (!emailBranding.includes('heroImageHtml') || !emailBranding.includes('detailRowsHtml') || !emailBranding.includes('actionButtonHtml')) {
+    errors.push('Branded email template is missing renewal artwork, details or accessible action-button support.');
+  }
+  if (!renewalReminders.includes("actionLabel: automatic ? 'Review my membership' : 'Renew now'") || !renewalReminders.includes('showHeaderLogo: automatic') || !renewalReminders.includes('heroLinkUrl: automatic')) {
+    errors.push('Renewal reminders do not separate manual renewal artwork/action from automatic-renewal messaging.');
+  }
+  if (!signIn.includes('safePortalReturnTo') || !signIn.includes('requestedReturnTo') || !portal.includes("returnTo='+encodeURIComponent(returnTo)") || !portal.includes("location.hash==='#membership-panel'")) {
+    errors.push('Renewal deep links are not safely preserved through sign-in and returned to the membership section.');
+  }
 
   if (!portal.includes('Profile Health Check') || !portal.includes('/.netlify/functions/member-profile-review') || !portal.includes('/profile/?review=1')) {
     errors.push('Patient Portal profile health-check controls are missing or incomplete.');

@@ -141,6 +141,17 @@
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
     const signInParams = new URLSearchParams(location.search);
+    function safePortalReturnTo(value) {
+      if (!value) return '';
+      try {
+        const target = new URL(value, location.origin);
+        if (target.origin !== location.origin || !target.pathname.startsWith('/portal/')) return '';
+        return target.pathname + target.search + target.hash;
+      } catch {
+        return '';
+      }
+    }
+    const requestedReturnTo = safePortalReturnTo(signInParams.get('returnTo') || '');
     const requestedPackage = String(signInParams.get('package') || '').toUpperCase();
     const selectedPackage = ['STANDARD', 'PLUS', 'MULTILINGUAL'].includes(requestedPackage) ? requestedPackage : '';
     const requestedTerm = [1, 2, 3].includes(Number(signInParams.get('term'))) ? Number(signInParams.get('term')) : 0;
@@ -175,6 +186,8 @@
 
       if (signedInEmail === 'admin@lymphawareid.com') {
         window.location.href = '/admin/';
+      } else if (requestedReturnTo) {
+        window.location.href = requestedReturnTo;
       } else {
         const portalParams = new URLSearchParams();
         if (selectedPackage) portalParams.set('package', selectedPackage);
