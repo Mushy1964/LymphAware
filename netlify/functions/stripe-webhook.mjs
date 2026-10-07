@@ -56,13 +56,14 @@ function supabaseHeaders(prefer = '') {
   return headers;
 }
 
-async function stripeRequest(path, method = 'GET', values = null) {
+async function stripeRequest(path, method = 'GET', values = null, idempotencyKey = '') {
   const response = await fetch(`https://api.stripe.com/v1/${path}`, {
     method,
     headers: {
       Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
       'Stripe-Version': '2026-07-29.dahlia',
-      ...(values ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {})
+      ...(values ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}),
+      ...(idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {})
     },
     body: values ? new URLSearchParams(values).toString() : undefined
   });
@@ -92,7 +93,7 @@ async function createRenewalStripePrice(packageType, years, amountPence) {
     'metadata[membership_term_years]': String(years),
     'metadata[purpose]': 'membership_renewal',
     'metadata[managed_by]': 'lymphaware_system'
-  });
+  }, `renewal-price-${packageType}-${years}-${amountPence}`);
 }
 
 async function patchMembershipBySubscription(subscriptionId, values) {
@@ -265,7 +266,7 @@ async function handleRecurringEvent(event) {
 
 async function moveRenewalToMultilingual(userId) {
   const response = await fetch(
-    `${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${encodeURIComponent(userId)}&auto_renew_enabled=eq.true&select=id,membership_term_years,stripe_subscription_item_id,renewal_price_pence&limit=1`,
+    `${process.env.SUPABASE_URL}/rest/v1/memberships?user_id=eq.${encodeURIComponent(userId)}&auto_renew_enabled=eq.true&select=id,package_type,membership_term_years,stripe_subscription_item_id,renewal_price_pence&limit=1`,
     { headers: supabaseHeaders() }
   );
   if (!response.ok) throw new Error(`Unable to read membership renewal: ${await response.text()}`);
@@ -275,12 +276,13 @@ async function moveRenewalToMultilingual(userId) {
 
   const renewalPricePence = await liveRenewalPrice('MULTILINGUAL', term);
   if (renewalPricePence <= 0) throw new Error('Unable to determine the current Multilingual renewal price.');
+  if (String(membership.package_type || '').toUpperCase() === 'MULTILINGUAL' && Number(membership.renewal_price_pence || 0) === renewalPricePence) return;
   const price = await createRenewalStripePrice('MULTILINGUAL', term, renewalPricePence);
 
   await stripeRequest(`subscription_items/${encodeURIComponent(membership.stripe_subscription_item_id)}`, 'POST', {
     price: price.id,
     proration_behavior: 'none'
-  });
+  }, `multilingual-renewal-price-${membership.id}-${renewalPricePence}`);
   const update = await fetch(`${process.env.SUPABASE_URL}/rest/v1/memberships?id=eq.${encodeURIComponent(membership.id)}`, {
     method: 'PATCH',
     headers: supabaseHeaders('return=minimal'),
