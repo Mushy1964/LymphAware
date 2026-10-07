@@ -1,5 +1,4 @@
 import { verifyAdminRequest } from './_shared/admin-auth.mjs';
-import { PACKAGE_DEFINITIONS } from './_shared/initial-membership-checkout.mjs';
 import {
   BUSINESS_SETTING_KEYS,
   getBusinessSettings,
@@ -15,12 +14,6 @@ function json(body, status = 200) {
   });
 }
 
-const RENEWAL_PRICES = {
-  STANDARD: PACKAGE_DEFINITIONS.STANDARD.renewals,
-  PLUS: PACKAGE_DEFINITIONS.PLUS.renewals,
-  MULTILINGUAL: PACKAGE_DEFINITIONS.MULTILINGUAL.renewals
-};
-
 function validateSubmittedSettings(input) {
   if (!input || typeof input !== 'object') throw new Error('No settings were supplied.');
   for (const key of BUSINESS_SETTING_KEYS) {
@@ -31,15 +24,15 @@ function validateSubmittedSettings(input) {
   }
   const settings = normaliseBusinessSettings(input);
   const checks = [
-    ['Standard', settings.price_standard_1y_pence, RENEWAL_PRICES.STANDARD[1]],
-    ['Standard', settings.price_standard_2y_pence, RENEWAL_PRICES.STANDARD[2]],
-    ['Standard', settings.price_standard_3y_pence, RENEWAL_PRICES.STANDARD[3]],
-    ['Plus', settings.price_plus_1y_pence, RENEWAL_PRICES.PLUS[1]],
-    ['Plus', settings.price_plus_2y_pence, RENEWAL_PRICES.PLUS[2]],
-    ['Plus', settings.price_plus_3y_pence, RENEWAL_PRICES.PLUS[3]],
-    ['Multilingual', settings.price_multilingual_1y_pence, RENEWAL_PRICES.MULTILINGUAL[1]],
-    ['Multilingual', settings.price_multilingual_2y_pence, RENEWAL_PRICES.MULTILINGUAL[2]],
-    ['Multilingual', settings.price_multilingual_3y_pence, RENEWAL_PRICES.MULTILINGUAL[3]]
+    ['Standard', settings.price_standard_1y_pence, settings.renewal_standard_1y_pence],
+    ['Standard', settings.price_standard_2y_pence, settings.renewal_standard_2y_pence],
+    ['Standard', settings.price_standard_3y_pence, settings.renewal_standard_3y_pence],
+    ['Plus', settings.price_plus_1y_pence, settings.renewal_plus_1y_pence],
+    ['Plus', settings.price_plus_2y_pence, settings.renewal_plus_2y_pence],
+    ['Plus', settings.price_plus_3y_pence, settings.renewal_plus_3y_pence],
+    ['Multilingual', settings.price_multilingual_1y_pence, settings.renewal_multilingual_1y_pence],
+    ['Multilingual', settings.price_multilingual_2y_pence, settings.renewal_multilingual_2y_pence],
+    ['Multilingual', settings.price_multilingual_3y_pence, settings.renewal_multilingual_3y_pence]
   ];
   const invalid = checks.find(([, initial, renewal]) => initial < renewal);
   if (invalid) {
@@ -59,7 +52,7 @@ export default async request => {
       return json({
         settings,
         pricing: publicPricing(settings),
-        renewalPrices: RENEWAL_PRICES,
+        renewalPrices: publicPricing(settings).renewals,
         updatedAt: new Date().toISOString()
       });
     }
@@ -71,7 +64,7 @@ export default async request => {
       saved: true,
       settings: saved,
       pricing: publicPricing(saved),
-      renewalPrices: RENEWAL_PRICES,
+      renewalPrices: publicPricing(saved).renewals,
       updatedAt: new Date().toISOString()
     });
   } catch (error) {
