@@ -336,8 +336,17 @@ function checkProjectConsistency() {
   if (!adminBusinessSettings.includes('Membership renewal prices') || !adminBusinessSettings.includes('renewal_standard_1y_pence') || !adminBusinessSettings.includes('/api/admin-sync-renewal-prices')) {
     errors.push('Admin Business Settings does not provide controlled renewal-price management.');
   }
-  if (!adminSyncRenewalPrices.includes('const NOTICE_DAYS = 60') || !adminSyncRenewalPrices.includes("proration_behavior: 'none'") || !adminSyncRenewalPrices.includes('Member notification failed, so the price change was rolled back') || !adminSyncRenewalPrices.includes('AUTO_RENEW_PRICE_CHANGED')) {
-    errors.push('Existing automatic-renew price changes are missing advance-notice, no-proration or rollback safeguards.');
+  if (!adminSyncRenewalPrices.includes('const NOTICE_DAYS = 60') || !adminSyncRenewalPrices.includes("proration_behavior: 'none'") || !adminSyncRenewalPrices.includes('Member notification failed, so the price change was rolled back') || !adminSyncRenewalPrices.includes('AUTO_RENEW_PRICE_CHANGED') || !adminSyncRenewalPrices.includes('AUTO_RENEW_PRICE_CHANGE_DEFERRED') || !adminSyncRenewalPrices.includes('pending_renewal_price_pence') || !adminSyncRenewalPrices.includes('notifyDeferredPriceChange')) {
+    errors.push('Existing automatic-renew price changes are missing advance-notice, no-proration, deferred-following-cycle or rollback safeguards.');
+  }
+  if (!adminBusinessSettings.includes('queued automatically for the new price at the following renewal') || !adminBusinessSettings.includes('result.deferred')) {
+    errors.push('Admin Business Settings does not explain or report protected deferred automatic-renew price changes.');
+  }
+  if (!portal.includes('pending_renewal_price_pence') || !portal.includes('automaticRenewalStatusText') || !portal.includes('queued automatically for the following renewal')) {
+    errors.push('Patient Portal does not show a queued future automatic-renew price change.');
+  }
+  if (!webhook.includes('applyDeferredRenewalPriceAfterPaidCycle') || !webhook.includes('AUTO_RENEW_DEFERRED_PRICE_ACTIVATED') || !webhook.includes('pending_renewal_price_pence: null') || !webhook.includes('activate-deferred-renewal-price-')) {
+    errors.push('Stripe renewal webhook does not automatically activate a deferred price after the protected renewal succeeds.');
   }
   if (!webhook.includes("event.type === 'invoice.payment_failed'") || !webhook.includes("'RENEWAL_PAYMENT_FAILED'") || !webhook.includes('hosted_invoice_url')) {
     errors.push('Failed automatic-renewal payments do not trigger the branded recovery workflow.');
@@ -348,8 +357,8 @@ function checkProjectConsistency() {
   if (!cancelRenewedMembership.includes("renewalMode !== 'MANUAL'") || !cancelRenewedMembership.includes('previousTermStillActive') || !cancelRenewedMembership.includes('restoredMembershipEnd')) {
     errors.push('Renewal cooling-off cancellation cannot safely refund manual renewals while restoring an unexpired previous term.');
   }
-  if (!terms.includes('both automatic and member-initiated renewals') || !terms.includes('does not create an immediate charge')) {
-    errors.push('Terms do not explain manual renewal cooling-off and controlled future price changes.');
+  if (!terms.includes('both automatic and member-initiated renewals') || !terms.includes('does not create an immediate charge') || !terms.includes('within 60 days') || !terms.includes('following renewal instead')) {
+    errors.push('Terms do not explain manual renewal cooling-off, the 60-day protection window and deferred future price changes.');
   }
   if (!home.includes('Choose one, two or three years of membership')) {
     errors.push('Homepage membership wording does not offer the agreed one-, two- and three-year terms.');
