@@ -74,7 +74,7 @@ export default async (request) => {
         auto_renew_enabled: false,
         auto_renew_cancelled_at: now,
         cooling_off_cancellation_requested_at: now,
-        stripe_subscription_status: renewalMode === 'MANUAL' ? membership.stripe_subscription_id ? 'canceled' : null : 'canceled',
+        ...(renewalMode !== 'MANUAL' ? { stripe_subscription_status: 'canceled' } : {}),
         updated_at: now
       })
     });
