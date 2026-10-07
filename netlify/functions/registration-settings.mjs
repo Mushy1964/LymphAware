@@ -1,5 +1,6 @@
 import { getRegistrationMode } from './_shared/registration-access.mjs';
 import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
+import { getControlSettings, publicControlSettings } from './_shared/control-settings.mjs';
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -11,13 +12,19 @@ function json(body, status = 200) {
 export default async (request) => {
   if (request.method !== 'GET') return json({ error: 'Method not allowed.' }, 405);
   try {
-    const [mode, businessSettings] = await Promise.all([getRegistrationMode(), getBusinessSettings()]);
+    const [mode, businessSettings, controlSettings] = await Promise.all([
+      getRegistrationMode(),
+      getBusinessSettings(),
+      getControlSettings()
+    ]);
     const pricing = publicPricing(businessSettings);
+    const controls = publicControlSettings({ ...controlSettings, registration_mode: mode });
     return json({
       mode,
       codeRequired: mode === 'INVITE_ONLY',
       codeLabel: mode === 'INVITE_ONLY' ? 'Trial code' : 'Discount code (optional)',
       pricing,
+      controls,
       codeHelp: mode === 'INVITE_ONLY'
         ? 'Enter the code provided in your LymphAware ID trial invitation. It is applied automatically at secure checkout.'
         : 'If you have an active LymphAware ID promotional code, enter it here. Leave this blank if you do not have one. Any discount applies only to the initial membership price. Postage & packing is not discounted, and automatic-renewal prices are never reduced by the code.'
