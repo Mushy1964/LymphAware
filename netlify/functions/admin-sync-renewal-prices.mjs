@@ -44,7 +44,7 @@ async function stripeRequest(path, method = 'GET', values = null, idempotencyKey
 
 async function activeAutomaticMemberships() {
   const response = await fetch(
-    `${env('SUPABASE_URL')}/rest/v1/memberships?membership_status=eq.ACTIVE&payment_status=eq.PAID&auto_renew_enabled=eq.true&stripe_subscription_item_id=not.is.null&select=id,user_id,package_type,membership_term_years,renewal_price_pence,next_renewal_at,stripe_subscription_id,stripe_subscription_item_id`,
+    `${env('SUPABASE_URL')}/rest/v1/memberships?membership_status=eq.ACTIVE&payment_status=eq.PAID&auto_renew_enabled=eq.true&stripe_subscription_item_id=not.is.null&select=id,user_id,package_type,membership_term_years,renewal_price_pence,next_renewal_at,stripe_subscription_id,stripe_subscription_item_id,pending_renewal_price_pence,pending_renewal_price_effective_after,pending_renewal_price_notice_sent_at`,
     { headers: serviceHeaders() }
   );
   if (!response.ok) throw new Error(`Unable to load automatic-renew memberships: ${await response.text()}`);
@@ -61,6 +61,20 @@ function eligibleNoticeWindow(membership) {
   const next = new Date(membership.next_renewal_at || 0);
   if (!Number.isFinite(next.getTime())) return false;
   return next.getTime() - Date.now() >= NOTICE_DAYS * 86400000;
+}
+
+function addYearsClamped(value, years) {
+  const source = new Date(value);
+  if (!Number.isFinite(source.getTime())) return null;
+  const month = source.getUTCMonth();
+  const day = source.getUTCDate();
+  const result = new Date(source);
+  result.setUTCDate(1);
+  result.setUTCFullYear(result.getUTCFullYear() + Number(years || 1));
+  result.setUTCMonth(month);
+  const lastDay = new Date(Date.UTC(result.getUTCFullYear(), month + 1, 0)).getUTCDate();
+  result.setUTCDate(Math.min(day, lastDay));
+  return result;
 }
 
 async function patchMembership(membershipId, values) {
@@ -128,6 +142,54 @@ async function notifyPriceChange(membership, oldPrice, newPrice) {
   });
 }
 
+async function notifyDeferredPriceChange(membership, oldPrice, newPrice) {
+  const email = await memberEmail(membership.user_id);
+  if (!email) return { ok: false, error: 'No member email address is available.' };
+
+  const years = Number(membership.membership_term_years || 1);
+  const followingRenewal = addYearsClamped(membership.next_renewal_at, years);
+  return sendMembershipEmail({
+    to: email,
+    subject: 'Advance notice of a future LymphAware ID renewal price change',
+    htmlTitle: 'A future renewal price is changing',
+    preheader: `Your imminent renewal stays at ${money(oldPrice)}; the new price will apply at the following renewal.`,
+    actionUrl: MEMBERSHIP_RENEWAL_URL,
+    actionLabel: 'Review my membership',
+    text:
+      `We are writing to give you advance notice of a future change to your LymphAware ID automatic-renewal price.\n\n` +
+      `Your forthcoming renewal on ${dateUK(membership.next_renewal_at)} is too close to the price-change notice date, so it will remain at your current agreed price of ${money(oldPrice)}.\n\n` +
+      `After that renewal succeeds, your automatic-renewal agreement will move to the new price of ${money(newPrice)} for the following renewal${followingRenewal ? `, expected on ${dateUK(followingRenewal)}` : ''}. No additional payment is being taken now.\n\n` +
+      `You remain in control and can cancel automatic renewal at any time before a renewal date from your Patient Portal. Cancelling automatic renewal does not shorten the membership term you have already paid for.\n\n` +
+      `Review your membership:\n${MEMBERSHIP_RENEWAL_URL}\n\nThe LymphAware ID Team`,
+    detailRows: [
+      { label: 'Forthcoming renewal date', value: dateUK(membership.next_renewal_at) },
+      { label: 'Forthcoming renewal price', value: money(oldPrice) },
+      { label: 'Following renewal', value: followingRenewal ? dateUK(followingRenewal) : 'After the forthcoming renewal' },
+      { label: 'Future renewal price', value: money(newPrice) }
+    ],
+    idempotencyKey: `deferred-renewal-price-change-${membership.id}-${newPrice}-${new Date(membership.next_renewal_at).toISOString().slice(0, 10)}`
+  });
+}
+
+async function notifyDeferredPriceWithdrawal(membership, pendingPrice) {
+  const email = await memberEmail(membership.user_id);
+  if (!email) return { ok: false, error: 'No member email address is available.' };
+
+  return sendMembershipEmail({
+    to: email,
+    subject: 'Update: planned LymphAware ID renewal price change withdrawn',
+    htmlTitle: 'Your planned future price change has been withdrawn',
+    preheader: 'Your automatic-renewal price will remain at its current amount.',
+    actionUrl: MEMBERSHIP_RENEWAL_URL,
+    actionLabel: 'Review my membership',
+    text:
+      `We previously wrote to you about a planned future change to your LymphAware ID automatic-renewal price. That planned change has now been withdrawn.\n\n` +
+      `Your current automatic-renewal price remains ${money(membership.renewal_price_pence)}. The previously advised future price of ${money(pendingPrice)} will not be applied.\n\n` +
+      `No payment has been taken as a result of this update.\n\nReview your membership:\n${MEMBERSHIP_RENEWAL_URL}\n\nThe LymphAware ID Team`,
+    idempotencyKey: `deferred-renewal-price-withdrawn-${membership.id}-${pendingPrice}-${new Date().toISOString().slice(0, 10)}`
+  });
+}
+
 export default async request => {
   if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
 
@@ -140,25 +202,126 @@ export default async request => {
 
     let updated = 0;
     let unchanged = 0;
-    let skippedNoticeWindow = 0;
+    let deferred = 0;
+    let withdrawn = 0;
     const failures = [];
 
     for (const membership of memberships) {
       const nextPrice = targetPrice(pricing, membership);
       const oldPrice = Number(membership.renewal_price_pence || 0);
+      const pendingPrice = Number(membership.pending_renewal_price_pence || 0);
 
-      if (!nextPrice || nextPrice === oldPrice) {
-        unchanged += 1;
+      if (!nextPrice) {
+        failures.push({ membership: membership.id, error: 'No valid configured renewal price was found.' });
+        continue;
+      }
+
+      if (nextPrice === oldPrice) {
+        if (!pendingPrice) {
+          unchanged += 1;
+          continue;
+        }
+
+        const previousPending = {
+          pending_renewal_price_pence: membership.pending_renewal_price_pence,
+          pending_renewal_price_effective_after: membership.pending_renewal_price_effective_after,
+          pending_renewal_price_notice_sent_at: membership.pending_renewal_price_notice_sent_at
+        };
+        try {
+          await patchMembership(membership.id, {
+            pending_renewal_price_pence: null,
+            pending_renewal_price_effective_after: null,
+            pending_renewal_price_notice_sent_at: null
+          });
+          const notice = await notifyDeferredPriceWithdrawal(membership, pendingPrice);
+          if (!notice.ok) {
+            await patchMembership(membership.id, previousPending);
+            throw new Error(`The planned price change was restored because the withdrawal email could not be sent: ${notice.error}`);
+          }
+          try {
+            await recordContractEvent({
+              membershipId: membership.id,
+              userId: membership.user_id,
+              eventType: 'AUTO_RENEW_DEFERRED_PRICE_WITHDRAWN',
+              details: {
+                current_price_pence: oldPrice,
+                withdrawn_price_pence: pendingPrice,
+                notice_sent: true
+              }
+            });
+          } catch (auditError) {
+            console.error('Unable to record deferred price withdrawal audit event:', auditError);
+          }
+          withdrawn += 1;
+        } catch (error) {
+          failures.push({ membership: membership.id, error: error instanceof Error ? error.message : String(error) });
+        }
         continue;
       }
 
       if (!eligibleNoticeWindow(membership)) {
-        skippedNoticeWindow += 1;
+        if (
+          pendingPrice === nextPrice &&
+          membership.pending_renewal_price_effective_after === membership.next_renewal_at &&
+          membership.pending_renewal_price_notice_sent_at
+        ) {
+          deferred += 1;
+          continue;
+        }
+
+        const previousPending = {
+          pending_renewal_price_pence: membership.pending_renewal_price_pence,
+          pending_renewal_price_effective_after: membership.pending_renewal_price_effective_after,
+          pending_renewal_price_notice_sent_at: membership.pending_renewal_price_notice_sent_at
+        };
+        const noticeSentAt = new Date().toISOString();
+
+        try {
+          await patchMembership(membership.id, {
+            pending_renewal_price_pence: nextPrice,
+            pending_renewal_price_effective_after: membership.next_renewal_at,
+            pending_renewal_price_notice_sent_at: noticeSentAt
+          });
+
+          const notice = await notifyDeferredPriceChange(membership, oldPrice, nextPrice);
+          if (!notice.ok) {
+            await patchMembership(membership.id, previousPending);
+            throw new Error(`The deferred price change was rolled back because the member notice could not be sent: ${notice.error}`);
+          }
+
+          try {
+            await recordContractEvent({
+              membershipId: membership.id,
+              userId: membership.user_id,
+              eventType: 'AUTO_RENEW_PRICE_CHANGE_DEFERRED',
+              details: {
+                current_price_pence: oldPrice,
+                future_price_pence: nextPrice,
+                protected_renewal_at: membership.next_renewal_at,
+                applies_after_successful_renewal: true,
+                notice_days_required: NOTICE_DAYS,
+                notice_sent: true
+              }
+            });
+          } catch (auditError) {
+            console.error('Unable to record deferred renewal price audit event:', auditError);
+          }
+
+          deferred += 1;
+        } catch (error) {
+          failures.push({ membership: membership.id, error: error instanceof Error ? error.message : String(error) });
+        }
         continue;
       }
 
       let previousStripePrice = '';
       let newStripePrice = '';
+      const previousPending = {
+        pending_renewal_price_pence: membership.pending_renewal_price_pence,
+        pending_renewal_price_effective_after: membership.pending_renewal_price_effective_after,
+        pending_renewal_price_notice_sent_at: membership.pending_renewal_price_notice_sent_at
+      };
+
       try {
         const item = await stripeRequest(`subscription_items/${encodeURIComponent(membership.stripe_subscription_item_id)}`);
         previousStripePrice = typeof item.price === 'string' ? item.price : item.price?.id || '';
@@ -175,7 +338,12 @@ export default async request => {
         );
 
         try {
-          await patchMembership(membership.id, { renewal_price_pence: nextPrice });
+          await patchMembership(membership.id, {
+            renewal_price_pence: nextPrice,
+            pending_renewal_price_pence: null,
+            pending_renewal_price_effective_after: null,
+            pending_renewal_price_notice_sent_at: null
+          });
         } catch (databaseError) {
           try {
             await stripeRequest(
@@ -205,7 +373,10 @@ export default async request => {
               { price: previousStripePrice, proration_behavior: 'none' },
               `renewal-item-notice-rollback-${membership.id}-${oldPrice}`
             );
-            await patchMembership(membership.id, { renewal_price_pence: oldPrice });
+            await patchMembership(membership.id, {
+              renewal_price_pence: oldPrice,
+              ...previousPending
+            });
             await stripeRequest(
               `prices/${encodeURIComponent(newStripePrice)}`,
               'POST',
@@ -248,7 +419,8 @@ export default async request => {
     return json({
       updated,
       unchanged,
-      skippedNoticeWindow,
+      deferred,
+      withdrawn,
       failed: failures.length
     });
   } catch (error) {
