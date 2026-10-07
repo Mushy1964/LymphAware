@@ -26,15 +26,15 @@ function linkify(value) {
 
 function actionButtonHtml(actionUrl = '', actionLabel = '') {
   if (!actionUrl) return '';
-  return '<p style="margin:20px 0 24px;"><a href="' + escapeHtml(actionUrl) + '" style="display:inline-block;padding:13px 22px;border-radius:8px;background:#0053b7;color:#ffffff;text-decoration:none;font:700 16px/1.3 Arial,sans-serif;">' + escapeHtml(actionLabel || 'Continue') + '</a></p>';
+  return '<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:20px 0 24px;width:auto;max-width:100%;"><tr><td align="center" bgcolor="#0053b7" style="border-radius:8px;"><a href="' + escapeHtml(actionUrl) + '" style="display:block;box-sizing:border-box;max-width:100%;padding:13px 22px;border-radius:8px;background:#0053b7;color:#ffffff;text-decoration:none;text-align:center;white-space:normal;overflow-wrap:anywhere;word-break:normal;font:700 16px/1.3 Arial,sans-serif;">' + escapeHtml(actionLabel || 'Continue') + '</a></td></tr></table>';
 }
 
 function detailRowsHtml(rows = []) {
   if (!Array.isArray(rows) || !rows.length) return '';
   const items = rows.map((row) =>
-    '<tr><td style="padding:9px 12px;border-bottom:1px solid #d8e8ef;font:600 14px/1.4 Arial,sans-serif;color:#405368;">' +
+    '<tr><td width="52%" valign="top" style="width:52%;padding:9px 12px;border-bottom:1px solid #d8e8ef;font:600 14px/1.4 Arial,sans-serif;color:#405368;overflow-wrap:anywhere;word-break:normal;">' +
     escapeHtml(row?.label || '') +
-    '</td><td align="right" style="padding:9px 12px;border-bottom:1px solid #d8e8ef;font:700 14px/1.4 Arial,sans-serif;color:#17283d;">' +
+    '</td><td width="48%" valign="top" align="right" style="width:48%;padding:9px 12px;border-bottom:1px solid #d8e8ef;font:700 14px/1.4 Arial,sans-serif;color:#17283d;overflow-wrap:anywhere;word-break:normal;">' +
     escapeHtml(row?.value || '') +
     '</td></tr>'
   ).join('');
@@ -80,18 +80,18 @@ export function brandedEmailHtml({
   const safePreheader = escapeHtml(preheader || title || 'LymphAware ID');
   return `<!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n<style>\n@media only screen and (max-width:520px){\n  .email-shell{width:100%!important;max-width:100%!important}\n  .email-content{padding:20px 18px 24px!important}\n  .email-title{font-size:21px!important;line-height:1.28!important}\n}\n</style></head>
 <body style="margin:0;padding:0;background:#f4f7f9;">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${safePreheader}</div>
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f4f7f9;">
     <tr>
       <td align="center" style="padding:24px 12px;">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:640px;background:#ffffff;border:1px solid #dbe6ec;border-radius:18px;overflow:hidden;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" class="email-shell" style="width:100%;max-width:640px;background:#ffffff;border:1px solid #dbe6ec;border-radius:18px;overflow:hidden;">
           ${showHeaderLogo ? `<tr><td style="padding:28px 32px 20px;text-align:left;"><img src="${EMAIL_LOGO_URL}" width="360" alt="LymphAware ID – Helping People Living with Lymphoedema Be Understood" style="display:block;width:100%;max-width:360px;height:auto;border:0;"></td></tr>` : ''}
           ${heroImageHtml({ heroImageUrl, heroImageAlt, heroLinkUrl })}
           <tr>
-            <td style="padding:${showHeaderLogo || heroImageUrl ? '24px 32px 28px' : '28px 32px'};">
-              <h1 style="margin:0 0 18px;font:700 24px/1.3 Arial,sans-serif;color:#0053b7;">${safeTitle}</h1>
+            <td class="email-content" style="padding:${showHeaderLogo || heroImageUrl ? '24px 32px 28px' : '28px 32px'};">
+              <h1 class="email-title" style="margin:0 0 18px;max-width:100%;font:700 24px/1.3 Arial,sans-serif;color:#0053b7;white-space:normal;overflow-wrap:anywhere;word-break:normal;">${safeTitle}</h1>
               ${detailRows.length
                 ? bodyHtml(text) + detailRowsHtml(detailRows) + actionButtonHtml(actionUrl, actionLabel)
                 : bodyHtml(text, actionUrl, actionLabel)}
