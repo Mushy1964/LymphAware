@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Communications | LymphAware ID Admin</title>
+  <link rel="stylesheet" href="/css/styles.css"><link rel="stylesheet" href="/css/brand-header.css?v=20260921"><link rel="stylesheet" href="/css/admin-control-centre.css?v=20261007">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="site-header"><div class="container header-inner"><a href="/" class="header-brand"><img class="header-logo" src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID"></a><div class="header-actions"><button id="admin-sign-out" class="button button-secondary" type="button">Sign Out</button></div></div></header>
+<main class="admin-control-page">
+  <div class="admin-control-head"><div><p class="eyebrow">LymphAware ID Control Centre</p><h1>Communications</h1><p>Pause or resume routine automated messages and send safe test emails without changing the underlying customer journey.</p></div><a class="button button-secondary admin-toplink" href="/admin/">Order Management</a></div>
+  <nav class="admin-nav" aria-label="Administration sections"><a href="/admin/">Orders</a><a href="/admin/members/">Members</a><a href="/admin/business-settings/">Business Settings</a><a href="/admin/communications/" aria-current="page">Communications</a><a href="/admin/website-controls/">Website Controls</a><a href="/admin/reports/">Reports</a><a href="/admin/activity-log/">Activity Log</a></nav>
+
+  <form id="communications-form" class="control-grid" aria-busy="true">
+    <section class="control-card">
+      <h2>Customer reminders</h2>
+      <p>These switches control whether the scheduled function sends the email. They do not alter membership dates or entitlement rules.</p>
+      <div class="toggle-row"><div class="toggle-copy"><strong>Membership renewal reminders</strong><span>Controls the 60–45 day and 14–7 day reminder emails.</span></div><input id="comm-renewal" type="checkbox"></div>
+      <div class="toggle-row"><div class="toggle-copy"><strong>Profile Health Check reminders</strong><span>Controls six-monthly profile-review reminders and the follow-up.</span></div><input id="comm-profile" type="checkbox"></div>
+      <div class="toggle-row"><div class="toggle-copy"><strong>Membership expiry notices</strong><span>Memberships still expire correctly if this is off; only the expiry email is paused.</span></div><input id="comm-expiry" type="checkbox"></div>
+    </section>
+
+    <section class="control-card">
+      <h2>Administrator notifications</h2>
+      <div class="toggle-row"><div class="toggle-copy"><strong>Order &amp; fulfilment notifications</strong><span>Pause new-order and profile-ready emails to the administrator. Orders still appear in Admin.</span></div><input id="comm-order" type="checkbox"></div>
+      <div class="field"><label for="comm-admin-email">Operations notification email</label><input id="comm-admin-email" type="email" required><p>Used for operational notifications and website enquiries. The verified email <em>sender</em> remains protected in system configuration.</p></div>
+    </section>
+
+    <section class="control-card full">
+      <h2>Send test emails</h2>
+      <p>Tests go only to the operations notification email above and do not change any member record, reminder date or Stripe subscription.</p>
+      <div class="actions">
+        <button class="button button-secondary test-email" data-type="renewal_manual" type="button">Test manual renewal</button>
+        <button class="button button-secondary test-email" data-type="renewal_auto" type="button">Test auto renewal</button>
+        <button class="button button-secondary test-email" data-type="profile_review" type="button">Test Profile Health Check</button>
+        <button class="button button-secondary test-email" data-type="expiry" type="button">Test expiry notice</button>
+        <button class="button button-secondary test-email" data-type="order_admin" type="button">Test admin order email</button>
+      </div>
+      <p id="test-status" class="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="control-card full">
+      <div class="safe-box"><strong>Protected:</strong> the HTML design, sender-domain authentication, legal wording, reminder timing windows and payment links remain controlled code. Admin controls whether the tested process is active, not its security-critical implementation.</div>
+      <div class="actions"><button id="save-communications" class="button button-primary" type="submit">Save Communication Settings</button></div>
+      <p id="communication-status" class="status" role="status" aria-live="polite">Loading communication settings…</p>
+    </section>
+  </form>
+</main>
+<script>
+const SUPABASE_URL='https://thbhsktcenhrnxzkbjus.supabase.co',SUPABASE_PUBLISHABLE_KEY='sb_publishable_poyzEEwONnXEqVgepPF6aQ_6qbaLFpi';
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY),form=document.getElementById('communications-form'),statusEl=document.getElementById('communication-status'),testStatus=document.getElementById('test-status'),saveButton=document.getElementById('save-communications');
+async function token(){const {data:{session},error}=await supabaseClient.auth.getSession();if(error||!session?.access_token){location.href='/sign-in/';return null}return session.access_token}
+async function api(path,method='GET',body=null){const t=await token();if(!t)return null;const response=await fetch(path,{method,headers:{Authorization:'Bearer '+t,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,cache:'no-store'});const result=await response.json().catch(()=>({}));if(response.status===403){location.href='/sign-in/';return null}if(!response.ok)throw new Error(result.error||'Request failed.');return result}
+function fill(s){document.getElementById('comm-renewal').checked=s.communications_renewal_reminders_enabled===true;document.getElementById('comm-profile').checked=s.communications_profile_review_reminders_enabled===true;document.getElementById('comm-expiry').checked=s.communications_expiry_notices_enabled===true;document.getElementById('comm-order').checked=s.communications_order_notifications_enabled===true;document.getElementById('comm-admin-email').value=s.communications_admin_notification_email||'admin@lymphawareid.com'}
+async function load(){try{const r=await api('/api/admin-communications');if(!r)return;fill(r.settings);form.setAttribute('aria-busy','false');statusEl.textContent=''}catch(e){statusEl.className='status error';statusEl.textContent=e.message}}
+form.addEventListener('submit',async e=>{e.preventDefault();if(!form.reportValidity())return;saveButton.disabled=true;statusEl.className='status';statusEl.textContent='Saving…';try{const r=await api('/api/admin-communications','PUT',{settings:{communications_renewal_reminders_enabled:document.getElementById('comm-renewal').checked,communications_profile_review_reminders_enabled:document.getElementById('comm-profile').checked,communications_expiry_notices_enabled:document.getElementById('comm-expiry').checked,communications_order_notifications_enabled:document.getElementById('comm-order').checked,communications_admin_notification_email:document.getElementById('comm-admin-email').value.trim()}});if(!r)return;fill(r.settings);statusEl.className='status success';statusEl.textContent='Communication settings saved.'}catch(e){statusEl.className='status error';statusEl.textContent=e.message}finally{saveButton.disabled=false}});
+document.querySelectorAll('.test-email').forEach(button=>button.addEventListener('click',async()=>{const original=button.textContent;button.disabled=true;button.textContent='Sending…';testStatus.className='status';testStatus.textContent='';try{const r=await api('/api/admin-test-email','POST',{type:button.dataset.type});if(!r)return;testStatus.className='status success';testStatus.textContent='Test email sent to '+r.to+'.'}catch(e){testStatus.className='status error';testStatus.textContent=e.message}finally{button.disabled=false;button.textContent=original}}));
+document.getElementById('admin-sign-out').addEventListener('click',async()=>{await supabaseClient.auth.signOut();location.href='/sign-in/'});
+load();
+</script>
+</body></html>
