@@ -230,6 +230,18 @@ export default async (request) => {
       if (!packageDefinition) return json({ error: 'Please select a valid LymphAware ID membership package.' }, 400);
       membershipTermYears = Number(body?.membershipTermYears || 3);
       if (![1, 2, 3].includes(membershipTermYears)) return json({ error: 'Please select a valid membership length.' }, 400);
+      const packageAvailable = {
+        STANDARD: controlSettings.feature_package_standard_enabled,
+        PLUS: controlSettings.feature_package_plus_enabled,
+        MULTILINGUAL: controlSettings.feature_package_multilingual_enabled
+      }[packageType] === true;
+      const termAvailable = {
+        1: controlSettings.feature_term_1y_enabled,
+        2: controlSettings.feature_term_2y_enabled,
+        3: controlSettings.feature_term_3y_enabled
+      }[membershipTermYears] === true;
+      if (!packageAvailable) return json({ error: 'That membership package is temporarily unavailable for new memberships.' }, 400);
+      if (!termAvailable) return json({ error: 'That membership term is temporarily unavailable for new memberships.' }, 400);
 
       if (packageDefinition.requiresLanguage) {
         languageCode = normaliseLanguageCode(body?.languageCode);
