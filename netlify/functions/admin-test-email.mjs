@@ -55,7 +55,8 @@ export default async request=>{
     'Once you save your display name and photograph, LymphAware ID will be notified automatically that your card details are ready. We will then begin preparing your ID card, lanyard and holder, together with any additional cards or language versions included in your order.\n\n'+
     'We aim to prepare and dispatch your order within 7–10 working days after your required card details have been completed. Delivery time after dispatch will depend on the postal service and destination.\n\n'+
     'YOUR INITIAL COOLING-OFF PERIOD\n\nYou may tell us that you want to cancel within 14 days of joining. Contact admin@lymphawareid.com. Any refund and deduction for services or personalised items already supplied will be handled in accordance with your statutory rights and the Terms.';
-   result=await sendAdminTest({to:admin.email,subject:'TEST – Welcome to LymphAware ID – complete your secure account',text,actionUrl:'https://lymphawareid.com/sign-in/',actionLabel:'Confirm email / sign in'});
+   const testText=text+'\n\nTEST NOTE\nThe live customer email contains a secure, one-time account-confirmation button generated specifically for that customer. The button is deliberately omitted from this administrator test copy so no invalid or misleading activation link is created.';
+   result=await sendAdminTest({to:admin.email,subject:'TEST – Welcome to LymphAware ID – complete your secure account',text:testText});
   }else if(template==='STARTUP_PRODUCTION'){
    const text=
     'Your LymphAware ID order ORD-000123 has entered card production.\n\n'+
