@@ -57,6 +57,20 @@ export default async request=>{
     'YOUR INITIAL COOLING-OFF PERIOD\n\nYou may tell us that you want to cancel within 14 days of joining. Contact admin@lymphawareid.com. Any refund and deduction for services or personalised items already supplied will be handled in accordance with your statutory rights and the Terms.';
    const testText=text+'\n\nTEST NOTE\nThe live customer email contains a secure, one-time account-confirmation button generated specifically for that customer. The button is deliberately omitted from this administrator test copy so no invalid or misleading activation link is created.';
    result=await sendAdminTest({to:admin.email,subject:'TEST – Welcome to LymphAware ID – complete your secure account',text:testText});
+  }else if(template==='ADMIN_PROFILE_READY'){
+   const subject='TEST – LymphAware ID profile details ready for card production – LA-000003';
+   const text=
+    'A LymphAware ID member has now saved the two mandatory details needed for ID card production.\n\n'+
+    'Order: ORD-000123\n'+
+    'LymphAware ID: LA-000003\n'+
+    'Display name: Alex Morgan\n'+
+    'Customer email: alex.morgan@example.com\n\n'+
+    'Order contents:\n'+
+    '• 2 × LymphAware ID cards – English\n'+
+    '• 2 × Lanyards & holders\n\n'+
+    'The order will now appear at the appropriate stage in LymphAware ID Administration. If the order includes an additional language, that language version may still be preparing before the complete order is ready to print.\n\n'+
+    'Open LymphAware ID Administration:\nhttps://lymphawareid.com/admin/?stage=PROCESS';
+   result=await sendAdminTest({to:admin.email,subject,text,actionUrl:'https://lymphawareid.com/admin/?stage=PROCESS',actionLabel:'Open LymphAware ID Administration'});
   }else if(template==='STARTUP_PRODUCTION'){
    const text=
     'Your LymphAware ID order ORD-000123 has entered card production.\n\n'+
