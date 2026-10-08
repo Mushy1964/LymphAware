@@ -108,3 +108,4 @@ export default async (request) => {
     return json({ error: 'Administration figures could not be loaded.' }, 500);
   }
 };
+export const config={path:'/api/admin-dashboard-summary'};
