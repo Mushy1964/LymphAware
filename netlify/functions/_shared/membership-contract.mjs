@@ -1,3 +1,4 @@
+import { RENEWAL_HERO_BASE64 } from './renewal-hero-base64.mjs';
 import { brandedEmailHtml } from './email-branding.mjs';
 export const MEMBERSHIP_CONTRACT_VERSION = 'DMCCA-READY-2026-09-12';
 export const FIRST_REMINDER_WINDOW = '60 to 45 days before renewal';
@@ -88,28 +89,39 @@ export async function sendMembershipEmail({
   if (!apiKey || !to) return { ok: false, error: 'Membership email is not configured.' };
   const headers = { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
   if (idempotencyKey) headers['Idempotency-Key'] = idempotencyKey;
+  const inlineRenewalHero = heroImageUrl === RENEWAL_HERO_URL;
+  const renderedHeroUrl = inlineRenewalHero ? 'cid:lymphaware-renewal-hero' : heroImageUrl;
+  const payload = {
+    from: String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphawareid.com>').trim(),
+    to: [to],
+    reply_to: ['admin@lymphawareid.com'],
+    subject,
+    text,
+    html: brandedEmailHtml({
+      title: htmlTitle || subject,
+      text: htmlText || text,
+      preheader,
+      actionUrl,
+      actionLabel,
+      heroImageUrl: renderedHeroUrl,
+      heroImageAlt,
+      heroLinkUrl,
+      showHeaderLogo,
+      detailRows
+    })
+  };
+  if (inlineRenewalHero) {
+    payload.attachments = [{
+      filename: 'LymphAware_Renewal_Email_Hero_Approved.jpg',
+      content: RENEWAL_HERO_BASE64,
+      content_type: 'image/jpeg',
+      content_id: 'lymphaware-renewal-hero'
+    }];
+  }
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers,
-    body: JSON.stringify({
-      from: String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphawareid.com>').trim(),
-      to: [to],
-      reply_to: ['admin@lymphawareid.com'],
-      subject,
-      text,
-      html: brandedEmailHtml({
-        title: htmlTitle || subject,
-        text: htmlText || text,
-        preheader,
-        actionUrl,
-        actionLabel,
-        heroImageUrl,
-        heroImageAlt,
-        heroLinkUrl,
-        showHeaderLogo,
-        detailRows
-      })
-    })
+    body: JSON.stringify(payload)
   });
   return response.ok ? { ok: true } : { ok: false, error: await response.text() };
 }
