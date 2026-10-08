@@ -29,7 +29,24 @@
 </section>
 <section class="panel">
 <h2>Communications & test emails</h2><p>Send a copy of the live customer email templates to your administrator email address without changing any member record.</p>
-<div class="field"><label for="test-email-template">Email template</label><select id="test-email-template"><option value="AUTO_RENEW_FIRST">Advance automatic-renewal reminder</option><option value="AUTO_RENEW_FINAL">Final automatic-renewal reminder</option><option value="MANUAL_FIRST">Advance expiry / manual-renewal reminder</option><option value="MANUAL_FINAL">Final expiry / manual-renewal reminder</option><option value="PROFILE_REVIEW_FIRST">Profile review reminder</option><option value="PROFILE_REVIEW_FOLLOWUP">Profile review follow-up</option></select></div>
+<div class="field"><label for="test-email-template">Customer communication</label><select id="test-email-template">
+<optgroup label="Joining & fulfilment">
+<option value="STARTUP_WELCOME">Welcome / secure account setup email</option>
+<option value="STARTUP_PRODUCTION">Cards entered production email</option>
+<option value="STARTUP_DISPATCH">Order dispatched email</option>
+<option value="STARTUP_WELCOME_LETTER">Printed A4 Welcome Letter</option>
+</optgroup>
+<optgroup label="Membership renewal">
+<option value="AUTO_RENEW_FIRST">Advance automatic-renewal reminder</option>
+<option value="AUTO_RENEW_FINAL">Final automatic-renewal reminder</option>
+<option value="MANUAL_FIRST">Advance expiry / manual-renewal reminder</option>
+<option value="MANUAL_FINAL">Final expiry / manual-renewal reminder</option>
+</optgroup>
+<optgroup label="Profile review">
+<option value="PROFILE_REVIEW_FIRST">Profile review reminder</option>
+<option value="PROFILE_REVIEW_FOLLOWUP">Profile review follow-up</option>
+</optgroup>
+</select></div>
 <div class="actions"><button id="send-test-email" class="button button-secondary">Send Test Email to Admin</button><span id="test-email-status" class="status"></span></div>
 </section>
 <section class="panel">
@@ -80,9 +97,10 @@ function renderMembers(members){const box=document.getElementById('member-list')
 async function loadMembers(){const q=document.getElementById('member-search').value.trim();const s=document.getElementById('member-status');s.textContent='Loading members…';try{const r=await api('/api/admin-members-list?q='+encodeURIComponent(q));renderMembers(r.members||[]);s.className='status';s.textContent=(r.members||[]).length+' member(s) shown.'}catch(e){s.className='status err';s.textContent=e.message}}
 async function cancelRenew(e){const b=e.currentTarget;if(!confirm('Cancel automatic renewal for '+b.dataset.name+'? Their current membership remains active until its existing expiry date.'))return;b.disabled=true;try{await api('/api/admin-member-action','POST',{action:'CANCEL_AUTO_RENEW',membershipId:b.dataset.id});await loadMembers();await loadActivity()}catch(err){alert(err.message)}finally{b.disabled=false}}
 async function loadActivity(){const box=document.getElementById('activity-list');try{const r=await api('/api/admin-activity-log');const rows=r.activity||[];box.innerHTML=rows.length?rows.map(a=>`<div class="activity-row"><span>${new Date(a.created_at).toLocaleString('en-GB')}</span><strong>${esc(a.actor_email)}</strong><span>${esc(a.summary)}</span></div>`).join(''):'<div class="protected">No Control Centre activity has been recorded yet.</div>'}catch(e){box.innerHTML='<div class="protected">'+esc(e.message)+'</div>'}}
-async function sendTestEmail(){const b=document.getElementById('send-test-email'),s=document.getElementById('test-email-status');b.disabled=true;s.className='status';s.textContent='Sending…';try{const r=await api('/api/admin-test-email','POST',{template:document.getElementById('test-email-template').value});s.className='status ok';s.textContent='Test sent to '+r.to+'.';await loadActivity()}catch(e){s.className='status err';s.textContent=e.message}finally{b.disabled=false}}
+function refreshCommunicationAction(){const select=document.getElementById('test-email-template'),b=document.getElementById('send-test-email'),s=document.getElementById('test-email-status');const printed=select.value==='STARTUP_WELCOME_LETTER';b.textContent=printed?'Open Welcome Letter Preview':'Send Test Email to Admin';s.textContent='';s.className='status'}
+async function sendTestEmail(){const b=document.getElementById('send-test-email'),s=document.getElementById('test-email-status'),template=document.getElementById('test-email-template').value;if(template==='STARTUP_WELCOME_LETTER'){window.open('/admin/communication-preview/welcome-letter/','_blank','noopener');return}b.disabled=true;s.className='status';s.textContent='Sending…';try{const r=await api('/api/admin-test-email','POST',{template});s.className='status ok';s.textContent='Test sent to '+r.to+'.';await loadActivity()}catch(e){s.className='status err';s.textContent=e.message}finally{b.disabled=false}}
 async function loadReport(){const box=document.getElementById('report-summary');try{const r=await api('/api/admin-dashboard-summary');const s=r.summary||{};const items=[['Active members',s.active_members],['Paid members',s.paid_members],['Pilot / sponsored',s.pilot_sponsored_members],['Visible QR profiles',s.visible_profiles],['Profiles needing details',s.profiles_needing_details],['Approved language profiles',s.approved_language_profiles]];box.innerHTML=items.map(([k,v])=>'<div class="detail"><b>'+esc(k)+'</b>'+esc(v??0)+'</div>').join('')}catch(e){box.innerHTML='<div class="protected">'+esc(e.message)+'</div>'}}
-document.getElementById('send-test-email').onclick=sendTestEmail;
+document.getElementById('send-test-email').onclick=sendTestEmail;document.getElementById('test-email-template').addEventListener('change',refreshCommunicationAction);refreshCommunicationAction();
 document.getElementById('search-members').onclick=loadMembers;document.getElementById('member-search').addEventListener('keydown',e=>{if(e.key==='Enter')loadMembers()});
 document.getElementById('admin-sign-out').onclick=async()=>{await sb.auth.signOut();location.href='/sign-in/'};
 loadSettings();loadMembers();loadReport();loadActivity();
