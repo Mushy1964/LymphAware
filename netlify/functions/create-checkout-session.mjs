@@ -1,4 +1,5 @@
 import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
+import { getControlSettings, publicControls } from './_shared/system-controls.mjs';
 
 const APPROVED_LANGUAGES = {
   FR: 'French',
@@ -191,8 +192,9 @@ export default async (request) => {
 
     const isTrialParticipant = membership.membership_status === 'PILOT';
     const trialLaterOrderCouponId = isTrialParticipant ? 'LYMPHAWARE_TRIAL_LATER_100_V1' : '';
-    const businessSettings = await getBusinessSettings({ strict: true });
+    const [businessSettings, controlSettings] = await Promise.all([getBusinessSettings({ strict: true }), getControlSettings({ strict: true })]);
     const livePricing = publicPricing(businessSettings);
+    const features = publicControls(controlSettings).features;
 
     const deliveryCountry = normaliseCountry(body?.deliveryCountry);
     if (!CHECKOUT_COUNTRIES.has(deliveryCountry)) return json({ error: 'Please select a supported delivery country.' }, 400);
@@ -226,11 +228,14 @@ export default async (request) => {
       if (!packageDefinition) return json({ error: 'Please select a valid LymphAware ID membership package.' }, 400);
       membershipTermYears = Number(body?.membershipTermYears || 3);
       if (![1, 2, 3].includes(membershipTermYears)) return json({ error: 'Please select a valid membership length.' }, 400);
+      if (features.packages?.[packageType] !== true) return json({ error: 'That membership package is temporarily unavailable.' }, 400);
+      if (features.terms?.[membershipTermYears] !== true) return json({ error: 'That membership length is temporarily unavailable.' }, 400);
 
       if (packageDefinition.requiresLanguage) {
         languageCode = normaliseLanguageCode(body?.languageCode);
         languageName = APPROVED_LANGUAGES[languageCode] || '';
         if (!languageName) return json({ error: 'Please select an additional language that is currently available.' }, 400);
+        if (features.additionalLanguages !== true || features.languages?.[languageCode] !== true) return json({ error: 'That additional language is temporarily unavailable.' }, 400);
         translationConsent = body?.translationConsent === true;
         if (!translationConsent) return json({ error: 'Please confirm that LymphAware ID may process your English profile to prepare the translated version.' }, 400);
       }
@@ -243,6 +248,7 @@ export default async (request) => {
           : `${membershipTermYears}-year membership with 1 English ID card and 1 lanyard & holder.`;
       amountPence = livePricing.packages[packageType][membershipTermYears];
       autoRenew = body?.autoRenew === true;
+      if (autoRenew && features.autoRenewSignup !== true) return json({ error: 'Automatic renewal is temporarily unavailable for new memberships.' }, 400);
       if (autoRenew && body?.autoRenewAcknowledged !== true) {
         return json({ error: 'Please confirm the automatic-renewal amount and frequency.' }, 400);
       }
@@ -270,6 +276,7 @@ export default async (request) => {
       if (!complianceUpdate.ok) return json({ error: 'Unable to record your membership selection. Please try again.' }, 500);
     } else if (paymentType === 'additional_items') {
       if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware ID membership is required.' }, 403);
+      if (features.additionalItems !== true) return json({ error: 'Additional cards, lanyards and accessories are temporarily unavailable.' }, 400);
 
       const legacyCardQuantity = parseQuantity(body?.cardQuantity);
       lanyardQuantity = parseQuantity(body?.lanyardQuantity);
@@ -285,6 +292,7 @@ export default async (request) => {
       if (languageCode) {
         languageName = APPROVED_LANGUAGES[languageCode] || '';
         if (!languageName) return json({ error: 'Please select an additional language that is currently available.' }, 400);
+        if (features.additionalLanguages !== true || features.languages?.[languageCode] !== true) return json({ error: 'That additional language is temporarily unavailable.' }, 400);
         translationConsent = body?.translationConsent === true;
         if (!translationConsent) return json({ error: 'Please confirm that LymphAware ID may process your English profile to prepare the translated version.' }, 400);
         if (await alreadyPurchasedLanguage(user.id, languageCode, languageName)) {
@@ -315,10 +323,12 @@ export default async (request) => {
       replacementLanyard = lanyardQuantity > 0;
     } else if (paymentType === 'additional_language') {
       if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware ID membership is required.' }, 403);
+      if (features.additionalLanguages !== true) return json({ error: 'Additional-language purchases are temporarily unavailable.' }, 400);
 
       languageCode = normaliseLanguageCode(body?.languageCode);
       languageName = APPROVED_LANGUAGES[languageCode] || '';
       if (!languageName) return json({ error: 'Please select an additional language that is currently available.' }, 400);
+      if (features.languages?.[languageCode] !== true) return json({ error: 'That additional language is temporarily unavailable.' }, 400);
       translationConsent = body?.translationConsent === true;
       if (!translationConsent) return json({ error: 'Please confirm that LymphAware ID may process your English profile to prepare the translated version.' }, 400);
       if (await alreadyPurchasedLanguage(user.id, languageCode, languageName)) {
@@ -331,6 +341,7 @@ export default async (request) => {
       packageType = 'ADDITIONAL_LANGUAGE';
     } else if (paymentType === 'replacement_items') {
       if (!hasActiveEntitlement(membership)) return json({ error: 'An active LymphAware ID membership is required.' }, 403);
+      if (features.additionalItems !== true) return json({ error: 'Replacement cards and accessories are temporarily unavailable.' }, 400);
 
       replacementCard = body?.replacementCard === true;
       replacementLanyard = body?.replacementLanyard === true;
