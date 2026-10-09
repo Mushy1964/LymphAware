@@ -1,4 +1,5 @@
 import { brandedEmailHtml } from './_shared/email-branding.mjs';
+import { getControlSettings, communicationControls } from './_shared/system-controls.mjs';
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -76,7 +77,7 @@ async function sendDeletionEmails(email, lymphawareId) {
   const apiKey = env('RESEND_API_KEY');
   if (!apiKey) return;
   const from = env('ORDER_NOTIFICATION_FROM') || 'LymphAware ID <notifications@lymphawareid.com>';
-  const adminEmail = env('ORDER_NOTIFICATION_EMAIL') || 'admin@lymphawareid.com';
+  const adminEmail = communicationControls(await getControlSettings()).adminNotificationEmail || env('ORDER_NOTIFICATION_EMAIL') || 'admin@lymphawareid.com';
   const reference = lymphawareId ? ` (${lymphawareId})` : '';
   const customerSubject = 'Your LymphAware ID account has been deleted';
   const customerText = 'Your LymphAware ID account, QR profile, additional-language profiles and stored photograph have been permanently deleted. Completed transaction records are retained only where required for financial and legal record keeping.\n\nIf you did not expect this email, contact admin@lymphawareid.com.';
