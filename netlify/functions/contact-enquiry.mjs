@@ -1,4 +1,3 @@
-import { enforcePublicRateLimit } from './_shared/rate-limit.mjs';
 import { brandedEmailHtml } from './_shared/email-branding.mjs';
 function jsonResponse(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -28,8 +27,6 @@ export default async (request) => {
   }
 
   try {
-    const rate = await enforcePublicRateLimit(request, { scope: 'contact-enquiry', limit: 8, windowSeconds: 600 });
-    if (!rate.allowed) return jsonResponse({ error: 'Too many enquiries have been submitted from this connection. Please wait a few minutes and try again.' }, 429);
     const body = await request.json().catch(() => ({}));
 
     // Quietly accept honeypot submissions so automated senders receive no clues.
@@ -111,5 +108,6 @@ export default async (request) => {
 };
 
 export const config = {
-  path: '/api/contact-enquiry'
+  path: '/api/contact-enquiry',
+  rateLimit: { action: 'rate_limit', aggregateBy: 'ip', windowSize: 600, windowLimit: 8 }
 };
