@@ -1,5 +1,6 @@
 import { verifyAdminRequest as verifyAdmin } from './_shared/admin-auth.mjs';
 import { brandedEmailHtml } from './_shared/email-branding.mjs';
+import { getControlSettings, communicationControls } from './_shared/system-controls.mjs';
 function serviceHeaders(prefer = '') {
   const headers = {
     apikey: process.env.SUPABASE_SECRET_KEY,
@@ -75,7 +76,7 @@ export default async (request) => {
 
     const orderRef = `ORD-${String(order.order_number).padStart(6, '0')}`;
     const itemLines = items.map(item => `${item.quantity} × ${item.description}`).join('\n');
-    const to = String(process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphawareid.com').trim();
+    const to = communicationControls(await getControlSettings()).adminNotificationEmail || String(process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphawareid.com').trim();
     const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphawareid.com>').trim();
 
     const subject = `New LymphAware ID order – ${orderRef}`;
