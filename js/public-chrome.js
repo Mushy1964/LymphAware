@@ -118,6 +118,19 @@
       </nav>`);
   }
 
+  fetch('/api/public-site-settings',{cache:'no-store'})
+    .then(response=>response.ok?response.json():null)
+    .then(settings=>{
+      if(!settings?.announcement?.enabled||!settings.announcement.message)return;
+      const banner=document.createElement('div');
+      banner.className='public-announcement';
+      banner.setAttribute('role','status');
+      banner.innerHTML='<div class="container">'+String(settings.announcement.message).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))+'</div>';
+      const target=document.querySelector('.public-nav-bar:last-of-type')||document.querySelector('header.site-header');
+      if(target)target.insertAdjacentElement('afterend',banner);
+    })
+    .catch(()=>{});
+
   const footer = document.querySelector('footer');
   if (footer) {
     footer.outerHTML = `
