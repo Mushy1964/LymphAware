@@ -45,3 +45,10 @@
 /preview/*
   X-Robots-Tag: noindex, nofollow, noarchive
   Cache-Control: no-store
+
+
+/css/public-chrome.css
+  Cache-Control: public, max-age=0, must-revalidate
+
+/js/public-chrome.js
+  Cache-Control: public, max-age=0, must-revalidate
