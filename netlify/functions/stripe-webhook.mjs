@@ -2,8 +2,8 @@ import crypto from 'node:crypto';
 import { brandedEmailHtml } from './_shared/email-branding.mjs';
 import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
 import { PACKAGE_DEFINITIONS } from './_shared/initial-membership-checkout.mjs';
-import {
 import { getControlSettings, communicationControls } from './_shared/system-controls.mjs';
+import {
   MEMBERSHIP_CONTRACT_VERSION,
   dateUK,
   memberEmail,
