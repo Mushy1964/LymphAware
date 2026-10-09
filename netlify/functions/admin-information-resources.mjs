@@ -21,7 +21,7 @@ export default async request=>{
     const url=text(body.url,1000);let parsed;try{parsed=new URL(url)}catch{return json({error:'Enter a valid resource web address.'},400)}
     if(parsed.protocol!=='https:')return json({error:'Resource links must use https.'},400);
     const sortOrder=Number(body.sort_order);if(!Number.isInteger(sortOrder)||sortOrder<0||sortOrder>9999)return json({error:'Sort order must be a whole number between 0 and 9999.'},400);
-    const update={organisation:text(body.organisation,160),title:text(body.title,240),url,active:body.active===true,sort_order:sortOrder,updated_at:new Date().toISOString()};
+    const update={organisation:text(body.organisation,160),title:text(body.title,240),description:text(body.description,500),url,active:body.active===true,sort_order:sortOrder,updated_at:new Date().toISOString()};
     const r=await fetch(`${env('SUPABASE_URL')}/rest/v1/information_resources?id=eq.${id}`,{method:'PATCH',headers:headers('return=representation'),body:JSON.stringify(update)});
     if(!r.ok)throw new Error('Information resource could not be updated.');
     const resource=(await r.json())?.[0];if(!resource)return json({error:'Information resource not found.'},404);
