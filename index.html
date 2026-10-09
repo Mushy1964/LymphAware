@@ -1570,6 +1570,13 @@
       }
       const renewalText=card.querySelector('.home-membership-renewal-values');if(renewalText&&renewals)renewalText.textContent=`1 year ${money(renewals[1])} · 2 years ${money(renewals[2])} · 3 years ${money(renewals[3])}`;
     }
+    const features=settings.controls?.features||{};
+    for(const [code,card] of Object.entries(cards)){
+      if(card&&features.packages&&features.packages[code]===false)card.hidden=true;
+      if(card&&features.terms){
+        [...card.querySelectorAll('.home-membership-term-options li')].forEach((row,index)=>{const years=index+1;if(features.terms[years]===false)row.hidden=true});
+      }
+    }
     const shipping=settings.pricing.shipping,postage=document.getElementById('home-postage-prices');
     if(shipping&&postage)postage.textContent=`Postage & packing is ${money(shipping.UK)} for the United Kingdom, ${money(shipping.EUROPE)} for Europe and ${money(shipping.REST_OF_WORLD)} for the Rest of World.`;
   }catch(error){console.error('Unable to load live membership pricing:',error)}
