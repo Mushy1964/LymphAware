@@ -1,4 +1,5 @@
 import { brandedEmailHtml } from './_shared/email-branding.mjs';
+import { getControlSettings, communicationControls } from './_shared/system-controls.mjs';
 function env(name) {
   return String(process.env[name] || '').trim();
 }
@@ -95,7 +96,7 @@ export default async (request) => {
     const itemLines = items.map(item => `• ${Math.max(1, Number(item.quantity || 1))} × ${item.description}${item.language_name ? ` – ${item.language_name}` : ''}`).join('\n');
 
     const apiKey = env('RESEND_API_KEY');
-    const to = env('ORDER_NOTIFICATION_EMAIL') || 'admin@lymphawareid.com';
+    const to = communicationControls(await getControlSettings()).adminNotificationEmail || env('ORDER_NOTIFICATION_EMAIL') || 'admin@lymphawareid.com';
     const from = env('ORDER_NOTIFICATION_FROM') || 'LymphAware ID <notifications@lymphawareid.com>';
     if (!apiKey) {
       await patchOrder(order.id, {
