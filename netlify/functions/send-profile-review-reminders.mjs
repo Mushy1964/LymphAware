@@ -7,6 +7,7 @@ import {
   sendProfileReviewEmail,
   serviceHeaders
 } from './_shared/profile-review.mjs';
+import { getControlSettings, communicationControls } from './_shared/system-controls.mjs';
 
 function supabaseUrl() {
   return String(Netlify.env.get('SUPABASE_URL') || '').trim();
@@ -40,6 +41,11 @@ async function markReminder(profile, column) {
 }
 
 export default async () => {
+  const controls = communicationControls(await getControlSettings());
+  if (!controls.profileReviewReminders) {
+    console.log(JSON.stringify({ profile_review_reminders_disabled: true }));
+    return new Response(null, { status: 204 });
+  }
   const failures = [];
   let firstReminders = 0;
   let followups = 0;
