@@ -1,4 +1,3 @@
-import { enforcePublicRateLimit } from './_shared/rate-limit.mjs';
 import {
   createInitialMembershipCheckout,
   normaliseInitialSelection
@@ -37,8 +36,6 @@ export default async (request) => {
   if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
 
   try {
-    const rate = await enforcePublicRateLimit(request, { scope: 'membership-checkout', limit: 10, windowSeconds: 600 });
-    if (!rate.allowed) return json({ error: 'Too many checkout requests have been made from this connection. Please wait a few minutes and try again.' }, 429);
     const body = await request.json().catch(() => ({}));
     const email = String(body.email || '').trim().toLowerCase();
     if (!/^\S+@\S+\.\S+$/.test(email)) return json({ error: 'Please enter a valid email address.' }, 400);
@@ -72,4 +69,8 @@ export default async (request) => {
     console.error('Unable to start membership checkout:', error instanceof Error ? error.message : error);
     return json({ error: error instanceof Error ? error.message : 'Unable to open secure payment.' }, 500);
   }
+};
+
+export const config = {
+  rateLimit: { action: 'rate_limit', aggregateBy: 'ip', windowSize: 600, windowLimit: 10 }
 };
