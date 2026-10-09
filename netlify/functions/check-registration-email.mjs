@@ -1,4 +1,3 @@
-import { enforcePublicRateLimit } from './_shared/rate-limit.mjs';
 import { authoriseRegistration, registrationUnavailableMessage } from './_shared/registration-access.mjs';
 
 function json(body, status = 200) {
@@ -29,11 +28,6 @@ export default async request => {
   if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
 
   try {
-    const rate = await enforcePublicRateLimit(request, { scope: 'registration-check', limit: 20, windowSeconds: 600 });
-    if (!rate.allowed) {
-      await finishAfter(startedAt);
-      return json({ error: 'Too many account checks have been made from this connection. Please wait a few minutes and try again.' }, 429);
-    }
     const body = await request.json().catch(() => ({}));
     const email = String(body.email || '').trim().toLowerCase();
     if (!/^\S+@\S+\.\S+$/.test(email)) {
@@ -72,4 +66,8 @@ export default async request => {
     await finishAfter(startedAt);
     return json({ error: 'We could not check this email address. Please try again.' }, 500);
   }
+};
+
+export const config = {
+  rateLimit: { action: 'rate_limit', aggregateBy: 'ip', windowSize: 600, windowLimit: 20 }
 };
