@@ -1,6 +1,7 @@
 export { MEMBERSHIP_CONTRACT_VERSION, FIRST_REMINDER_WINDOW, FINAL_REMINDER_WINDOW } from './membership-contract.mjs';
 import { MEMBERSHIP_CONTRACT_VERSION, FIRST_REMINDER_WINDOW, FINAL_REMINDER_WINDOW } from './membership-contract.mjs';
 import { getBusinessSettings, publicPricing } from './business-settings.mjs';
+import { getControlSettings, publicControls } from './system-controls.mjs';
 
 export const APPROVED_LANGUAGES = {
   FR: 'French',
@@ -54,6 +55,17 @@ export async function normaliseInitialSelection(body = {}) {
   if (packageType === 'MULTILINGUAL' && body.translationConsent !== true) throw new Error('Please confirm the translation agreement.');
   if (body.termsAccepted !== true) throw new Error('Please accept the Terms and Privacy Notice.');
   if (autoRenew && body.autoRenewAcknowledged !== true) throw new Error('Please confirm the automatic-renewal details.');
+
+  const controlSettings = await getControlSettings({ strict: true });
+  const features = publicControls(controlSettings).features;
+  if (features.packages?.[packageType] !== true) throw new Error('That membership package is temporarily unavailable.');
+  if (features.terms?.[membershipTermYears] !== true) throw new Error('That membership length is temporarily unavailable.');
+  if (autoRenew && features.autoRenewSignup !== true) throw new Error('Automatic renewal is temporarily unavailable for new memberships.');
+  if (packageType === 'MULTILINGUAL') {
+    if (features.additionalLanguages !== true || features.languages?.[languageCode] !== true) {
+      throw new Error('That additional language is temporarily unavailable.');
+    }
+  }
 
   const businessSettings = await getBusinessSettings({ strict: true });
   const pricing = publicPricing(businessSettings);
