@@ -131,6 +131,10 @@ function checkProjectConsistency() {
   const cancelRenewedMembershipPath = path.join(root, 'netlify/functions/cancel-renewed-membership.mjs');
   const termsPath = path.join(root, 'terms/index.html');
   const renewalArtworkPath = path.join(root, 'assets/email/LymphAware_Renewal_Email_Hero_Approved.jpg');
+  const renewalHeroBase64Path = path.join(root, 'netlify/functions/_shared/renewal-hero-base64.mjs');
+  const managePaymentMethodPath = path.join(root, 'netlify/functions/manage-payment-method.mjs');
+  const adminControlCentrePath = path.join(root, 'admin/control-centre/index.html');
+  const headersPath = path.join(root, '_headers');
 
   const checkout = fs.readFileSync(checkoutPath, 'utf8');
   const portal = fs.readFileSync(portalPath, 'utf8');
@@ -170,9 +174,21 @@ function checkProjectConsistency() {
   const adminSyncRenewalPrices = fs.readFileSync(adminSyncRenewalPricesPath, 'utf8');
   const cancelRenewedMembership = fs.readFileSync(cancelRenewedMembershipPath, 'utf8');
   const terms = fs.readFileSync(termsPath, 'utf8');
+  const renewalHeroBase64 = fs.readFileSync(renewalHeroBase64Path, 'utf8');
+  const managePaymentMethod = fs.readFileSync(managePaymentMethodPath, 'utf8');
+  const adminControlCentre = fs.readFileSync(adminControlCentrePath, 'utf8');
+  const netlifyHeaders = fs.readFileSync(headersPath, 'utf8');
 
-  if (!fs.existsSync(renewalArtworkPath) || fs.statSync(renewalArtworkPath).size < 40000) {
-    errors.push('Approved renewal email hero artwork is missing or unexpectedly small.');
+  if (!fs.existsSync(renewalArtworkPath) || fs.statSync(renewalArtworkPath).size < 5000) {
+    errors.push('Renewal email fallback artwork is missing or unexpectedly small.');
+  }
+  if (
+    !renewalHeroBase64.includes('RENEWAL_HERO_CHUNK_01') ||
+    !renewalHeroBase64.includes('RENEWAL_HERO_CHUNK_07') ||
+    !membershipContract.includes("content_id: 'lymphaware-renewal-hero'") ||
+    !membershipContract.includes("cid:lymphaware-renewal-hero")
+  ) {
+    errors.push('Renewal emails are not using the approved inline CID artwork assembly.');
   }
   if (!membershipContract.includes("LymphAware_Renewal_Email_Hero_Approved.jpg") || !membershipContract.includes("portal/#membership-panel")) {
     errors.push('Renewal email configuration is not using the approved renewal email artwork and the membership Portal deep link.');
@@ -189,6 +205,37 @@ function checkProjectConsistency() {
 
   if (!portal.includes('Profile Health Check') || !portal.includes('/.netlify/functions/member-profile-review') || !portal.includes('/profile/?review=1')) {
     errors.push('Patient Portal profile health-check controls are missing or incomplete.');
+  }
+  if (
+    !portal.includes('Update payment method') ||
+    !portal.includes('/api/manage-payment-method') ||
+    !managePaymentMethod.includes("'flow_data[type]': 'payment_method_update'") ||
+    !managePaymentMethod.includes("billing_portal/sessions")
+  ) {
+    errors.push('Automatic-renew members do not have the protected Stripe payment-method update flow.');
+  }
+  if (
+    webhook.includes('[1, 2, 3, 5]') ||
+    webhook.includes(' 5: 2999') ||
+    webhook.includes(' 5: 3999') ||
+    webhook.includes(' 5: 4999') ||
+    adminControlCentre.includes('[1,2,3,5]')
+  ) {
+    errors.push('Obsolete five-year membership handling remains in webhook or Admin code.');
+  }
+  if (
+    !publicProfileFunction.includes('source.is_archived === true') ||
+    !publicProfileFunction.includes('profile.is_archived === true')
+  ) {
+    errors.push('Public QR profile function does not explicitly reject archived profiles.');
+  }
+  if (
+    !netlifyHeaders.includes('X-Content-Type-Options: nosniff') ||
+    !netlifyHeaders.includes('Content-Security-Policy:') ||
+    !netlifyHeaders.includes('/admin/*') ||
+    !netlifyHeaders.includes('X-Robots-Tag: noindex, nofollow, noarchive')
+  ) {
+    errors.push('Netlify browser security headers or private-area indexing protection are missing.');
   }
   if (!profile.includes('profileReviewMode') || !profile.includes('confirmProfileReviewAfterSave')) {
     errors.push('Profile editor does not complete a requested six-monthly review after save.');
