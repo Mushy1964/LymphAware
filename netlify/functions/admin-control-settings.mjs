@@ -6,6 +6,7 @@ const KEYS = Object.freeze({
   renewal_final_reminder_days: { type: 'int', min: 3, max: 30, fallback: '14' },
   announcement_enabled: { type: 'bool', fallback: 'false' },
   announcement_message: { type: 'text', max: 320, fallback: '' },
+  announcement_scroll_speed: { type: 'int', min: 20, max: 120, fallback: '55' },
   announcement_start_at: { type: 'datetime', fallback: '' },
   announcement_end_at: { type: 'datetime', fallback: '' },
   communications_admin_notification_email: { type: 'email', max: 254, fallback: 'admin@lymphawareid.com' },
