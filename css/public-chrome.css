@@ -654,13 +654,19 @@
   align-items:center;
   gap:42px;
   padding-right:42px;
-  font-weight:800;
+  font-weight:400;
   line-height:1;
+  color:#0053b7;
+}
+.public-announcement-group span{
+  color:#0053b7;
+  font-weight:400;
 }
 .public-announcement-separator{
-  color:#27842a;
+  color:#27842a !important;
   font-size:1rem;
   line-height:1;
+  font-weight:700 !important;
 }
 .public-announcement:hover .public-announcement-track,
 .public-announcement:focus-within .public-announcement-track{
