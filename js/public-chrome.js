@@ -141,8 +141,10 @@
           const step=Math.max(1,Math.ceil(first.getBoundingClientRect().width));
           const copies=Math.max(4,Math.ceil(frame.clientWidth/step)+3);
           track.innerHTML=group.repeat(copies);
+          const configuredSpeed=Number(settings?.announcement?.scrollSpeed);
+          const pixelsPerSecond=Number.isFinite(configuredSpeed)?Math.min(120,Math.max(20,configuredSpeed)):55;
           banner.style.setProperty('--announcement-shift','-'+step+'px');
-          banner.style.setProperty('--announcement-duration',Math.max(10,Math.min(32,step/55))+'s');
+          banner.style.setProperty('--announcement-duration',Math.max(4,step/pixelsPerSecond)+'s');
         });
       }
     })
