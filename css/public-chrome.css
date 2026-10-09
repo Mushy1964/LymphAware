@@ -614,4 +614,92 @@
 
 
 
-.public-announcement{padding:12px 0;border-top:1px solid #b9d5e8;border-bottom:1px solid #b9d5e8;background:#edf7fc;color:#173b57;font-weight:700;line-height:1.45;text-align:center}.public-announcement .container{max-width:1180px;margin:0 auto;padding:0 18px}
+.public-announcement{
+  width:100%;
+  margin:0;
+  padding:0;
+  background:transparent;
+  color:#173b57;
+}
+.public-announcement-frame{
+  width:min(1180px, calc(100% - 40px));
+  height:46px;
+  margin:0 auto;
+  overflow:hidden;
+  border:1px solid #b9d5e8;
+  border-top:0;
+  background:#edf7fc;
+  box-sizing:border-box;
+}
+.public-announcement-window{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+}
+.public-announcement-track{
+  display:flex;
+  align-items:center;
+  width:max-content;
+  min-width:max-content;
+  height:100%;
+  white-space:nowrap;
+  will-change:transform;
+  animation:public-announcement-scroll var(--announcement-duration, 22s) linear infinite;
+}
+.public-announcement-group{
+  flex:none;
+  display:flex;
+  align-items:center;
+  gap:42px;
+  padding-right:42px;
+  font-weight:800;
+  line-height:1;
+}
+.public-announcement-separator{
+  color:#27842a;
+  font-size:1rem;
+  line-height:1;
+}
+.public-announcement:hover .public-announcement-track,
+.public-announcement:focus-within .public-announcement-track{
+  animation-play-state:paused;
+}
+@keyframes public-announcement-scroll{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
+@media (max-width:700px){
+  .public-announcement-frame{
+    width:min(100% - 24px, 1180px);
+    height:44px;
+  }
+  .public-announcement-group{
+    gap:30px;
+    padding-right:30px;
+    font-size:.92rem;
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  .public-announcement-window{
+    justify-content:center;
+    padding:0 14px;
+    box-sizing:border-box;
+  }
+  .public-announcement-track{
+    animation:none;
+    transform:none;
+    min-width:0;
+    white-space:normal;
+    text-align:center;
+  }
+  .public-announcement-track .public-announcement-group:nth-child(2),
+  .public-announcement-separator{
+    display:none;
+  }
+  .public-announcement-group{
+    min-width:0;
+    padding:0;
+  }
+}
