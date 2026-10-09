@@ -1,4 +1,5 @@
 import { brandedEmailHtml } from './email-branding.mjs';
+import { buildOrderStatusCommunication, orderReference } from './customer-communication-content.mjs';
 function env(name) {
   return String(Netlify.env.get(name) || '').trim();
 }
@@ -12,10 +13,6 @@ function serviceHeaders(prefer = '') {
     'Content-Type': 'application/json',
     ...(prefer ? { Prefer: prefer } : {})
   };
-}
-
-function orderReference(number) {
-  return `ORD-${String(number || 0).padStart(6, '0')}`;
 }
 
 async function patchOrder(orderId, values) {
@@ -50,32 +47,25 @@ async function sendEmail({ to, subject, text }) {
 }
 
 async function auditedOrderEmail(order, kind) {
-  const settings = {
+  const columns = {
     production: {
       status: 'production_notification_status',
       error: 'production_notification_error',
-      sent: 'production_notification_sent_at',
-      subject: `Your LymphAware ID cards are now in production – ${orderReference(order.order_number)}`,
-      text:
-        `Your LymphAware ID order ${orderReference(order.order_number)} has entered card production.\n\n` +
-        'We will email you again when the complete order has been packed and dispatched. You can review your details in the Patient Portal:\nhttps://lymphawareid.com/portal/'
+      sent: 'production_notification_sent_at'
     },
     completion: {
       status: 'completion_notification_status',
       error: 'completion_notification_error',
-      sent: 'completion_notification_sent_at',
-      subject: `Your LymphAware ID order has been dispatched – ${orderReference(order.order_number)}`,
-      text:
-        `Your LymphAware ID order ${orderReference(order.order_number)} has been completed, packed and dispatched.\n\n` +
-        'Thank you for being a LymphAware ID member. You can continue to update your QR profile at any time from the Patient Portal:\nhttps://lymphawareid.com/portal/'
+      sent: 'completion_notification_sent_at'
     }
   }[kind];
-  if (!settings) throw new Error('Unknown customer notification type.');
-  if (String(order[settings.status] || '').toUpperCase() === 'SENT') return { ok: true, already_sent: true };
-  const result = await sendEmail({ to: order.customer_email, subject: settings.subject, text: settings.text });
+  if (!columns) throw new Error('Unknown customer notification type.');
+  if (String(order[columns.status] || '').toUpperCase() === 'SENT') return { ok: true, already_sent: true };
+  const communication = buildOrderStatusCommunication(order, kind);
+  const result = await sendEmail({ to: order.customer_email, subject: communication.subject, text: communication.text });
   await patchOrder(order.id, result.ok
-    ? { [settings.status]: 'SENT', [settings.error]: null, [settings.sent]: new Date().toISOString() }
-    : { [settings.status]: 'FAILED', [settings.error]: result.error, [settings.sent]: null });
+    ? { [columns.status]: 'SENT', [columns.error]: null, [columns.sent]: new Date().toISOString() }
+    : { [columns.status]: 'FAILED', [columns.error]: result.error, [columns.sent]: null });
   return result;
 }
 
