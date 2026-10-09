@@ -135,6 +135,15 @@ function checkProjectConsistency() {
   const managePaymentMethodPath = path.join(root, 'netlify/functions/manage-payment-method.mjs');
   const adminControlCentrePath = path.join(root, 'admin/control-centre/index.html');
   const headersPath = path.join(root, '_headers');
+  const systemControlsPath = path.join(root, 'netlify/functions/_shared/system-controls.mjs');
+  const publicSiteSettingsPath = path.join(root, 'netlify/functions/public-site-settings.mjs');
+  const adminSecurityPath = path.join(root, 'admin/security/index.html');
+  const adminAttentionPath = path.join(root, 'netlify/functions/admin-attention-items.mjs');
+  const adminResourcesPath = path.join(root, 'netlify/functions/admin-information-resources.mjs');
+  const rateLimitPath = path.join(root, 'netlify/functions/_shared/rate-limit.mjs');
+  const communicationContentPath = path.join(root, 'netlify/functions/_shared/customer-communication-content.mjs');
+  const adminTestEmailPath = path.join(root, 'netlify/functions/admin-test-email.mjs');
+  const orderNotificationsPath = path.join(root, 'netlify/functions/_shared/order-notifications.mjs');
 
   const checkout = fs.readFileSync(checkoutPath, 'utf8');
   const portal = fs.readFileSync(portalPath, 'utf8');
@@ -178,6 +187,15 @@ function checkProjectConsistency() {
   const managePaymentMethod = fs.readFileSync(managePaymentMethodPath, 'utf8');
   const adminControlCentre = fs.readFileSync(adminControlCentrePath, 'utf8');
   const netlifyHeaders = fs.readFileSync(headersPath, 'utf8');
+  const systemControls = fs.readFileSync(systemControlsPath, 'utf8');
+  const publicSiteSettings = fs.readFileSync(publicSiteSettingsPath, 'utf8');
+  const adminSecurity = fs.readFileSync(adminSecurityPath, 'utf8');
+  const adminAttention = fs.readFileSync(adminAttentionPath, 'utf8');
+  const adminResources = fs.readFileSync(adminResourcesPath, 'utf8');
+  const rateLimit = fs.readFileSync(rateLimitPath, 'utf8');
+  const communicationContent = fs.readFileSync(communicationContentPath, 'utf8');
+  const adminTestEmail = fs.readFileSync(adminTestEmailPath, 'utf8');
+  const orderNotifications = fs.readFileSync(orderNotificationsPath, 'utf8');
 
   if (!fs.existsSync(renewalArtworkPath) || fs.statSync(renewalArtworkPath).size < 5000) {
     errors.push('Renewal email fallback artwork is missing or unexpectedly small.');
@@ -236,6 +254,42 @@ function checkProjectConsistency() {
     !netlifyHeaders.includes('X-Robots-Tag: noindex, nofollow, noarchive')
   ) {
     errors.push('Netlify browser security headers or private-area indexing protection are missing.');
+  }
+  if (
+    !systemControls.includes('feature_package_standard_enabled') ||
+    !systemControls.includes('feature_term_3y_enabled') ||
+    !systemControls.includes('communications_profile_review_reminders_enabled') ||
+    !publicSiteSettings.includes("path: '/api/public-site-settings'") ||
+    !initialMembershipCheckout.includes("features.packages?.[packageType] !== true") ||
+    !checkout.includes("features.additionalItems !== true") ||
+    !register.includes("settings.controls?.features") ||
+    !portal.includes("SITE_FEATURES=settings.controls?.features")
+  ) {
+    errors.push('Admin operational availability controls are not consistently enforced by public/member journeys.');
+  }
+  if (
+    !adminSecurity.includes("factorType:'totp'") ||
+    !adminSecurity.includes('admin_mfa_required:true') ||
+    !signIn.includes('getAuthenticatorAssuranceLevel') ||
+    !adminControlCentre.includes('Admin Security')
+  ) {
+    errors.push('Administrator multi-factor setup or sign-in routing is incomplete.');
+  }
+  if (
+    !adminAttention.includes("path:'/api/admin-attention-items'") ||
+    !adminControlCentre.includes('Attention required') ||
+    !adminControlCentre.includes('loadAttention()') ||
+    !adminResources.includes("path:'/api/admin-information-resources'")
+  ) {
+    errors.push('Admin operational attention or information-resource controls are incomplete.');
+  }
+  if (
+    !rateLimit.includes('rate_limit_events') ||
+    !communicationContent.includes('buildInitialMembershipWelcome') ||
+    !adminTestEmail.includes('buildOrderStatusCommunication') ||
+    !orderNotifications.includes('buildOrderStatusCommunication')
+  ) {
+    errors.push('Public rate limiting or shared live/test communication templates are incomplete.');
   }
   if (!profile.includes('profileReviewMode') || !profile.includes('confirmProfileReviewAfterSave')) {
     errors.push('Profile editor does not complete a requested six-monthly review after save.');
@@ -488,7 +542,7 @@ function checkProjectConsistency() {
     !adminDashboard.includes('Cancellation Requests') ||
     !adminDashboard.includes('Completed Orders') ||
     !adminDashboard.includes('admin@lymphawareid.com') ||
-    !signIn.includes("window.location.href = '/admin/';")
+    (!signIn.includes("'/admin/security/?challenge=1'") || !signIn.includes("'/admin/'"))
   ) {
     errors.push('Administration does not match the agreed order/fulfilment workflow, identify trial orders, restrict welcome letters, show the admin notification address, or route the administrator correctly.');
   }
