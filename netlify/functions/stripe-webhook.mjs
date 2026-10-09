@@ -3,6 +3,7 @@ import { brandedEmailHtml } from './_shared/email-branding.mjs';
 import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
 import { PACKAGE_DEFINITIONS } from './_shared/initial-membership-checkout.mjs';
 import {
+import { getControlSettings, communicationControls } from './_shared/system-controls.mjs';
   MEMBERSHIP_CONTRACT_VERSION,
   dateUK,
   memberEmail,
@@ -405,7 +406,7 @@ async function sendOrderNotification(order, session, items) {
     return { ok: false, error };
   }
 
-  const to = String(process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphawareid.com').trim();
+  const to = communicationControls(await getControlSettings()).adminNotificationEmail || String(process.env.ORDER_NOTIFICATION_EMAIL || 'admin@lymphawareid.com').trim();
   const from = String(process.env.ORDER_NOTIFICATION_FROM || 'LymphAware ID <notifications@lymphawareid.com>').trim();
   const itemLines = items.map((item) => {
     const language = item.language_name ? ` – ${item.language_name}` : '';
