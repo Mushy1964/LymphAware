@@ -123,9 +123,14 @@
     .then(settings=>{
       if(!settings?.announcement?.enabled||!settings.announcement.message)return;
       const banner=document.createElement('div');
+      const message=String(settings.announcement.message).trim();
+      const safeMessage=message.replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      const group='<div class="public-announcement-group"><span>'+safeMessage+'</span><span class="public-announcement-separator" aria-hidden="true">●</span></div>';
       banner.className='public-announcement';
       banner.setAttribute('role','status');
-      banner.innerHTML='<div class="container">'+String(settings.announcement.message).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))+'</div>';
+      banner.setAttribute('aria-label',message);
+      banner.style.setProperty('--announcement-duration',Math.max(16,Math.min(44,16+(message.length*0.28)))+'s');
+      banner.innerHTML='<div class="public-announcement-frame"><div class="public-announcement-window" aria-hidden="true"><div class="public-announcement-track">'+group+group+'</div></div></div>';
       const target=document.querySelector('.public-nav-bar:last-of-type')||document.querySelector('header.site-header');
       if(target)target.insertAdjacentElement('afterend',banner);
     })
