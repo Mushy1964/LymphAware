@@ -16,6 +16,7 @@ import {
   serviceHeaders
 } from './_shared/membership-contract.mjs';
 import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
+import { getControlSettings, communicationControls } from './_shared/system-controls.mjs';
 
 async function reminderTiming() {
   const defaults = { first: 60, final: 14 };
@@ -166,10 +167,15 @@ async function sendReminder(membership, kind, livePricing) {
 export default async () => {
   const failures = [];
   let sent = 0;
-  const livePricing = publicPricing(await getBusinessSettings({ strict: true }));
+  const [businessSettings, controlSettings] = await Promise.all([getBusinessSettings({ strict: true }), getControlSettings()]);
+  const livePricing = publicPricing(businessSettings);
+  const communications = communicationControls(controlSettings);
   const timing = await reminderTiming();
 
   for (const membership of await dueMemberships(timing.first)) {
+    const automatic = membership.auto_renew_enabled === true;
+    if (automatic && !communications.renewalReminders) continue;
+    if (!automatic && !communications.expiryNotices) continue;
     const dueAt = reminderDate(membership);
     const days = daysUntil(dueAt);
     try {
