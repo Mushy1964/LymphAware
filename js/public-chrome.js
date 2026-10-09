@@ -129,10 +129,22 @@
       banner.className='public-announcement';
       banner.setAttribute('role','status');
       banner.setAttribute('aria-label',message);
-      banner.style.setProperty('--announcement-duration',Math.max(16,Math.min(44,16+(message.length*0.28)))+'s');
       banner.innerHTML='<div class="public-announcement-frame"><div class="public-announcement-window" aria-hidden="true"><div class="public-announcement-track">'+group+group+'</div></div></div>';
       const target=document.querySelector('.public-nav-bar:last-of-type')||document.querySelector('header.site-header');
-      if(target)target.insertAdjacentElement('afterend',banner);
+      if(target){
+        target.insertAdjacentElement('afterend',banner);
+        requestAnimationFrame(()=>{
+          const frame=banner.querySelector('.public-announcement-frame');
+          const track=banner.querySelector('.public-announcement-track');
+          const first=track?.querySelector('.public-announcement-group');
+          if(!frame||!track||!first)return;
+          const step=Math.max(1,Math.ceil(first.getBoundingClientRect().width));
+          const copies=Math.max(4,Math.ceil(frame.clientWidth/step)+3);
+          track.innerHTML=group.repeat(copies);
+          banner.style.setProperty('--announcement-shift','-'+step+'px');
+          banner.style.setProperty('--announcement-duration',Math.max(10,Math.min(32,step/55))+'s');
+        });
+      }
     })
     .catch(()=>{});
 
