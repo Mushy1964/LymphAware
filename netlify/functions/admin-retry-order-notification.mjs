@@ -60,6 +60,12 @@ export default async (request) => {
         headers: { 'Content-Type': 'application/json' }
       });
     }
+    if (String(order.notification_status || '').toUpperCase() !== 'FAILED') {
+      return new Response(JSON.stringify({ error: 'Only a failed administrator order notification can be retried.' }), {
+        status: 409,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
 
     const apiKey = String(process.env.RESEND_API_KEY || '').trim();
     if (!apiKey) {
