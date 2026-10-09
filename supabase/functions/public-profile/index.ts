@@ -123,10 +123,10 @@ Deno.serve(async (req) => {
     if (languageProfile) {
       const { data: source, error: sourceError } = await supabaseAdmin
         .from('profiles')
-        .select('id,user_id,display_name,lymphaware_id,photo_path,emergency_contact_name,emergency_contact_phone,qr_profile_active,is_demo')
+        .select('id,user_id,display_name,lymphaware_id,photo_path,emergency_contact_name,emergency_contact_phone,qr_profile_active,is_demo,is_archived')
         .eq('id', languageProfile.source_profile_id)
         .maybeSingle()
-      if (sourceError || !source || source.qr_profile_active !== true) {
+      if (sourceError || !source || source.qr_profile_active !== true || source.is_archived === true) {
         return Response.json({ error: 'Profile not available' }, { status: 404, headers: corsHeaders })
       }
 
@@ -180,13 +180,13 @@ Deno.serve(async (req) => {
 
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
-      .select('id,user_id,display_name,lymphaware_id,photo_path,lymphoedema_type,lymphoedema_location,compression_information,treatment_considerations,assistance_needs,emergency_contact_name,emergency_contact_relationship,emergency_contact_phone,additional_statement,is_demo')
+      .select('id,user_id,display_name,lymphaware_id,photo_path,lymphoedema_type,lymphoedema_location,compression_information,treatment_considerations,assistance_needs,emergency_contact_name,emergency_contact_relationship,emergency_contact_phone,additional_statement,is_demo,is_archived')
       .eq(token.includes('-') ? 'qr_token' : 'public_code', token)
       .eq('qr_profile_active', true)
       .maybeSingle()
 
     if (profileError) return Response.json({ error: 'Unable to load profile' }, { status: 500, headers: corsHeaders })
-    if (!profile) return Response.json({ error: 'Profile not available' }, { status: 404, headers: corsHeaders })
+    if (!profile || profile.is_archived === true) return Response.json({ error: 'Profile not available' }, { status: 404, headers: corsHeaders })
 
     const isDemo = profile.is_demo === true || token === DEMO_PROFILE_TOKEN
     const consentOk = await hasActiveHealthConsent(profile.id, isDemo)
