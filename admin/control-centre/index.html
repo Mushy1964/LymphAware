@@ -54,9 +54,20 @@
 <h2>Renewal communications</h2><p>Control when the scheduled membership reminders are sent. The reminder content and compliance wording remain protected in code.</p>
 <div class="field"><label for="renewal_first_reminder_days">Advance reminder (days before renewal/expiry)</label><input id="renewal_first_reminder_days" type="number" min="14" max="120" step="1"></div>
 <div class="field"><label for="renewal_final_reminder_days">Final reminder (days before renewal/expiry)</label><input id="renewal_final_reminder_days" type="number" min="3" max="30" step="1"></div>
+<div class="switch-list">
+  <label class="switch-row"><span>Automatic-renewal reminder emails</span><input id="communications_renewal_reminders_enabled" type="checkbox"></label>
+  <label class="switch-row"><span>Manual expiry / renewal reminder and expiry emails</span><input id="communications_expiry_notices_enabled" type="checkbox"></label>
+  <label class="switch-row"><span>Six-monthly profile review reminders</span><input id="communications_profile_review_reminders_enabled" type="checkbox"></label>
+</div>
+<div class="field" style="margin-top:14px"><label for="communications_admin_notification_email">Operational administrator notification email</label><input id="communications_admin_notification_email" type="email" maxlength="254"></div>
+<div class="protected"><strong>Protected:</strong> payment confirmations, account-security messages, cancellation confirmations and other transaction-critical communications are not controlled by these switches.</div>
 </section>
 <section class="panel" style="grid-column:1/-1">
 <div class="actions"><button id="save-controls" class="button button-primary">Save Control Centre Settings</button><span id="settings-status" class="status" role="status"></span></div>
+</section>
+<section class="panel attention">
+<h2>Attention required</h2><p>Operational issues that may need you to act, without searching Stripe, email logs or database records.</p>
+<div id="attention-summary" class="attention-summary">Checking…</div><div id="attention-list" class="attention-list"></div>
 </section>
 <section class="panel">
 <h2>Communications & test emails</h2><p>Send a copy of the live customer email templates to your administrator email address without changing any member record.</p>
@@ -89,7 +100,7 @@
 </section>
 <section class="panel members">
 <h2>Member management</h2><p>Search and inspect membership, renewal and profile status. Operational actions are deliberately limited: paid status and membership expiry cannot be overridden here.</p>
-<div class="member-tools"><input id="member-search" type="search" placeholder="Search name, email or LymphAware ID"><button id="search-members" class="button button-secondary">Search</button></div>
+<div class="member-tools"><label class="sr-only" for="member-search">Search members</label><input id="member-search" type="search" placeholder="Search name, email or LymphAware ID"><button id="search-members" class="button button-secondary">Search</button></div>
 <div class="member-key" aria-label="Member colour key">
   <strong>Colour key:</strong>
   <span class="key-group"><span>Package</span><span class="badge badge-standard">Standard</span><span class="badge badge-plus">Plus</span><span class="badge badge-multilingual">Multilingual</span></span>
