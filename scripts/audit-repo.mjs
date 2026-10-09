@@ -119,6 +119,7 @@ function checkProjectConsistency() {
   const profileReviewMemberPath = path.join(root, 'netlify/functions/member-profile-review.mjs');
   const profileReviewReminderPath = path.join(root, 'netlify/functions/send-profile-review-reminders.mjs');
   const packageJsonPath = path.join(root, 'package.json');
+  const packageLockPath = path.join(root, 'package-lock.json');
   const walletPagePath = path.join(root, 'wallet-card/index.html');
   const walletMemberPath = path.join(root, 'netlify/functions/_shared/wallet-member.mjs');
   const appleWalletPath = path.join(root, 'netlify/functions/apple-wallet-pass.mjs');
@@ -311,6 +312,7 @@ function checkProjectConsistency() {
     errors.push('Profile review reminders are not listed across all three membership packages.');
   }
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  const packageLock = JSON.parse(fs.readFileSync(packageLockPath, 'utf8'));
   const walletPage = fs.readFileSync(walletPagePath, 'utf8');
   const walletMember = fs.readFileSync(walletMemberPath, 'utf8');
   const appleWallet = fs.readFileSync(appleWalletPath, 'utf8');
@@ -318,6 +320,9 @@ function checkProjectConsistency() {
 
   if (packageJson.dependencies?.['passkit-generator'] !== '3.6.1') {
     errors.push('Apple Wallet pass generator dependency is missing or not pinned to the reviewed version.');
+  }
+  if (packageLock.lockfileVersion !== 3 || packageLock.packages?.['']?.dependencies?.['passkit-generator'] !== '3.6.1') {
+    errors.push('npm dependency lockfile is missing or does not pin the reviewed Apple Wallet dependency.');
   }
   if (!walletMember.includes("['PLUS', 'MULTILINGUAL']") || !walletMember.includes('membership_end') || !walletMember.includes('walletProviderReadiness')) {
     errors.push('Wallet eligibility is not centrally restricted to current Plus/Multilingual memberships.');
