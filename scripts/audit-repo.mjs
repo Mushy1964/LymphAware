@@ -141,6 +141,7 @@ function checkProjectConsistency() {
   const adminSecurityPath = path.join(root, 'admin/security/index.html');
   const adminAttentionPath = path.join(root, 'netlify/functions/admin-attention-items.mjs');
   const adminResourcesPath = path.join(root, 'netlify/functions/admin-information-resources.mjs');
+  const publicInformationResourcesPath = path.join(root, 'netlify/functions/public-information-resources.mjs');
   const contactEnquiryPath = path.join(root, 'netlify/functions/contact-enquiry.mjs');
   const registrationEmailCheckPath = path.join(root, 'netlify/functions/check-registration-email.mjs');
   const communicationContentPath = path.join(root, 'netlify/functions/_shared/customer-communication-content.mjs');
@@ -194,6 +195,7 @@ function checkProjectConsistency() {
   const adminSecurity = fs.readFileSync(adminSecurityPath, 'utf8');
   const adminAttention = fs.readFileSync(adminAttentionPath, 'utf8');
   const adminResources = fs.readFileSync(adminResourcesPath, 'utf8');
+  const publicInformationResources = fs.readFileSync(publicInformationResourcesPath, 'utf8');
   const contactEnquiry = fs.readFileSync(contactEnquiryPath, 'utf8');
   const registrationEmailCheck = fs.readFileSync(registrationEmailCheckPath, 'utf8');
   const communicationContent = fs.readFileSync(communicationContentPath, 'utf8');
@@ -419,7 +421,14 @@ function checkProjectConsistency() {
     errors.push('Admin discount-code creation does not preserve one-time membership-only discount rules or trial-code protection.');
   }
   if (!home.includes('.home-membership-packages .home-membership-package-badge') || !home.includes('font-size: 1.3rem;')) errors.push('Homepage membership headings are not enlarged for desktop and tablet.');
-  if (!understanding.includes('privacy-grid trusted-resource-grid') || (understanding.match(/class="trusted-resource-action"/g) || []).length !== 6) errors.push('Trusted-resource link buttons are not grouped for consistent alignment.');
+  if (
+    !understanding.includes('id="trusted-resource-grid"') ||
+    !understanding.includes("/api/public-information-resources") ||
+    !understanding.includes("trusted-resource-action") ||
+    !publicInformationResources.includes("path:'/api/public-information-resources'") ||
+    !publicInformationResources.includes("active=eq.true") ||
+    !adminResources.includes("description:text(body.description,500)")
+  ) errors.push('Approved information resources are not using the shared Admin-managed source across public and member surfaces.');
   if (!styles.includes('.trusted-resource-grid .trusted-resource-action .button') || !styles.includes('width: 100%;')) errors.push('Trusted-resource link buttons do not share a consistent width.');
 
   if (!businessSettings.includes('renewals: {') || !businessSettings.includes('renewal_standard_1y_pence') || !businessSettings.includes('renewal_plus_2y_pence') || !businessSettings.includes('renewal_multilingual_3y_pence')) {
