@@ -20,6 +20,37 @@
 <div class="protected"><strong>Protected:</strong> changing this does not alter existing members, payments, subscriptions or expiry dates.</div>
 </section>
 <section class="panel">
+<h2>Website availability</h2><p>Temporarily remove routine choices from the website without changing code. Server-side checkout uses the same controls, so a disabled option cannot be bypassed by calling checkout directly.</p>
+<div class="availability-grid">
+  <div><strong>Membership packages</strong><div class="switch-list" style="margin-top:8px">
+    <label class="switch-row"><span>Standard</span><input id="feature_package_standard_enabled" type="checkbox"></label>
+    <label class="switch-row"><span>Plus</span><input id="feature_package_plus_enabled" type="checkbox"></label>
+    <label class="switch-row"><span>Multilingual</span><input id="feature_package_multilingual_enabled" type="checkbox"></label>
+  </div></div>
+  <div><strong>Membership terms</strong><div class="switch-list" style="margin-top:8px">
+    <label class="switch-row"><span>1 year</span><input id="feature_term_1y_enabled" type="checkbox"></label>
+    <label class="switch-row"><span>2 years</span><input id="feature_term_2y_enabled" type="checkbox"></label>
+    <label class="switch-row"><span>3 years</span><input id="feature_term_3y_enabled" type="checkbox"></label>
+  </div></div>
+  <div><strong>Joining &amp; purchases</strong><div class="switch-list" style="margin-top:8px">
+    <label class="switch-row"><span>Offer automatic renewal to new members</span><input id="feature_auto_renew_signup_enabled" type="checkbox"></label>
+    <label class="switch-row"><span>Additional cards, lanyards &amp; accessories</span><input id="feature_additional_items_enabled" type="checkbox"></label>
+    <label class="switch-row"><span>Additional-language purchases</span><input id="feature_additional_languages_enabled" type="checkbox"></label>
+  </div></div>
+  <div><strong>Approved additional languages</strong><div class="switch-list" style="margin-top:8px">
+    <label class="switch-row"><span>French</span><input id="feature_language_fr_enabled" type="checkbox"></label>
+    <label class="switch-row"><span>Spanish</span><input id="feature_language_es_enabled" type="checkbox"></label>
+    <label class="switch-row"><span>German</span><input id="feature_language_de_enabled" type="checkbox"></label>
+  </div></div>
+</div>
+</section>
+<section class="panel">
+<h2>Website announcement</h2><p>Display a temporary information banner across the public information pages. Useful for maintenance, postal delays, holidays or important service notices.</p>
+<label class="switch-row" style="margin-bottom:14px"><span><strong>Show announcement</strong><br><small>The banner appears only while enabled and inside any dates below.</small></span><input id="announcement_enabled" type="checkbox"></label>
+<div class="field"><label for="announcement_message">Announcement message</label><textarea id="announcement_message" maxlength="320" placeholder="Enter a short public service message"></textarea></div>
+<div class="availability-grid"><div class="field"><label for="announcement_start_at">Start (optional)</label><input id="announcement_start_at" type="datetime-local"></div><div class="field"><label for="announcement_end_at">End (optional)</label><input id="announcement_end_at" type="datetime-local"></div></div>
+</section>
+<section class="panel">
 <h2>Renewal communications</h2><p>Control when the scheduled membership reminders are sent. The reminder content and compliance wording remain protected in code.</p>
 <div class="field"><label for="renewal_first_reminder_days">Advance reminder (days before renewal/expiry)</label><input id="renewal_first_reminder_days" type="number" min="14" max="120" step="1"></div>
 <div class="field"><label for="renewal_final_reminder_days">Final reminder (days before renewal/expiry)</label><input id="renewal_final_reminder_days" type="number" min="3" max="30" step="1"></div>
