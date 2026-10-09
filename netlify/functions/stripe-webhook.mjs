@@ -13,9 +13,9 @@ import {
 } from './_shared/membership-contract.mjs';
 
 const INITIAL_PACKAGE_PRICES = {
-  STANDARD: { 1: 2499, 2: 3499, 3: 4499, 5: 2999 },
-  PLUS: { 1: 3499, 2: 4499, 3: 5499, 5: 3999 },
-  MULTILINGUAL: { 1: 5499, 2: 6999, 3: 8499, 5: 4999 }
+  STANDARD: { 1: 2499, 2: 3499, 3: 4499 },
+  PLUS: { 1: 3499, 2: 4499, 3: 5499 },
+  MULTILINGUAL: { 1: 5499, 2: 6999, 3: 8499 }
 };
 
 const ADDITIONAL_CARD_PRICE_PENCE = 699;
@@ -464,9 +464,9 @@ async function sendCustomerConfirmation(order, session, items, paymentType, lang
   const postageChargePence = Number(session.metadata?.shipping_pence || session.total_details?.amount_shipping || 0);
   const postagePaid = `£${(postageChargePence / 100).toFixed(2)}`;
   const totalPaid = `£${((session.amount_total || 0) / 100).toFixed(2)}`;
-  const membershipTermYears = [1, 2, 3, 5].includes(Number(session.metadata?.membership_term_years))
+  const membershipTermYears = [1, 2, 3].includes(Number(session.metadata?.membership_term_years))
     ? Number(session.metadata.membership_term_years)
-    : 5;
+    : 3;
   let subject = `Your LymphAware ID order is confirmed – ${orderRef}`;
   let nextSteps =
     `Your order has been received. We will use the current name and photograph in your LymphAware ID profile for any ID card included in this order.\n\n` +
@@ -818,9 +818,9 @@ export default async (request) => {
 
     const paidAt = new Date();
     const packageType = String(session.metadata?.package_type || 'STANDARD').trim().toUpperCase();
-    const membershipTermYears = [1, 2, 3, 5].includes(Number(session.metadata?.membership_term_years))
+    const membershipTermYears = [1, 2, 3].includes(Number(session.metadata?.membership_term_years))
       ? Number(session.metadata.membership_term_years)
-      : 5;
+      : 3;
     const metadataPackagePricePence = Number(session.metadata?.package_price_pence);
     const packagePricePence = Number.isInteger(metadataPackagePricePence) && metadataPackagePricePence > 0
       ? metadataPackagePricePence
