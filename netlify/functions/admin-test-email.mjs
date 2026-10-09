@@ -6,6 +6,7 @@ import {
   renewalNoticeText, sendMembershipEmail
 } from './_shared/membership-contract.mjs';
 import { sendProfileReviewEmail } from './_shared/profile-review.mjs';
+import { buildInitialMembershipWelcome, buildOrderStatusCommunication } from './_shared/customer-communication-content.mjs';
 
 function json(body,status=200){return new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}})}
 function sampleMembership(){
@@ -49,14 +50,12 @@ export default async request=>{
   }else if(template==='PROFILE_REVIEW_FIRST'||template==='PROFILE_REVIEW_FOLLOWUP'){
    result=await sendProfileReviewEmail({to:admin.email,kind:template.endsWith('FOLLOWUP')?'followup':'first',dueAt:new Date().toISOString(),idempotencyKey:''});
   }else if(template==='STARTUP_WELCOME'){
+   const welcome=buildInitialMembershipWelcome({membershipTermYears:1,isTrial:false,accountSetupLink:'',languageName:'',autoRenew:true,renewalPricePence:1899});
    const text=
-    'Thank you for joining LymphAware ID. Your order has been received and your secure account is ready to complete.\n\n'+
-    'Please confirm your email address, then sign in and add the display name and photograph you want shown on your LymphAware ID card.\n\n'+
-    'Once you save your display name and photograph, LymphAware ID will be notified automatically that your card details are ready. We will then begin preparing your ID card, lanyard and holder, together with any additional cards or language versions included in your order.\n\n'+
-    'We aim to prepare and dispatch your order within 7–10 working days after your required card details have been completed. Delivery time after dispatch will depend on the postal service and destination.\n\n'+
-    'YOUR INITIAL COOLING-OFF PERIOD\n\nYou may tell us that you want to cancel within 14 days of joining. Contact admin@lymphawareid.com. Any refund and deduction for services or personalised items already supplied will be handled in accordance with your statutory rights and the Terms.';
-   const testText=text+'\n\nTEST NOTE\nThe live customer email contains a secure, one-time account-confirmation button generated specifically for that customer. The button is deliberately omitted from this administrator test copy so no invalid or misleading activation link is created.';
-   result=await sendAdminTest({to:admin.email,subject:'TEST – Welcome to LymphAware ID – complete your secure account',text:testText});
+    'Thank you for your LymphAware ID purchase.\n\nOrder: ORD-000123\n\nItems:\n• 1 × LymphAware ID Standard – 1-Year\n• 1 × Lanyard & holder\n\nPostage & packing (before any promotion discount): £2.99\nTotal paid: £27.98\n\n'+
+    welcome.nextSteps+
+    '\n\nIf you need help, contact admin@lymphawareid.com.\n\nThe LymphAware ID Team\n\nTEST NOTE\nThe live customer email contains a secure, one-time account-confirmation button generated specifically for that customer. The button is deliberately omitted from this administrator test copy.';
+   result=await sendAdminTest({to:admin.email,subject:'TEST – '+welcome.subject,text});
   }else if(template==='ADMIN_PROFILE_READY'){
    const subject='TEST – LymphAware ID profile details ready for card production – LA-000003';
    const text=
@@ -72,15 +71,11 @@ export default async request=>{
     'Open LymphAware ID Administration:\nhttps://lymphawareid.com/admin/?stage=PROCESS';
    result=await sendAdminTest({to:admin.email,subject,text,actionUrl:'https://lymphawareid.com/admin/?stage=PROCESS',actionLabel:'Open LymphAware ID Administration'});
   }else if(template==='STARTUP_PRODUCTION'){
-   const text=
-    'Your LymphAware ID order ORD-000123 has entered card production.\n\n'+
-    'We will email you again when the complete order has been packed and dispatched. You can review your details in the Patient Portal:\nhttps://lymphawareid.com/portal/';
-   result=await sendAdminTest({to:admin.email,subject:'TEST – Your LymphAware ID cards are now in production – ORD-000123',text,actionUrl:'https://lymphawareid.com/portal/',actionLabel:'Open Patient Portal'});
+   const communication=buildOrderStatusCommunication({order_number:123},'production');
+   result=await sendAdminTest({to:admin.email,subject:'TEST – '+communication.subject,text:communication.text,actionUrl:'https://lymphawareid.com/portal/',actionLabel:'Open Patient Portal'});
   }else if(template==='STARTUP_DISPATCH'){
-   const text=
-    'Your LymphAware ID order ORD-000123 has been completed, packed and dispatched.\n\n'+
-    'Thank you for being a LymphAware ID member. You can continue to update your QR profile at any time from the Patient Portal:\nhttps://lymphawareid.com/portal/';
-   result=await sendAdminTest({to:admin.email,subject:'TEST – Your LymphAware ID order has been dispatched – ORD-000123',text,actionUrl:'https://lymphawareid.com/portal/',actionLabel:'Open Patient Portal'});
+   const communication=buildOrderStatusCommunication({order_number:123},'completion');
+   result=await sendAdminTest({to:admin.email,subject:'TEST – '+communication.subject,text:communication.text,actionUrl:'https://lymphawareid.com/portal/',actionLabel:'Open Patient Portal'});
   }else return json({error:'Unknown email template.'},400);
   if(!result?.ok)throw new Error(result?.error||'Test email could not be sent.');
   await log(admin,template);return json({sent:true,to:admin.email});
