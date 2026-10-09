@@ -31,6 +31,28 @@
   line-height:1.2 !important;
   white-space:normal !important;
 }
+.admin-section-nav .button[aria-current="page"]{
+  background:#eef6fb !important;
+  border-color:#0053b7 !important;
+  color:#003f88 !important;
+}
+.admin-local-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:16px;
+}
+.admin-local-actions .button{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:190px;
+  min-height:54px;
+  padding:10px 14px;
+  box-sizing:border-box;
+  text-align:center;
+  line-height:1.2;
+}
 @media(max-width:800px){
   .admin-section-heading{
     grid-template-columns:1fr !important;
