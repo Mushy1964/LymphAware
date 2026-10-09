@@ -114,7 +114,7 @@ export async function verifyAdminRequest(request) {
     const valid = await verifySignature(token, header, jwk);
     if (!valid) return null;
 
-    const controls = await getControlSettings();
+    const controls = await getControlSettings({ strict: true });
     if (adminMfaRequired(controls) && payload.aal !== 'aal2') return null;
 
     return { id: payload.sub, email, aal: String(payload.aal || 'aal1') };
