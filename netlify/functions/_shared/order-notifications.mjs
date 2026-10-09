@@ -98,6 +98,22 @@ export async function markLinkedOrdersInProduction(userId, orderId = '') {
   return outcomes;
 }
 
+export async function retryFailedOrderCustomerNotification(orderId, kind) {
+  if (!['production','completion'].includes(kind)) throw new Error('Unsupported notification type.');
+  const response = await fetch(
+    `${env('SUPABASE_URL')}/rest/v1/orders?id=eq.${encodeURIComponent(orderId)}&select=*&limit=1`,
+    { headers: serviceHeaders() }
+  );
+  if (!response.ok) throw new Error('Unable to load the order for notification recovery.');
+  const order = (await response.json())?.[0];
+  if (!order) throw new Error('Order not found.');
+  const statusColumn = kind === 'production' ? 'production_notification_status' : 'completion_notification_status';
+  if (String(order[statusColumn] || '').toUpperCase() !== 'FAILED') {
+    throw new Error('Only a failed customer notification can be retried from Attention Required.');
+  }
+  return auditedOrderEmail(order, kind);
+}
+
 export async function notifyOrderCompleted(orderId) {
   const response = await fetch(
     `${env('SUPABASE_URL')}/rest/v1/orders?id=eq.${encodeURIComponent(orderId)}&select=*&limit=1`,
