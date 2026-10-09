@@ -140,7 +140,8 @@ function checkProjectConsistency() {
   const adminSecurityPath = path.join(root, 'admin/security/index.html');
   const adminAttentionPath = path.join(root, 'netlify/functions/admin-attention-items.mjs');
   const adminResourcesPath = path.join(root, 'netlify/functions/admin-information-resources.mjs');
-  const rateLimitPath = path.join(root, 'netlify/functions/_shared/rate-limit.mjs');
+  const contactEnquiryPath = path.join(root, 'netlify/functions/contact-enquiry.mjs');
+  const registrationEmailCheckPath = path.join(root, 'netlify/functions/check-registration-email.mjs');
   const communicationContentPath = path.join(root, 'netlify/functions/_shared/customer-communication-content.mjs');
   const adminTestEmailPath = path.join(root, 'netlify/functions/admin-test-email.mjs');
   const orderNotificationsPath = path.join(root, 'netlify/functions/_shared/order-notifications.mjs');
@@ -192,7 +193,8 @@ function checkProjectConsistency() {
   const adminSecurity = fs.readFileSync(adminSecurityPath, 'utf8');
   const adminAttention = fs.readFileSync(adminAttentionPath, 'utf8');
   const adminResources = fs.readFileSync(adminResourcesPath, 'utf8');
-  const rateLimit = fs.readFileSync(rateLimitPath, 'utf8');
+  const contactEnquiry = fs.readFileSync(contactEnquiryPath, 'utf8');
+  const registrationEmailCheck = fs.readFileSync(registrationEmailCheckPath, 'utf8');
   const communicationContent = fs.readFileSync(communicationContentPath, 'utf8');
   const adminTestEmail = fs.readFileSync(adminTestEmailPath, 'utf8');
   const orderNotifications = fs.readFileSync(orderNotificationsPath, 'utf8');
@@ -284,7 +286,9 @@ function checkProjectConsistency() {
     errors.push('Admin operational attention or information-resource controls are incomplete.');
   }
   if (
-    !rateLimit.includes('rate_limit_events') ||
+    !contactEnquiry.includes("rateLimit: { action: 'rate_limit'") ||
+    !registrationEmailCheck.includes("rateLimit: { action: 'rate_limit'") ||
+    !startMembershipCheckout.includes("rateLimit: { action: 'rate_limit'") ||
     !communicationContent.includes('buildInitialMembershipWelcome') ||
     !adminTestEmail.includes('buildOrderStatusCommunication') ||
     !orderNotifications.includes('buildOrderStatusCommunication')
