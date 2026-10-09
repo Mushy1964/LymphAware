@@ -1,0 +1,53 @@
+/* Shared Admin section heading/navigation
+   Keeps the primary Admin navigation aligned and identically sized across pages. */
+.admin-section-heading{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) 390px !important;
+  gap:28px !important;
+  align-items:start !important;
+  margin-bottom:28px !important;
+}
+.admin-section-heading-copy{min-width:0}
+.admin-section-nav{
+  display:grid !important;
+  grid-template-columns:repeat(2,190px) !important;
+  gap:10px !important;
+  width:390px !important;
+  justify-content:end !important;
+  align-content:start !important;
+  align-items:stretch !important;
+}
+.admin-section-nav .button{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:190px !important;
+  min-width:190px !important;
+  max-width:190px !important;
+  min-height:54px !important;
+  padding:10px 14px !important;
+  box-sizing:border-box !important;
+  text-align:center !important;
+  line-height:1.2 !important;
+  white-space:normal !important;
+}
+@media(max-width:800px){
+  .admin-section-heading{
+    grid-template-columns:1fr !important;
+    gap:18px !important;
+  }
+  .admin-section-nav{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    width:100% !important;
+    justify-content:stretch !important;
+  }
+  .admin-section-nav .button{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    min-height:52px !important;
+  }
+}
+@media(max-width:460px){
+  .admin-section-nav{grid-template-columns:1fr !important}
+}
