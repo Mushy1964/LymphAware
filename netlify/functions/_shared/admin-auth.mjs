@@ -1,3 +1,4 @@
+import { getControlSettings, adminMfaRequired } from './system-controls.mjs';
 import { webcrypto } from 'node:crypto';
 
 function env(name) {
@@ -113,7 +114,10 @@ export async function verifyAdminRequest(request) {
     const valid = await verifySignature(token, header, jwk);
     if (!valid) return null;
 
-    return { id: payload.sub, email };
+    const controls = await getControlSettings();
+    if (adminMfaRequired(controls) && payload.aal !== 'aal2') return null;
+
+    return { id: payload.sub, email, aal: String(payload.aal || 'aal1') };
   } catch {
     return null;
   }
