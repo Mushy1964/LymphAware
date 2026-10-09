@@ -1,6 +1,7 @@
 const DEFAULTS = Object.freeze({
   announcement_enabled: 'false',
   announcement_message: '',
+  announcement_scroll_speed: '55',
   announcement_start_at: '',
   announcement_end_at: '',
   communications_admin_notification_email: 'admin@lymphawareid.com',
@@ -95,6 +96,7 @@ export function publicControls(settings, now = new Date()) {
     announcement: {
       enabled: activeAnnouncement,
       message: activeAnnouncement ? String(s.announcement_message || '').trim() : '',
+      scrollSpeed: Math.min(120, Math.max(20, Number.parseInt(String(s.announcement_scroll_speed || '55'), 10) || 55)),
       startAt: start || null,
       endAt: end || null
     },
