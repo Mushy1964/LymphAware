@@ -1,4 +1,5 @@
 import { memberEmail, membershipExpiredNoticeText, sendMembershipEmail } from './_shared/membership-contract.mjs';
+import { getControlSettings, communicationControls } from './_shared/system-controls.mjs';
 
 function serviceHeaders(prefer = '') {
   return {
@@ -37,6 +38,7 @@ async function markLapsed(membership) {
 }
 
 export default async () => {
+  const communications = communicationControls(await getControlSettings());
   const failures = [];
   let lapsed = 0;
 
@@ -45,6 +47,7 @@ export default async () => {
       await markLapsed(membership);
       lapsed += 1;
       try {
+        if (!communications.expiryNotices) continue;
         const email = await memberEmail(membership.user_id);
         if (email) {
           const result = await sendMembershipEmail({
