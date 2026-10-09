@@ -185,7 +185,10 @@
       const signedInEmail = data?.user?.email?.toLowerCase() || '';
 
       if (signedInEmail === 'admin@lymphawareid.com') {
-        window.location.href = '/admin/';
+        const { data: aal } = await supabaseClient.auth.mfa.getAuthenticatorAssuranceLevel();
+        window.location.href = aal?.nextLevel === 'aal2' && aal?.currentLevel !== 'aal2'
+          ? '/admin/security/?challenge=1'
+          : '/admin/';
       } else if (requestedReturnTo) {
         window.location.href = requestedReturnTo;
       } else {
