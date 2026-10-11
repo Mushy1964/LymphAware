@@ -35,7 +35,7 @@
   </script>
 
   <link rel="stylesheet" href="/css/styles.css">
-  <link rel="stylesheet" href="/css/home.css?v=20261011-leaflet-video">
+  <link rel="stylesheet" href="/css/home.css?v=20261011-leaflet-modal">
   <link rel="stylesheet" href="/css/home-width-fix.css">
   <link rel="stylesheet" href="/css/quick-guide.css">
 
@@ -1046,38 +1046,58 @@
       </div>
     </div>
 
-    <!-- LEAFLET PRESENTATION: alongside the existing interactive demo -->
-    <div id="home-demo-leaflet" class="home-demo-leaflet" hidden>
+    <!-- LEAFLET PRESENTATION — compact preview and accessible modal video -->
+    <div id="home-demo-leaflet" class="home-demo-leaflet">
+      <button
+        type="button"
+        id="home-demo-leaflet-preview"
+        class="home-demo-leaflet-preview"
+        aria-haspopup="dialog"
+        aria-controls="home-demo-leaflet-dialog"
+        aria-label="Watch the 30-second LymphAware ID leaflet presentation">
+        <img
+          src="/assets/demo/LymphAware_Hero_Product_Showcase_v2.webp"
+          alt="LymphAware ID card and matching digital patient profile"
+          width="1586"
+          height="992"
+          loading="lazy">
+        <span class="home-demo-leaflet-preview-play" aria-hidden="true"></span>
+        <span class="home-demo-leaflet-preview-caption">30-second presentation</span>
+      </button>
       <div class="home-demo-leaflet-copy">
-        <p class="home-demo-eyebrow">Watch our leaflet</p>
+        <p class="home-demo-eyebrow">Explore our leaflet</p>
         <h3>Discover LymphAware ID in 30 seconds</h3>
-        <p>
-          Explore our leaflet presentation to see how a LymphAware ID card
-          and its linked patient-controlled profile can help share important
-          information more easily.
-        </p>
-        <p class="home-demo-leaflet-hint">
-          Press play to watch. You can pause, replay or view it full screen.
-        </p>
-        <a class="home-demo-leaflet-open" href="/assets/demo/Leaflet%20Presentation.mp4" target="_blank" rel="noopener">
-          Open the presentation in a new tab &rarr;
-        </a>
+        <p>See how a LymphAware ID card and its patient-controlled digital profile can help share important information clearly and simply.</p>
+        <button type="button" id="home-demo-leaflet-watch" class="home-demo-leaflet-watch" aria-haspopup="dialog" aria-controls="home-demo-leaflet-dialog">
+          <span class="home-demo-leaflet-watch-icon" aria-hidden="true"></span>
+          Watch presentation
+        </button>
       </div>
-      <div class="home-demo-leaflet-player">
+    </div>
+
+    <dialog id="home-demo-leaflet-dialog" class="home-demo-leaflet-dialog" aria-labelledby="home-demo-leaflet-dialog-title">
+      <div class="home-demo-leaflet-dialog-head">
+        <h3 id="home-demo-leaflet-dialog-title">Explore LymphAware ID</h3>
+        <button type="button" id="home-demo-leaflet-close" class="home-demo-leaflet-close" aria-label="Close video">&times;</button>
+      </div>
+      <div class="home-demo-leaflet-dialog-body">
         <video
           id="home-demo-leaflet-video"
           class="home-demo-leaflet-video"
-          width="662"
-          height="1390"
           controls
           playsinline
           preload="none"
-          aria-label="Thirty-second LymphAware ID leaflet presentation">
+          width="662"
+          height="1390"
+          aria-label="LymphAware ID 30-second leaflet presentation">
           <source src="/assets/demo/Leaflet%20Presentation.mp4" type="video/mp4">
-          Your browser does not support the video player.
+          Your browser does not support MP4 video.
         </video>
       </div>
-    </div>
+      <p class="home-demo-leaflet-dialog-foot">
+        <a href="/assets/demo/Leaflet%20Presentation.mp4" target="_blank" rel="noopener">Open the video in a new tab</a>
+      </p>
+    </dialog>
   </section>
 
   <!-- CAN I USE IT IN ANOTHER LANGUAGE? -->
@@ -1617,23 +1637,35 @@
 </script>
 
 <script>
-/* Show the leaflet player only when its MP4 asset has been published.
-   This keeps the existing sample-card demonstration functional while
-   the media file is being added to GitHub/Netlify. */
+/* Leaflet presentation: play only following a click, stop when dialog closes. */
 (function () {
-  const block = document.getElementById('home-demo-leaflet');
+  const modal = document.getElementById('home-demo-leaflet-dialog');
   const video = document.getElementById('home-demo-leaflet-video');
-  const source = video && video.querySelector('source');
-  if (!block || !video || !source) return;
-  fetch(source.getAttribute('src'), {method: 'HEAD', cache: 'no-store'})
-    .then(response => {
-      const type = (response.headers.get('content-type') || '').toLowerCase();
-      if (!response.ok || !type.includes('video')) return;
-      block.hidden = false;
-      video.preload = 'metadata';
-      video.load();
-    })
-    .catch(() => {});
+  const preview = document.getElementById('home-demo-leaflet-preview');
+  const watch = document.getElementById('home-demo-leaflet-watch');
+  const close = document.getElementById('home-demo-leaflet-close');
+  if (!modal || !video || !preview || !watch || !close) return;
+  let opener = null;
+  function openVideo(event) {
+    if (typeof modal.showModal !== 'function') {
+      window.open('/assets/demo/Leaflet%20Presentation.mp4', '_blank', 'noopener');
+      return;
+    }
+    opener = event.currentTarget;
+    modal.showModal();
+    video.play().catch(() => {});
+  }
+  preview.addEventListener('click', openVideo);
+  watch.addEventListener('click', openVideo);
+  close.addEventListener('click', () => modal.close());
+  modal.addEventListener('click', event => {
+    if (event.target === modal) modal.close();
+  });
+  modal.addEventListener('close', () => {
+    video.pause();
+    video.currentTime = 0;
+    if (opener && opener.isConnected) opener.focus();
+  });
 })();
 </script>
 </body>
