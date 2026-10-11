@@ -2890,7 +2890,8 @@
 /* Compact leaflet video preview — See LymphAware ID in action */
 .home-page .home-demo-leaflet {
   box-sizing: border-box;
-  max-width: 1050px;
+  width: min(1180px, calc(100% - 40px));
+  max-width: none;
   margin: 44px auto 0;
   padding: clamp(14px, 2.7vw, 24px);
   display: grid;
@@ -3082,6 +3083,7 @@
 @media (max-width: 780px) {
   .home-page .home-demo-leaflet {
     margin-top: 30px;
+    width: min(1180px, calc(100% - 28px));
     padding: 14px;
     grid-template-columns: minmax(0, 1fr);
     gap: 18px;
