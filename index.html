@@ -1045,6 +1045,39 @@
         </a>
       </div>
     </div>
+
+    <!-- LEAFLET PRESENTATION: alongside the existing interactive demo -->
+    <div id="home-demo-leaflet" class="home-demo-leaflet" hidden>
+      <div class="home-demo-leaflet-copy">
+        <p class="home-demo-eyebrow">Watch our leaflet</p>
+        <h3>Discover LymphAware ID in 30 seconds</h3>
+        <p>
+          Explore our leaflet presentation to see how a LymphAware ID card
+          and its linked patient-controlled profile can help share important
+          information more easily.
+        </p>
+        <p class="home-demo-leaflet-hint">
+          Press play to watch. You can pause, replay or view it full screen.
+        </p>
+        <a class="home-demo-leaflet-open" href="/assets/demo/LymphAware_ID_Leaflet_Presentation.mp4" target="_blank" rel="noopener">
+          Open the presentation in a new tab &rarr;
+        </a>
+      </div>
+      <div class="home-demo-leaflet-player">
+        <video
+          id="home-demo-leaflet-video"
+          class="home-demo-leaflet-video"
+          width="662"
+          height="1390"
+          controls
+          playsinline
+          preload="none"
+          aria-label="Thirty-second LymphAware ID leaflet presentation">
+          <source src="/assets/demo/LymphAware_ID_Leaflet_Presentation.mp4" type="video/mp4">
+          Your browser does not support the video player.
+        </video>
+      </div>
+    </div>
   </section>
 
   <!-- CAN I USE IT IN ANOTHER LANGUAGE? -->
@@ -1580,6 +1613,27 @@
     const shipping=settings.pricing.shipping,postage=document.getElementById('home-postage-prices');
     if(shipping&&postage)postage.textContent=`Postage & packing is ${money(shipping.UK)} for the United Kingdom, ${money(shipping.EUROPE)} for Europe and ${money(shipping.REST_OF_WORLD)} for the Rest of World.`;
   }catch(error){console.error('Unable to load live membership pricing:',error)}
+})();
+</script>
+
+<script>
+/* Show the leaflet player only when its MP4 asset has been published.
+   This keeps the existing sample-card demonstration functional while
+   the media file is being added to GitHub/Netlify. */
+(function () {
+  const block = document.getElementById('home-demo-leaflet');
+  const video = document.getElementById('home-demo-leaflet-video');
+  const source = video && video.querySelector('source');
+  if (!block || !video || !source) return;
+  fetch(source.getAttribute('src'), {method: 'HEAD', cache: 'no-store'})
+    .then(response => {
+      const type = (response.headers.get('content-type') || '').toLowerCase();
+      if (!response.ok || !type.includes('video')) return;
+      block.hidden = false;
+      video.preload = 'metadata';
+      video.load();
+    })
+    .catch(() => {});
 })();
 </script>
 </body>

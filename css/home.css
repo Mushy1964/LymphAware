@@ -2886,3 +2886,73 @@
     margin: 0;
   }
 }
+
+/* LEAFLET PRESENTATION — within See LymphAware ID in action */
+.home-page .home-demo-leaflet[hidden] { display: none !important; }
+
+.home-page .home-demo-leaflet {
+  max-width: 1080px;
+  margin: 48px auto 0;
+  padding: clamp(24px, 4vw, 42px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 340px);
+  gap: clamp(22px, 4vw, 55px);
+  align-items: center;
+  border: 1px solid #d9e9e3;
+  border-radius: 24px;
+  background: linear-gradient(140deg, #f7fbff 0%, #ffffff 50%, #f1faf3 100%);
+  box-shadow: 0 12px 35px rgba(17, 68, 100, 0.08);
+}
+.home-page .home-demo-leaflet-copy h3 {
+  margin: 8px 0 18px;
+  color: #113a62;
+  font-size: clamp(1.75rem, 3.3vw, 2.6rem);
+  line-height: 1.16;
+  letter-spacing: -0.025em;
+}
+.home-page .home-demo-leaflet-copy > p:not(.home-demo-eyebrow) {
+  color: #30465a;
+  font-size: 1.06rem;
+  line-height: 1.65;
+}
+.home-page .home-demo-leaflet-copy .home-demo-leaflet-hint {
+  margin: 20px 0 16px;
+  font-size: 0.96rem;
+}
+.home-page .home-demo-leaflet-open {
+  display: inline-flex;
+  align-items: center;
+  color: #0753a7;
+  font-weight: 700;
+  text-underline-offset: 4px;
+}
+.home-page .home-demo-leaflet-open:focus-visible {
+  outline: 3px solid #168b42;
+  outline-offset: 4px;
+}
+.home-page .home-demo-leaflet-player {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+.home-page .home-demo-leaflet-video {
+  display: block;
+  width: 100%;
+  max-width: 310px;
+  height: auto;
+  aspect-ratio: 662 / 1390;
+  object-fit: contain;
+  border-radius: 16px;
+  background: #f5f8fb;
+  box-shadow: 0 10px 25px rgba(8, 35, 64, 0.15);
+}
+@media (max-width: 780px) {
+  .home-page .home-demo-leaflet {
+    margin-top: 34px;
+    padding: 24px 18px;
+    grid-template-columns: minmax(0, 1fr);
+    text-align: center;
+    gap: 26px;
+  }
+  .home-page .home-demo-leaflet-video { max-width: min(100%, 310px); }
+}
