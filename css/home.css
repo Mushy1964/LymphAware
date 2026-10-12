@@ -3058,7 +3058,7 @@
     grid-template-columns: minmax(0, 1fr);
     gap: 18px;
   }
-  .home-page .home-demo-leaflet-copy { padding: 2px 8px 12px; }
+  .home-page .home-demo-leaflet-copy { order: -1; padding: 2px 8px 12px; }
   .home-page .home-demo-leaflet-copy h3 { margin-bottom: 10px; }
   .home-page .home-demo-leaflet-copy > p:not(.home-demo-eyebrow) { margin-bottom: 14px; }
 }
