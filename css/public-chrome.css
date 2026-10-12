@@ -677,8 +677,15 @@
   to{transform:translateX(var(--announcement-shift,-600px))}
 }
 @media (max-width:700px){
+  .public-announcement{
+    width:100vw;
+    max-width:100vw;
+    overflow:hidden;
+  }
   .public-announcement-frame{
-    width:min(100% - 24px, 1180px);
+    width:100vw;
+    max-width:100vw;
+    margin:0;
     height:44px;
   }
   .public-announcement-group{
