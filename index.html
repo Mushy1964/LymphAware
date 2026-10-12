@@ -35,7 +35,7 @@
   </script>
 
   <link rel="stylesheet" href="/css/styles.css">
-  <link rel="stylesheet" href="/css/home.css?v=20261012-leaflet-full-width">
+  <link rel="stylesheet" href="/css/home.css?v=20261012-leaflet-preview-only">
   <link rel="stylesheet" href="/css/home-width-fix.css">
   <link rel="stylesheet" href="/css/quick-guide.css">
 
@@ -1067,10 +1067,6 @@
         <p class="home-demo-eyebrow">Our digital leaflet</p>
         <h3>Take a look at our digital leaflet</h3>
         <p>View our digital leaflet to discover how LymphAware ID works, where it could help, and how it makes sharing important information simpler.</p>
-        <button type="button" id="home-demo-leaflet-watch" class="home-demo-leaflet-watch" aria-haspopup="dialog" aria-controls="home-demo-leaflet-dialog">
-          <span class="home-demo-leaflet-watch-icon" aria-hidden="true"></span>
-          View digital leaflet
-        </button>
       </div>
     </div>
 
@@ -1641,9 +1637,8 @@
   const modal = document.getElementById('home-demo-leaflet-dialog');
   const video = document.getElementById('home-demo-leaflet-video');
   const preview = document.getElementById('home-demo-leaflet-preview');
-  const watch = document.getElementById('home-demo-leaflet-watch');
   const close = document.getElementById('home-demo-leaflet-close');
-  if (!modal || !video || !preview || !watch || !close) return;
+  if (!modal || !video || !preview || !close) return;
   let opener = null;
   function openVideo(event) {
     if (typeof modal.showModal !== 'function') {
@@ -1655,7 +1650,6 @@
     video.play().catch(() => {});
   }
   preview.addEventListener('click', openVideo);
-  watch.addEventListener('click', openVideo);
   close.addEventListener('click', () => modal.close());
   modal.addEventListener('click', event => {
     if (event.target === modal) modal.close();
