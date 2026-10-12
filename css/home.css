@@ -2964,11 +2964,13 @@
 }
 .home-page .home-demo-leaflet-copy { min-width: 0; }
 .home-page .home-demo-leaflet-copy h3 {
-  color: #153e64;
-  font-size: clamp(1.75rem, 2.7vw, 2.3rem);
-  line-height: 1.13;
-  letter-spacing: -.025em;
-  margin: 8px 0 16px;
+  /* Match the main "See LymphAware ID in action" heading. */
+  margin: 0 0 16px;
+  color: #17283d;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -1px;
 }
 .home-page .home-demo-leaflet-copy > p:not(.home-demo-eyebrow) {
   color: #344b5b;
@@ -3062,4 +3064,12 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .home-page .home-demo-leaflet-preview img { transition: none; }
+}
+
+/* Keep leaflet heading aligned with other section titles on small screens. */
+@media (max-width: 680px) {
+  .home-page .home-demo-leaflet-copy h3 {
+    font-size: 2rem;
+    line-height: 1.15;
+  }
 }
