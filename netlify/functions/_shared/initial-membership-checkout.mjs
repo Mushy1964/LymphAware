@@ -11,7 +11,7 @@ export const APPROVED_LANGUAGES = {
 
 export const PACKAGE_DEFINITIONS = {
   STANDARD: {
-    name: 'LymphAware ID Standard',
+    name: 'LymphAware ID Essential',
     initialProductId: 'prod_VJoj1Jx9jjanuP',
     renewalProductId: 'prod_VFJ4HtlMHhiQZE'
   },
