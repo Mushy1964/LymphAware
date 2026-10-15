@@ -12,7 +12,7 @@ function json(body, status = 200) {
 export default async (request) => {
   if (request.method !== 'GET') return json({ error: 'Method not allowed.' }, 405);
   try {
-    const [mode, businessSettings, controlSettings] = await Promise.all([getRegistrationMode(), getBusinessSettings(), getControlSettings()]);
+    const [mode, businessSettings, controlSettings] = await Promise.all([getRegistrationMode(), getBusinessSettings({ strict: true }), getControlSettings()]);
     const pricing = publicPricing(businessSettings);
     const controls = publicControls(controlSettings);
     return json({
