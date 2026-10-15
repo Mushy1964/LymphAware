@@ -571,9 +571,7 @@ function buildInitialItems(packageType, languageCode, languageName, membershipTe
   if (packageType === 'MULTILINGUAL') {
     return [
       normaliseItem({ item_type: 'MEMBERSHIP', description: `LymphAware ID ${termLabel} Multilingual`, quantity: 1, unit_price_pence: packagePricePence, line_total_pence: packagePricePence }),
-      normaliseItem({ item_type: 'EXTRA_CARD', description: 'Second English ID Card – included in Multilingual package', quantity: 1, unit_price_pence: 0, line_total_pence: 0 }),
-      normaliseItem({ item_type: 'LANGUAGE_PACKAGE', description: 'Multilingual translated ID Cards & QR Profile', quantity: 2, unit_price_pence: 0, line_total_pence: 0, language_code: languageCode, language_name: languageName }),
-      normaliseItem({ item_type: 'LANYARD_HOLDER', description: 'Translated-language Lanyard & Holder – included in Multilingual package', quantity: 1, unit_price_pence: 0, line_total_pence: 0, language_code: languageCode, language_name: languageName })
+      normaliseItem({ item_type: 'LANGUAGE_PACKAGE', description: 'Multilingual translated ID Card & QR Profile', quantity: 1, unit_price_pence: 0, line_total_pence: 0, language_code: languageCode, language_name: languageName }),
     ];
   }
   return [normaliseItem({ item_type: 'MEMBERSHIP', description: `LymphAware ID ${termLabel} Membership`, quantity: 1, unit_price_pence: packagePricePence, line_total_pence: packagePricePence })];
