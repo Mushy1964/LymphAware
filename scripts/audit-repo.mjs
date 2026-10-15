@@ -363,8 +363,8 @@ function checkProjectConsistency() {
   }
 
   for (const expected of [
-    'price_additional_card_pence: 699',
-    'price_lanyard_holder_pence: 799',
+    'price_additional_card_pence: 499',
+    'price_lanyard_holder_pence: 699',
     'price_additional_language_pence: 2499',
     'postage_uk_pence: 299',
     'postage_europe_pence: 499',
