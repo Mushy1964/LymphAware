@@ -118,37 +118,101 @@
       </nav>`);
   }
 
-  fetch('/api/public-site-settings',{cache:'no-store'})
-    .then(response=>response.ok?response.json():null)
-    .then(settings=>{
-      if(!settings?.announcement?.enabled||!settings.announcement.message)return;
-      const banner=document.createElement('div');
-      const message=String(settings.announcement.message).trim();
-      const safeMessage=message.replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-      const group='<div class="public-announcement-group"><span>'+safeMessage+'</span><span class="public-announcement-separator" aria-hidden="true">●</span></div>';
-      banner.className='public-announcement';
-      banner.setAttribute('role','status');
-      banner.setAttribute('aria-label',message);
-      banner.innerHTML='<div class="public-announcement-frame"><div class="public-announcement-window" aria-hidden="true"><div class="public-announcement-track">'+group+group+'</div></div></div>';
-      const target=document.querySelector('.public-nav-bar:last-of-type')||document.querySelector('header.site-header');
-      if(target){
-        target.insertAdjacentElement('afterend',banner);
-        requestAnimationFrame(()=>{
-          const frame=banner.querySelector('.public-announcement-frame');
-          const track=banner.querySelector('.public-announcement-track');
-          const first=track?.querySelector('.public-announcement-group');
-          if(!frame||!track||!first)return;
-          const step=Math.max(1,Math.ceil(first.getBoundingClientRect().width));
-          const copies=Math.max(4,Math.ceil(frame.clientWidth/step)+3);
-          track.innerHTML=group.repeat(copies);
-          const configuredSpeed=Number(settings?.announcement?.scrollSpeed);
-          const pixelsPerSecond=Number.isFinite(configuredSpeed)?Math.min(120,Math.max(20,configuredSpeed)):55;
-          banner.style.setProperty('--announcement-shift','-'+step+'px');
-          banner.style.setProperty('--announcement-duration',Math.max(4,step/pixelsPerSecond)+'s');
-        });
+  // The public announcement is controlled in Admin > Business Settings.
+  // Create its allocated space immediately so an asynchronous check cannot
+  // unexpectedly push the page down after it is displayed.
+  const announcementTarget = document.querySelector('.public-nav-bar:last-of-type') ||
+    document.querySelector('header.site-header');
+  const announcementCacheKey = 'lymphaware-public-announcement-v2';
+  const banner = document.createElement('div');
+  banner.className = 'public-announcement is-pending';
+  banner.setAttribute('aria-busy', 'true');
+  banner.innerHTML = '<div class="public-announcement-frame"></div>';
+  if (announcementTarget) announcementTarget.insertAdjacentElement('afterend', banner);
+
+  let displayedAnnouncement = null;
+
+  function showAnnouncement(config) {
+    const message = String(config?.message || '').trim();
+    if (!config?.enabled || !message) {
+      displayedAnnouncement = null;
+      banner.hidden = true;
+      banner.classList.remove('is-pending');
+      banner.removeAttribute('role');
+      banner.removeAttribute('aria-label');
+      banner.removeAttribute('aria-busy');
+      return;
+    }
+
+    const configuredSpeed = Number(config?.scrollSpeed);
+    const pixelsPerSecond = Number.isFinite(configuredSpeed)
+      ? Math.min(120, Math.max(20, configuredSpeed)) : 55;
+    const fingerprint = message + ':' + pixelsPerSecond;
+
+    if (displayedAnnouncement === fingerprint && !banner.hidden) return;
+    displayedAnnouncement = fingerprint;
+
+    banner.hidden = false;
+    banner.classList.remove('is-pending');
+    banner.setAttribute('role', 'status');
+    banner.setAttribute('aria-label', message);
+    banner.removeAttribute('aria-busy');
+
+    const safeMessage = message.replace(/[&<>"']/g,
+      ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const group = '<div class="public-announcement-group"><span>' + safeMessage +
+      '</span><span class="public-announcement-separator" aria-hidden="true">●</span></div>';
+
+    banner.innerHTML = '<div class="public-announcement-frame">' +
+      '<div class="public-announcement-window" aria-hidden="true">' +
+      '<div class="public-announcement-track">' + group + group +
+      '</div></div></div>';
+
+    requestAnimationFrame(() => {
+      // Do not render a stale asynchronous frame after an admin setting change.
+      if (displayedAnnouncement !== fingerprint || banner.hidden) return;
+      const frame = banner.querySelector('.public-announcement-frame');
+      const track = banner.querySelector('.public-announcement-track');
+      const first = track?.querySelector('.public-announcement-group');
+      if (!frame || !track || !first) return;
+      const step = Math.max(1, Math.ceil(first.getBoundingClientRect().width));
+      const copies = Math.max(4, Math.ceil(frame.clientWidth / step) + 3);
+      track.innerHTML = group.repeat(copies);
+      banner.style.setProperty('--announcement-shift', '-' + step + 'px');
+      banner.style.setProperty('--announcement-duration',
+        Math.max(4, step / pixelsPerSecond) + 's');
+    });
+  }
+
+  if (announcementTarget) {
+    try {
+      // Reuse the last verified banner on return navigation, without waiting
+      // for another round-trip. The cache is per browser tab, not persistent.
+      const cached = JSON.parse(sessionStorage.getItem(announcementCacheKey) || 'null');
+      if (cached && typeof cached === 'object' && cached.announcement) {
+        showAnnouncement(cached.announcement);
       }
-    })
-    .catch(()=>{});
+    } catch {
+      // Storage can be unavailable; the live request still works normally.
+    }
+
+    // Always revalidate so switching off or editing the banner in admin takes
+    // effect without requiring a new browser session.
+    fetch('/api/public-site-settings', { cache: 'no-store' })
+      .then(response => response.ok ? response.json() : null)
+      .then(settings => {
+        if (!settings?.announcement) return;
+        showAnnouncement(settings.announcement);
+        try {
+          sessionStorage.setItem(announcementCacheKey,
+            JSON.stringify({ announcement: settings.announcement }));
+        } catch {}
+      })
+      .catch(() => {
+        // Preserve the last known banner during a transient network failure.
+        // If there is no cached banner, the layout space remains reserved.
+      });
+  }
 
   const footer = document.querySelector('footer');
   if (footer) {
