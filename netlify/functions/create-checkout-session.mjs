@@ -8,7 +8,7 @@ const APPROVED_LANGUAGES = {
 };
 
 const PACKAGE_DEFINITIONS = {
-  STANDARD: { name: 'LymphAware ID Standard', requiresLanguage: false, renewalProductId: 'prod_VFJ4HtlMHhiQZE' },
+  STANDARD: { name: 'LymphAware ID Essential', requiresLanguage: false, renewalProductId: 'prod_VFJ4HtlMHhiQZE' },
   PLUS: { name: 'LymphAware ID Plus', requiresLanguage: false, renewalProductId: 'prod_VFJ4Wpeq0QMpAX' },
   MULTILINGUAL: { name: 'LymphAware ID Multilingual', requiresLanguage: true, renewalProductId: 'prod_VFJ4xSalNV5KEi' }
 };
