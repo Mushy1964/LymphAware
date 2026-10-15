@@ -145,22 +145,38 @@
   line-height: 1.6;
 }
 
+/* Align the hero buttons with the three benefit columns immediately below.
+   Without pre-launch interest the original two choices share the same width. */
 .home-page .home-hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
   width: 100%;
   max-width: 600px;
 }
 
+.home-page .home-hero-actions.has-prelaunch-interest {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .home-page .home-hero-actions .button {
-  flex: 1 1 0;
-  width: auto;
-  min-width: 0;
-  min-height: 48px;
-  padding: 0 24px;
-  border-radius: 10px;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 54px;
+  padding: 9px 10px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  text-align: center;
+  line-height: 1.25;
+  white-space: normal;
+}
+
+/* The launch switch must hide the interest button even when button rules set display. */
+.home-page .home-hero-actions .button[hidden] {
+  display: none !important;
 }
 
 .home-page .home-hero-reassurance {
