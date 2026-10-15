@@ -1129,6 +1129,18 @@
     </div>
   </section>
 
+  <!-- PRE-LAUNCH INTEREST — ISOLATED, REMOVABLE AT LAUNCH -->
+  <section id="prelaunch-interest-invite" hidden aria-labelledby="prelaunch-interest-title" style="padding:28px 16px;background:linear-gradient(100deg,#f0f9f3,#eff6ff)">
+    <div class="container" style="max-width:1080px;margin:auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:22px;padding:23px;border:1px solid #d8e8e5;border-radius:16px;background:#fff">
+      <div style="flex:1 1 340px">
+        <p style="margin:0 0 8px;color:#297c39;font-size:.84rem;letter-spacing:.07em;font-weight:800;text-transform:uppercase">Coming soon · Patient-led</p>
+        <h2 id="prelaunch-interest-title" style="margin:0 0 9px;color:#16334f;font-size:clamp(1.5rem,3vw,2.05rem)">Be among the first to hear.</h2>
+        <p style="margin:0;color:#405a69;line-height:1.6">Explore LymphAware ID, share a suggestion, and register for an email when we launch. Free to register your interest, with no obligation to join.</p>
+      </div>
+      <a class="button button-primary" href="/register-interest/?source=website" style="white-space:normal;text-align:center">Register your interest</a>
+    </div>
+  </section>
+  <script>(async()=>{try{const r=await fetch('/api/prelaunch-interest',{cache:'no-store'});const d=await r.json();if(d.enabled)document.getElementById('prelaunch-interest-invite').hidden=false;}catch{}})();</script>
   <!-- I WANT ONE — WHAT DOES IT COST? -->
   <section id="membership" class="home-membership-section" aria-labelledby="membership-title">
     <div class="container home-membership-grid">
