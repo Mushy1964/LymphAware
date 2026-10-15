@@ -28,8 +28,13 @@ export async function db(table, params = '', options = {}) {
     'Accept':'application/json', ...(options.headers||{})
   }});
   if(!result.ok) { console.error('Prelaunch database request failed',table,result.status,(await result.text()).slice(0,150));throw new Error('Database request failed'); }
-  if(result.status===204)return [];
-  return result.json();
+  // PostgREST legitimately returns an empty body for successful
+  // POST/PATCH/DELETE operations with Prefer: return=minimal. Calling
+  // result.json() on that response throws after the record was saved,
+  // preventing the confirmation email from being sent.
+  const responseText = await result.text();
+  if (!responseText.trim()) return [];
+  return JSON.parse(responseText);
 }
 export async function isEnabled() {
   const data=await db('prelaunch_interest_config','select=enabled&id=eq.true&limit=1');
