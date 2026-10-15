@@ -114,6 +114,10 @@
       align-items: stretch;
     }
 
+
+    /* Prices are authoritative only after the live business settings load. */
+    .home-membership-packages:not(.pricing-loaded) .home-membership-price,
+    .home-membership-packages:not(.pricing-loaded) .home-membership-term-options { visibility: hidden; }
     .home-membership-packages[hidden] {
       display: none !important;
     }
@@ -1640,7 +1644,7 @@
 (async function loadLiveBusinessPricing(){
   try{
     const response=await fetch('/api/registration-settings',{cache:'no-store'}),settings=await response.json();
-    if(!response.ok||!settings?.pricing)return;
+    if(!response.ok||!settings?.pricing?.packages)throw new Error('Live membership pricing is unavailable');
     const money=p=>`£${(Number(p||0)/100).toFixed(2)}`;
     const cards={STANDARD:document.querySelector('.home-membership-package-standard'),MULTILINGUAL:document.querySelector('.home-membership-package-multilingual')};
     for(const [code,card] of Object.entries(cards)){
@@ -1660,6 +1664,7 @@
         [...card.querySelectorAll('.home-membership-term-options li')].forEach((row,index)=>{const years=index+1;if(features.terms[years]===false)row.hidden=true});
       }
     }
+    document.getElementById('membership-packages')?.classList.add('pricing-loaded');
     const shipping=settings.pricing.shipping,postage=document.getElementById('home-postage-prices');
     if(shipping&&postage)postage.textContent=`Postage & packing is ${money(shipping.UK)} for the United Kingdom, ${money(shipping.EUROPE)} for Europe and ${money(shipping.REST_OF_WORLD)} for the Rest of World.`;
   }catch(error){console.error('Unable to load live membership pricing:',error)}
