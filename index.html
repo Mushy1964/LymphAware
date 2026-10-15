@@ -4,6 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff">
+  <!-- Restore the last confirmed pre-launch button state before the first paint. -->
+  <script>
+    try {
+      const state = sessionStorage.getItem('lymphaware-prelaunch-interest-visibility');
+      if (state === 'on' || state === 'off') {
+        document.documentElement.classList.add('prelaunch-interest-' + state);
+      }
+    } catch {
+      // No stored preference: reserve the third column until the switch can be checked.
+    }
+  </script>
 
   <title>LymphAware ID | Helping People Living with Lymphoedema Be Understood</title>
 
@@ -627,7 +638,7 @@
         <div class="home-hero-actions" id="home-hero-actions">
           <a href="/register/" id="hero-membership-link" class="button button-primary">Join LymphAware ID</a>
           <a href="#sample-card" class="button button-secondary">View sample card</a>
-          <a href="/register-interest/?source=website" id="home-hero-interest-link" class="button button-secondary" hidden>Register your interest</a>
+          <a href="/register-interest/?source=website" id="home-hero-interest-link" class="button button-secondary" aria-hidden="true" tabindex="-1" inert>Register your interest</a>
         </div>
 
         <div class="home-hero-reassurance" aria-label="LymphAware ID key benefits">
@@ -1433,23 +1444,40 @@
   </div>
 </footer>
 
-<!-- Only show the pre-launch button while registration is enabled in the private admin area. -->
+<!-- Keep the initial three-button layout stable and verify the current admin setting. -->
 <script>
-  (async function displayPrelaunchInterestButton() {
-    try {
-      const response = await fetch('/api/prelaunch-interest-status', { cache: 'no-store' });
-      if (!response.ok) return;
-      const { enabled } = await response.json();
-      if (!enabled) return;
-      const link = document.getElementById('home-hero-interest-link');
-      const actions = document.getElementById('home-hero-actions');
-      if (link && actions) {
-        link.hidden = false;
-        actions.classList.add('has-prelaunch-interest');
-      }
-    } catch {
-      // Keep the homepage usable if the pre-launch feature is unavailable.
+  (function initialisePrelaunchInterestButton() {
+    const link = document.getElementById('home-hero-interest-link');
+    if (!link) return;
+
+    const storageKey = 'lymphaware-prelaunch-interest-visibility';
+    const root = document.documentElement;
+
+    function apply(enabled) {
+      root.classList.toggle('prelaunch-interest-on', enabled);
+      root.classList.toggle('prelaunch-interest-off', !enabled);
+      link.inert = !enabled;
+      link.setAttribute('aria-hidden', String(!enabled));
+      link.tabIndex = enabled ? 0 : -1;
     }
+
+    // When returning from another page, reuse the last checked state immediately.
+    // The authoritative admin switch is still checked afresh on every page load.
+    if (root.classList.contains('prelaunch-interest-on')) apply(true);
+    if (root.classList.contains('prelaunch-interest-off')) apply(false);
+
+    (async () => {
+      try {
+        const response = await fetch('/api/prelaunch-interest-status', { cache: 'no-store' });
+        if (!response.ok) return;
+        const { enabled } = await response.json();
+        if (typeof enabled !== 'boolean') return;
+        apply(enabled);
+        try { sessionStorage.setItem(storageKey, enabled ? 'on' : 'off'); } catch {}
+      } catch {
+        // Keep the cached display state and the rest of the website working.
+      }
+    })();
   })();
 </script>
 
