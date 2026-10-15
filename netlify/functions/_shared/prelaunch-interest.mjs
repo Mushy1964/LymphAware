@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from 'node:crypto';
+import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
 export function env(name) { return String(globalThis.Netlify?.env?.get?.(name) || process.env[name] || '').trim(); }
 export function response(body, status = 200) {
@@ -6,6 +6,18 @@ export function response(body, status = 200) {
 }
 export function sha(value) { return createHash('sha256').update(String(value)).digest('hex'); }
 export function randomToken() { return randomBytes(32).toString('hex'); }
+export function unsubscribeLink(id) {
+  const sig=createHmac('sha256',secret()).update('unsubscribe:'+id).digest('hex');
+  return 'https://lymphawareid.com/register-interest/unsubscribe/?token='+encodeURIComponent(id+'.'+sig);
+}
+export function verifyUnsubscribeToken(value) {
+  const token=String(value||'').trim();
+  const match=/^([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\.([a-f0-9]{64})$/i.exec(token);
+  if(!match)return null;
+  const sig=createHmac('sha256',secret()).update('unsubscribe:'+match[1]).digest();
+  const supplied=Buffer.from(match[2],'hex');
+  return timingSafeEqual(sig,supplied)?match[1]:null;
+}
 export function clean(value, max) { return String(value ?? '').replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,max); }
 function secret() { const key=env('SUPABASE_SECRET_KEY'); if(!key || !env('SUPABASE_URL')) throw new Error('Private database connection is unavailable'); return key; }
 export async function db(table, params = '', options = {}) {
