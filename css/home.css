@@ -145,18 +145,19 @@
   line-height: 1.6;
 }
 
-/* Align the hero buttons with the three benefit columns immediately below.
-   Without pre-launch interest the original two choices share the same width. */
+/* Reserve all three hero button columns before the asynchronous admin switch loads.
+   This prevents a visible jump from two wide buttons to three narrow buttons. */
 .home-page .home-hero-actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   width: 100%;
   max-width: 600px;
 }
 
-.home-page .home-hero-actions.has-prelaunch-interest {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+/* At launch the admin switch restores the original two-button arrangement. */
+html.prelaunch-interest-off .home-page .home-hero-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .home-page .home-hero-actions .button {
@@ -174,8 +175,17 @@
   white-space: normal;
 }
 
-/* The launch switch must hide the interest button even when button rules set display. */
-.home-page .home-hero-actions .button[hidden] {
+/* While loading, the empty third slot has no clickable or accessible control.
+   On return visits the last verified state is set in the document head, before paint. */
+.home-page .home-hero-actions #home-hero-interest-link {
+  visibility: hidden;
+  pointer-events: none;
+}
+html.prelaunch-interest-on .home-page .home-hero-actions #home-hero-interest-link {
+  visibility: visible;
+  pointer-events: auto;
+}
+html.prelaunch-interest-off .home-page .home-hero-actions #home-hero-interest-link {
   display: none !important;
 }
 
