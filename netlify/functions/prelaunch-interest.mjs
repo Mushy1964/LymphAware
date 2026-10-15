@@ -3,7 +3,6 @@ import { db, env, response, sha, randomToken, clean, isEnabled, sendConfirm } fr
 const generic='If this email address can be registered, a confirmation email will be sent. Please check your inbox and junk folder.';
 export default async request => {
   try {
-    if(request.method==='GET')return response({enabled:await isEnabled()});
     if(request.method!=='POST')return response({error:'Method not allowed.'},405);
     if(!(await isEnabled()))return response({error:'Pre-launch registrations are currently closed.'},410);
     const origin=request.headers.get('origin');
@@ -34,4 +33,4 @@ export default async request => {
     return response({error:'We could not complete the registration. Please try again later.'},500);
   }
 };
-export const config={path:'/api/prelaunch-interest',rateLimit:{action:'rate_limit',aggregateBy:'ip',windowSize:600,windowLimit:8}};
+export const config={path:'/api/prelaunch-interest',method:'POST',rateLimit:{action:'rate_limit',aggregateBy:'ip',windowSize:600,windowLimit:8}};
