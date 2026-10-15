@@ -59,12 +59,17 @@ export default async request => {
 
     const body = await request.json().catch(() => ({}));
     const settings = validateSubmittedSettings(body.settings);
-    const saved = await saveBusinessSettings(settings);
+    await saveBusinessSettings(settings);
+    const persisted = await getBusinessSettings({ strict: true });
+    const mismatched = BUSINESS_SETTING_KEYS.filter(key => persisted[key] !== settings[key]);
+    if (mismatched.length) {
+      throw new Error('The saved prices could not be verified. Please reload Business Settings and try again.');
+    }
     return json({
       saved: true,
-      settings: saved,
-      pricing: publicPricing(saved),
-      renewalPrices: publicPricing(saved).renewals,
+      settings: persisted,
+      pricing: publicPricing(persisted),
+      renewalPrices: publicPricing(persisted).renewals,
       updatedAt: new Date().toISOString()
     });
   } catch (error) {
