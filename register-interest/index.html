@@ -2,6 +2,17 @@
 <html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Register your interest | LymphAware ID</title><meta name="description" content="LymphAware ID is coming soon. Explore the service and register your interest in receiving launch updates.">
 <meta name="robots" content="noindex,follow"><meta name="referrer" content="no-referrer">
+<!-- Use the pre-launch setting already checked on the homepage before first paint. -->
+<script>
+  try {
+    const cached = sessionStorage.getItem('lymphaware-prelaunch-interest-visibility');
+    if (cached === 'on' || cached === 'off') {
+      document.documentElement.classList.add('prelaunch-interest-' + cached);
+    }
+  } catch {
+    // First visits do not need a cached setting.
+  }
+</script>
 <link rel="stylesheet" href="/css/styles.css"><link rel="stylesheet" href="/css/secondary-header.css"><link rel="stylesheet" href="/css/public-chrome.css?v=20261009-4"><link rel="stylesheet" href="/css/brand-header.css?v=20260921-7"><script defer src="/js/public-chrome.js?v=20261009-4"></script>
 <style>
   /* Match the shared Contact page's 1180px container, form card and right-hand information panel. */
@@ -95,6 +106,10 @@
   .interest-form-card .button { min-width: 190px; justify-content: center; }
   .interest-form-status { margin: 18px 0 0; font-weight: 700; line-height: 1.5; }
   .interest-form-status[hidden], .interest-form-card[hidden] { display: none !important; }
+  /* Show the registration form immediately rather than waiting for the status endpoint.
+     If the admin switch was previously verified as off, show the closed notice instead. */
+  html.prelaunch-interest-off #form-card { display: none !important; }
+  html.prelaunch-interest-off #closed { display: block !important; }
   .interest-honeypot { position: absolute; left: -9999px; }
   .interest-aside { min-width: 0; }
   .interest-aside h3 { font-size: 1.35rem; margin: 0 0 12px; }
@@ -140,7 +155,7 @@
         <p>Pre-launch registrations are not currently open. You can still <a href="/">explore the website</a>.</p>
       </section>
 
-      <section id="form-card" class="interest-form-card" aria-labelledby="interest-heading" hidden>
+      <section id="form-card" class="interest-form-card" aria-labelledby="interest-heading">
         <p class="eyebrow">Your thoughts matter</p>
         <h2 id="interest-heading">Register your interest</h2>
         <p class="interest-form-intro">
@@ -199,7 +214,7 @@
             <a href="mailto:admin@lymphawareid.com">admin@lymphawareid.com</a> about your information.
           </p>
 
-          <button class="button button-primary" id="submit-interest" type="submit">Register my interest</button>
+          <button class="button button-primary" id="submit-interest" type="submit" disabled>Register my interest</button>
           <p class="interest-form-status" id="interest-status" role="status" aria-live="polite" hidden></p>
         </form>
       </section>
@@ -228,7 +243,37 @@
 <footer><div class="container"><div class="footer-grid"><div class="footer-brand"><img class="footer-logo" src="/assets/brand/LymphAwareID_Logo_No_Tagline_20260921.svg" alt="LymphAware ID"><p>Helping People Living with Lymphoedema Be Understood.</p></div><div class="footer-links"><a href="/about/">About</a><a href="/understanding-lymphoedema/">Understanding Lymphoedema</a><a href="/for-professionals/">For Professionals</a><a href="/help/">Help</a><a href="/privacy/">Privacy</a><a href="/cookies/">Cookies</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a></div></div><div class="footer-note">LymphAware ID supports communication and awareness; it does not provide diagnosis or replace professional medical advice.</div></div></footer>
 <script>
 const card=document.getElementById('form-card'),closed=document.getElementById('closed'),status=document.getElementById('interest-status'),form=document.getElementById('interest-form');
-(async()=>{try{const r=await fetch('/api/prelaunch-interest-status',{cache:'no-store'});const d=await r.json();if(d.enabled)card.hidden=false;else closed.hidden=false}catch{closed.hidden=false}})();
+// Match the already verified homepage state immediately, then silently refresh it.
+// The form is visible from the first render when registration is open; submission
+// remains disabled until availability has been established.
+const prelaunchKey='lymphaware-prelaunch-interest-visibility';
+const submitButton=document.getElementById('submit-interest');
+const cachedState=document.documentElement.classList.contains('prelaunch-interest-on')?'on':document.documentElement.classList.contains('prelaunch-interest-off')?'off':null;
+if(cachedState==='on')submitButton.disabled=false;
+if(cachedState==='off'){card.hidden=true;closed.hidden=false;}
+(async()=>{
+  try{
+    const r=await fetch('/api/prelaunch-interest-status',{cache:'no-store'});
+    if(!r.ok)throw new Error('Pre-launch status check failed');
+    const d=await r.json();
+    if(typeof d.enabled!=='boolean')throw new Error('Invalid pre-launch status');
+    const enabled=d.enabled;
+    document.documentElement.classList.toggle('prelaunch-interest-on',enabled);
+    document.documentElement.classList.toggle('prelaunch-interest-off',!enabled);
+    card.hidden=!enabled;
+    closed.hidden=enabled;
+    submitButton.disabled=!enabled;
+    try{sessionStorage.setItem(prelaunchKey,enabled?'on':'off');}catch{}
+  }catch(error){
+    // Do not remove a visible form while visitors are reading it if the
+    // status service is temporarily unavailable. Submissions remain blocked.
+    submitButton.disabled=true;
+    if(!card.hidden){
+      status.hidden=false;
+      status.textContent='Registrations cannot be verified at the moment. Please try again shortly.';
+    }
+  }
+})();
 form.addEventListener('submit',async e=>{e.preventDefault();const b=document.getElementById('submit-interest');b.disabled=true;status.hidden=false;status.textContent='Submitting...';
 const values=new FormData(form),source=(new URLSearchParams(location.search)).get('source');
 try{const r=await fetch('/api/prelaunch-interest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firstName:values.get('firstName'),email:values.get('email'),interestLevel:values.get('interestLevel'),suggestion:values.get('suggestion'),emailConsent:values.get('emailConsent')==='on',botField:values.get('botField'),source:['forum','social','website','other'].includes(source)?source:'website'})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Unable to register at present.');status.textContent=d.message||'Please check your email to confirm.';form.reset();}catch(err){status.textContent=err.message;}finally{b.disabled=false;}});
