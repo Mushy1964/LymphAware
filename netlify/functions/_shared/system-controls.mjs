@@ -12,7 +12,7 @@ const DEFAULTS = Object.freeze({
   feature_additional_languages_enabled: 'true',
   feature_auto_renew_signup_enabled: 'true',
   feature_package_standard_enabled: 'true',
-  feature_package_plus_enabled: 'true',
+  feature_package_plus_enabled: 'false',
   feature_package_multilingual_enabled: 'true',
   feature_term_1y_enabled: 'true',
   feature_term_2y_enabled: 'true',
