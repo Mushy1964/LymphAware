@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff">
-  <!-- Restore the last confirmed pre-launch button state before the first paint. -->
+  <!-- Establish the pre-launch button layout immediately and begin checking
+       the admin availability setting while the rest of the page loads. -->
   <script>
     try {
       const state = sessionStorage.getItem('lymphaware-prelaunch-interest-visibility');
@@ -12,8 +13,11 @@
         document.documentElement.classList.add('prelaunch-interest-' + state);
       }
     } catch {
-      // No stored preference: reserve the third column until the switch can be checked.
+      // First-time visitors still see the complete three-button layout.
     }
+    window.lymphAwarePrelaunchStatus = fetch('/api/prelaunch-interest-status', {
+      cache: 'no-store'
+    }).then(response => response.ok ? response.json() : null).catch(() => null);
   </script>
 
   <title>LymphAware ID | Helping People Living with Lymphoedema Be Understood</title>
@@ -46,7 +50,7 @@
   </script>
 
   <link rel="stylesheet" href="/css/styles.css">
-  <link rel="stylesheet" href="/css/home.css?v=20261015-black-join-preview">
+  <link rel="stylesheet" href="/css/home.css?v=20261015-interest-first-paint">
   <link rel="stylesheet" href="/css/home-width-fix.css">
   <link rel="stylesheet" href="/css/quick-guide.css">
 
@@ -1470,10 +1474,9 @@
 
     (async () => {
       try {
-        const response = await fetch('/api/prelaunch-interest-status', { cache: 'no-store' });
-        if (!response.ok) return;
-        const { enabled } = await response.json();
-        if (typeof enabled !== 'boolean') return;
+        const status = await window.lymphAwarePrelaunchStatus;
+        if (!status || typeof status.enabled !== 'boolean') return;
+        const { enabled } = status;
         apply(enabled);
         try { sessionStorage.setItem(storageKey, enabled ? 'on' : 'off'); } catch {}
       } catch {
