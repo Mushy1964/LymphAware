@@ -1,5 +1,5 @@
 import { verifyAdminRequest } from './_shared/admin-auth.mjs';
-import { db, isEnabled, setEnabled, response, clean } from './_shared/prelaunch-interest.mjs';
+import { db, isEnabled, setEnabled, response, clean, unsubscribeLink } from './_shared/prelaunch-interest.mjs';
 
 export default async request => {
   const admin=await verifyAdminRequest(request);
@@ -8,7 +8,7 @@ export default async request => {
     if(request.method==='GET'){
       const enabled=await isEnabled();
       const rows=await db('prelaunch_interest','select=id,first_name,email,interest_level,suggestion,source,consent_at,consent_version,confirmed_at,unsubscribed_at,review_status,admin_notes,created_at&order=created_at.desc&limit=1000');
-      return response({enabled,rows});
+      return response({enabled,rows:rows.map(r=>({...r,unsubscribe_url:r.confirmed_at&&!r.unsubscribed_at?unsubscribeLink(r.id):null}))});
     }
     if(request.method!=='PATCH'&&request.method!=='DELETE')return response({error:'Method not allowed.'},405);
     const raw=await request.text();if(raw.length>5000)return response({error:'Request too long.'},413);
