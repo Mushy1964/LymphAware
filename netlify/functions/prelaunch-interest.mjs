@@ -1,6 +1,6 @@
 import { db, env, response, sha, randomToken, clean, isEnabled, sendConfirm } from './_shared/prelaunch-interest.mjs';
 
-const generic='If this email address can be registered, a confirmation email will be sent. Please check your inbox and junk folder.';
+const generic='Thank you. If this registration needs confirmation, we will email a link shortly. If you have already confirmed, there is nothing further to do. Please check your inbox and junk folder.';
 export default async request => {
   try {
     if(request.method!=='POST')return response({error:'Method not allowed.'},405);
