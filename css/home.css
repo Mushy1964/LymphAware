@@ -160,19 +160,50 @@ html.prelaunch-interest-off .home-page .home-hero-actions {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.home-page .home-hero-actions .button {
+/* Three matching, accessible solid hero buttons. Colours reflect the
+   blue/green LymphAware ID brand; layout stays aligned with the cards below. */
+.home-page .home-hero-actions .button.home-hero-cta {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   min-width: 0;
-  min-height: 54px;
-  padding: 9px 10px;
+  height: 66px;
+  min-height: 66px;
+  padding: 10px 12px;
   box-sizing: border-box;
-  border-radius: 10px;
+  border-radius: 11px;
+  border: 2px solid transparent;
+  color: #fff !important;
   text-align: center;
   line-height: 1.25;
   white-space: normal;
+  font-weight: 700;
+}
+
+.home-page .home-hero-actions .home-hero-cta--green {
+  background: #247a24 !important;
+  border-color: #247a24 !important;
+}
+.home-page .home-hero-actions .home-hero-cta--blue {
+  background: #0053b7 !important;
+  border-color: #0053b7 !important;
+}
+.home-page .home-hero-actions .home-hero-cta--green:hover,
+.home-page .home-hero-actions .home-hero-cta--green:focus-visible {
+  background: #1e681e !important;
+  border-color: #1e681e !important;
+  color: #fff !important;
+}
+.home-page .home-hero-actions .home-hero-cta--blue:hover,
+.home-page .home-hero-actions .home-hero-cta--blue:focus-visible {
+  background: #004394 !important;
+  border-color: #004394 !important;
+  color: #fff !important;
+}
+.home-page .home-hero-actions .home-hero-cta:focus-visible {
+  outline: 3px solid #142c4a;
+  outline-offset: 3px;
 }
 
 /* While loading, the empty third slot has no clickable or accessible control.
@@ -698,9 +729,10 @@ html.prelaunch-interest-off .home-page .home-hero-actions #home-hero-interest-li
     gap: 12px;
   }
 
-  .home-page .home-hero-actions .button {
+  .home-page .home-hero-actions .button.home-hero-cta {
     width: 100%;
-    min-height: 50px;
+    height: 66px;
+    min-height: 66px;
   }
 
   .home-page .home-hero-product {
