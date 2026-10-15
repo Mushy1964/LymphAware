@@ -49,6 +49,7 @@ export async function normaliseInitialSelection(body = {}) {
   const autoRenew = body.autoRenew === true;
 
   if (!packageDefinition) throw new Error('Please select a LymphAware ID membership package.');
+  if (packageType === 'PLUS') throw new Error('LymphAware ID Plus is no longer offered to new members. Please select Standard or Multilingual.');
   if (![1, 2, 3].includes(membershipTermYears)) throw new Error('Please select a membership length.');
   if (!CHECKOUT_COUNTRIES.has(deliveryCountry)) throw new Error('Please select a supported delivery country.');
   if (packageType === 'MULTILINGUAL' && !languageName) throw new Error('Please select an additional language.');
