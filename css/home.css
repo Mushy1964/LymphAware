@@ -201,6 +201,20 @@ html.prelaunch-interest-off .home-page .home-hero-actions {
   border-color: #004394 !important;
   color: #fff !important;
 }
+/* Temporary visual comparison: only the Join button is black.
+   The sample-card and interest buttons retain their brand blue and green. */
+.home-page .home-hero-actions #hero-membership-link {
+  background: #171717 !important;
+  border-color: #171717 !important;
+  color: #ffffff !important;
+}
+.home-page .home-hero-actions #hero-membership-link:hover,
+.home-page .home-hero-actions #hero-membership-link:focus-visible {
+  background: #303030 !important;
+  border-color: #303030 !important;
+  color: #ffffff !important;
+}
+
 .home-page .home-hero-actions .home-hero-cta:focus-visible {
   outline: 3px solid #142c4a;
   outline-offset: 3px;
