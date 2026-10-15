@@ -38,9 +38,9 @@ if(action==='unsubscribe'&&!confirm('Withdraw email permission for this address?
 button.disabled=true;
 try{if(action==='delete')await api('DELETE',{id});else if(action==='unsubscribe')await api('PATCH',{action,id});else await api('PATCH',{action:'review',id,status:card.querySelector('[data-status]').value,notes:card.querySelector('[data-notes]').value});await load();message('Record updated successfully.');}catch(e){message(e.message);button.disabled=false;}};
 $('export').onclick=()=>{const confirmed=rows.filter(r=>r.confirmed_at&&!r.unsubscribed_at);if(!confirmed.length){message('No confirmed email addresses available to export.');return;}if(!confirm('Export '+confirmed.length+' confirmed addresses? Store this file securely and delete when no longer required.'))return;
-const header=['Email','First name','Interest','Consent recorded','Email confirmed','Consent wording version','Source'];
+const header=['Email','First name','Interest','Consent recorded','Email confirmed','Consent wording version','Source','Unsubscribe URL'];
 const quote=v=>{let s=String(v??'');if(/^[=+\-@]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';};
-const csv=[header,...confirmed.map(r=>[r.email,r.first_name,r.interest_level,r.consent_at,r.confirmed_at,r.consent_version,r.source])].map(row=>row.map(quote).join(',')).join('\r\n');
+const csv=[header,...confirmed.map(r=>[r.email,r.first_name,r.interest_level,r.consent_at,r.confirmed_at,r.consent_version,r.source,r.unsubscribe_url])].map(row=>row.map(quote).join(',')).join('\r\n');
 const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='lymphawareid-confirmed-prelaunch-interest.csv';a.click();URL.revokeObjectURL(url);message('Confirmed email list exported. Keep it private.');};
 load();
 </script></body></html>
