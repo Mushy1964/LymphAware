@@ -220,14 +220,14 @@ html.prelaunch-interest-off .home-page .home-hero-actions {
   outline-offset: 3px;
 }
 
-/* While loading, the empty third slot has no clickable or accessible control.
-   On return visits the last verified state is set in the document head, before paint. */
+/* Show all three hero buttons at first paint, even on a first visit.
+   The interest link starts inert until the admin availability check completes.
+   If registrations are off (including a cached off state), hide it entirely. */
 .home-page .home-hero-actions #home-hero-interest-link {
-  visibility: hidden;
+  visibility: visible;
   pointer-events: none;
 }
 html.prelaunch-interest-on .home-page .home-hero-actions #home-hero-interest-link {
-  visibility: visible;
   pointer-events: auto;
 }
 html.prelaunch-interest-off .home-page .home-hero-actions #home-hero-interest-link {
