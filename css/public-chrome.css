@@ -614,6 +614,34 @@
 
 
 
+/* Keep the announcement row stable while the admin setting is verified. */
+.public-announcement[hidden] { display: none !important; }
+.public-announcement.is-pending .public-announcement-frame {
+  background: #edf7fc;
+}
+.public-announcement.is-pending .public-announcement-track {
+  animation: none;
+}
+
+/* Smooth same-origin public-page navigation in supporting browsers. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root) {
+  animation-duration: 140ms;
+  animation-timing-function: ease-in;
+}
+::view-transition-new(root) {
+  animation-duration: 170ms;
+  animation-timing-function: ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.01ms;
+  }
+}
+
 .public-announcement{
   width:100%;
   margin:0;
