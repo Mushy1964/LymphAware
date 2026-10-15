@@ -116,7 +116,7 @@ function appendRecurringPrice(form, index, productId, amountPence, intervalCount
 
 function packageDescription(selection) {
   const { packageType, membershipTermYears, languageName } = selection;
-  if (packageType === 'MULTILINGUAL') return `${membershipTermYears}-year membership with English and ${languageName} profiles, 2 English cards, 2 ${languageName} cards and 2 lanyards & holders.`;
+  if (packageType === 'MULTILINGUAL') return `${membershipTermYears}-year membership with English and ${languageName} profiles, 1 English card, 1 ${languageName} card and 1 lanyard & holder.`;
   if (packageType === 'PLUS') return `${membershipTermYears}-year membership with 2 English ID cards and 2 lanyards & holders.`;
   return `${membershipTermYears}-year membership with 1 English ID card and 1 lanyard & holder.`;
 }
