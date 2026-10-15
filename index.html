@@ -1140,7 +1140,7 @@
       <a class="button button-primary" href="/register-interest/?source=website" style="white-space:normal;text-align:center">Register your interest</a>
     </div>
   </section>
-  <script>(async()=>{try{const r=await fetch('/api/prelaunch-interest',{cache:'no-store'});const d=await r.json();if(d.enabled)document.getElementById('prelaunch-interest-invite').hidden=false;}catch{}})();</script>
+  <script>(async()=>{try{const r=await fetch('/api/prelaunch-interest-status',{cache:'no-store'});const d=await r.json();if(d.enabled)document.getElementById('prelaunch-interest-invite').hidden=false;}catch{}})();</script>
   <!-- I WANT ONE — WHAT DOES IT COST? -->
   <section id="membership" class="home-membership-section" aria-labelledby="membership-title">
     <div class="container home-membership-grid">
