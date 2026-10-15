@@ -1155,7 +1155,7 @@
         <p class="home-membership-eyebrow">LymphAware ID membership</p>
         <h2 id="membership-title">Choose the LymphAware ID membership that fits you.</h2>
         <p id="membership-lead" class="home-membership-lead">
-          Compare the packages and prices below. Choose one, two or three years of membership in the
+          Compare the two membership options and prices below. Choose one, two or three years of membership in the
           joining journey. Every option includes access to your secure Patient Portal and a
           patient-controlled QR profile.
         </p>
@@ -1175,26 +1175,6 @@
             <li>1 × English QR profile</li>
             <li>1 × English LymphAware ID card</li>
             <li>1 × Lanyard &amp; holder</li>
-            <li>Secure Patient Portal access</li>
-            <li>Update your information during membership</li><li>Six-monthly profile review reminders</li>
-          </ul>
-          
-        </article>
-
-        <article class="home-membership-price-card home-membership-package-plus">
-          <img class="home-membership-recommended" src="/assets/brand/LymphAware_Recommended_Badge.png" alt="Recommended">
-          <p class="home-membership-package-badge">LymphAware ID Plus</p>
-          <p class="home-membership-package-summary">Extra flexibility for everyday use.</p>
-          <p class="home-membership-price"><span class="home-membership-price-from">From</span>£34.99</p>
-          <ul class="home-membership-term-options" aria-label="LymphAware ID Plus prices">
-            <li><span>1 year</span><span class="home-membership-term-price"><span>£34.99</span></span></li>
-            <li><span>2 years</span><span class="home-membership-term-price"><span>£44.99</span><span class="home-membership-annual">£22.50 per year</span></span></li>
-            <li><span>3 years</span><span class="home-membership-term-price"><span>£54.99 <span class="home-membership-best-value">Best value</span></span><span class="home-membership-annual">£18.33 per year</span></span></li>
-          </ul>
-          <ul class="home-membership-benefits">
-            <li>1 × English QR profile</li>
-            <li>2 × English LymphAware ID cards</li>
-            <li>2 × Lanyards &amp; holders</li>
             <li>Secure Patient Portal access</li>
             <li>Update your information during membership</li><li>Six-monthly profile review reminders</li>
           </ul>
@@ -1237,7 +1217,7 @@
         <a id="membership-join-link" href="/register/" class="button button-primary">Join LymphAware ID</a>
         <p class="home-membership-renewal">
           <span id="home-postage-prices">Postage &amp; packing is £2.99 for the United Kingdom, £4.99 for Europe and £9.99 for the Rest of World.</span>
-          Postage &amp; packing is applied once per order. At checkout you can optionally choose automatic renewal at the lower price shown for your package and term. Renewal continues your membership, secure Patient Portal and QR profile access only; it does not include new or replacement cards, lanyards, holders or postage. Automatic renewal is never selected without your agreement.
+          Postage &amp; packing is applied once per order. At checkout you can optionally choose automatic renewal, with the exact future charge shown before you agree. Renewal continues your membership, secure Patient Portal and QR profile access only; it does not include new or replacement cards, lanyards, holders or postage. Automatic renewal is never selected without your agreement.
           International orders may be subject to import VAT, customs duties or local handling charges. Unless LymphAware ID expressly states that these are included, they are payable by the customer.
         </p>
       </div>
@@ -1662,7 +1642,7 @@
     const response=await fetch('/api/registration-settings',{cache:'no-store'}),settings=await response.json();
     if(!response.ok||!settings?.pricing)return;
     const money=p=>`£${(Number(p||0)/100).toFixed(2)}`;
-    const cards={STANDARD:document.querySelector('.home-membership-package-standard'),PLUS:document.querySelector('.home-membership-package-plus'),MULTILINGUAL:document.querySelector('.home-membership-package-multilingual')};
+    const cards={STANDARD:document.querySelector('.home-membership-package-standard'),MULTILINGUAL:document.querySelector('.home-membership-package-multilingual')};
     for(const [code,card] of Object.entries(cards)){
       if(!card)continue;
       const prices=settings.pricing.packages?.[code],renewals=settings.pricing.renewals?.[code];
