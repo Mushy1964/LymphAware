@@ -65,7 +65,7 @@ export async function sendConfirm(email, firstName, confirmToken) {
     'You can unsubscribe from future updates at any time. Read our Privacy Notice: ' + privacyUrl,
     'Thank you for your interest and support.',
     'The LymphAware ID Team'
-  ].join('\\n\\n');
+  ].join('\n\n');
 
   const result = await fetch('https://api.resend.com/emails', {
     method: 'POST',
