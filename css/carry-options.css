@@ -1,4 +1,4 @@
-/* Carry options: uses the three original supplied product photographs in one small WebP sprite. */
+/* Carry options: original high-resolution source files take precedence; the older sprite is only a fallback until those image files are uploaded. */
 .home-page .home-carry-options {
   margin: 36px 0 46px;
   padding: clamp(24px, 3.5vw, 42px);
@@ -51,6 +51,15 @@
   background-repeat: no-repeat;
   background-size: 300% 100%;
   background-color: #fff;
+}
+.home-page .home-carry-original {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  background: #fff;
+  border-radius: inherit;
 }
 .home-page .home-carry-lanyard { background-position: left center; }
 .home-page .home-carry-wallet { background-position: center center; }
