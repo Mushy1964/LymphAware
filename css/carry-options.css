@@ -61,7 +61,13 @@
   background: #fff;
   border-radius: inherit;
 }
-.home-page .home-carry-lanyard { background-position: left center; }
+/* Enlarge the lanyard portrait within its existing image panel only.
+   The original full-resolution PNG remains untouched. */
+.home-page .home-carry-lanyard { background-position: left center; overflow: hidden; }
+.home-page .home-carry-lanyard .home-carry-original {
+  transform: scale(1.33);
+  transform-origin: center center;
+}
 .home-page .home-carry-wallet { background-position: center center; }
 .home-page .home-carry-phone { background-position: right center; }
 .home-page .home-carry-card h3 {
