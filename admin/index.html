@@ -498,7 +498,7 @@
         const readyOrderIds=stageOrders('PROCESS').filter(order=>order.workflow_stage==='READY_TO_PRINT').map(order=>order.id).filter(Boolean);
         const response=await fetch('/.netlify/functions/export-easybadge-batch',{method:'POST',headers:{Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'},body:JSON.stringify({order_ids:readyOrderIds})});
         if(!response.ok){let message='The EasyBadge file could not be prepared.';try{const result=await response.json();if(result?.error)message=result.error}catch{}throw new Error(message)}
-        const cardCount=Number(response.headers.get('X-LymphAware ID-Card-Count')||0);
+        const cardCount=Number(response.headers.get('X-LymphAware-ID-Card-Count')||0);
         const fileBlob=await response.blob();
         const downloadUrl=URL.createObjectURL(fileBlob);
         const link=document.createElement('a');
