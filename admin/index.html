@@ -345,28 +345,25 @@
       orderLoadPromise=(async()=>{
         try{
           const accessToken=await token();if(!accessToken)return;
-          let result,archivedResult;
-          try{
-            [result,archivedResult]=await Promise.all([
-              request('/.netlify/functions/admin-orders-list?scope=ACTIVE',accessToken),
-              request('/.netlify/functions/admin-orders-list?scope=ARCHIVED',accessToken)
-            ]);
-          }catch(firstError){
+          let result;
+          try {
+            result=await request('/.netlify/functions/admin-orders-list?scope=ACTIVE',accessToken);
+          } catch(firstError) {
             if(hasSuccessfulOrderLoad||silent)throw firstError;
             await new Promise(resolve=>setTimeout(resolve,700));
-            [result,archivedResult]=await Promise.all([
-              request('/.netlify/functions/admin-orders-list?scope=ACTIVE',accessToken),
-              request('/.netlify/functions/admin-orders-list?scope=ARCHIVED',accessToken)
-            ]);
+            result=await request('/.netlify/functions/admin-orders-list?scope=ACTIVE',accessToken);
           }
           orders=(result.orders||[]);
-          archivedOrders=(archivedResult.orders||[]);
           hasSuccessfulOrderLoad=true;
           updateCounts();
           if(!preserveStage||!stageOrders(activeStage).length)selectInitialStage();
           loading.hidden=true;
           errorBox.hidden=true;
           renderStage();
+          // Archived history loads independently so it cannot delay active orders.
+          request('/.netlify/functions/admin-orders-list?scope=ARCHIVED',accessToken)
+            .then(history=>{archivedOrders=history.orders||[];updateCounts();if(activeStage==='ARCHIVED')renderStage()})
+            .catch(error=>console.warn('Archived orders could not be refreshed:',error));
         }catch(error){
           console.error(error);
           loading.hidden=true;
