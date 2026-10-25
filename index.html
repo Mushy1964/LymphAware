@@ -643,6 +643,14 @@
     .home-membership-static-card{position:relative;min-width:0;aspect-ratio:1353 / 1638;overflow:hidden}
     .home-membership-static-card img{position:absolute;display:block;width:107.02%;max-width:none;height:auto;left:-3.47%;top:-6.96%}
     .home-membership-static-card:nth-child(2) img{top:-8.79%}
+    /* Tablet fallback: keep images in normal document flow so Safari/tablet
+       layouts cannot collapse the absolutely positioned artwork. */
+    @media (min-width:681px) and (max-width:1100px){
+      .home-membership-static-cards{grid-template-columns:1fr;gap:18px}
+      .home-membership-static-card{position:static;aspect-ratio:auto;overflow:visible}
+      .home-membership-static-card img,
+      .home-membership-static-card:nth-child(2) img{position:static;width:100%;max-width:100%;height:auto;left:auto;top:auto}
+    }
 </style>
   <link rel="stylesheet" href="/css/public-chrome.css?v=20261015-smooth-navigation">
   <link rel="preload" as="script" href="/js/public-chrome-bootstrap.js?v=20261015-beforepaint">
