@@ -629,7 +629,13 @@
       }
     }
 
-  </style>
+  
+    /* Final card overrides after legacy membership styling. */
+    .home-membership-packages .home-membership-price-card{border-top-width:1px;transition:box-shadow .16s ease}
+    .home-membership-packages .home-membership-price-card:hover{transform:none;box-shadow:0 14px 32px rgba(24,54,68,.12)}
+    .home-membership-packages .home-membership-benefits li{padding-left:0;color:#162b2c;line-height:1.4}
+    .home-membership-packages .home-membership-benefits li::before{position:static;left:auto;top:auto}
+</style>
   <link rel="stylesheet" href="/css/public-chrome.css?v=20261015-smooth-navigation">
   <link rel="preload" as="script" href="/js/public-chrome-bootstrap.js?v=20261015-beforepaint">
   <script src="/js/public-chrome.js?v=20261015-beforepaint" defer></script>
@@ -1279,11 +1285,11 @@
 
       <div id="membership-packages" class="home-membership-packages">
         <article class="home-membership-price-card home-membership-package-standard">
-          <div class="home-membership-card-heading"><span class="home-membership-card-icon" aria-hidden="true">♧</span>          <p class="home-membership-package-badge">LymphAware ID Essential</p>
+          <div class="home-membership-card-heading"><span class="home-membership-card-icon" aria-hidden="true">ID</span>          <p class="home-membership-package-badge">LymphAware ID Essential</p>
           <p class="home-membership-package-summary">Everyday identification, reassurance and access to your information.</p></div>
           <div class="home-membership-card-body">
           <p class="home-membership-price"><span class="home-membership-price-from">From</span>£24.99</p>
-          <ul class="home-membership-term-options" aria-label="LymphAware ID Standard prices">
+          <ul class="home-membership-term-options" aria-label="LymphAware ID Essential prices">
             <li><span>1 year</span><span class="home-membership-term-price"><span>£24.99</span></span></li>
             <li><span>2 years</span><span class="home-membership-term-price"><span>£34.99</span><span class="home-membership-annual">£17.50 per year</span></span></li>
             <li><span>3 years</span><span class="home-membership-term-price"><span>£44.99 <span class="home-membership-best-value">Best value</span></span><span class="home-membership-annual">£15.00 per year</span></span></li>
@@ -1299,7 +1305,7 @@
         </article>
 
         <article class="home-membership-price-card home-membership-package-multilingual">
-          <div class="home-membership-card-heading"><span class="home-membership-card-icon" aria-hidden="true">◎</span>          <p class="home-membership-package-badge">LymphAware ID Multilingual</p>
+          <div class="home-membership-card-heading"><span class="home-membership-card-icon" aria-hidden="true">🌐</span>          <p class="home-membership-package-badge">LymphAware ID Multilingual</p>
           <p class="home-membership-package-summary">More ways to be understood, wherever language matters.</p></div>
           <div class="home-membership-card-body">
           <p class="home-membership-price"><span class="home-membership-price-from">From</span>£49.99</p>
