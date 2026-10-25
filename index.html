@@ -116,6 +116,91 @@
     }
 
 
+
+    /* Membership presentation: prices remain populated from live business settings. */
+    .home-membership-packages .home-membership-price-card{
+      --plan:#267c12;--plan-dark:#176a14;--plan-light:#e7f9e3;
+      padding:0;border:1px solid #cfe0d5;border-radius:26px;
+      background:var(--plan-light);overflow:hidden;box-shadow:0 12px 28px rgba(24,54,68,.08);
+    }
+    .home-membership-packages .home-membership-package-multilingual{
+      --plan:#0759b5;--plan-dark:#154b91;--plan-light:#e1f2fd;
+    }
+    .home-membership-packages .home-membership-price-card:hover{transform:none;box-shadow:0 14px 32px rgba(24,54,68,.12)}
+    .home-membership-card-heading{
+      position:relative;min-height:170px;padding:30px 26px 36px 105px;
+      background:linear-gradient(164deg,var(--plan-dark) 0%,var(--plan) 67%,#75b900 100%);
+      color:white;isolation:isolate;
+    }
+    .home-membership-package-multilingual .home-membership-card-heading{
+      background:linear-gradient(165deg,#23528f 0%,#0860bc 64%,#3d9ee1 100%);
+    }
+    .home-membership-card-heading::after{
+      content:"";position:absolute;left:-5%;right:-5%;bottom:-19px;height:49px;
+      border-radius:50% 50% 0 0;background:var(--plan-light);z-index:-1;
+    }
+    .home-membership-card-icon{
+      position:absolute;top:29px;left:24px;width:65px;height:65px;
+      border-radius:50%;display:grid;place-items:center;background:white;
+      color:var(--plan);font-size:2.1rem;font-weight:800;
+    }
+    .home-membership-card-heading .home-membership-package-badge{
+      display:block;margin:0 0 10px;padding:0;background:none;border-radius:0;
+      color:white;font-size:clamp(1.18rem,1.8vw,1.65rem);line-height:1.18;
+    }
+    .home-membership-card-heading .home-membership-package-summary{
+      margin:0;color:white;font-size:1rem;line-height:1.45;
+    }
+    .home-membership-card-body{padding:20px 25px 30px;flex:1;display:flex;flex-direction:column}
+    .home-membership-packages .home-membership-price{
+      padding:0;border:0;color:var(--plan);font-size:clamp(2.6rem,4vw,3.6rem);
+    }
+    .home-membership-packages .home-membership-price-from{color:#17283d}
+    .home-membership-packages .home-membership-term-options{
+      grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:22px 0 26px;
+    }
+    .home-membership-packages .home-membership-term-options li{
+      position:relative;display:flex;flex-direction:column;justify-content:center;
+      gap:6px;min-height:106px;padding:18px 5px 10px;text-align:center;
+      border:2px solid var(--plan);border-radius:12px;background:#fff;
+      color:#18283b;font-size:.95rem;
+    }
+    .home-membership-packages .home-membership-term-options li:last-child{
+      background:var(--plan);color:white;
+    }
+    .home-membership-packages .home-membership-term-price{
+      justify-items:center;text-align:center;font-size:clamp(.92rem,1.45vw,1.25rem);
+    }
+    .home-membership-packages .home-membership-term-options li:last-child .home-membership-annual{
+      color:white;
+    }
+    .home-membership-packages .home-membership-annual{font-size:.73rem}
+    .home-membership-packages .home-membership-best-value{
+      position:absolute;top:-18px;left:9%;right:9%;padding:5px 2px;
+      background:var(--plan);color:white;border-radius:999px;font-size:.75rem;
+    }
+    .home-membership-packages .home-membership-benefits{
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px;
+      margin:0;padding:0;list-style:none;
+    }
+    .home-membership-packages .home-membership-benefits li{
+      display:flex;align-items:center;gap:10px;margin:0;padding:0;
+      font-size:.92rem;line-height:1.4;color:#162b2c;
+    }
+    .home-membership-packages .home-membership-benefits li::before{
+      content:"✓";position:static;flex:0 0 34px;height:34px;
+      display:grid;place-items:center;border-radius:50%;background:white;
+      color:var(--plan);font-size:1.3rem;font-weight:800;
+    }
+    @media(max-width:600px){
+      .home-membership-card-heading{padding:26px 18px 35px 83px;min-height:150px}
+      .home-membership-card-icon{top:25px;left:15px;width:55px;height:55px;font-size:1.8rem}
+      .home-membership-card-body{padding:18px 15px 26px}
+      .home-membership-packages .home-membership-term-options{gap:6px}
+      .home-membership-packages .home-membership-term-options li{min-height:98px;font-size:.83rem}
+      .home-membership-packages .home-membership-benefits{grid-template-columns:1fr;gap:12px}
+    }
+
     /* Prices are authoritative only after the live business settings load. */
     .home-membership-packages:not(.pricing-loaded) .home-membership-price,
     .home-membership-packages:not(.pricing-loaded) .home-membership-term-options { visibility: hidden; }
@@ -1194,8 +1279,9 @@
 
       <div id="membership-packages" class="home-membership-packages">
         <article class="home-membership-price-card home-membership-package-standard">
-          <p class="home-membership-package-badge">LymphAware ID Essential</p>
-          <p class="home-membership-package-summary">Everyday identification, reassurance and access to your information.</p>
+          <div class="home-membership-card-heading"><span class="home-membership-card-icon" aria-hidden="true">♧</span>          <p class="home-membership-package-badge">LymphAware ID Essential</p>
+          <p class="home-membership-package-summary">Everyday identification, reassurance and access to your information.</p></div>
+          <div class="home-membership-card-body">
           <p class="home-membership-price"><span class="home-membership-price-from">From</span>£24.99</p>
           <ul class="home-membership-term-options" aria-label="LymphAware ID Standard prices">
             <li><span>1 year</span><span class="home-membership-term-price"><span>£24.99</span></span></li>
@@ -1209,12 +1295,13 @@
             <li>Secure Patient Portal access</li>
             <li>Update your information during membership</li><li>Six-monthly profile review reminders</li>
           </ul>
-          
+          </div>
         </article>
 
         <article class="home-membership-price-card home-membership-package-multilingual">
-          <p class="home-membership-package-badge">LymphAware ID Multilingual</p>
-          <p class="home-membership-package-summary">More ways to be understood, wherever language matters.</p>
+          <div class="home-membership-card-heading"><span class="home-membership-card-icon" aria-hidden="true">◎</span>          <p class="home-membership-package-badge">LymphAware ID Multilingual</p>
+          <p class="home-membership-package-summary">More ways to be understood, wherever language matters.</p></div>
+          <div class="home-membership-card-body">
           <p class="home-membership-price"><span class="home-membership-price-from">From</span>£49.99</p>
           <ul class="home-membership-term-options" aria-label="LymphAware ID Multilingual prices">
             <li><span>1 year</span><span class="home-membership-term-price"><span>£49.99</span></span></li>
@@ -1229,7 +1316,7 @@
             <li>1 × Lanyard &amp; holder</li>
             <li>Translation prepared by LymphAware ID</li><li>Six-monthly profile review reminders</li>
           </ul>
-          
+          </div>
         </article>
       </div>
       <p class="home-membership-renewal-price" style="width:100%;max-width:none;margin:20px 0 0;text-align:left;grid-column:1 / -1"><strong>Renewal is your choice.</strong> Your LymphAware ID membership is paid upfront for your chosen term, with no obligation to renew. Automatic renewal is entirely optional and is never pre-selected. If you choose it, we’ll clearly explain the renewal terms and future price before you agree, send reminders ahead of renewal payments, and make it straightforward to manage or cancel automatic renewal through your Patient Portal. No unexpected renewals, no hidden charges — just clear information and control over your membership.</p>
