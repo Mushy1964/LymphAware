@@ -646,7 +646,7 @@
     /* Tablet fallback: keep images in normal document flow so Safari/tablet
        layouts cannot collapse the absolutely positioned artwork. */
     @media (min-width:681px) and (max-width:1100px){
-      .home-membership-static-cards{grid-template-columns:1fr;gap:18px}
+      .home-membership-static-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
       .home-membership-static-card{position:static;aspect-ratio:auto;overflow:visible}
       .home-membership-static-card img,
       .home-membership-static-card:nth-child(2) img{position:static;width:100%;max-width:100%;height:auto;left:auto;top:auto}
