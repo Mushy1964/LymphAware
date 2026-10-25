@@ -635,6 +635,11 @@
     .home-membership-packages .home-membership-price-card:hover{transform:none;box-shadow:0 14px 32px rgba(24,54,68,.12)}
     .home-membership-packages .home-membership-benefits li{padding-left:0;color:#162b2c;line-height:1.4}
     .home-membership-packages .home-membership-benefits li::before{position:static;left:auto;top:auto}
+
+    /* Public membership artwork is static; checkout and renewal prices remain admin-controlled. */
+    .home-membership-static-cards{align-items:start}
+    .home-membership-static-card{min-width:0}
+    .home-membership-static-card img{display:block;width:100%;height:auto;object-fit:contain}
 </style>
   <link rel="stylesheet" href="/css/public-chrome.css?v=20261015-smooth-navigation">
   <link rel="preload" as="script" href="/js/public-chrome-bootstrap.js?v=20261015-beforepaint">
@@ -1283,47 +1288,9 @@
         </p>
       </div>
 
-      <div id="membership-packages" class="home-membership-packages">
-        <article class="home-membership-price-card home-membership-package-standard">
-          <div class="home-membership-card-heading"><span class="home-membership-card-icon" aria-hidden="true">ID</span>          <p class="home-membership-package-badge">LymphAware ID Essential</p>
-          <p class="home-membership-package-summary">Everyday identification, reassurance and access to your information.</p></div>
-          <div class="home-membership-card-body">
-          <p class="home-membership-price"><span class="home-membership-price-from">From</span>£24.99</p>
-          <ul class="home-membership-term-options" aria-label="LymphAware ID Essential prices">
-            <li><span>1 year</span><span class="home-membership-term-price"><span>£24.99</span></span></li>
-            <li><span>2 years</span><span class="home-membership-term-price"><span>£34.99</span><span class="home-membership-annual">£17.50 per year</span></span></li>
-            <li><span>3 years</span><span class="home-membership-term-price"><span>£44.99 <span class="home-membership-best-value">Best value</span></span><span class="home-membership-annual">£15.00 per year</span></span></li>
-          </ul>
-          <ul class="home-membership-benefits">
-            <li>1 × English QR profile</li>
-            <li>1 × English LymphAware ID card</li>
-            <li>1 × Lanyard &amp; holder</li>
-            <li>Secure Patient Portal access</li>
-            <li>Update your information during membership</li><li>Six-monthly profile review reminders</li>
-          </ul>
-          </div>
-        </article>
-
-        <article class="home-membership-price-card home-membership-package-multilingual">
-          <div class="home-membership-card-heading"><span class="home-membership-card-icon" aria-hidden="true">🌐</span>          <p class="home-membership-package-badge">LymphAware ID Multilingual</p>
-          <p class="home-membership-package-summary">More ways to be understood, wherever language matters.</p></div>
-          <div class="home-membership-card-body">
-          <p class="home-membership-price"><span class="home-membership-price-from">From</span>£49.99</p>
-          <ul class="home-membership-term-options" aria-label="LymphAware ID Multilingual prices">
-            <li><span>1 year</span><span class="home-membership-term-price"><span>£49.99</span></span></li>
-            <li><span>2 years</span><span class="home-membership-term-price"><span>£64.99</span><span class="home-membership-annual">£32.50 per year</span></span></li>
-            <li><span>3 years</span><span class="home-membership-term-price"><span>£79.99 <span class="home-membership-best-value">Best value</span></span><span class="home-membership-annual">£26.66 per year</span></span></li>
-          </ul>
-          <ul class="home-membership-benefits">
-            <li>1 × English QR profile</li>
-            <li>1 × Additional-language QR profile</li>
-            <li>1 × English ID card</li>
-            <li>1 × Translated-language ID card</li>
-            <li>1 × Lanyard &amp; holder</li>
-            <li>Translation prepared by LymphAware ID</li><li>Six-monthly profile review reminders</li>
-          </ul>
-          </div>
-        </article>
+      <div id="membership-packages" class="home-membership-packages home-membership-static-cards">
+        <div class="home-membership-static-card"><img src="/assets/membership/Essential_Card.png" alt="LymphAware ID Essential membership: one, two and three-year prices and included benefits" loading="lazy" decoding="async"></div>
+        <div class="home-membership-static-card"><img src="/assets/membership/Multilingual_Card.png" alt="LymphAware ID Multilingual membership: one, two and three-year prices and included benefits" loading="lazy" decoding="async"></div>
       </div>
       <p class="home-membership-renewal-price" style="width:100%;max-width:none;margin:20px 0 0;text-align:left;grid-column:1 / -1"><strong>Renewal is your choice.</strong> Your LymphAware ID membership is paid upfront for your chosen term, with no obligation to renew. Automatic renewal is entirely optional and is never pre-selected. If you choose it, we’ll clearly explain the renewal terms and future price before you agree, send reminders ahead of renewal payments, and make it straightforward to manage or cancel automatic renewal through your Patient Portal. No unexpected renewals, no hidden charges — just clear information and control over your membership.</p>
 
