@@ -636,18 +636,17 @@
     .home-membership-packages .home-membership-benefits li{padding-left:0;color:#162b2c;line-height:1.4}
     .home-membership-packages .home-membership-benefits li::before{position:static;left:auto;top:auto}
 
-    /* Trim the transparent padding within the supplied PNG canvases while
-       preserving the source images and consistent two-column layout. */
-    .home-membership-static-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:18px}
-    .home-membership-static-card{display:block;position:relative;min-width:0;aspect-ratio:1353/1638;overflow:hidden}
-    .home-membership-static-card img{display:block;position:absolute;width:107.02%;max-width:none;height:auto;left:-3.47%;top:-6.96%;object-fit:contain;opacity:1;visibility:visible}
+    /* Use normal-flow images for tablet Safari; preserve cropped artwork on desktop. */
+    .home-membership-static-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+    .home-membership-static-card{position:relative;min-width:0;aspect-ratio:1353/1638;overflow:hidden}
+    .home-membership-static-card img{position:absolute;display:block;width:107.02%;max-width:none;height:auto;left:-3.47%;top:-6.96%;visibility:visible;opacity:1}
     .home-membership-static-card:nth-child(2) img{top:-8.79%}
-    @media(max-width:1100px){
-      .home-membership-static-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media(min-width:681px) and (max-width:1100px){
+      .home-membership-static-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+      .home-membership-static-card{position:static;aspect-ratio:auto;overflow:visible;min-height:1px}
+      .home-membership-static-card img,.home-membership-static-card:nth-child(2) img{position:static;display:block;width:100%;max-width:100%;height:auto;left:auto;top:auto;visibility:visible;opacity:1}
     }
-    @media(max-width:680px){
-      .home-membership-static-cards{grid-template-columns:1fr}
-    }
+    @media(max-width:680px){.home-membership-static-cards{grid-template-columns:1fr}}
 </style>
   <link rel="stylesheet" href="/css/public-chrome.css?v=20261015-smooth-navigation">
   <link rel="preload" as="script" href="/js/public-chrome-bootstrap.js?v=20261015-beforepaint">
