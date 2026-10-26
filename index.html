@@ -636,12 +636,18 @@
     .home-membership-packages .home-membership-benefits li{padding-left:0;color:#162b2c;line-height:1.4}
     .home-membership-packages .home-membership-benefits li::before{position:static;left:auto;top:auto}
 
-    /* Static membership PNGs: normal-flow rendering on all devices avoids
-       tablet Safari's empty absolutely positioned image containers. */
+    /* Trim the transparent padding within the supplied PNG canvases while
+       preserving the source images and consistent two-column layout. */
     .home-membership-static-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:18px}
-    .home-membership-static-card{display:block;position:static;min-width:0;height:auto;aspect-ratio:auto;overflow:visible}
-    .home-membership-static-card img{display:block;position:static;width:100%;max-width:100%;height:auto;aspect-ratio:auto;object-fit:contain;visibility:visible;opacity:1;transform:none}
-    @media(max-width:680px){.home-membership-static-cards{grid-template-columns:1fr}}
+    .home-membership-static-card{display:block;position:relative;min-width:0;aspect-ratio:1353/1638;overflow:hidden}
+    .home-membership-static-card img{display:block;position:absolute;width:107.02%;max-width:none;height:auto;left:-3.47%;top:-6.96%;object-fit:contain;opacity:1;visibility:visible}
+    .home-membership-static-card:nth-child(2) img{top:-8.79%}
+    @media(max-width:1100px){
+      .home-membership-static-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media(max-width:680px){
+      .home-membership-static-cards{grid-template-columns:1fr}
+    }
 </style>
   <link rel="stylesheet" href="/css/public-chrome.css?v=20261015-smooth-navigation">
   <link rel="preload" as="script" href="/js/public-chrome-bootstrap.js?v=20261015-beforepaint">
