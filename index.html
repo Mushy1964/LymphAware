@@ -646,6 +646,13 @@
       .home-membership-static-card{position:static;aspect-ratio:auto;overflow:visible;min-height:1px}
       .home-membership-static-card img,.home-membership-static-card:nth-child(2) img{position:static;display:block;width:100%;max-width:100%;height:auto;left:auto;top:auto;visibility:visible;opacity:1}
     }
+    /* Tablet Safari fallback: render the card as a background as well as an IMG.
+       This avoids blank cards when the image element fails to paint. */
+    @media(min-width:681px) and (max-width:1100px){
+      .home-membership-static-card{position:relative;aspect-ratio:1353/1638;overflow:hidden;background-size:contain;background-position:center top;background-repeat:no-repeat}
+      .home-membership-static-card:first-child{background-image:url('/assets/membership/Essential_Card.png?v=20261026-tablet')}
+      .home-membership-static-card:nth-child(2){background-image:url('/assets/membership/Multilingual_Card.png?v=20261026-tablet')}
+    }
     @media(max-width:680px){.home-membership-static-cards{grid-template-columns:1fr}}
 </style>
   <link rel="stylesheet" href="/css/public-chrome.css?v=20261015-smooth-navigation">
@@ -1026,17 +1033,17 @@
         </div>
         <div class="home-carry-grid">
           <article class="home-carry-card">
-            <div class="home-carry-image home-carry-lanyard" role="img" aria-label="LymphAware ID card worn in a holder on a branded blue lanyard"><img class="home-carry-original" src="/assets/images/lymphaware-id-carry-lanyard.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></div>
+            <div class="home-carry-image home-carry-lanyard" role="img" aria-label="LymphAware ID card worn in a holder on a branded blue lanyard"><img class="home-carry-original" src="/assets/images/lymphaware-id-carry-lanyard.png" alt="" loading="eager" decoding="sync" onerror="this.remove()"></div>
             <h3>Wear it on a lanyard</h3>
             <p>Keep your LymphAware ID visible and easily accessible throughout the day.</p>
           </article>
           <article class="home-carry-card">
-            <div class="home-carry-image home-carry-wallet" role="img" aria-label="LymphAware ID card carried inside an open brown wallet with British banknotes"><img class="home-carry-original" src="/assets/images/lymphaware-id-carry-wallet.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></div>
+            <div class="home-carry-image home-carry-wallet" role="img" aria-label="LymphAware ID card carried inside an open brown wallet with British banknotes"><img class="home-carry-original" src="/assets/images/lymphaware-id-carry-wallet.png" alt="" loading="eager" decoding="sync" onerror="this.remove()"></div>
             <h3>Keep it in your wallet or purse</h3>
             <p>Carry your ID discreetly and have it ready whenever you need it.</p>
           </article>
           <article class="home-carry-card">
-            <div class="home-carry-image home-carry-phone" role="img" aria-label="Illustration of a LymphAware ID card displayed in a smartphone digital wallet"><img class="home-carry-original" src="/assets/images/lymphaware-id-carry-phone.png" alt="" loading="lazy" decoding="async" onerror="this.remove()"></div>
+            <div class="home-carry-image home-carry-phone" role="img" aria-label="Illustration of a LymphAware ID card displayed in a smartphone digital wallet"><img class="home-carry-original" src="/assets/images/lymphaware-id-carry-phone.png" alt="" loading="eager" decoding="sync" onerror="this.remove()"></div>
             <h3>Keep it on your phone</h3>
             <p>Have your ID available through your phone's digital wallet. <strong>Coming soon.</strong></p>
           </article>
@@ -1296,8 +1303,8 @@
       </div>
 
       <div id="membership-packages" class="home-membership-packages home-membership-static-cards">
-        <div class="home-membership-static-card"><img src="/assets/membership/Essential_Card.png" alt="LymphAware ID Essential membership: one, two and three-year prices and included benefits" loading="lazy" decoding="async"></div>
-        <div class="home-membership-static-card"><img src="/assets/membership/Multilingual_Card.png" alt="LymphAware ID Multilingual membership: one, two and three-year prices and included benefits" loading="lazy" decoding="async"></div>
+        <div class="home-membership-static-card"><img src="/assets/membership/Essential_Card.png?v=20261026-tablet" alt="LymphAware ID Essential membership: one, two and three-year prices and included benefits" loading="eager" decoding="sync"></div>
+        <div class="home-membership-static-card"><img src="/assets/membership/Multilingual_Card.png?v=20261026-tablet" alt="LymphAware ID Multilingual membership: one, two and three-year prices and included benefits" loading="eager" decoding="sync"></div>
       </div>
       <p class="home-membership-renewal-price" style="width:100%;max-width:none;margin:20px 0 0;text-align:left;grid-column:1 / -1"><strong>Renewal is your choice.</strong> Your LymphAware ID membership is paid upfront for your chosen term, with no obligation to renew. Automatic renewal is entirely optional and is never pre-selected. If you choose it, we’ll clearly explain the renewal terms and future price before you agree, send reminders ahead of renewal payments, and make it straightforward to manage or cancel automatic renewal through your Patient Portal. No unexpected renewals, no hidden charges — just clear information and control over your membership.</p>
 
