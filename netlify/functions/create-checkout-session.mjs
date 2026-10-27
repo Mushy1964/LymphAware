@@ -384,9 +384,9 @@ export default async (request) => {
         appendInlinePrice(
           stripeForm,
           1,
-          `${checkoutName} – joining and card fulfilment`,
+          `${checkoutName} – initial membership and card fulfilment (one-time balance)`,
           joiningAndFulfilmentPence,
-          'One-time joining, card and lanyard fulfilment charge.'
+          'One-time portion of your initial membership price, including your card and lanyard. Not charged on renewal.'
         );
       }
       nextLineItemIndex = joiningAndFulfilmentPence > 0 ? 2 : 1;
@@ -406,6 +406,13 @@ export default async (request) => {
       'Postage & packing for this LymphAware ID order.',
       1
     );
+
+    if (paymentType === 'initial_membership' && autoRenew) {
+      stripeForm.append(
+        'custom_text[submit][message]',
+        'Today: initial membership, card and postage, less any discount. Your optional automatic renewal is a future digital-membership charge at the price and interval you agreed to before checkout; no new card or postage is included.'
+      );
+    }
 
     if (initialTrialPromotionId) stripeForm.append('discounts[0][promotion_code]', initialTrialPromotionId);
     else if (trialLaterOrderCouponId) stripeForm.append('discounts[0][coupon]', trialLaterOrderCouponId);
