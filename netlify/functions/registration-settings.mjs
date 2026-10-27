@@ -1,3 +1,4 @@
+import { listDiscountCodeControls, discountCodeWebsiteStatus } from './_shared/discount-code-controls.mjs';
 import { getRegistrationMode } from './_shared/registration-access.mjs';
 import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
 import { getControlSettings, publicControls } from './_shared/system-controls.mjs';
@@ -12,12 +13,13 @@ function json(body, status = 200) {
 export default async (request) => {
   if (request.method !== 'GET') return json({ error: 'Method not allowed.' }, 405);
   try {
-    const [mode, businessSettings, controlSettings] = await Promise.all([getRegistrationMode(), getBusinessSettings({ strict: true }), getControlSettings()]);
+    const [mode, businessSettings, controlSettings, discountControls] = await Promise.all([getRegistrationMode(), getBusinessSettings({ strict: true }), getControlSettings(), listDiscountCodeControls()]);
     const pricing = publicPricing(businessSettings);
     const controls = publicControls(controlSettings);
     return json({
       mode,
       codeRequired: mode === 'INVITE_ONLY',
+      discountCodeAvailable: mode === 'OPEN' && discountControls.some(code => discountCodeWebsiteStatus(code, 'PUBLIC').allowed),
       codeLabel: mode === 'INVITE_ONLY' ? 'Trial code' : 'Discount code (optional)',
       pricing,
       controls,
