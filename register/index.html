@@ -96,7 +96,7 @@
       }
       const discountLine=document.getElementById('review-discount-line');
       discountLine.hidden=discountPence===0;
-      document.getElementById('review-discount-label').textContent=verifiedTrial?'Trial code discount':'Discount code';
+      document.getElementById('review-discount-label').textContent=`Discount code: ${trialInviteInput.value.trim().toUpperCase()}${verifiedDiscount?.percentOff!=null?' ('+Number(verifiedDiscount.percentOff)+'%)':''}`;
       document.getElementById('review-discount').textContent=`−${money(discountPence)}`;
       document.getElementById('review-total').textContent=money(packagePence+shippingPence-discountPence);
     }
