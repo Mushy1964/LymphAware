@@ -73,10 +73,21 @@ export async function getBusinessSettings({ strict = false } = {}) {
     if (!response.ok) throw new Error('Business pricing settings could not be read.');
 
     const settings = { ...DEFAULTS };
+    const received = new Set();
     for (const row of await response.json()) {
       if (!BUSINESS_SETTING_KEYS.includes(row.setting_key)) continue;
       const value = validPence(row.setting_value);
-      if (value !== null) settings[row.setting_key] = value;
+      if (value === null) {
+        if (strict) throw new Error('Invalid Admin pricing setting: ' + row.setting_key);
+        continue;
+      }
+      settings[row.setting_key] = value;
+      received.add(row.setting_key);
+    }
+    // Checkout and live pricing must never silently use historical defaults.
+    if (strict) {
+      const missing = BUSINESS_SETTING_KEYS.filter(key => !received.has(key));
+      if (missing.length) throw new Error('Missing Admin pricing settings: ' + missing.join(', '));
     }
     return settings;
   } catch (error) {
