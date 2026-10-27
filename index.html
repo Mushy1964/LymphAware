@@ -639,8 +639,8 @@
     /* Use normal-flow images for tablet Safari; preserve cropped artwork on desktop. */
     .home-membership-static-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
     .home-membership-static-card{position:relative;min-width:0;aspect-ratio:1353/1638;overflow:hidden}
-    .home-membership-static-card img{position:absolute;display:block;width:107.02%;max-width:none;height:auto;left:-3.47%;top:-8.5%;visibility:visible;opacity:1}
-    .home-membership-static-card:nth-child(2) img{top:-10.0%}
+    .home-membership-static-card img{position:absolute;display:block;width:107.02%;max-width:none;height:auto;left:-3.47%;top:-6.96%;visibility:visible;opacity:1}
+    .home-membership-static-card:nth-child(2) img{top:-7.55%}
     @media(min-width:681px) and (max-width:1100px){
       .home-membership-static-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
       .home-membership-static-card{position:static;aspect-ratio:auto;overflow:visible;min-height:1px}
@@ -670,6 +670,7 @@
     .home-membership-live-prices .live-annual-2{left:36%}
     .home-membership-live-prices .live-annual-3{left:67%;color:white}
     .home-membership-static-cards:not(.pricing-loaded) .home-membership-live-prices{visibility:hidden}
+    .home-membership-static-card:nth-child(2) .home-membership-live-prices{transform:translateY(-0.6%)}
     .home-membership-pricing-error{grid-column:1/-1;color:#9b2828;font-weight:700}
 </style>
   <link rel="stylesheet" href="/css/public-chrome.css?v=20261015-smooth-navigation">
