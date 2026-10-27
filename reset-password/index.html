@@ -106,13 +106,13 @@
       <form id="new-password-form">
         <div class="form-group">
           <label for="password">New password</label>
-          <input type="password" id="password" name="password" autocomplete="new-password" minlength="8" required>
-          <p class="password-help">Use at least 8 characters.</p>
+          <input type="password" id="password" name="password" autocomplete="new-password" minlength="12" required>
+          <p class="password-help">Use at least 12 characters.</p>
         </div>
 
         <div class="form-group">
           <label for="confirm-password">Confirm new password</label>
-          <input type="password" id="confirm-password" name="confirm-password" autocomplete="new-password" minlength="8" required>
+          <input type="password" id="confirm-password" name="confirm-password" autocomplete="new-password" minlength="12" required>
         </div>
 
         <button type="submit" class="button button-primary portal-button" disabled>Update Password</button>
@@ -173,8 +173,8 @@
       const password = document.getElementById('password').value;
       const confirmPassword = document.getElementById('confirm-password').value;
 
-      if (password.length < 8) {
-        message.textContent = 'Please choose a password containing at least 8 characters.';
+      if (password.length < 12) {
+        message.textContent = 'Please choose a password containing at least 12 characters.';
         return;
       }
 
