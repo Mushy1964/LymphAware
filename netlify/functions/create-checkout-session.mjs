@@ -1,3 +1,4 @@
+import { authoriseExistingTrialParticipant } from './_shared/registration-access.mjs';
 import { getBusinessSettings, publicPricing } from './_shared/business-settings.mjs';
 import { getControlSettings, publicControls } from './_shared/system-controls.mjs';
 
@@ -192,6 +193,7 @@ export default async (request) => {
 
     const isTrialParticipant = membership.membership_status === 'PILOT';
     const trialLaterOrderCouponId = isTrialParticipant ? 'LYMPHAWARE_TRIAL_LATER_100_V1' : '';
+    let initialTrialPromotionId = '';
     const [businessSettings, controlSettings] = await Promise.all([getBusinessSettings({ strict: true }), getControlSettings({ strict: true })]);
     const livePricing = publicPricing(businessSettings);
     const features = publicControls(controlSettings).features;
@@ -221,6 +223,13 @@ export default async (request) => {
     if (paymentType === 'initial_membership') {
       if (membership.membership_status !== 'PENDING' || membership.payment_status !== 'PENDING') {
         return json({ error: 'No membership payment is currently due.' }, 403);
+      }
+      const registeredTrialCode = String(user?.user_metadata?.registration_invite_code || '').trim();
+      if (registeredTrialCode) {
+        const eligibility = await authoriseExistingTrialParticipant(registeredTrialCode, user.email || '');
+        if (!eligibility.allowed) return json({ error: 'Your original trial invitation could not be verified. Please contact LymphAware ID before paying.' }, 403);
+        initialTrialPromotionId = eligibility.promotionCodeId;
+        if (body?.autoRenew === true) return json({ error: 'Automatic renewal is unavailable for private-trial activation. Please untick automatic renewal to continue without future charges.' }, 400);
       }
       if (body?.termsAccepted !== true) return json({ error: 'Please accept the Terms and Privacy Notice.' }, 400);
       packageType = String(body?.packageType || 'STANDARD').trim().toUpperCase();
@@ -398,8 +407,9 @@ export default async (request) => {
       1
     );
 
-    if (trialLaterOrderCouponId) stripeForm.append('discounts[0][coupon]', trialLaterOrderCouponId);
-    stripeForm.append('metadata[trial_discount_applied]', trialLaterOrderCouponId ? '1' : '0');
+    if (initialTrialPromotionId) stripeForm.append('discounts[0][promotion_code]', initialTrialPromotionId);
+    else if (trialLaterOrderCouponId) stripeForm.append('discounts[0][coupon]', trialLaterOrderCouponId);
+    stripeForm.append('metadata[trial_discount_applied]', (initialTrialPromotionId || trialLaterOrderCouponId) ? '1' : '0');
     if (autoRenew) stripeForm.append('payment_method_collection', 'always');
     stripeForm.append('billing_address_collection', 'required');
     stripeForm.append('shipping_address_collection[allowed_countries][0]', deliveryCountry);
