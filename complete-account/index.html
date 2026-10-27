@@ -44,12 +44,12 @@
       <form id="account-form">
         <div class="form-group">
           <label for="password">Create a password</label>
-          <input type="password" id="password" autocomplete="new-password" minlength="8" required>
-          <p class="password-help">Use at least 8 characters.</p>
+          <input type="password" id="password" autocomplete="new-password" minlength="12" required>
+          <p class="password-help">Use at least 12 characters.</p>
         </div>
         <div class="form-group">
           <label for="confirm-password">Confirm password</label>
-          <input type="password" id="confirm-password" autocomplete="new-password" minlength="8" required>
+          <input type="password" id="confirm-password" autocomplete="new-password" minlength="12" required>
         </div>
         <button type="submit" class="button button-primary portal-button" disabled>Complete account setup</button>
         <p id="account-message" role="status" aria-live="polite">Checking your secure account-setup link...</p>
@@ -91,7 +91,7 @@
       if(!setupReady){message.textContent='Please open the latest secure account-setup link sent to your email address.';return}
       const password=document.getElementById('password').value;
       const confirmPassword=document.getElementById('confirm-password').value;
-      if(password.length<8){message.textContent='Please choose a password containing at least 8 characters.';return}
+      if(password.length < 12){message.textContent='Please choose a password containing at least 12 characters.';return}
       if(password!==confirmPassword){message.textContent='The passwords do not match. Please try again.';return}
       submitButton.disabled=true;
       message.textContent='Finishing your secure account setup...';
