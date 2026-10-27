@@ -229,7 +229,7 @@ export default async (request) => {
         const eligibility = await authoriseExistingTrialParticipant(registeredTrialCode, user.email || '');
         if (!eligibility.allowed) return json({ error: 'Your original trial invitation could not be verified. Please contact LymphAware ID before paying.' }, 403);
         initialTrialPromotionId = eligibility.promotionCodeId;
-        if (body?.autoRenew === true) return json({ error: 'Automatic renewal is unavailable for private-trial activation. Please untick automatic renewal to continue without future charges.' }, 400);
+        if (body?.autoRenew === true && !String(process.env.STRIPE_SECRET_KEY || '').startsWith('sk_test_')) return json({ error: 'Trial automatic renewal can only be tested in Stripe test mode, to prevent future real charges.' }, 400);
       }
       if (body?.termsAccepted !== true) return json({ error: 'Please accept the Terms and Privacy Notice.' }, 400);
       packageType = String(body?.packageType || 'STANDARD').trim().toUpperCase();
