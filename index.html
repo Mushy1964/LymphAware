@@ -654,6 +654,22 @@
       .home-membership-static-card:nth-child(2){background-image:url('/assets/membership/Multilingual_Card.png?v=20261026-tablet')}
     }
     @media(max-width:680px){.home-membership-static-cards{grid-template-columns:1fr}}
+
+    /* Live pricing is browser text over the untouched Canva artwork. */
+    .home-membership-static-card{container-type:inline-size}
+    .home-membership-live-prices{position:absolute;z-index:2;pointer-events:none;left:-3.47%;top:-6.96%;width:107.02%;aspect-ratio:1448/2048;font-family:Arial,Helvetica,sans-serif;color:#080808}
+    .home-membership-live-prices .live-price{position:absolute;white-space:nowrap;text-align:center;font-weight:800;line-height:1}
+    .home-membership-live-prices .live-from{left:7.7%;top:26.5%;font-size:clamp(15px,6.5cqw,72px);color:#287f00;text-align:left}
+    .home-membership-static-card:nth-child(2) .live-from{color:#0058b5}
+    .home-membership-live-prices .live-term{top:37.6%;width:26%;font-size:clamp(11px,4.3cqw,48px)}
+    .home-membership-live-prices .live-term-1{left:7.6%}
+    .home-membership-live-prices .live-term-2{left:36.7%}
+    .home-membership-live-prices .live-term-3{left:65.8%;color:white}
+    .home-membership-live-prices .live-annual{top:40.6%;width:26%;font-size:clamp(8px,1.9cqw,23px);font-weight:400}
+    .home-membership-live-prices .live-annual-2{left:36.7%}
+    .home-membership-live-prices .live-annual-3{left:65.8%;color:white}
+    .home-membership-static-cards:not(.pricing-loaded) .home-membership-live-prices{visibility:hidden}
+    .home-membership-pricing-error{grid-column:1/-1;color:#9b2828;font-weight:700}
 </style>
   <link rel="stylesheet" href="/css/public-chrome.css?v=20261015-smooth-navigation">
   <link rel="preload" as="script" href="/js/public-chrome-bootstrap.js?v=20261015-beforepaint">
@@ -1303,8 +1319,8 @@
       </div>
 
       <div id="membership-packages" class="home-membership-packages home-membership-static-cards">
-        <div class="home-membership-static-card"><img src="/assets/membership/Essential_Card.png?v=20261026-tablet" alt="LymphAware ID Essential membership: one, two and three-year prices and included benefits" loading="eager" decoding="sync"></div>
-        <div class="home-membership-static-card"><img src="/assets/membership/Multilingual_Card.png?v=20261026-tablet" alt="LymphAware ID Multilingual membership: one, two and three-year prices and included benefits" loading="eager" decoding="sync"></div>
+        <div class="home-membership-static-card" data-membership-package="STANDARD"><img src="/assets/membership/Essential_Card.png?v=20261027-live-prices" alt="LymphAware ID Essential membership benefits and pricing options" loading="eager" decoding="sync"><div class="home-membership-live-prices" aria-label="Membership prices"><span class="live-price live-from" data-live-price="1"></span><span class="live-price live-term live-term-1" data-live-price="1"></span><span class="live-price live-term live-term-2" data-live-price="2"></span><span class="live-price live-term live-term-3" data-live-price="3"></span><span class="live-price live-annual live-annual-2" data-live-annual="2"></span><span class="live-price live-annual live-annual-3" data-live-annual="3"></span></div></div>
+        <div class="home-membership-static-card" data-membership-package="MULTILINGUAL"><img src="/assets/membership/Multilingual_Card.png?v=20261027-live-prices" alt="LymphAware ID Multilingual membership benefits and pricing options" loading="eager" decoding="sync"><div class="home-membership-live-prices" aria-label="Membership prices"><span class="live-price live-from" data-live-price="1"></span><span class="live-price live-term live-term-1" data-live-price="1"></span><span class="live-price live-term live-term-2" data-live-price="2"></span><span class="live-price live-term live-term-3" data-live-price="3"></span><span class="live-price live-annual live-annual-2" data-live-annual="2"></span><span class="live-price live-annual live-annual-3" data-live-annual="3"></span></div></div>
       </div>
       <p class="home-membership-renewal-price" style="width:100%;max-width:none;margin:20px 0 0;text-align:left;grid-column:1 / -1"><strong>Renewal is your choice.</strong> Your LymphAware ID membership is paid upfront for your chosen term, with no obligation to renew. Automatic renewal is entirely optional and is never pre-selected. If you choose it, we’ll clearly explain the renewal terms and future price before you agree, send reminders ahead of renewal payments, and make it straightforward to manage or cancel automatic renewal through your Patient Portal. No unexpected renewals, no hidden charges — just clear information and control over your membership.</p>
 
@@ -1746,28 +1762,20 @@
     const response=await fetch('/api/registration-settings',{cache:'no-store'}),settings=await response.json();
     if(!response.ok||!settings?.pricing?.packages)throw new Error('Live membership pricing is unavailable');
     const money=p=>`£${(Number(p||0)/100).toFixed(2)}`;
-    const cards={STANDARD:document.querySelector('.home-membership-package-standard'),MULTILINGUAL:document.querySelector('.home-membership-package-multilingual')};
-    for(const [code,card] of Object.entries(cards)){
-      if(!card)continue;
-      const prices=settings.pricing.packages?.[code],renewals=settings.pricing.renewals?.[code];
-      if(prices){
-        const from=card.querySelector('.home-membership-price');if(from)from.innerHTML=`<span class="home-membership-price-from">From</span>${money(prices[1])}`;
-        const rows=[...card.querySelectorAll('.home-membership-term-options li')];
-        rows.forEach((row,index)=>{const years=index+1,price=prices[years],priceSpan=row.querySelector('.home-membership-term-price > span:first-child'),annual=row.querySelector('.home-membership-annual');if(priceSpan){priceSpan.textContent=money(price);if(years===3){const badge=document.createElement('span');badge.className='home-membership-best-value';badge.textContent='Best value';priceSpan.append(' ',badge)}}if(annual&&years>1)annual.textContent=`${money(Math.round(price/years))} per year`});
-      }
-      const renewalText=card.querySelector('.home-membership-renewal-values');// Renewal is explained in plain language on the package cards; the selected term's exact renewal price is shown at checkout.
-    }
+    const cards={STANDARD:document.querySelector('[data-membership-package="STANDARD"]'),MULTILINGUAL:document.querySelector('[data-membership-package="MULTILINGUAL"]')};
     const features=settings.controls?.features||{};
     for(const [code,card] of Object.entries(cards)){
-      if(card&&features.packages&&features.packages[code]===false)card.hidden=true;
-      if(card&&features.terms){
-        [...card.querySelectorAll('.home-membership-term-options li')].forEach((row,index)=>{const years=index+1;if(features.terms[years]===false)row.hidden=true});
-      }
+      if(!card)continue;
+      const prices=settings.pricing.packages?.[code];
+      if(features.packages?.[code]===false){card.hidden=true;continue;}
+      if(!prices||![1,2,3].every(years=>Number.isFinite(Number(prices[years]))&&Number(prices[years])>0))throw new Error('Incomplete live membership pricing for '+code);
+      card.querySelectorAll('[data-live-price]').forEach(el=>{el.textContent=money(prices[Number(el.dataset.livePrice)])});
+      card.querySelectorAll('[data-live-annual]').forEach(el=>{const years=Number(el.dataset.liveAnnual);el.textContent=money(Math.round(Number(prices[years])/years))+' per year'});
     }
     document.getElementById('membership-packages')?.classList.add('pricing-loaded');
     const shipping=settings.pricing.shipping,postage=document.getElementById('home-postage-prices');
     if(shipping&&postage)postage.textContent=`Postage & packing is ${money(shipping.UK)} for the United Kingdom, ${money(shipping.EUROPE)} for Europe and ${money(shipping.REST_OF_WORLD)} for the Rest of World.`;
-  }catch(error){console.error('Unable to load live membership pricing:',error)}
+  }catch(error){console.error('Unable to load live membership pricing:',error);const box=document.getElementById('membership-packages');if(box&&!box.querySelector('.home-membership-pricing-error')){const note=document.createElement('p');note.className='home-membership-pricing-error';note.textContent='Live membership prices are temporarily unavailable. Please check the joining page for current prices.';box.append(note)}}
 })();
 </script>
 
