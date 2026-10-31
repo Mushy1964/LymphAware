@@ -270,6 +270,23 @@
       .profile-account-group + .account-management{margin-top:22px;padding-top:22px}
       .profile-account-group-title{font-size:1.12rem}
     }
+
+/* My Profile desktop arrangement: explicit grid areas prevent auto-placement conflicts. */
+@media (min-width: 900px) {
+  #portal-grid.simple-view #profiles-account-panel,
+  .portal-grid.simple-view #profiles-account-panel {
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-template-areas:"heading heading" "intro intro" "edit review" "visibility visibility"!important;
+    gap:18px 22px!important;
+    align-items:stretch;
+  }
+  .portal-grid.simple-view #profiles-account-panel>h2{grid-area:heading!important;margin:0!important}
+  .portal-grid.simple-view #profiles-account-panel>p{grid-area:intro!important;margin:0!important}
+  .portal-grid.simple-view #profiles-account-panel>.profile-management-group{grid-area:edit!important;grid-column:auto!important;grid-row:auto!important}
+  .portal-grid.simple-view #profiles-account-panel>.profile-review-group{grid-area:review!important;grid-column:auto!important;grid-row:auto!important}
+  .portal-grid.simple-view #profiles-account-panel>.profile-visibility-group{grid-area:visibility!important;grid-column:auto!important;grid-row:auto!important}
+}
 </style>
   <link rel="stylesheet" href="/css/brand-header.css?v=20260921-7">
 </head>
