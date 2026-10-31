@@ -615,6 +615,21 @@
 @media(min-width:1100px) and (max-width:1280px){
  #portal-content.portal-shell.portal-dashboard-layout{padding-left:216px!important;padding-right:18px!important}
 }
+
+/* Approved dashboard: real card and QR previews beneath four action tiles. */
+#portal-content.portal-dashboard-layout .portal-dashboard-main{display:flex;flex-direction:column;gap:22px;min-width:0}
+#portal-content.portal-dashboard-layout .portal-dashboard-previews{background:#fff;border-radius:17px;padding:22px;box-shadow:0 5px 24px rgba(15,51,87,.06);min-width:0}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-heading h2{font-size:1.35rem;color:#101b43;margin:0 0 6px}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-heading p{color:#61718a;margin:0 0 17px}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-tile{min-width:0;border:1px solid #d6e5f1;border-radius:14px;background:#f7fbfe;padding:14px;display:flex;flex-direction:column;gap:10px}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-tile h3{font-size:1.08rem;color:#101b43;margin:0}
+#portal-content.portal-dashboard-layout .portal-dashboard-embed-wrap{background:#fff;border:1px solid #e1e9ef;border-radius:11px;overflow:hidden;min-height:280px}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-tile iframe{display:block;width:100%;height:280px;border:0;background:#fff}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-tile p{font-size:.83rem;color:#61718a;line-height:1.5;margin:0}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-tile button{background:#075bc5;color:#fff;border:1px solid #075bc5;border-radius:9px;padding:10px 12px;font:inherit;font-weight:700;cursor:pointer}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-tile button+button{background:#fff;color:#075bc5}
+@media(max-width:760px){#portal-content.portal-dashboard-layout .portal-dashboard-preview-grid{grid-template-columns:1fr}}
 </style>
   <link rel="stylesheet" href="/css/brand-header.css?v=20260921-7">
 </head>
@@ -777,7 +792,16 @@ sidebar.querySelector('[data-portal-help]').addEventListener('click',()=>locatio
 sidebar.querySelector('[data-portal-settings]').addEventListener('click',()=>sidebar.querySelector('[data-portal-destination="profile"]').click());
 portalShell.insertBefore(sidebar,portalShell.firstChild);
 const homeColumns=document.createElement('div');homeColumns.className='portal-home-columns';
-simpleNav.parentNode.insertBefore(homeColumns,simpleNav);homeColumns.appendChild(simpleNav);
+simpleNav.parentNode.insertBefore(homeColumns,simpleNav);
+const dashboardMain=document.createElement('div');dashboardMain.className='portal-dashboard-main';
+homeColumns.appendChild(dashboardMain);dashboardMain.appendChild(simpleNav);
+const dashboardPreview=document.createElement('section');dashboardPreview.className='portal-dashboard-previews';
+dashboardPreview.innerHTML='<div class="portal-dashboard-preview-heading"><h2>Your LymphAware ID Card</h2><p>Your ID card and QR profile, shown together.</p></div><div class="portal-dashboard-preview-grid"><section class="portal-dashboard-preview-tile"><h3>My ID Card</h3><div class="portal-dashboard-embed-wrap"><iframe title="Your current LymphAware ID card" id="portal-dashboard-card-frame" loading="lazy"></iframe></div><p>Your card preview uses your saved details.</p><button type="button" data-portal-destination="card">View my ID card</button></section><section class="portal-dashboard-preview-tile"><h3>My QR Profile</h3><div class="portal-dashboard-embed-wrap"><iframe title="Your QR-linked patient profile" id="portal-dashboard-profile-frame" loading="lazy"></iframe></div><p>See what others can view when they scan your QR code.</p><button type="button" data-portal-destination="card">View my QR profile</button><button type="button" data-portal-destination="profile">Edit profile information</button></section></div>';
+dashboardMain.appendChild(dashboardPreview);
+dashboardPreview.querySelectorAll('[data-portal-destination]').forEach(button=>button.addEventListener('click',()=>sidebar.querySelector('[data-portal-destination="'+button.dataset.portalDestination+'"]').click()));
+function syncDashboardPreviews(){for(const [linkId,frameId] of [['card-preview-link','portal-dashboard-card-frame'],['preview-link','portal-dashboard-profile-frame']]){const link=document.getElementById(linkId),frame=document.getElementById(frameId);if(!link||!frame)continue;const url=!link.hidden?link.getAttribute('href'):null;if(url&&url!=='#'&&frame.dataset.previewUrl!==url){frame.dataset.previewUrl=url;frame.src=url}else if(!url){frame.removeAttribute('src');frame.removeAttribute('data-preview-url');frame.srcdoc='<p style="font:16px sans-serif;padding:22px">Your preview will appear once your card and profile are ready.</p>'}}}
+new MutationObserver(syncDashboardPreviews).observe(document.getElementById('member-content'),{subtree:true,childList:true,attributes:true,attributeFilter:['href','hidden']});
+syncDashboardPreviews();
 const infoRail=document.createElement('aside');infoRail.className='portal-info-rail';infoRail.setAttribute('aria-label','Membership at a glance');
 infoRail.innerHTML='<section><h3>Membership status</h3><p class="portal-status" id="portal-rail-status">Checking membership…</p><button type="button" data-portal-destination="membership">Manage membership</button></section><section><h3>My orders</h3><p>View your orders and any additional cards or accessories.</p><button type="button" data-portal-destination="orders">View my orders</button></section><section><h3>Profile & privacy</h3><p>Choose what information is available when someone scans your card.</p><button type="button" data-portal-destination="profile">Manage my profile</button></section>';
 homeColumns.appendChild(infoRail);
