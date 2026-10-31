@@ -14,6 +14,27 @@
 .portal-grid.simple-view #portal-card-shortcuts{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
 .portal-grid.simple-view #portal-card-shortcuts .button{margin:0;min-height:48px}
 .portal-simple-nav{margin:18px 0 22px}.portal-simple-nav[hidden],#portal-simple-back[hidden]{display:none!important}.portal-simple-nav h2{margin:0 0 6px}.portal-simple-nav>p{margin:0 0 16px;color:#53677a}.portal-simple-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.portal-simple-tiles button{display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-height:112px;padding:20px;border:1px solid #b9d0dd;border-radius:14px;background:#fff;color:#142c44;font:inherit;text-align:left;cursor:pointer}.portal-simple-tiles strong{font-size:1.15rem}.portal-simple-tiles span{color:#526575}.portal-simple-tiles button:hover,.portal-simple-tiles button:focus-visible{outline:2px solid #0053b7}.portal-simple-nav #portal-simple-back{margin-top:14px}.portal-grid.simple-view .portal-option[data-area]{display:none!important}.portal-grid.simple-view[data-area="profile"] .portal-option[data-area="profile"],.portal-grid.simple-view[data-area="card"] .portal-option[data-area="card"],.portal-grid.simple-view[data-area="orders"] .portal-option[data-area="orders"],.portal-grid.simple-view[data-area="membership"] .portal-option[data-area="membership"]{display:block!important}.portal-grid.simple-view[data-area="home"] #onboarding-panel{display:block!important}.portal-grid.simple-view .portal-option[hidden]{display:none!important}@media(max-width:600px){.portal-simple-tiles{grid-template-columns:1fr}.portal-simple-tiles button{min-height:85px}}
+/* Dashboard visual refresh: branded, accessible, and limited to navigation tiles. */
+.portal-simple-nav{margin:24px 0 26px}
+.portal-simple-nav h2{font-size:clamp(1.4rem,2vw,1.7rem);color:#172b43}
+.portal-simple-nav>p{margin-bottom:20px}
+.portal-simple-tiles{gap:18px}
+.portal-simple-tiles button{position:relative;overflow:hidden;min-height:156px;padding:25px 26px 24px 100px;border:1px solid #c7dce4;border-radius:18px;box-shadow:0 5px 18px rgba(24,61,90,.055);transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+.portal-simple-tiles button::before{position:absolute;left:24px;top:25px;display:grid;place-items:center;width:55px;height:55px;border-radius:16px;background:#e2f2e8;color:#21743a;content:"";background-repeat:no-repeat;background-position:center;background-size:28px}
+.portal-simple-tiles button::after{content:"›";position:absolute;right:22px;bottom:17px;font-size:30px;font-weight:600;color:#2c6b98;line-height:1}
+.portal-simple-tiles button[data-area="profile"]{background:linear-gradient(120deg,#f0faf3 0%,#fff 80%);border-left:5px solid #23833b}
+.portal-simple-tiles button[data-area="card"]{background:linear-gradient(120deg,#eef6ff 0%,#fff 80%);border-left:5px solid #0759b6}
+.portal-simple-tiles button[data-area="orders"]{background:linear-gradient(120deg,#f0f8fb 0%,#fff 80%);border-left:5px solid #16819b}
+.portal-simple-tiles button[data-area="membership"]{background:linear-gradient(120deg,#f4f5fc 0%,#fff 80%);border-left:5px solid #485bb1}
+.portal-simple-tiles button[data-area="profile"]::before{content:"♙"}
+.portal-simple-tiles button[data-area="card"]::before{content:"▣";background:#e1efff;color:#0759b6}
+.portal-simple-tiles button[data-area="orders"]::before{content:"▤";background:#e1f3f7;color:#12758d}
+.portal-simple-tiles button[data-area="membership"]::before{content:"✓";background:#e9ebfb;color:#485bb1}
+.portal-simple-tiles button strong{font-size:1.25rem;line-height:1.3}
+.portal-simple-tiles button span{font-size:1rem;line-height:1.5;max-width:320px}
+.portal-simple-tiles button:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(24,61,90,.12)}
+.portal-simple-tiles button:focus-visible{outline:3px solid #0053b7;outline-offset:3px}
+@media(max-width:600px){.portal-simple-tiles{gap:12px}.portal-simple-tiles button{min-height:118px;padding:20px 35px 20px 82px}.portal-simple-tiles button::before{left:17px;top:20px;width:48px;height:48px}.portal-simple-tiles button strong{font-size:1.12rem}.portal-simple-tiles button span{font-size:.95rem}}
     .portal-page{min-height:calc(100vh - 84px);padding:var(--space-account-top) var(--space-page-gutter) var(--space-account-bottom);background:linear-gradient(135deg,rgba(36, 122, 36, .06),rgba(0, 83, 183, .05))}
     .portal-shell{width:100%;max-width:1180px;margin:0 auto}#portal-content{display:none}#portal-loading{text-align:center;padding:80px 20px;color:var(--muted)}
     .portal-welcome{margin-bottom:30px}.portal-welcome h1{margin:6px 0 12px;font-size:clamp(2rem,3vw,2.8rem);line-height:1.15}.portal-welcome p{max-width:700px;color:var(--muted);font-size:1.08rem;line-height:1.55}
