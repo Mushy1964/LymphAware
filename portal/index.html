@@ -547,6 +547,13 @@
  .portal-info-rail{grid-template-columns:1fr}
 }
 
+/* Compact desktop tiles matching the approved dashboard reference. */
+@media(min-width:1100px){
+ #portal-content.portal-dashboard-layout .portal-simple-tiles button{position:relative;min-height:172px;padding:72px 12px 20px;gap:6px}
+ #portal-content.portal-dashboard-layout .portal-simple-tiles button::before{left:12px;top:14px;width:46px;height:46px}
+ #portal-content.portal-dashboard-layout .portal-simple-tiles strong{font-size:.96rem;line-height:1.25}
+ #portal-content.portal-dashboard-layout .portal-simple-tiles span{font-size:.82rem;line-height:1.35}
+}
 /* Final cascade override: never widen the portal beyond the original site container. */
 #portal-content.portal-shell.portal-dashboard-layout{width:100%!important;max-width:1180px!important;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box!important}
 @media(min-width:1100px){#portal-content.portal-shell.portal-dashboard-layout{padding:28px 26px 28px 207px!important}}
