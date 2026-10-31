@@ -359,6 +359,18 @@
 .portal-grid.simple-view[data-area="membership"] .membership-renewal-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
 .portal-grid.simple-view[data-area="membership"] .membership-renewal-actions[hidden]{display:none}
 @media(max-width:650px){.portal-grid.simple-view[data-area="orders"] .portal-option[data-area="orders"],.portal-grid.simple-view[data-area="membership"] .portal-option[data-area="membership"]{padding:22px 18px}.portal-grid.simple-view[data-area="orders"] .button,.portal-grid.simple-view[data-area="membership"] .button{width:100%;min-width:0!important}}
+
+/* Compact order cards: two columns on desktop, one on smaller screens. */
+@media(min-width:900px){
+ .orders-dialog{width:min(94vw,1120px);max-width:1120px}
+ .order-history-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:stretch}
+ .order-history-card{min-width:0;display:flex;flex-direction:column;padding:18px 20px}
+ .order-history-card .order-history-total{margin-top:auto;padding-top:14px}
+ .order-history-head{flex-wrap:wrap;gap:8px 12px}
+ .order-history-items{margin:12px 0 16px;padding-top:12px}
+ .order-history-message{grid-column:1/-1}
+}
+@media(max-width:899px){.order-history-list{grid-template-columns:minmax(0,1fr)}.orders-dialog{width:min(100%,760px)}}
 </style>
   <link rel="stylesheet" href="/css/brand-header.css?v=20260921-7">
 </head>
