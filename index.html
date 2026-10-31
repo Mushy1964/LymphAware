@@ -1624,7 +1624,7 @@
 
     if (isSignedIn) {
       heroMembershipLink.href = '/portal/';
-      heroMembershipLink.textContent = 'Patient Portal';
+      heroMembershipLink.textContent = 'Go to My Portal';
       membershipTitle.textContent = 'Manage your LymphAware ID account.';
       membershipLead.textContent = 'The membership packages and available terms are shown below for reference. As you are already signed in, another membership cannot be selected from this page.';
       membershipPackages.hidden = false;
@@ -1651,12 +1651,12 @@
 
     if (isSignedIn) {
       desktopAccountLink.href = '/portal/';
-      desktopAccountLink.textContent = 'Patient Portal';
-      desktopAccountLink.hidden = true;
+      desktopAccountLink.textContent = 'My Portal';
+      desktopAccountLink.hidden = false;
       desktopSignOutButton.hidden = false;
 
       mobileAccountLink.href = '/portal/';
-      mobileAccountLink.textContent = 'Patient Portal';
+      mobileAccountLink.textContent = 'My Portal';
       mobileSignOutButton.hidden = false;
     } else {
       desktopAccountLink.href = '/sign-in/';
