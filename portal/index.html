@@ -67,6 +67,23 @@
 .portal-grid.simple-view .portal-option[data-area] h2{line-height:1.3}
 .portal-grid.simple-view .portal-option[data-area] .button:focus-visible{outline:3px solid #0053b7;outline-offset:3px}
 @media(max-width:680px){.portal-grid.simple-view #profiles-account-panel>.profile-account-group{padding:17px}.portal-grid.simple-view .profile-management-actions,.portal-grid.simple-view .profile-review-actions,.portal-grid.simple-view .membership-renewal-actions,.portal-grid.simple-view #portal-card-shortcuts{grid-template-columns:1fr}.portal-grid.simple-view .profile-management-actions #profile-link{grid-column:auto}.portal-grid.simple-view .profile-visibility-control{align-items:flex-start}}
+/* Compact My Profile: one primary action, one privacy switch, one review status. */
+.portal-grid.simple-view #profiles-account-panel{gap:16px}
+.portal-grid.simple-view #profiles-account-panel>.profile-account-group{padding:20px 24px;border-radius:13px}
+.portal-grid.simple-view #profiles-account-panel>.profile-management-group{background:#f6fbf7}
+.portal-grid.simple-view #profiles-account-panel>.profile-visibility-group{background:#fff}
+.portal-grid.simple-view #profiles-account-panel>.profile-review-group{background:#fff}
+.portal-grid.simple-view #profiles-account-panel>.profile-account-group .profile-account-group-intro{margin-bottom:12px}
+.portal-grid.simple-view #profiles-account-panel .profile-management-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.portal-grid.simple-view #profiles-account-panel .profile-management-actions #profile-link{width:auto;min-width:200px;max-width:100%}
+.portal-grid.simple-view #profiles-account-panel .profile-visibility-control{padding:12px 16px;background:#f7fafb;box-shadow:none}
+.portal-grid.simple-view #profiles-account-panel .profile-visibility-warning{font-size:.91rem;line-height:1.5;padding:11px 14px}
+.portal-grid.simple-view #profiles-account-panel .profile-review-card{padding:16px 18px}
+.portal-grid.simple-view #profiles-account-panel .profile-review-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.portal-grid.simple-view #profiles-account-panel .profile-review-actions .button{width:auto;min-width:195px}
+.portal-grid.simple-view #profiles-account-panel .profile-review-actions #profile-review-link{background:#fff;color:#0053b7;border:1px solid #0053b7}
+.portal-grid.simple-view #profiles-account-panel .profile-review-actions #profile-review-confirm{background:#fff;color:#0053b7;border:1px solid #0053b7}
+@media(max-width:600px){.portal-grid.simple-view #profiles-account-panel>.profile-account-group{padding:16px}.portal-grid.simple-view #profiles-account-panel .profile-management-actions #profile-link,.portal-grid.simple-view #profiles-account-panel .profile-review-actions .button{width:100%;min-width:0}}
     .portal-page{min-height:calc(100vh - 84px);padding:var(--space-account-top) var(--space-page-gutter) var(--space-account-bottom);background:linear-gradient(135deg,rgba(36, 122, 36, .06),rgba(0, 83, 183, .05))}
     .portal-shell{width:100%;max-width:1180px;margin:0 auto}#portal-content{display:none}#portal-loading{text-align:center;padding:80px 20px;color:var(--muted)}
     .portal-welcome{margin-bottom:30px}.portal-welcome h1{margin:6px 0 12px;font-size:clamp(2rem,3vw,2.8rem);line-height:1.15}.portal-welcome p{max-width:700px;color:var(--muted);font-size:1.08rem;line-height:1.55}
@@ -287,7 +304,7 @@
           <p>Manage your information, choose what others can see and check that your profile is up to date.</p>
           <div class="profile-account-group profile-visibility-group">
             <h3 class="profile-account-group-title">QR profile visibility</h3>
-            <p class="profile-account-group-intro">Choose whether people who scan your LymphAware ID card can view the profile information you have chosen to share.</p>
+            <p class="profile-account-group-intro">Control whether your QR profile can be viewed when someone scans your card.</p>
             <div class="profile-visibility-control">
             <div class="profile-visibility-copy">
               <strong id="portal-visibility-title">Make my QR profile available</strong>
@@ -303,7 +320,7 @@
           </div>
           <div class="profile-account-group profile-management-group">
             <h3 class="profile-account-group-title">Your profile details</h3>
-            <p class="profile-account-group-intro">Add or update the information on your ID card and QR profile.</p>
+            <p class="profile-account-group-intro">Update the details you choose to share on your ID card and QR profile.</p>
             <div id="preview-language-control" class="preview-language-control" hidden>
             <label for="preview-language-select">Preview language</label>
             <select id="preview-language-select"><option value="EN">English</option></select>
@@ -321,12 +338,12 @@
           </div>
           <div class="profile-account-group profile-review-group" id="profile-review">
             <h3 class="profile-account-group-title">Profile health check</h3>
-            <p class="profile-account-group-intro">Every six months we’ll remind you to check that the information you have chosen to share is still current. Missing a review does not switch off your QR profile.</p>
+            <p class="profile-account-group-intro">We’ll remind you to check your information every six months. Your QR profile stays available if you miss a review.</p>
             <div id="profile-review-card" class="profile-review-card">
               <p id="profile-review-status" class="profile-review-status">Loading your review status…</p>
               <p id="profile-review-dates" class="profile-review-dates"></p>
               <div class="profile-review-actions">
-                <a id="profile-review-link" href="/profile/?review=1" class="button button-primary">Review my profile</a>
+                <a id="profile-review-link" href="/profile/?review=1" class="button button-primary">Check my details</a>
                 <button type="button" id="profile-review-confirm" class="button button-secondary">Everything is up to date</button>
               </div>
               <p id="profile-review-message" class="profile-review-message" role="status" aria-live="polite"></p>
