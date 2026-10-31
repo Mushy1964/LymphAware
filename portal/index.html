@@ -35,6 +35,14 @@
 .portal-simple-tiles button:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(24,61,90,.12)}
 .portal-simple-tiles button:focus-visible{outline:3px solid #0053b7;outline-offset:3px}
 @media(max-width:600px){.portal-simple-tiles{gap:12px}.portal-simple-tiles button{min-height:118px;padding:20px 35px 20px 82px}.portal-simple-tiles button::before{left:17px;top:20px;width:48px;height:48px}.portal-simple-tiles button strong{font-size:1.12rem}.portal-simple-tiles button span{font-size:.95rem}}
+/* Supplied LymphAware ID artwork: large, readable dashboard illustrations. */
+.portal-simple-tiles button{padding-left:132px;min-height:154px}
+.portal-simple-tiles button::before{content:""!important;width:82px;height:82px;left:24px;top:25px;background-color:transparent!important;background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;border-radius:0}
+.portal-simple-tiles button[data-area="profile"]::before{background-image:url('/assets/portal-profile.svg')}
+.portal-simple-tiles button[data-area="card"]::before{background-image:url('/assets/portal-card.svg')}
+.portal-simple-tiles button[data-area="orders"]::before{background-image:url('/assets/portal-orders.svg')}
+.portal-simple-tiles button[data-area="membership"]::before{background-image:url('/assets/portal-membership.svg')}
+@media(max-width:600px){.portal-simple-tiles button{padding-left:102px;min-height:112px}.portal-simple-tiles button::before{width:65px;height:65px;left:18px;top:21px}}
     .portal-page{min-height:calc(100vh - 84px);padding:var(--space-account-top) var(--space-page-gutter) var(--space-account-bottom);background:linear-gradient(135deg,rgba(36, 122, 36, .06),rgba(0, 83, 183, .05))}
     .portal-shell{width:100%;max-width:1180px;margin:0 auto}#portal-content{display:none}#portal-loading{text-align:center;padding:80px 20px;color:var(--muted)}
     .portal-welcome{margin-bottom:30px}.portal-welcome h1{margin:6px 0 12px;font-size:clamp(2rem,3vw,2.8rem);line-height:1.15}.portal-welcome p{max-width:700px;color:var(--muted);font-size:1.08rem;line-height:1.55}
