@@ -1644,52 +1644,12 @@
     signedInMembershipPanel.hidden = true;
   }
 
+  // The shared public header owns Sign In / Sign Out. The homepage only
+  // updates its existing Join button and membership content for members.
   function updateAccountLinks(session) {
     currentAccountSession = session || null;
-    const isSignedIn = Boolean(session?.user);
     updateHomepageMembership(session);
-
-    if (isSignedIn) {
-      desktopAccountLink.href = '/portal/';
-      desktopAccountLink.textContent = 'My Portal';
-      desktopAccountLink.hidden = false;
-      desktopSignOutButton.hidden = false;
-
-      mobileAccountLink.href = '/portal/';
-      mobileAccountLink.textContent = 'My Portal';
-      mobileSignOutButton.hidden = false;
-    } else {
-      desktopAccountLink.href = '/sign-in/';
-      desktopAccountLink.textContent = 'Sign In';
-      desktopAccountLink.hidden = false;
-      desktopSignOutButton.hidden = true;
-
-      mobileAccountLink.href = '/sign-in/';
-      mobileAccountLink.textContent = 'Sign In';
-      mobileSignOutButton.hidden = true;
-    }
   }
-
-  async function signOutFromHomepage() {
-    desktopSignOutButton.disabled = true;
-    mobileSignOutButton.disabled = true;
-
-    const { error } = await supabaseClient.auth.signOut();
-
-    if (error) {
-      console.error('Unable to sign out:', error);
-      desktopSignOutButton.disabled = false;
-      mobileSignOutButton.disabled = false;
-      return;
-    }
-
-    updateAccountLinks(null);
-    desktopSignOutButton.disabled = false;
-    mobileSignOutButton.disabled = false;
-  }
-
-  desktopSignOutButton.addEventListener('click', signOutFromHomepage);
-  mobileSignOutButton.addEventListener('click', signOutFromHomepage);
 
   async function checkAccountSession() {
     const { data: { session } } = await supabaseClient.auth.getSession();
