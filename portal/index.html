@@ -397,6 +397,28 @@
  #accessories-panel .orders-product-grid>.additional-language-box{padding:18px 20px!important}
 }
 @media(max-width:1049px){#accessories-panel .orders-product-grid{grid-template-columns:1fr}}
+
+/* Membership: two balanced information panels, with payment and account actions below. */
+@media(min-width:1050px){
+ .portal-grid.simple-view[data-area="membership"] #membership-panel{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:20px;row-gap:14px;align-items:start}
+ .portal-grid.simple-view[data-area="membership"] #membership-panel>*{grid-column:1/-1;min-width:0}
+ .portal-grid.simple-view[data-area="membership"] #membership-panel>#owned-package-summary:not([hidden]){grid-column:1;grid-row:auto;align-self:stretch;margin:0}
+ .portal-grid.simple-view[data-area="membership"] #membership-panel>#membership-change-policy:not([hidden]){grid-column:2;grid-row:auto;align-self:stretch;margin:0}
+ .portal-grid.simple-view[data-area="membership"] #membership-panel:has(>#owned-package-summary:not([hidden])):has(>#membership-change-policy:not([hidden])){grid-template-areas:"heading heading" "status status" "summary policy"}
+ .portal-grid.simple-view[data-area="membership"] #membership-panel:has(>#owned-package-summary:not([hidden])):has(>#membership-change-policy:not([hidden]))>h2{grid-area:heading}
+ .portal-grid.simple-view[data-area="membership"] #membership-panel:has(>#owned-package-summary:not([hidden])):has(>#membership-change-policy:not([hidden]))>#membership-status{grid-area:status}
+ .portal-grid.simple-view[data-area="membership"] #membership-panel:has(>#owned-package-summary:not([hidden])):has(>#membership-change-policy:not([hidden]))>#owned-package-summary{grid-area:summary}
+ .portal-grid.simple-view[data-area="membership"] #membership-panel:has(>#owned-package-summary:not([hidden])):has(>#membership-change-policy:not([hidden]))>#membership-change-policy{grid-area:policy}
+}
+.portal-grid.simple-view[data-area="membership"] #membership-change-policy{padding:20px 22px;line-height:1.55}
+.portal-grid.simple-view[data-area="membership"] #membership-change-policy p{margin:10px 0}
+.portal-grid.simple-view[data-area="membership"] #membership-billing-panel #membership-billing-controls{margin-top:18px}
+.portal-grid.simple-view[data-area="membership"] #membership-billing-panel .membership-renewal-actions{margin:18px 0;gap:12px}
+.portal-grid.simple-view[data-area="membership"] #membership-billing-panel .payment-result{margin-top:20px;padding:20px 22px}
+.portal-grid.simple-view[data-area="membership"] #membership-billing-panel .payment-result p{margin:12px 0 16px}
+.portal-grid.simple-view[data-area="membership"] #account-deletion-panel{padding-top:26px;padding-bottom:26px}
+.portal-grid.simple-view[data-area="membership"] #account-deletion-panel .account-management{margin-top:18px}
+.portal-grid.simple-view[data-area="membership"] #account-deletion-panel .account-deceased-note{margin-top:20px;padding-top:14px}
 </style>
   <link rel="stylesheet" href="/css/brand-header.css?v=20260921-7">
 </head>
