@@ -84,6 +84,21 @@
 .portal-grid.simple-view #profiles-account-panel .profile-review-actions #profile-review-link{background:#fff;color:#0053b7;border:1px solid #0053b7}
 .portal-grid.simple-view #profiles-account-panel .profile-review-actions #profile-review-confirm{background:#fff;color:#0053b7;border:1px solid #0053b7}
 @media(max-width:600px){.portal-grid.simple-view #profiles-account-panel>.profile-account-group{padding:16px}.portal-grid.simple-view #profiles-account-panel .profile-management-actions #profile-link,.portal-grid.simple-view #profiles-account-panel .profile-review-actions .button{width:100%;min-width:0}}
+/* Desktop task layout: profile and review side-by-side, privacy below. */
+@media(min-width:900px){
+.portal-grid.simple-view #profiles-account-panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:stretch}
+.portal-grid.simple-view #profiles-account-panel>h2,.portal-grid.simple-view #profiles-account-panel>p{grid-column:1/-1}
+.portal-grid.simple-view #profiles-account-panel>.profile-management-group{grid-column:1;grid-row:3}
+.portal-grid.simple-view #profiles-account-panel>.profile-review-group{grid-column:2;grid-row:3}
+.portal-grid.simple-view #profiles-account-panel>.profile-visibility-group{grid-column:1/-1;grid-row:4}
+.portal-grid.simple-view #profiles-account-panel>.profile-account-group{padding:24px}
+.portal-grid.simple-view #profiles-account-panel .profile-review-card{background:transparent;border:0;padding:0}
+.portal-grid.simple-view #profiles-account-panel .profile-review-actions{flex-direction:column;align-items:flex-start}
+.portal-grid.simple-view #profiles-account-panel .profile-review-actions .button{min-width:0;width:auto}
+}
+.portal-grid.simple-view #profiles-account-panel>.profile-account-group{margin:0}
+.portal-grid.simple-view #profiles-account-panel>.profile-account-group .profile-account-group-intro{line-height:1.55}
+.portal-grid.simple-view #profiles-account-panel .profile-review-status{margin-top:8px}
     .portal-page{min-height:calc(100vh - 84px);padding:var(--space-account-top) var(--space-page-gutter) var(--space-account-bottom);background:linear-gradient(135deg,rgba(36, 122, 36, .06),rgba(0, 83, 183, .05))}
     .portal-shell{width:100%;max-width:1180px;margin:0 auto}#portal-content{display:none}#portal-loading{text-align:center;padding:80px 20px;color:var(--muted)}
     .portal-welcome{margin-bottom:30px}.portal-welcome h1{margin:6px 0 12px;font-size:clamp(2rem,3vw,2.8rem);line-height:1.15}.portal-welcome p{max-width:700px;color:var(--muted);font-size:1.08rem;line-height:1.55}
