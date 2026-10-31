@@ -41,7 +41,7 @@ function packageFromItems(items) {
   if (description.includes('Multilingual')) {
     return {
       code: 'MULTILINGUAL',
-      name: `${termYears}-Year Multilingual`,
+      name: `Multilingual – ${termYears}-Year Membership`,
       language_name: languageName || null,
       included_summary: languageName
         ? `English + ${languageName} QR profiles · 1 English ID card · 1 ${languageName} ID card · 1 Lanyard & holder · Six-monthly profile review reminders`
@@ -58,7 +58,7 @@ function packageFromItems(items) {
   }
   return {
     code: 'STANDARD',
-    name: `${termYears}-Year Standard`,
+    name: `Essential – ${termYears}-Year Membership`,
     language_name: null,
     included_summary: '1 English QR profile · 1 English ID card · 1 Lanyard & holder · Six-monthly profile review reminders'
   };
