@@ -463,6 +463,54 @@
 .portal-grid.simple-view[data-area="membership"] .membership-billing-column #initial-cooling-off .button,.portal-grid.simple-view[data-area="membership"] .membership-billing-column #renewal-cooling-off .button{margin-top:auto!important}
 }
 
+
+/* Match the established website content width and the approved dashboard reference. */
+#portal-content.portal-dashboard-layout{
+ max-width:1180px!important;
+ width:100%;
+ background:#fff;
+ border:1px solid #d7e3ec;
+ border-radius:24px;
+ box-shadow:0 12px 35px rgba(20,52,77,.07);
+ padding:28px!important;
+ box-sizing:border-box;
+}
+#portal-content.portal-dashboard-layout .portal-welcome{margin-bottom:20px}
+#portal-content.portal-dashboard-layout .portal-welcome h1{font-size:clamp(1.65rem,2.4vw,2.25rem);margin:5px 0 8px}
+#portal-content.portal-dashboard-layout .portal-welcome p{font-size:1rem}
+#portal-content.portal-dashboard-layout .portal-simple-nav{margin:12px 0 16px}
+#portal-content.portal-dashboard-layout .portal-simple-nav h2{font-size:1.35rem}
+#portal-content.portal-dashboard-layout .portal-simple-tiles{gap:12px}
+#portal-content.portal-dashboard-layout .portal-simple-tiles button{
+ min-height:126px;
+ padding:18px 16px 18px 84px;
+ border-radius:15px;
+ box-shadow:0 3px 12px rgba(12,51,91,.045)
+}
+#portal-content.portal-dashboard-layout .portal-simple-tiles button::before{left:15px;top:24px;width:56px;height:56px}
+#portal-content.portal-dashboard-layout .portal-simple-tiles strong{font-size:1.05rem}
+#portal-content.portal-dashboard-layout .portal-simple-tiles span{font-size:.91rem}
+#portal-content.portal-dashboard-layout .portal-info-rail{margin-top:12px;gap:12px}
+#portal-content.portal-dashboard-layout .portal-info-rail section{padding:14px;border-radius:13px}
+#portal-content.portal-dashboard-layout .portal-info-rail h3{font-size:.95rem}
+#portal-content.portal-dashboard-layout .portal-info-rail p{font-size:.88rem}
+#portal-content.portal-dashboard-layout .portal-actions #sign-out-button{display:none}
+@media(min-width:1100px){
+ #portal-content.portal-dashboard-layout{padding:28px 26px 28px 207px!important;position:relative}
+ #portal-content.portal-dashboard-layout .portal-sidebar{left:0;top:0;bottom:0;width:184px;border-radius:23px 0 0 23px;box-shadow:none}
+ #portal-content.portal-dashboard-layout .portal-home-columns{grid-template-columns:minmax(0,1fr) 190px;gap:14px}
+ #portal-content.portal-dashboard-layout .portal-sidebar-brand{font-size:.96rem}
+ #portal-content.portal-dashboard-layout .portal-sidebar button{font-size:.9rem}
+}
+@media(max-width:1099px){
+ #portal-content.portal-dashboard-layout{padding:20px!important}
+ #portal-content.portal-dashboard-layout .portal-sidebar{border-radius:15px}
+}
+@media(max-width:650px){
+ #portal-content.portal-dashboard-layout{padding:14px!important;border-radius:15px}
+ #portal-content.portal-dashboard-layout .portal-simple-tiles button{min-height:104px}
+}
+
 /* LymphAware ID portal shell: navigation redesign, existing account actions retained. */
 @media(min-width:1100px){
  #portal-content.portal-dashboard-layout{position:relative;padding-left:232px!important;max-width:1600px!important}
