@@ -644,6 +644,58 @@
  .portal-dashboard-preview-tile iframe{height:310px}
 }
 /* Trigger Netlify branch preview build after enabling branch deploys. */
+
+/* Approved four-card dashboard reference — branch-only visual revision. */
+@media(min-width:1100px){
+ #portal-content.portal-shell.portal-dashboard-layout{max-width:1360px!important;padding:30px 24px 35px 264px!important;position:relative}
+ #portal-content.portal-dashboard-layout .portal-sidebar{width:240px!important;left:0!important;top:0!important;bottom:0!important;background:linear-gradient(155deg,#0759bd,#074aa5)!important}
+ #portal-content.portal-dashboard-layout .portal-home-columns{display:grid!important;grid-template-columns:minmax(0,1fr) 280px!important;gap:22px!important}
+ #portal-content.portal-dashboard-layout .portal-simple-tiles{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important}
+ #portal-content.portal-dashboard-layout .portal-simple-tiles button{min-height:190px!important;padding:80px 14px 18px!important}
+ #portal-content.portal-dashboard-layout .portal-simple-tiles button::before{left:14px!important;top:16px!important;width:55px!important;height:55px!important}
+ #portal-content.portal-dashboard-layout .portal-simple-tiles strong{font-size:1rem!important}
+ #portal-content.portal-dashboard-layout .portal-simple-tiles span{font-size:.87rem!important}
+}
+#portal-content.portal-dashboard-layout{background:#f5fbff!important;border:0!important;box-shadow:0 12px 38px rgba(20,52,77,.07)}
+#portal-content.portal-dashboard-layout .portal-welcome{margin-bottom:22px}
+#portal-content.portal-dashboard-layout .portal-welcome .eyebrow{display:none}
+#portal-content.portal-dashboard-layout .portal-welcome h1{font-size:clamp(1.6rem,2.5vw,2rem)!important;color:#101b43}
+#portal-content.portal-dashboard-layout .portal-simple-nav{margin:0 0 12px!important}
+#portal-content.portal-dashboard-layout .portal-simple-nav>h2,#portal-content.portal-dashboard-layout .portal-simple-nav>p{display:none}
+#portal-content.portal-dashboard-layout .portal-simple-tiles button{border-radius:15px!important;box-shadow:0 5px 18px rgba(21,61,91,.045)}
+#portal-content.portal-dashboard-layout .portal-dashboard-main{gap:12px}
+#portal-content.portal-dashboard-layout .portal-dashboard-previews{padding:24px!important;border:0!important;border-radius:17px!important;box-shadow:0 6px 22px rgba(22,60,90,.045)}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-heading{display:block}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-heading h2{font-size:1.35rem!important;color:#111d42}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-heading p{margin:6px 0 0;color:#60718d}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-tile{background:#f7fbfe!important;border:1px solid #d9e8f3!important;border-radius:14px!important;padding:15px!important}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-tile iframe{height:275px}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-actions{display:grid;gap:8px;margin-top:12px}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-actions button{padding:10px;border-radius:9px;background:#075ac4;color:#fff;border:1px solid #075ac4;font:inherit;font-weight:700;cursor:pointer}
+#portal-content.portal-dashboard-layout .portal-dashboard-preview-actions button+button{background:#fff;color:#075ac4}
+#portal-content.portal-dashboard-layout .portal-info-rail{gap:14px!important;margin-top:0!important}
+#portal-content.portal-dashboard-layout .portal-info-rail section{border:0!important;border-radius:15px!important;padding:19px!important;box-shadow:0 4px 18px rgba(21,61,91,.045)}
+#portal-content.portal-dashboard-layout .portal-info-rail h3{color:#111d42;font-size:1.05rem!important;display:flex;gap:10px;align-items:center}
+#portal-content.portal-dashboard-layout .portal-info-rail h3 span{font-size:1.4rem;color:#075ac4}
+#portal-content.portal-dashboard-layout .portal-info-rail button{display:flex;justify-content:space-between;align-items:center}
+#portal-content.portal-dashboard-layout .portal-rail-membership .portal-status{padding:14px;border-radius:11px;background:#e3f6e9;color:#08752c;font-weight:800}
+#portal-content.portal-dashboard-layout .portal-rail-security{background:#e8f4ff!important}
+@media(min-width:1100px) and (max-width:1280px){
+ #portal-content.portal-shell.portal-dashboard-layout{padding-left:220px!important;padding-right:18px!important}
+ #portal-content.portal-dashboard-layout .portal-sidebar{width:202px!important}
+ #portal-content.portal-dashboard-layout .portal-home-columns{grid-template-columns:minmax(0,1fr) 230px!important;gap:12px!important}
+ #portal-content.portal-dashboard-layout .portal-simple-tiles{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:1099px){
+ #portal-content.portal-dashboard-layout .portal-home-columns{display:block!important}
+ #portal-content.portal-dashboard-layout .portal-simple-tiles{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #portal-content.portal-dashboard-layout .portal-info-rail{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:650px){
+ #portal-content.portal-dashboard-layout .portal-simple-tiles{grid-template-columns:1fr!important}
+ #portal-content.portal-dashboard-layout .portal-info-rail{grid-template-columns:1fr}
+ #portal-content.portal-dashboard-layout .portal-dashboard-preview-grid{grid-template-columns:1fr}
+}
 </style>
   <link rel="stylesheet" href="/css/brand-header.css?v=20260921-7">
 </head>
@@ -817,12 +869,13 @@ portalShell.insertBefore(sidebar,portalShell.firstChild);
 const homeColumns=document.createElement('div');homeColumns.className='portal-home-columns';
 simpleNav.parentNode.insertBefore(homeColumns,simpleNav);homeColumns.appendChild(simpleNav);
 const infoRail=document.createElement('aside');infoRail.className='portal-info-rail';infoRail.setAttribute('aria-label','Membership at a glance');
-infoRail.innerHTML='<section><h3>Membership status</h3><p class="portal-status" id="portal-rail-status">Checking membership…</p><button type="button" data-portal-destination="membership">Manage membership</button></section><section><h3>My orders</h3><p>View your orders and any additional cards or accessories.</p><button type="button" data-portal-destination="orders">View my orders</button></section><section><h3>Profile & privacy</h3><p>Choose what information is available when someone scans your card.</p><button type="button" data-portal-destination="profile">Manage my profile</button></section>';
+infoRail.innerHTML='<section class="portal-rail-membership"><h3><span aria-hidden="true">▦</span> Membership Status</h3><p class="portal-status" id="portal-rail-status">Checking membership…</p><button type="button" data-portal-destination="membership">Manage membership <span aria-hidden="true">›</span></button></section><section><h3><span aria-hidden="true">▣</span> Recent Orders</h3><p>View your orders, additional cards and accessories.</p><button type="button" data-portal-destination="orders">View all orders <span aria-hidden="true">›</span></button></section><section><h3><span aria-hidden="true">?</span> Need Help?</h3><p>Find answers to common questions or contact our support team.</p><button type="button" data-portal-help>Visit Help & Support <span aria-hidden="true">›</span></button></section><section class="portal-rail-security"><h3><span aria-hidden="true">♢</span> Your information is secure</h3><p>Your information is shared only when you choose.</p><button type="button" data-portal-destination="profile">Manage profile privacy <span aria-hidden="true">›</span></button></section>';
 const dashboardMain=document.createElement('div');dashboardMain.className='portal-dashboard-main';homeColumns.insertBefore(dashboardMain,simpleNav);dashboardMain.appendChild(simpleNav);
-const dashboardPreview=document.createElement('section');dashboardPreview.className='portal-dashboard-previews';dashboardPreview.innerHTML='<div class="portal-dashboard-preview-heading"><h2>My ID Card & QR Profile</h2><button type="button" class="portal-preview-manage">View ID Card & QR Profile</button></div><div class="portal-dashboard-preview-grid"><div class="portal-dashboard-preview-tile"><h3>My ID Card</h3><div class="portal-card-embed-viewport"><iframe id="portal-home-card-embed" title="My ID card preview" loading="lazy"></iframe></div></div><div class="portal-dashboard-preview-tile"><h3>My QR Profile</h3><div class="portal-card-embed-viewport"><iframe id="portal-home-profile-embed" title="My QR profile preview" loading="lazy"></iframe></div></div></div>';
+const dashboardPreview=document.createElement('section');dashboardPreview.className='portal-dashboard-previews';dashboardPreview.innerHTML='<div class="portal-dashboard-preview-heading"><h2>Your LymphAware ID Card</h2><p>Your ID card and QR profile, shown together.</p></div><div class="portal-dashboard-preview-grid"><div class="portal-dashboard-preview-tile"><h3>My ID Card</h3><div class="portal-card-embed-viewport"><iframe id="portal-home-card-embed" title="My ID card preview" loading="lazy"></iframe></div></div><div class="portal-dashboard-preview-tile"><h3>My QR Profile</h3><div class="portal-card-embed-viewport"><iframe id="portal-home-profile-embed" title="My QR profile preview" loading="lazy"></iframe></div></div></div>';
 dashboardMain.appendChild(dashboardPreview);
-dashboardPreview.querySelector('.portal-preview-manage').addEventListener('click',()=>sidebar.querySelector('[data-portal-destination="card"]').click());
+dashboardPreview.querySelectorAll('.portal-dashboard-preview-tile').forEach((tile,index)=>{const actions=document.createElement('div');actions.className='portal-dashboard-preview-actions';actions.innerHTML=index===0?'<button type="button" data-portal-destination="card">View my ID card</button>':'<button type="button" data-portal-destination="card">View my QR profile</button><button type="button" data-portal-destination="profile">Edit profile information</button>';tile.appendChild(actions);actions.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>sidebar.querySelector('[data-portal-destination="'+button.dataset.portalDestination+'"]').click()))});
 homeColumns.appendChild(infoRail);
+infoRail.querySelector('[data-portal-help]').addEventListener('click',()=>sidebar.querySelector('[data-portal-help]').click());
 const originalSignOut=document.getElementById('sign-out-button');
 sidebar.querySelector('[data-portal-signout]').addEventListener('click',()=>originalSignOut.click());
 const membershipStatusForRail=document.getElementById('membership-status');
