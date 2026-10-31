@@ -287,6 +287,31 @@
   .portal-grid.simple-view #profiles-account-panel>.profile-review-group{grid-area:review!important;grid-column:auto!important;grid-row:auto!important}
   .portal-grid.simple-view #profiles-account-panel>.profile-visibility-group{grid-area:visibility!important;grid-column:auto!important;grid-row:auto!important}
 }
+
+/* Compact left column: edit profile above health check, privacy to the right. */
+@media(min-width:900px){
+.portal-grid.simple-view #profiles-account-panel{
+ grid-template-areas:"heading heading" "intro intro" "edit visibility" "review visibility"!important;
+ grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+ grid-template-rows:auto auto auto 1fr!important;
+ gap:16px 22px!important;
+}
+.portal-grid.simple-view #profiles-account-panel>.profile-management-group{grid-area:edit!important;align-self:start}
+.portal-grid.simple-view #profiles-account-panel>.profile-review-group{grid-area:review!important;align-self:stretch}
+.portal-grid.simple-view #profiles-account-panel>.profile-visibility-group{grid-area:visibility!important;align-self:stretch}
+}
+.portal-grid.simple-view #profiles-account-panel .profile-management-actions #profile-link,
+.portal-grid.simple-view #profiles-account-panel .profile-review-actions .button{
+ width:260px!important;max-width:100%!important;min-width:0!important;
+ min-height:52px!important;box-sizing:border-box!important;
+ display:inline-flex!important;justify-content:center!important;align-items:center!important;
+ text-align:center!important;padding:10px 14px!important;
+}
+.portal-grid.simple-view #profiles-account-panel .profile-review-actions{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:10px!important}
+@media(max-width:600px){
+.portal-grid.simple-view #profiles-account-panel .profile-management-actions #profile-link,
+.portal-grid.simple-view #profiles-account-panel .profile-review-actions .button{width:100%!important}
+}
 </style>
   <link rel="stylesheet" href="/css/brand-header.css?v=20260921-7">
 </head>
