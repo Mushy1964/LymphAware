@@ -574,7 +574,7 @@ function buildInitialItems(packageType, languageCode, languageName, membershipTe
       normaliseItem({ item_type: 'LANGUAGE_PACKAGE', description: 'Multilingual translated ID Card & QR Profile', quantity: 1, unit_price_pence: 0, line_total_pence: 0, language_code: languageCode, language_name: languageName }),
     ];
   }
-  return [normaliseItem({ item_type: 'MEMBERSHIP', description: `LymphAware ID ${termLabel} Membership`, quantity: 1, unit_price_pence: packagePricePence, line_total_pence: packagePricePence })];
+  return [normaliseItem({ item_type: 'MEMBERSHIP', description: `LymphAware ID Essential – ${termLabel} Membership`, quantity: 1, unit_price_pence: packagePricePence, line_total_pence: packagePricePence })];
 }
 
 function buildAdditionalLanguageItems(languageCode, languageName, languagePricePence = ADDITIONAL_LANGUAGE_PRICE_PENCE) {
