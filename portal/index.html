@@ -546,6 +546,10 @@
  .portal-sidebar button{flex:1 1 43%;font-size:.9rem;padding:10px 6px}
  .portal-info-rail{grid-template-columns:1fr}
 }
+
+/* Final cascade override: never widen the portal beyond the original site container. */
+#portal-content.portal-shell.portal-dashboard-layout{width:100%!important;max-width:1180px!important;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box!important}
+@media(min-width:1100px){#portal-content.portal-shell.portal-dashboard-layout{padding:28px 26px 28px 207px!important}}
 </style>
   <link rel="stylesheet" href="/css/brand-header.css?v=20260921-7">
 </head>
