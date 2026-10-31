@@ -557,6 +557,43 @@
 /* Final cascade override: never widen the portal beyond the original site container. */
 #portal-content.portal-shell.portal-dashboard-layout{width:100%!important;max-width:1180px!important;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box!important}
 @media(min-width:1100px){#portal-content.portal-shell.portal-dashboard-layout{padding:28px 26px 28px 207px!important}}
+
+/* Live portal stage 1: approved dashboard proportions, scoped to patient portal. */
+@media(min-width:1100px){
+ .portal-page .portal-shell{max-width:1360px!important}
+ #portal-content.portal-dashboard-layout{max-width:1360px!important;width:100%!important;padding:30px 26px 34px 264px!important;position:relative;min-height:820px}
+ #portal-content.portal-dashboard-layout .portal-sidebar{width:240px!important;left:0!important;top:0!important;bottom:0!important;border-radius:23px 0 0 23px!important}
+ #portal-content.portal-dashboard-layout .portal-home-columns{grid-template-columns:minmax(0,1fr) 280px!important;gap:22px!important}
+ #portal-content.portal-dashboard-layout .portal-simple-tiles{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important}
+ #portal-content.portal-dashboard-layout .portal-simple-tiles button{min-height:190px!important;padding:76px 14px 16px!important}
+}
+#portal-content.portal-dashboard-layout{background:#f5fbff!important}
+#portal-content.portal-dashboard-layout .portal-welcome{margin-bottom:22px}
+#portal-content.portal-dashboard-layout .portal-welcome .eyebrow{display:none}
+#portal-content.portal-dashboard-layout .portal-welcome h1{font-size:clamp(1.65rem,2.6vw,2.1rem)!important;color:#101b43}
+#portal-content.portal-dashboard-layout .portal-simple-nav>h2,#portal-content.portal-dashboard-layout .portal-simple-nav>p{display:none}
+#portal-content.portal-dashboard-layout .portal-simple-tiles button{border-radius:15px!important;box-shadow:0 4px 15px rgba(15,45,75,.06)}
+#portal-content.portal-dashboard-layout .portal-info-rail section{border-radius:15px!important;padding:18px!important;box-shadow:0 4px 18px rgba(15,45,75,.05)}
+#portal-content.portal-dashboard-layout .portal-sidebar-brand{padding:14px 10px 22px!important}
+#portal-content.portal-dashboard-layout .portal-sidebar-brand img{display:block;width:100%;max-width:180px;height:auto;object-fit:contain;object-position:left}
+#portal-content.portal-dashboard-layout .portal-sidebar-brand small{display:block;font-size:.76rem;margin-top:8px}
+#portal-content.portal-dashboard-layout .portal-sidebar button{display:flex;align-items:center;gap:12px}
+#portal-content.portal-dashboard-layout .portal-nav-icon{width:24px;height:24px;flex:0 0 24px}
+#portal-content.portal-dashboard-layout .portal-sidebar-extras{margin-top:22px;padding-top:15px;border-top:1px solid rgba(255,255,255,.3)}
+@media(min-width:1100px) and (max-width:1280px){
+ #portal-content.portal-dashboard-layout{padding-left:216px!important;padding-right:18px!important}
+ #portal-content.portal-dashboard-layout .portal-sidebar{width:196px!important}
+ #portal-content.portal-dashboard-layout .portal-home-columns{grid-template-columns:minmax(0,1fr) 220px!important;gap:12px!important}
+ #portal-content.portal-dashboard-layout .portal-simple-tiles{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:1099px){
+ #portal-content.portal-dashboard-layout{max-width:100%!important}
+ #portal-content.portal-dashboard-layout .portal-home-columns{display:block!important}
+ #portal-content.portal-dashboard-layout .portal-simple-tiles{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:650px){
+ #portal-content.portal-dashboard-layout .portal-simple-tiles{grid-template-columns:1fr!important}
+}
 </style>
   <link rel="stylesheet" href="/css/brand-header.css?v=20260921-7">
 </head>
@@ -713,7 +750,10 @@ const ownedPackageSummary=document.getElementById('owned-package-summary'),owned
 const membershipOverview=document.createElement('div');membershipOverview.className='membership-overview-grid';for(const id of ['owned-package-summary','membership-change-policy'])membershipOverview.appendChild(document.getElementById(id));document.getElementById('membership-panel').appendChild(membershipOverview);const billingPanel=document.getElementById('membership-billing-panel'),billingControls=document.getElementById('membership-billing-controls');const renewalBox=document.createElement('div');renewalBox.className='membership-billing-column';for(const id of ['membership-renewal-status','membership-renewal-actions'])renewalBox.appendChild(document.getElementById(id));const coolingBox=document.createElement('div');coolingBox.className='membership-billing-column';for(const id of ['initial-cooling-off','renewal-cooling-off'])coolingBox.appendChild(document.getElementById(id));billingControls.append(renewalBox,coolingBox);document.getElementById('member-content').appendChild(billingPanel);const deletionPanel=document.getElementById('account-deletion-panel');document.getElementById('member-content').appendChild(deletionPanel);const simpleNav=document.getElementById('portal-simple-nav'),simpleGrid=document.querySelector('.portal-grid');const portalShell=document.getElementById('portal-content');
 portalShell.classList.add('portal-dashboard-layout');
 const sidebar=document.createElement('nav');sidebar.className='portal-sidebar';sidebar.setAttribute('aria-label','Patient Portal navigation');
-sidebar.innerHTML='<div class="portal-sidebar-brand">LymphAware ID<small>Helping People Living with Lymphoedema Be Understood</small></div>'+[['home','⌂','Dashboard'],['profile','●','My Profile'],['card','▣','My ID Card'],['orders','▦','My Orders'],['membership','✓','My Membership']].map(([area,symbol,label])=>'<button type="button" data-portal-destination="'+area+'"><span class="nav-symbol" aria-hidden="true">'+symbol+'</span>'+label+'</button>').join('')+'<button type="button" data-portal-signout><span class="nav-symbol" aria-hidden="true">↪</span>Sign Out</button>';
+const navIcon=(name)=>{const p={home:'<path d="m3 10 9-7 9 7v10h-6v-7H9v7H3z"/>',profile:'<circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>',card:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M5 16c1-2 5-2 6 0M14 10h5M14 14h5"/>',orders:'<circle cx="9" cy="20" r="1"/><circle cx="19" cy="20" r="1"/><path d="M2 3h3l3 12h11l3-9H6"/>',membership:'<path d="m3 12 5 5 12-12"/><path d="M15 3h6v6"/>',help:'<circle cx="12" cy="12" r="10"/><path d="M9 9a3 3 0 1 1 5 2c-1 1-2 1.5-2 3M12 17h.01"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',signout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'};return '<svg class="portal-nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p[name]+'</svg>'};
+sidebar.innerHTML='<div class="portal-sidebar-brand"><img src="/assets/brand/LymphAwareID_Logo_20260921.svg" alt="LymphAware ID"><small>Helping People Living with Lymphoedema Be Understood</small></div>'+[['home','home','Dashboard'],['profile','profile','My Profile'],['card','card','My ID Card'],['orders','orders','My Orders'],['membership','membership','My Membership']].map(([area,icon,label])=>'<button type="button" data-portal-destination="'+area+'">'+navIcon(icon)+label+'</button>').join('')+'<div class="portal-sidebar-extras"><button type="button" data-portal-help>'+navIcon('help')+'Help & Support</button><button type="button" data-portal-settings>'+navIcon('settings')+'Account Settings</button></div><button type="button" data-portal-signout>'+navIcon('signout')+'Sign Out</button>';
+sidebar.querySelector('[data-portal-help]').addEventListener('click',()=>location.href='/help/');
+sidebar.querySelector('[data-portal-settings]').addEventListener('click',()=>sidebar.querySelector('[data-portal-destination="profile"]').click());
 portalShell.insertBefore(sidebar,portalShell.firstChild);
 const homeColumns=document.createElement('div');homeColumns.className='portal-home-columns';
 simpleNav.parentNode.insertBefore(homeColumns,simpleNav);homeColumns.appendChild(simpleNav);
